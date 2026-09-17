@@ -1,0 +1,252 @@
+/* Wig Party — Education and Guides (sections/education-guides.liquid) */
+
+.aria-education {
+  position: relative;
+  /* The decorative flourish is deliberately allowed to sit outside the content box, so the
+     section clips it rather than letting it create horizontal scroll. */
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--aria-eg-bg-from, #fff) 5%, var(--aria-eg-bg-to, #f5ebe2) 98%);
+}
+
+.aria-education__decoration {
+  display: none;
+}
+
+/* V4 places the two panels edge to edge across the full canvas (742 + 698 = 1440), so this
+   section intentionally bleeds full width instead of using the 1360px container. */
+.aria-education__layout {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Media ---------- */
+
+.aria-education__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #f6ede5;
+  aspect-ratio: 742 / 663;
+}
+
+.aria-education__media-item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.5s ease,
+    visibility 0.5s ease;
+}
+
+.aria-education__media-item.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.aria-education__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Panel ---------- */
+
+.aria-education__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: var(--white, #fff);
+  border-radius: 2px;
+}
+
+.aria-education__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  padding: 24px 16px;
+  border-radius: var(--border-radius, 4px);
+  background: linear-gradient(180deg, var(--aria-eg-panel-from, #f5e9e9) 0%, var(--aria-eg-panel-to, #fff) 100%);
+}
+
+.aria-education__signature {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.aria-education__signature-img {
+  display: block;
+  width: 200px;
+  height: auto;
+}
+
+.aria-education__heading {
+  margin: 0;
+  width: 100%;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--sy, #000);
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+/* ---------- Guide links ---------- */
+
+.aria-education__links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-education__link-item {
+  display: flex;
+  width: 100%;
+}
+
+/*
+ * Uniform, because these are links rather than tabs — there is no selected one. This is
+ * V4's unselected treatment (outlined, uppercase, 16px), used as the resting state for
+ * all of them; V4's white-filled step-up is now the hover/focus affordance below.
+ */
+.aria-education__link {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  /* 44px minimum tap target is satisfied by the 20px padding + line-height. */
+  min-height: 44px;
+  padding: 16px 20px;
+  border: 1px solid #525252;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--sy, #000);
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.aria-education__link-label {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/*
+ * Borrows V4's selected look (white fill) as the hover/focus state so the interaction uses
+ * the design's own vocabulary rather than an invented one. Font size and letter case stay
+ * put on purpose: V4's selected state also steps up a size and drops the uppercase, but
+ * changing either on hover reflows the label under the cursor.
+ */
+.aria-education__link:hover,
+.aria-education__link:focus-visible {
+  background: var(--white, #fff);
+  border-color: var(--py, #a64a4c);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aria-education__media-item,
+  .aria-education__link {
+    transition: none;
+  }
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (min-width: 750px) {
+  .aria-education__panel {
+    padding: 40px;
+  }
+
+  .aria-education__card {
+    padding: 32px;
+    gap: 20px;
+  }
+
+  .aria-education__signature-img {
+    width: 240px;
+  }
+
+  .aria-education__heading {
+    font-size: 44px;
+  }
+
+  .aria-education__links {
+    margin-top: 20px;
+  }
+
+  .aria-education__link {
+    padding: 20px;
+  }
+}
+
+/* ---------- Desktop ---------- */
+
+@media screen and (min-width: 990px) {
+  .aria-education__decoration {
+    position: absolute;
+    display: block;
+    top: -39px;
+    right: -80px;
+    width: 362px;
+    height: auto;
+    /* Matches the -75deg rotation the flourish carries in V4. */
+    transform: rotate(-75deg);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* 742 : 698 is the exact V4 split — expressed as a ratio so it holds at any width. */
+  .aria-education__layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 742fr 698fr;
+    align-items: center;
+  }
+
+  .aria-education__media {
+    aspect-ratio: auto;
+    min-height: 663px;
+    height: 100%;
+  }
+
+  .aria-education__panel {
+    padding: 40px;
+    min-height: 663px;
+  }
+
+  .aria-education__card {
+    padding: 40px;
+  }
+
+  .aria-education__signature-img {
+    width: 276px;
+  }
+
+  .aria-education__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  .aria-education__links {
+    margin-top: 32px;
+  }
+}

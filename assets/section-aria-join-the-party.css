@@ -1,0 +1,344 @@
+/* Wig Party — Join the Party (sections/join-the-party.liquid), V4 node 1:917 */
+
+.aria-join {
+  position: relative;
+  isolation: isolate;
+  background: var(--white, #fff);
+  color: var(--sy, #000);
+  padding-block: 48px;
+  overflow: hidden;
+}
+
+/* ---------- Background ---------- */
+
+.aria-join__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.aria-join__bg-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* V4 scrim: a diagonal wash that keeps the frosted panel readable over any photo. */
+.aria-join__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    118.89deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+.aria-join__inner {
+  position: relative;
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- Frosted panel ---------- */
+
+/* Same frosted treatment as Meet the Icons and the community-photos quote panel. */
+.aria-join__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 32px;
+  width: 100%;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--white, #fff);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+}
+
+/* V4: 48px between the text block and the form. */
+.aria-join__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}
+
+/* V4: 12px heading -> subheading. */
+.aria-join__text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* V4: Montserrat Bold 48/56. */
+.aria-join__heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--sy, #000);
+}
+
+/* V4: 20/28 in a 351px measure. */
+.aria-join__subheading {
+  margin: 0;
+  max-width: 400px;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--sy, #000);
+}
+
+/* ---------- Form ---------- */
+
+/* V4: 8px between the field and the button, both full width of the copy column. */
+.aria-join__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.aria-join__field {
+  display: block;
+}
+
+/* V4: h-56, translucent fill, #ddd border, radius 2, 20/28 placeholder. */
+.aria-join__input {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 56px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.17);
+  color: var(--sy, #000);
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.aria-join__input::placeholder {
+  color: rgba(25, 25, 25, 0.7);
+}
+
+.aria-join__input:focus,
+.aria-join__input:focus-visible {
+  outline: 2px solid var(--sy, #000);
+  outline-offset: -2px;
+}
+
+.aria-join__submit {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--sy, #000);
+  color: var(--white, #fff);
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-join__submit:hover,
+.aria-join__submit:focus-visible {
+  background: var(--py, #a64a4c);
+}
+
+.aria-join__message {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.aria-join__message--error {
+  color: #a10000;
+}
+
+.aria-join__message--success {
+  color: #0b6b3a;
+}
+
+/* ---------- Collage ---------- */
+
+/*
+ * V4 overlaps four photos inside a 529x536 box. Each item's box is expressed as a
+ * percentage of that container so the whole arrangement scales as one unit:
+ *   1  244x365 at (285, 73.49)
+ *   2  199x297 at (94, 17.27)
+ *   3  188x235 at (0, 234.49)
+ *   4  189x284 at (161, 236.07)
+ * Hidden below desktop — at narrow widths the overlap collapses into visual noise.
+ */
+.aria-join__collage {
+  display: none;
+}
+
+.aria-join__collage-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (min-width: 750px) {
+  .aria-join {
+    padding-block: 64px;
+  }
+
+  .aria-join__inner {
+    padding-inline: 40px;
+  }
+
+  .aria-join__panel {
+    padding: 32px;
+    max-width: 560px;
+  }
+
+  .aria-join__heading {
+    font-size: 40px;
+  }
+
+  .aria-join__subheading {
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+/* ---------- Desktop ---------- */
+
+/* V4: py-60 on the section; panel p-40 with a 64px gutter between the 471px copy
+   column and the 529px collage. */
+@media screen and (min-width: 990px) {
+  .aria-join {
+    padding-block: 60px;
+    padding-inline: 40px;
+  }
+
+  .aria-join__inner {
+    padding-inline: 0;
+  }
+
+  /*
+   * V4's panel is 40 + 471 + 64 + 529 + 40 = 1144px. With the columns pinned at
+   * `flex: 0 0` that could not shrink, so between 990px and ~1240px the panel was
+   * 1146px inside an ~895px container — clipped on both sides by the section's
+   * `overflow: hidden` rather than overflowing the page, so it read as cut off.
+   * `0 1` keeps V4's exact 471/529 wherever there is surplus (1440 has 1216px of room
+   * for 1000px of columns) and lets them give way below that instead.
+   */
+  .aria-join__panel {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 64px;
+    width: auto;
+    max-width: 100%;
+    padding: 40px;
+  }
+
+  .aria-join__copy {
+    flex: 0 1 471px;
+    width: 471px;
+    min-width: 0;
+    gap: 48px;
+    justify-content: center;
+  }
+
+  .aria-join__heading {
+    /* V4 Heading/H2 at Bold: 48 / 56. */
+    font-size: 48px;
+    line-height: 56px;
+  }
+
+  .aria-join__subheading {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-join__input,
+  .aria-join__submit {
+    font-size: 20px;
+  }
+
+  .aria-join__collage {
+    display: block;
+    position: relative;
+    flex: 0 1 529px;
+    width: 529px;
+    min-width: 0;
+    aspect-ratio: 529 / 536;
+  }
+
+  .aria-join__collage-item {
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .aria-join__collage-item--1 {
+    left: 53.88%;
+    top: 13.71%;
+    width: 46.12%;
+    height: 68.10%;
+  }
+
+  .aria-join__collage-item--2 {
+    left: 17.77%;
+    top: 3.22%;
+    width: 37.62%;
+    height: 55.41%;
+  }
+
+  .aria-join__collage-item--3 {
+    left: 0;
+    top: 43.75%;
+    width: 35.54%;
+    height: 43.84%;
+  }
+
+  .aria-join__collage-item--4 {
+    left: 30.43%;
+    top: 44.04%;
+    width: 35.73%;
+    height: 52.99%;
+  }
+}
+
+
+/* ==========================================================================
+   1024px BAND ONLY — 990px to 1279px
+   --------------------------------------------------------------------------
+   Scoped to the theme's own existing breakpoints so nothing leaks: 1280 and
+   1440 keep the untouched desktop rules, 768 and below keep the untouched
+   tablet/mobile rules. Do not widen or narrow this range without re-measuring.
+   ========================================================================== */
+
+/*
+ * The copy (471) and collage (529) bases plus a 64px gap want 1064px; the row offers 929.
+ * Both already shrink proportionally, so nothing broke — but the gap does not shrink, and
+ * 64px of it out of 929 is what made the panel feel tight and pushed the heading to three
+ * lines. Halving the gap hands ~32px back to the two columns.
+ */
+@media screen and (min-width: 990px) and (max-width: 1279px) {
+  .aria-join__panel {
+    gap: 32px;
+  }
+}

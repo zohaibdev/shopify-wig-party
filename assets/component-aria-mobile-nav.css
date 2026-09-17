@@ -1,0 +1,619 @@
+/* Wig Party — MOBILE DRAWER NAVIGATION (below 1280px)
+   snippets/aria-mobile-nav.liquid + assets/aria-mobile-nav.js
+
+   A tap-driven nested drawer, not a narrow mega menu. Two halves:
+
+     1. the drawer shell — overlay, slide, levels, header, scrolling
+     2. mobile presentation of the SHARED mega-menu columns, which arrive here as the same
+        markup the desktop panel uses (see the `context: 'mobile'` note in
+        snippets/aria-mega-menu.liquid) and are re-flowed from a row of fixed-width columns
+        into a single readable stack
+
+   EVERYTHING is inside `@media (max-width: 1279px)`. Above that the drawer must not exist
+   at all — the desktop mega menu owns the header — so there is no state in which both
+   systems are live. */
+
+@media screen and (max-width: 1279px) {
+  /* ---------- Shell ---------- */
+
+  .aria-mnav {
+    position: fixed;
+    inset: 0;
+    /* Above the header's own panels (nav overlay 40, drawer close 50) so nothing from the
+       old mobile overlay can ever sit on top of the drawer. */
+    z-index: 60;
+  }
+
+  .aria-mnav[hidden] {
+    display: none;
+  }
+
+  /*
+   * THE BACKDROP, and why the selector is doubled up.
+   *
+   * `base.css` carries Dawn's `a:empty, div:empty, … { display: none }` at line 483, and
+   * this element is an empty <div> by design — it is a backdrop, it has no content. That
+   * rule is specificity (0,1,1) and beats a single class (0,1,0), so the overlay was being
+   * set to `display: none`: it measured 0x0, the page behind was never dimmed, AND
+   * tap-outside-to-close silently did nothing because the pointer fell straight through to
+   * the page. `.aria-mnav .aria-mnav__overlay` (0,2,0) wins it back, and `display: block`
+   * is stated rather than relied upon.
+   *
+   * Fixed this way instead of stuffing an inert child inside the div: nothing about a
+   * backdrop wants a child element, and the next person to "tidy up" an empty span would
+   * reintroduce the bug.
+   */
+  .aria-mnav .aria-mnav__overlay {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transition: opacity 0.28s ease;
+  }
+
+  .aria-mnav.is-open .aria-mnav__overlay {
+    opacity: 1;
+  }
+
+  /*
+   * THE DRAWER. Slides from the LEFT because that is where the hamburger is
+   * (`.aria-header__nav-left` puts the toggle before the logo), so the panel opens from the
+   * control that summoned it.
+   *
+   * `width: min(88vw, 420px)` — fluid, with a ceiling so it does not become a full-bleed
+   * sheet on a large phone or a small tablet, and an 12% sliver of overlay always remains
+   * tappable to dismiss. No fixed width, no device-specific breakpoints.
+   *
+   * `height: 100%` on a fixed parent plus `100dvh` where supported: `dvh` tracks mobile
+   * browser chrome as it collapses, which is what stops the foot of a long menu hiding
+   * under the address bar.
+   */
+  .aria-mnav__drawer {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: min(88vw, 420px);
+    height: 100%;
+    overflow: hidden;
+    background: var(--white, #fff);
+    color: var(--sy, #000);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  @supports (height: 100dvh) {
+    .aria-mnav__drawer {
+      height: 100dvh;
+    }
+  }
+
+  .aria-mnav.is-open .aria-mnav__drawer {
+    transform: translateX(0);
+  }
+
+  /* ---------- Levels ---------- */
+
+  /*
+   * Each level fills the drawer and is its own layer, which is what makes this a DRILL-DOWN
+   * rather than an accordion: level 2 slides in over level 1 and REPLACES it. Nothing
+   * expands underneath a parent row, and the two levels never scroll as one document.
+   */
+  .aria-mnav__level {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--white, #fff);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .aria-mnav__level[hidden] {
+    display: none;
+  }
+
+  .aria-mnav__level--child {
+    /* Off-canvas to the right; `.is-active` brings it in. */
+    transform: translateX(100%);
+    z-index: 2;
+  }
+
+  .aria-mnav__level--child.is-active {
+    transform: translateX(0);
+  }
+
+  /* Level 1 drifts a little further left as a child covers it — a depth cue, not a move
+     the user has to follow. */
+  .aria-mnav__level--root.is-behind {
+    transform: translateX(-18%);
+  }
+
+  /* ---------- Header (Back / title / Close) ---------- */
+
+  /*
+   * `flex: none` + the body scrolling separately keeps this row pinned while the content
+   * moves under it, so Back and Close are reachable at any scroll position.
+   */
+  .aria-mnav__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    box-sizing: border-box;
+    min-height: 60px;
+    padding: 8px clamp(12px, 4vw, 20px);
+    border-bottom: 1px solid var(--cream, #eaddd4);
+    background: var(--white, #fff);
+  }
+
+  .aria-mnav__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    /* A long parent name truncates rather than pushing Close off the row. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* 44px tap targets for both controls — these are the drawer's primary controls and are
+     used one-handed. */
+  .aria-mnav__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    color: var(--sy, #000);
+    cursor: pointer;
+  }
+
+  .aria-mnav__icon-btn:hover,
+  .aria-mnav__icon-btn:focus-visible {
+    color: var(--py, #a64a4c);
+  }
+
+  .aria-mnav__icon-btn .aria-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Back sits first in the row and Close last, so the two never occupy the same corner and
+     cannot be mistaken for each other. */
+  .aria-mnav__back {
+    margin-inline-start: -8px;
+  }
+
+  .aria-mnav__close {
+    margin-inline-end: -8px;
+  }
+
+  /* ---------- Scrolling body ---------- */
+
+  /*
+   * The ONLY scroller. The drawer itself is `overflow: hidden` and <body> is locked, so
+   * there is no page scrolling behind the drawer and no nested-scroll confusion.
+   * `overscroll-behavior: contain` stops a flick at the end of the list from chaining
+   * through to the page underneath.
+   */
+  .aria-mnav__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: clamp(12px, 4vw, 20px);
+    /* Clear of a home-indicator / gesture bar. */
+    padding-bottom: calc(clamp(12px, 4vw, 20px) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ---------- Level 1 list ---------- */
+
+  .aria-mnav__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aria-mnav__item {
+    min-width: 0;
+  }
+
+  /*
+   * One row style for links and parents alike. 56px is comfortably over the 44px minimum,
+   * and the whole row is the hit area — not just the label — which is what stops a
+   * mis-tap next to the text doing nothing.
+   */
+  .aria-mnav__link {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 56px;
+    padding: 12px 4px;
+    border: 0;
+    border-bottom: 1px solid rgba(var(--cream-rgb, 234, 221, 212), 0.9);
+    background: transparent;
+    color: var(--sy, #000);
+    font-family: inherit;
+    font-size: 17px;
+    line-height: 26px;
+    letter-spacing: 0;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    /* Stops a tap during a scroll flick registering as a hit. */
+    touch-action: manipulation;
+  }
+
+  .aria-mnav__link:active {
+    background: rgba(var(--cream-rgb, 234, 221, 212), 0.45);
+  }
+
+  .aria-mnav__link-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .aria-mnav__chevron {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--py, #a64a4c);
+  }
+
+  /* ---------- "View all <parent>" ---------- */
+
+  .aria-mnav__viewall {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    margin-top: 20px;
+    padding: 12px 24px;
+    border-radius: 2px;
+    background: var(--sy, #000);
+    color: var(--white, #fff);
+    font-size: 16px;
+    line-height: 26px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  /* ============================================================
+     SHARED MEGA CONTENT, RE-FLOWED
+     ============================================================
+     The level-2 body holds the same column markup as the desktop panel. Everything below
+     unwinds the desktop row layout into a stack and drops the fixed pixel widths the
+     design uses at 1440 — the columns keep their identity, they just stop being columns. */
+
+  .aria-mnav__mega-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /*
+   * The width custom property is the desktop design width (260, 378, 814...). Every one of
+   * those is wider than the drawer, so it is overridden here rather than obeyed. This is
+   * the single rule that turns the row into a stack.
+   */
+  .aria-mnav__mega .aria-mega__col {
+    width: 100% !important;
+    max-width: 100%;
+    flex: 0 0 auto;
+    gap: 16px;
+  }
+
+  /* `margin-left: auto` creates the desktop right-hand group's void; in a stack it would
+     just be dead space. */
+  .aria-mnav__mega .aria-mega__col--push {
+    margin-left: 0;
+  }
+
+  /* The gradient shell keeps its identity but loses the 20px side padding that assumed a
+     wide column, so its content lines up with the rest of the stack. */
+  .aria-mnav__mega .aria-mega__col--shell {
+    padding: 0 12px 16px;
+  }
+
+  /* ---------- Column heads ---------- */
+
+  .aria-mnav__mega .aria-mega__col-head {
+    padding-bottom: 10px;
+  }
+
+  .aria-mnav__mega .aria-mega__col-title {
+    font-size: 15px;
+    line-height: 24px;
+  }
+
+  /* ---------- Menu rows ---------- */
+
+  /*
+   * The design's 58px outlined cards stay outlined cards — that treatment is the design —
+   * but the row grows to a 48px minimum tap target and the label is free to wrap on a
+   * narrow screen instead of being clipped. `white-space` is deliberately left at normal:
+   * on desktop these must stay on one line inside a measured column, but at 320px wrapping
+   * is the correct outcome.
+   */
+  .aria-mnav__mega .aria-mega__links--padded .aria-mega__link,
+  .aria-mnav__mega .aria-mega__links--divided .aria-mega__link {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .aria-mnav__mega .aria-mega__links--padded .aria-mega__link {
+    padding: 11px 14px;
+  }
+
+  /* ---------- Style cards (Shop) ---------- */
+
+  .aria-mnav__mega .aria-mega__style {
+    min-height: 56px;
+  }
+
+  /* ---------- Promo cards (Shop) ---------- */
+
+  /*
+   * Two-up on anything above ~380px, one-up below, so a 320px screen never squeezes two
+   * 244px cards into 148px each. `auto-fit` + `minmax` does it without a breakpoint.
+   */
+  .aria-mnav__mega--shop .aria-mnav__mega-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .aria-mnav__mega .aria-mega__promo {
+    aspect-ratio: 244 / 260;
+  }
+
+  /* ============================================================
+     FEATURE CARDS — RESPONSIVE, AND STILL FOUR DIFFERENT DESIGNS
+     ============================================================
+     Each card goes full-width and content-height. What does NOT happen is normalising them
+     into one card: Best Sellers keeps its photo under the dark double overlay, Community
+     keeps its photo-less gradient shell and centred signature, Deals keeps its
+     bottom-anchored panel and sharp corners, Live keeps its signature and frosted play
+     disc. Only the fixed pixel geometry is released. */
+
+  .aria-mnav__mega .aria-mega__col--feature-card {
+    width: 100% !important;
+    /* The desktop cards are 449/450 tall to hold a fixed 410px glass panel. On mobile the
+       panel is content-height, so the card must be too — a fixed height would either clip
+       the copy or leave a gap under it. */
+    min-height: 0;
+  }
+
+  .aria-mnav__mega .aria-mega__feature {
+    min-height: 0;
+    padding: clamp(14px, 4.5vw, 21px);
+  }
+
+  /* Best Sellers: photo + overlay retained; the panel sizes to its content. */
+  .aria-mnav__mega .aria-mega__col--feature-best-sellers {
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .aria-mnav__mega .aria-mega__col--feature-best-sellers .aria-mega__feature {
+    min-height: 0;
+    gap: 20px;
+  }
+
+  /* The 201px cap exists to force the desktop two-line break; on mobile the heading should
+     use the width it has. */
+  .aria-mnav__mega .aria-mega__col--feature-best-sellers .aria-mega__feature-title {
+    max-width: none;
+  }
+
+  /* Community: gradient shell, no photo, centred signature — all preserved. */
+  .aria-mnav__mega .aria-mega__col--feature-community .aria-mega__feature {
+    min-height: 0;
+    gap: 20px;
+  }
+
+  /* Dailey Deals: the panel stays welded to the bottom of the photo, so the card needs a
+     real height. An aspect-ratio gives it one that scales with the drawer. */
+  .aria-mnav__mega .aria-mega__col--feature-deals {
+    min-height: 0;
+    aspect-ratio: 260 / 450;
+    max-height: 78vh;
+  }
+
+  /* Typography: one step down, still well above a readable floor, and `clamp` so a 320px
+     screen and a 430px screen each get a sensible size. */
+  .aria-mnav__mega .aria-mega__feature-title {
+    font-size: clamp(20px, 5.6vw, 24px);
+    line-height: 1.32;
+  }
+
+  .aria-mnav__mega .aria-mega__feature-text {
+    font-size: clamp(15px, 4.2vw, 18px);
+    line-height: 1.5;
+  }
+
+  .aria-mnav__mega .aria-mega__col--feature-community .aria-mega__feature-text {
+    font-size: clamp(15px, 4.4vw, 20px);
+  }
+
+  .aria-mnav__mega .aria-mega__col--feature-deals .aria-mega__feature-title {
+    font-size: clamp(16px, 4.6vw, 18px);
+  }
+
+  .aria-mnav__mega .aria-mega__col--feature-deals .aria-mega__feature-text {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  /*
+   * CTAs stay full-width with a 48px tap target.
+   *
+   * `nowrap` is dropped — the desktop rule guarantees one line inside a measured 216px
+   * button, but forcing it here would push the label out of its own box on a narrow screen.
+   * The label is kept on one line by SIZE instead: at 18px "SHOP BEST SELLERS" needs ~161px
+   * and a 320px screen only offers ~169px of button content, which was tipping it onto a
+   * second line (an 80px-tall CTA). The clamp reaches the design's 18px from ~410px up and
+   * eases to 15px at 320px, which still reads clearly and keeps every CTA one line.
+   */
+  .aria-mnav__mega .aria-mega__btn {
+    min-height: 48px;
+    padding: 12px 16px;
+    font-size: clamp(15px, 4.4vw, 18px);
+    white-space: normal;
+  }
+
+  .aria-mnav__mega .aria-mega__btn--outline {
+    width: 100%;
+  }
+
+  /* ---------- Signature (Community + Live) ---------- */
+
+  /*
+   * The desktop element is a fixed 249x96 / 120x46 mask. Here it keeps its aspect ratio and
+   * never exceeds the available width, so it scales instead of being cropped by the card.
+   */
+  .aria-mnav__mega .aria-mega__signature {
+    width: min(var(--aria-mega-sig-w, 249px), 100%);
+    height: auto;
+    aspect-ratio: var(--aria-mega-sig-ar, 249 / 96);
+  }
+
+  /* ---------- Media card (Live) ---------- */
+
+  .aria-mnav__mega .aria-mega__media {
+    aspect-ratio: 493 / 415;
+  }
+
+  /* Both overlays scale in from the corners a little on a narrow card so they do not crowd
+     the edge. The play disc keeps its 48px tap target. */
+  .aria-mnav__mega .aria-mega__media-play {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .aria-mnav__mega .aria-mega__signature--media {
+    left: 12px;
+    bottom: 12px;
+  }
+
+  /* ---------- Photo row (Community) ---------- */
+
+  .aria-mnav__mega .aria-mega__photos {
+    gap: 8px;
+  }
+
+  /* ---------- Belt and braces: no product cards ---------- */
+
+  /*
+   * `aria-mega-column` already skips the whole products column on mobile, so this matches
+   * nothing today. It stays as a guard: if a future column type ever emits a product card
+   * into the drawer, it must not appear.
+   */
+  .aria-mnav__mega .aria-mega__products,
+  .aria-mnav__mega .aria-mega__product {
+    display: none;
+  }
+
+  /* ---------- The old full-screen overlay is retired ---------- */
+
+  /*
+   * `.aria-header__nav-panel` is still the DESKTOP inline nav (it becomes `position: static`
+   * at 1280px up), so it cannot be deleted — but its mobile life as a full-screen overlay is
+   * over, and the hamburger now targets the drawer instead. Forced closed here so a stale
+   * `.is-open` class from a resize can never leave the old overlay stacked under the drawer.
+   */
+  .aria-header__nav-panel,
+  .aria-header__nav-panel.is-open {
+    display: none;
+  }
+}
+
+/* ---------- Desktop: the drawer must not exist ---------- */
+
+/*
+ * THE HARD BREAKPOINT GUARANTEE, and why it is CSS rather than JS.
+ *
+ * Every rule above lives inside `max-width: 1279px`, including `.aria-mnav[hidden]`'s own
+ * `display: none`. So at 1280px up an un-hidden `.aria-mnav` would fall back to being a
+ * plain static <div> and dump the whole drawer — seven levels of menu — into the page flow
+ * under the header.
+ *
+ * That is reachable: the JS closes the drawer on a `matchMedia` change, but a resize across
+ * the breakpoint does not always deliver that event (it did not under viewport emulation
+ * while this was being tested), which left an open drawer sitting on top of the desktop
+ * nav — precisely the "both systems live at once" state the brief rules out. Making it a
+ * media query means the outcome cannot depend on a listener firing at all.
+ */
+@media screen and (min-width: 1280px) {
+  .aria-mnav {
+    display: none;
+  }
+}
+
+/* ---------- Body scroll lock ---------- */
+
+/*
+ * SCOPED TO MOBILE, deliberately. An earlier version put this outside the media query
+ * reasoning that the class must keep working through a resize — which had it backwards: a
+ * stale `.aria-mnav-open` then locked the PAGE at desktop widths and nothing on desktop
+ * would ever remove it. Bounding the rule to the drawer's own range means crossing to
+ * desktop releases the page whether or not the JS gets to run.
+ *
+ * `position: fixed` is not used — it would lose the scroll position. `overflow: hidden` on
+ * both <html> and <body> is what actually holds iOS Safari still.
+ */
+@media screen and (max-width: 1279px) {
+  body.aria-mnav-open {
+    overflow: hidden;
+  }
+
+  html:has(body.aria-mnav-open) {
+    overflow: hidden;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+
+/*
+ * The drill-down still works, it just arrives instead of sliding. Kept as `transition: none`
+ * rather than removing the transforms, so the off-canvas positioning that drives the
+ * drill-down is untouched — only its animation is.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .aria-mnav__drawer,
+  .aria-mnav__level,
+  .aria-mnav__overlay {
+    transition: none;
+  }
+
+  .aria-mnav__level--root.is-behind {
+    transform: none;
+  }
+}

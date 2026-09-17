@@ -1,0 +1,409 @@
+{{ 'section-aria-why-wig-party.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign has_video = false
+  if section.settings.video != blank or section.settings.video_url != blank
+    assign has_video = true
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .aria-why {
+    --aria-why-bg: {{ section.settings.background_color }};
+    --aria-why-frame-border: {{ section.settings.frame_border_color }};
+  }
+{%- endstyle -%}
+
+<section class="aria-why">
+  <div class="aria-why__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="aria-why__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="aria-why__column">
+      {%- comment -%}
+        Media frame. A merchant-selected video wins over the still image; the still
+        doubles as the video poster so the frame is never empty. Mirrors the ladder in
+        sections/meet-the-icons.liquid.
+      {%- endcomment -%}
+      {%- comment -%}
+        Poster markup is shared by both branches below, so it is captured once.
+      {%- endcomment -%}
+      {%- capture poster_media -%}
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 1692
+            | image_tag:
+              loading: 'lazy',
+              sizes: '(min-width: 990px) 846px, calc(100vw - 56px)',
+              widths: '480,720,846,1024,1400,1692',
+              class: 'aria-why__image',
+              alt: section.settings.image.alt | default: section.settings.heading
+          }}
+        {%- else -%}
+          {%- comment -%} Placeholder still from the V4 design until a merchant sets media. {%- endcomment -%}
+          <img
+            src="{{ 'wp-meet-the-icons-bg.jpg' | asset_url }}"
+            alt=""
+            width="1264"
+            height="845"
+            loading="lazy"
+            class="aria-why__image"
+          >
+        {%- endif -%}
+
+        {%- comment -%}
+          V4 lays a flat rgba(0,0,0,0.2) scrim over the poster (node 1:886). It was
+          skipped at first as Figma video-poster noise, but it is doing real work: the
+          Kristi signature is white, and without the scrim it sits on a mid-tone part of
+          the photo (measured luma 128) where it all but disappears. Rendered before the
+          play glyph and the signature so both stay crisp above it. The inert child keeps
+          Dawn's `:empty { display: none }` from sweeping it away.
+        {%- endcomment -%}
+        <span class="aria-why__scrim" aria-hidden="true"><span></span></span>
+      {%- endcapture -%}
+
+      {%- capture play_glyph -%}
+        <span class="aria-why__play" aria-hidden="true">
+          <img
+            src="{{ 'wp-play-button.svg' | asset_url }}"
+            alt=""
+            width="70"
+            height="70"
+            loading="lazy"
+          >
+        </span>
+      {%- endcapture -%}
+
+      <div class="aria-why__frame">
+        {%- liquid
+          assign video_id = section.settings.video_url.id
+          assign control_params = ''
+          unless section.settings.video_show_controls
+            assign control_params = '&controls=0'
+          endunless
+
+          # A Shopify-hosted file gets the autoplay + custom-controls treatment; an external
+          # URL keeps the click-to-play poster below.
+          assign has_hosted_video = false
+          if section.settings.video != blank
+            assign has_hosted_video = true
+          endif
+        -%}
+        {%- if has_hosted_video -%}
+          {%- comment -%}
+            Autoplaying, muted, looping, inline video with the theme's shared custom
+            controls — the same behaviour as the Real Customers slides, driven by the same
+            assets/aria-video-controls.js, so this video joins the ONE page-wide audio group
+            and can never hold audio at the same time as a Real Customers slide.
+
+            `controls` is deliberately absent: that absence is what keeps the native
+            timeline, volume slider, fullscreen and PiP chrome off the video. `muted` must
+            be an ATTRIBUTE, not merely set from JS, or Chrome/Safari refuse the autoplay,
+            and `playsinline` is what stops iOS going fullscreen.
+
+            The section's `video_autoplay` and `video_show_controls` settings no longer
+            apply to a hosted video — autoplay is now unconditional and the controls are the
+            theme's own. `video_show_controls` still drives the external-iframe branch.
+
+            Built by hand rather than with `video_tag` for the same reason as Real Customers:
+            `video_tag` forces the video's own preview frame as the poster and offers no
+            override, and this design wants the merchant's still image there.
+          {%- endcomment -%}
+          {%- liquid
+            assign why_poster_url = ''
+            if section.settings.image != blank
+              assign why_poster_url = section.settings.image | image_url: width: 1600
+            elsif section.settings.video.preview_image != blank
+              assign why_poster_url = section.settings.video.preview_image | image_url: width: 1600
+            endif
+          -%}
+          <div class="aria-why__media aria-why__media--video" data-aria-video-media>
+            <video
+              class="aria-why__video"
+              data-aria-video
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              {% if why_poster_url != blank %}
+                poster="{{ why_poster_url }}"
+              {% endif %}
+            >
+              {%- for source in section.settings.video.sources -%}
+                <source src="{{ source.url }}" type="{{ source.mime_type }}">
+              {%- endfor -%}
+            </video>
+
+            {%- comment -%}
+              Opposite corners, never grouped. Positions are this section's own (see
+              section-aria-why-wig-party.css) because its frame is a wide landscape box,
+              not the Real Customers portrait card.
+            {%- endcomment -%}
+            <button
+              type="button"
+              class="aria-video-ctrl aria-video-ctrl--play aria-why__ctrl"
+              data-aria-video-play
+              data-state="playing"
+              data-label-play="{{ 'aria_theme.video.play' | t | escape }}"
+              data-label-pause="{{ 'aria_theme.video.pause' | t | escape }}"
+              aria-label="{{ 'aria_theme.video.pause' | t }}"
+            >
+              {%- render 'aria-icon', name: 'pause', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--pause' -%}
+              {%- render 'aria-icon', name: 'play', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--play' -%}
+            </button>
+
+            <button
+              type="button"
+              class="aria-video-ctrl aria-video-ctrl--sound aria-why__ctrl"
+              data-aria-video-sound
+              data-state="muted"
+              data-label-mute="{{ 'aria_theme.video.mute' | t | escape }}"
+              data-label-unmute="{{ 'aria_theme.video.unmute' | t | escape }}"
+              aria-label="{{ 'aria_theme.video.unmute' | t }}"
+            >
+              {%- render 'aria-icon', name: 'sound-off', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--off' -%}
+              {%- render 'aria-icon', name: 'sound-on', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--on' -%}
+            </button>
+        {%- elsif has_video -%}
+          {%- comment -%}
+            External URL: click-to-play via Dawn's <deferred-media> (assets/global.js). The
+            custom controls cannot drive a third-party iframe without loading YouTube's or
+            Vimeo's player API, and such a video cannot join the shared audio group either,
+            so a hosted file is preferred here.
+          {%- endcomment -%}
+          <deferred-media class="aria-why__media aria-why__media--deferred">
+            <button
+              id="Deferred-Poster-{{ section.id }}"
+              class="aria-why__poster"
+              type="button"
+              aria-label="{{ 'aria_theme.why_wig_party.play_video' | t }}"
+            >
+              {{ poster_media }}
+              {{ play_glyph }}
+            </button>
+
+            <template>
+                {%- comment -%}
+                  Built by hand from video_url.type / .id, the way Dawn's own video.liquid
+                  does it. `external_video_tag` only accepts a product media object and
+                  raises "does not support VideoUrlDrop" on a video_url setting.
+                {%- endcomment -%}
+                {%- if section.settings.video_url.type == 'youtube' -%}
+                  <iframe
+                    class="aria-why__video"
+                    src="https://www.youtube.com/embed/{{ video_id }}?enablejsapi=1&playsinline=1&loop=1&playlist={{ video_id }}&autoplay=1{{ control_params }}"
+                    title="{{ section.settings.heading | default: 'Video' | escape }}"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                {%- else -%}
+                  <iframe
+                    class="aria-why__video"
+                    src="https://player.vimeo.com/video/{{ video_id }}?loop=1&playsinline=1&autoplay=1{{ control_params }}"
+                    title="{{ section.settings.heading | default: 'Video' | escape }}"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                {%- endif -%}
+            </template>
+        {%- else -%}
+          <div class="aria-why__media">
+            {{ poster_media }}
+            {%- comment -%}
+              No video is set, so the glyph is decorative only — it is aria-hidden and
+              not a control, because a play button that cannot play anything is a lie.
+              Set a video (or an external URL) and the branch above turns it into a real
+              click-to-play control.
+            {%- endcomment -%}
+            {%- if section.settings.show_play_icon -%}
+              {{ play_glyph }}
+            {%- endif -%}
+        {%- endif -%}
+
+          {%- if section.settings.show_signature -%}
+            <span class="aria-why__signature" aria-hidden="true">
+              {%- if section.settings.signature_image != blank -%}
+                {{
+                  section.settings.signature_image
+                  | image_url: width: 480
+                  | image_tag: loading: 'lazy', widths: '160,320,480', class: 'aria-why__signature-img', alt: ''
+                }}
+              {%- else -%}
+                <img
+                  src="{{ 'wp-kristi-signature.svg' | asset_url }}"
+                  alt=""
+                  width="158"
+                  height="62"
+                  loading="lazy"
+                  class="aria-why__signature-img"
+                >
+              {%- endif -%}
+            </span>
+          {%- endif -%}
+        {%- comment -%} Close whichever media element the branch above opened. {%- endcomment -%}
+        {%- if has_hosted_video -%}
+          </div>
+        {%- elsif has_video -%}
+          </deferred-media>
+        {%- else -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="aria-why__features" role="list">
+          {%- for block in section.blocks -%}
+            <li class="aria-why__feature" {{ block.shopify_attributes }}>
+              <span class="aria-why__badge">
+                {%- if block.settings.icon != blank -%}
+                  {{
+                    block.settings.icon
+                    | image_url: width: 56
+                    | image_tag: loading: 'lazy', widths: '28,56', class: 'aria-why__badge-icon', alt: ''
+                  }}
+                {%- else -%}
+                  <img
+                    src="{{ 'wp-icon-free-shipping.svg' | asset_url }}"
+                    alt=""
+                    width="28"
+                    height="24"
+                    loading="lazy"
+                    class="aria-why__badge-icon"
+                  >
+                {%- endif -%}
+              </span>
+
+              {%- if block.settings.label != blank -%}
+                <p class="aria-why__label">{{ block.settings.label }}</p>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-why-wig-party.name",
+  "tag": "section",
+  "class": "aria-why-wig-party-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Why Wig Party",
+      "label": "t:sections.aria-why-wig-party.settings.heading.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-why-wig-party.settings.header_media.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.aria-why-wig-party.settings.image.label",
+      "info": "t:sections.aria-why-wig-party.settings.image.info"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.aria-why-wig-party.settings.video.label"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "accept": ["youtube", "vimeo"],
+      "label": "t:sections.aria-why-wig-party.settings.video_url.label",
+      "info": "t:sections.aria-why-wig-party.settings.video_url.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_autoplay",
+      "default": false,
+      "label": "t:sections.aria-why-wig-party.settings.video_autoplay.label",
+      "info": "t:sections.aria-why-wig-party.settings.video_autoplay.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_show_controls",
+      "default": true,
+      "label": "t:sections.aria-why-wig-party.settings.video_show_controls.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_play_icon",
+      "default": true,
+      "label": "t:sections.aria-why-wig-party.settings.show_play_icon.label",
+      "info": "t:sections.aria-why-wig-party.settings.show_play_icon.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-why-wig-party.settings.header_signature.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_signature",
+      "default": true,
+      "label": "t:sections.aria-why-wig-party.settings.show_signature.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "signature_image",
+      "label": "t:sections.aria-why-wig-party.settings.signature_image.label",
+      "info": "t:sections.aria-why-wig-party.settings.signature_image.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-why-wig-party.settings.header_colors.content"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-why-wig-party.settings.background_color.label"
+    },
+    {
+      "type": "color",
+      "id": "frame_border_color",
+      "default": "#BC696B",
+      "label": "t:sections.aria-why-wig-party.settings.frame_border_color.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "t:sections.aria-why-wig-party.blocks.feature.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "default": "In Stock & Ready to Ship",
+          "label": "t:sections.aria-why-wig-party.blocks.feature.settings.label.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.aria-why-wig-party.blocks.feature.settings.icon.label",
+          "info": "t:sections.aria-why-wig-party.blocks.feature.settings.icon.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-why-wig-party.presets.name",
+      "blocks": [
+        { "type": "feature", "settings": { "label": "Authorized Belle Tress Retailer" } },
+        { "type": "feature", "settings": { "label": "In Stock & Ready to Ship" } },
+        { "type": "feature", "settings": { "label": "Live Shopping on Facebook" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,259 @@
+{{ 'section-aria-about-wig-party.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign social_blocks = section.blocks | where: 'type', 'social'
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .aria-about {
+    --aria-about-bg: {{ section.settings.background_color }};
+  }
+{%- endstyle -%}
+
+<section class="aria-about">
+  <div class="aria-about__inner">
+    <div class="aria-about__layout">
+      <div class="aria-about__copy">
+        <div class="aria-about__copy-top">
+          {%- if section.settings.eyebrow != blank -%}
+            <span class="aria-about__eyebrow">{{ section.settings.eyebrow }}</span>
+          {%- endif -%}
+
+          {%- if section.settings.heading != blank -%}
+            <h2 class="aria-about__heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+
+          {%- if section.settings.body != blank -%}
+            <div class="aria-about__body">{{ section.settings.body }}</div>
+          {%- endif -%}
+
+          {%- if section.settings.tagline != blank -%}
+            <p class="aria-about__tagline">{{ section.settings.tagline }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.button_label != blank -%}
+            <a
+              href="{{ section.settings.button_link | default: routes.root_url }}"
+              class="aria-about__btn"
+            >
+              {{- section.settings.button_label -}}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%}
+          Social links are section blocks rather than Dawn's `social-icons` snippet.
+          That snippet renders only platforms whose theme setting is filled in, and every
+          `social_*_link` on this store is empty — so the row came out completely blank.
+          Blocks keep each URL merchant-editable in place, and a block with no URL yet
+          still shows its icon on a `#` placeholder so the row is never empty.
+
+          The glyphs are Dawn's own `icon-<platform>.svg` assets, inlined. The V4 exports
+          carry no platform labels, and shipping a mis-identified brand mark is worse than
+          reusing the correct, already-translated set.
+        {%- endcomment -%}
+        {%- if section.settings.show_social and social_blocks.size > 0 -%}
+          <ul class="aria-about__social" role="list">
+            {%- for block in social_blocks -%}
+              {%- liquid
+                assign platform = block.settings.platform
+                assign icon_asset = 'icon-' | append: platform | append: '.svg'
+                assign platform_name = 'general.social.links.' | append: platform | t
+              -%}
+              <li class="aria-about__social-item" {{ block.shopify_attributes }}>
+                <a
+                  href="{{ block.settings.url | default: '#' }}"
+                  class="aria-about__social-link"
+                  {% if block.settings.url != blank %}
+                    target="_blank"
+                    rel="noopener"
+                  {% endif %}
+                >
+                  <span class="aria-about__social-icon">
+                    {{- icon_asset | inline_asset_content -}}
+                  </span>
+                  <span class="visually-hidden">{{ platform_name }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        {%- if section.settings.show_signature -%}
+          <span class="aria-about__signature" aria-hidden="true">
+            {%- if section.settings.signature_image != blank -%}
+              {{
+                section.settings.signature_image
+                | image_url: width: 690
+                | image_tag: loading: 'lazy', widths: '345,690', class: 'aria-about__signature-img', alt: ''
+              }}
+            {%- else -%}
+              {%- comment -%}
+                Dark variant of the wordmark — the hero/Meet-the-Icons copy is white and
+                would be invisible on this white section.
+              {%- endcomment -%}
+              <img
+                src="{{ 'wp-kristi-signature-dark.svg' | asset_url }}"
+                alt=""
+                width="345"
+                height="134"
+                loading="lazy"
+                class="aria-about__signature-img"
+              >
+            {%- endif -%}
+          </span>
+        {%- endif -%}
+      </div>
+
+      <div class="aria-about__media">
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 1360
+            | image_tag:
+              loading: 'lazy',
+              sizes: '(min-width: 990px) 680px, 100vw',
+              widths: '375,680,1020,1360',
+              class: 'aria-about__image',
+              alt: section.settings.image.alt | default: section.settings.heading
+          }}
+        {%- else -%}
+          <img
+            src="{{ 'wp-ugc-featured.jpg' | asset_url }}"
+            alt=""
+            width="680"
+            height="625"
+            loading="lazy"
+            class="aria-about__image"
+          >
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-about-wig-party.name",
+  "tag": "section",
+  "class": "aria-about-wig-party-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "About Wig Party",
+      "label": "t:sections.aria-about-wig-party.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Hi, I'm",
+      "label": "t:sections.aria-about-wig-party.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "default": "<p>Wig Party started with one girl, a love for wigs, and a dream to help other women feel beautiful, confident, and included. Through the laughs, the lives, the tears, and the wigs, this community has become my heart.</p>",
+      "label": "t:sections.aria-about-wig-party.settings.body.label"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "default": "You're not just a customer. You're part of the Wig Party family.",
+      "label": "t:sections.aria-about-wig-party.settings.tagline.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Our Story",
+      "label": "t:sections.aria-about-wig-party.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.aria-about-wig-party.settings.button_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-about-wig-party.settings.header_media.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.aria-about-wig-party.settings.image.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-about-wig-party.settings.header_extras.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social",
+      "default": true,
+      "label": "t:sections.aria-about-wig-party.settings.show_social.label",
+      "info": "t:sections.aria-about-wig-party.settings.show_social.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_signature",
+      "default": true,
+      "label": "t:sections.aria-about-wig-party.settings.show_signature.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "signature_image",
+      "label": "t:sections.aria-about-wig-party.settings.signature_image.label",
+      "info": "t:sections.aria-about-wig-party.settings.signature_image.info"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-about-wig-party.settings.background_color.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "social",
+      "name": "t:sections.aria-about-wig-party.blocks.social.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "platform",
+          "default": "instagram",
+          "label": "t:sections.aria-about-wig-party.blocks.social.settings.platform.label",
+          "options": [
+            { "value": "facebook", "label": "Facebook" },
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "tiktok", "label": "TikTok" },
+            { "value": "youtube", "label": "YouTube" },
+            { "value": "pinterest", "label": "Pinterest" },
+            { "value": "twitter", "label": "X (Twitter)" },
+            { "value": "snapchat", "label": "Snapchat" },
+            { "value": "tumblr", "label": "Tumblr" },
+            { "value": "vimeo", "label": "Vimeo" }
+          ]
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.aria-about-wig-party.blocks.social.settings.url.label",
+          "info": "t:sections.aria-about-wig-party.blocks.social.settings.url.info"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.aria-about-wig-party.presets.name",
+      "blocks": [
+        { "type": "social", "settings": { "platform": "facebook" } },
+        { "type": "social", "settings": { "platform": "instagram" } },
+        { "type": "social", "settings": { "platform": "tiktok" } },
+        { "type": "social", "settings": { "platform": "youtube" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

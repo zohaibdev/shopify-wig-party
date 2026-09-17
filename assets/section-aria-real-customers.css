@@ -1,0 +1,340 @@
+/* Wig Party — Real Customers, Real Confidence (sections/real-customers.liquid) */
+
+.aria-real-customers {
+  background: var(--aria-rc-bg, #000);
+  color: var(--white, #fff);
+  padding-block: 48px;
+}
+
+.aria-real-customers__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- Header ---------- */
+
+.aria-real-customers__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.aria-real-customers__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(250, 248, 245, 0.19);
+  border: 1px solid var(--white, #fff);
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--white, #fff);
+}
+
+.aria-real-customers__badge-stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--qi, #bc696b);
+}
+
+.aria-real-customers__badge-stars .aria-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.aria-real-customers__heading {
+  margin: 0;
+  max-width: 600px;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--white, #fff);
+}
+
+/* ---------- Carousel ---------- */
+
+.aria-real-customers__carousel {
+  position: relative;
+}
+
+.aria-real-customers__swiper {
+  width: 100%;
+  min-width: 0;
+  /* Coverflow translates neighbours outward, so the track must not clip them. */
+  overflow: hidden;
+  padding-block: 8px;
+}
+
+.aria-real-customers__slide {
+  /* Fixed slide width: Swiper is in slidesPerView:'auto' mode. */
+  width: 240px;
+  height: auto;
+  display: flex;
+}
+
+/* V4 scale ladder: active 1.00, immediate neighbours 0.84, everything else 0.70.
+   Driven by Swiper's slide-state classes rather than the coverflow effect so the tiers
+   are exact and symmetrical.
+
+   The scale is applied to the inner frame, NOT the slide: Swiper's own
+   `.swiper-backface-hidden .swiper-slide { transform: translateZ(0) }` has the same
+   specificity as a `.slide.swiper-slide-active` selector and clobbers it. Swiper never
+   touches the slide's children, so scaling the frame is conflict-free. */
+/* The scale itself is owned by aria-real-customers.js (inline transform) — declaring it
+   here as well left a transition permanently in flight and the computed value never
+   settled. CSS keeps only the origin and the easing. */
+.aria-real-customers__frame {
+  transform-origin: center center;
+  transition: transform 0.4s ease;
+}
+
+.aria-real-customers__slide.swiper-slide-prev,
+.aria-real-customers__slide.swiper-slide-next {
+  z-index: 1;
+}
+
+.aria-real-customers__slide.swiper-slide-active {
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aria-real-customers__frame {
+    transition: none;
+  }
+}
+
+/* White photo frame, per V4 */
+.aria-real-customers__frame {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 9px;
+  background: var(--white, #fff);
+  border-radius: 2px;
+}
+
+.aria-real-customers__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 316 / 546;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #f1f1f1;
+}
+
+.aria-real-customers__image,
+.aria-real-customers__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The external-video wrapper this used to target is gone — the iframe is now appended
+   straight into <deferred-media>. `border: 0` is still required: without it the UA's
+   default 2px iframe border makes the video 4px wider than its frame. */
+iframe.aria-real-customers__video {
+  border: 0;
+}
+
+/* Click-to-play poster button (Dawn's <deferred-media>). Fills the media box so the whole
+   frame is the target, and is removed once the video has loaded. */
+.aria-real-customers__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.aria-real-customers__media--deferred[loaded] .aria-real-customers__poster {
+  display: none;
+}
+
+.aria-real-customers__poster:focus-visible {
+  outline: 2px solid var(--qi, #bc696b);
+  outline-offset: -4px;
+}
+
+/* `pointer-events: none` so clicks fall through to the poster button underneath —
+   otherwise the glyph swallows the click that is meant to start the video. */
+.aria-real-customers__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 56px;
+  height: 56px;
+  pointer-events: none;
+}
+
+.aria-real-customers__play img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-real-customers__poster:hover .aria-real-customers__play,
+.aria-real-customers__poster:focus-visible .aria-real-customers__play {
+  scale: 1.06;
+}
+
+/* ---------- Custom video controls: POSITIONS ONLY ----------
+   The disc appearance, sizes, state-icon switching, hover/active/focus and touch target
+   are shared and live in component-aria-video-controls.css. This section only says WHERE
+   its two controls sit, because the brief requires them in opposite corners and never
+   grouped: play bottom-left, sound bottom-right of the 316/546 portrait media box, which
+   is `position: relative` + `overflow: hidden`, so an inset control cannot be clipped.
+   Measured separation is 215px at desktop and 130px at 375px. */
+.aria-real-customers__ctrl {
+  bottom: 10px;
+}
+
+.aria-video-ctrl--play.aria-real-customers__ctrl {
+  left: 10px;
+}
+
+.aria-video-ctrl--sound.aria-real-customers__ctrl {
+  right: 10px;
+}
+
+/* A video slide has no click-to-play poster, so the decorative centre glyph must not
+   render over it. */
+.aria-real-customers__media--video .aria-real-customers__play {
+  display: none;
+}
+
+.aria-real-customers__caption {
+  margin: 0;
+  padding-inline: 4px;
+  font-size: 13px;
+  line-height: 20px;
+  color: #3f3e3e;
+  text-align: center;
+}
+
+/* ---------- Navigation ---------- */
+
+.aria-real-customers__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.aria-real-customers__nav--prev {
+  left: 0;
+  background: var(--white, #fff);
+  color: #111;
+  border: 1px solid #a9aab5;
+}
+
+.aria-real-customers__nav--next {
+  right: 0;
+  background: var(--qi, #bc696b);
+  color: var(--white, #fff);
+  border: 0;
+}
+
+.aria-real-customers__nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.aria-real-customers__nav .aria-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media screen and (min-width: 750px) {
+  .aria-real-customers {
+    padding-block: 64px;
+  }
+
+  .aria-real-customers__inner {
+    padding-inline: 40px;
+    gap: 40px;
+  }
+
+  .aria-real-customers__heading {
+    font-size: 44px;
+  }
+
+  .aria-real-customers__slide {
+    width: 288px;
+  }
+
+  .aria-real-customers__play {
+    width: 70px;
+    height: 70px;
+  }
+
+  .aria-real-customers__ctrl {
+    bottom: 12px;
+  }
+
+  .aria-video-ctrl--play.aria-real-customers__ctrl {
+    left: 12px;
+  }
+
+  .aria-video-ctrl--sound.aria-real-customers__ctrl {
+    right: 12px;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .aria-real-customers {
+    padding-inline: 40px;
+    padding-block: var(--section-spacing, 80px);
+  }
+
+  .aria-real-customers__inner {
+    padding-inline: 0;
+    gap: 48px;
+  }
+
+  .aria-real-customers__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  /* V4 active slide is 343 x 573 including the white frame. */
+  .aria-real-customers__slide {
+    width: 343px;
+  }
+
+  .aria-real-customers__frame {
+    padding: 12px;
+  }
+
+  .aria-real-customers__nav {
+    width: 60px;
+    height: 60px;
+  }
+
+  .aria-real-customers__nav--next {
+    width: 64px;
+    height: 64px;
+  }
+}

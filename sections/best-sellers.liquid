@@ -1,0 +1,188 @@
+{{ 'component-aria-product-card.css' | asset_url | stylesheet_tag }}
+{{ 'section-aria-best-sellers.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign product_blocks = section.blocks | where: 'type', 'product'
+-%}
+
+<section
+  class="aria-best-sellers"
+  style="--aria-bs-bg-from: {{ section.settings.background_gradient_start }}; --aria-bs-bg-to: {{ section.settings.background_gradient_end }};"
+>
+  <div class="aria-best-sellers__inner">
+    <div class="aria-best-sellers__header">
+      {%- if section.settings.show_rating_badge and section.settings.rating_badge_text != blank -%}
+        <div class="aria-best-sellers__rating-badge">
+          <span class="aria-best-sellers__rating-stars" aria-hidden="true">
+            {%- for i in (1..5) -%}
+              {%- render 'aria-icon', name: 'star' -%}
+            {%- endfor -%}
+          </span>
+          <span>{{ section.settings.rating_badge_text }}</span>
+        </div>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="aria-best-sellers__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subheading != blank -%}
+        <p class="aria-best-sellers__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if product_blocks.size > 0 -%}
+      {%- comment -%}
+        Slide counts are explicit rather than inherited from the script defaults
+        (1.3/2.2/3.2). At 1.3 the mobile card came out ~202px, too narrow for the
+        "View Product" label beside the 54px quick-add button, so the label wrapped and
+        the two buttons no longer matched in height.
+
+        Never put a Liquid comment inside an HTML tag's attribute list: a
+        whitespace-trimming comment tag eats the surrounding newline and welds the
+        neighbouring attributes into one name
+        (data-aria-product-carouseldata-slides-mobile), which silently stopped Swiper
+        from initialising here.
+      {%- endcomment -%}
+      <div
+        class="aria-best-sellers__carousel-wrap"
+        data-aria-product-carousel
+        data-slides-mobile="1.15"
+        data-slides-sm="2.1"
+        data-slides-md="3.2"
+        data-slides-desktop="4"
+        data-slides-lg="3"
+        data-space-between="12"
+      >
+        <div class="swiper aria-best-sellers__swiper" data-aria-carousel-swiper>
+          <div class="swiper-wrapper">
+            {%- for block in product_blocks -%}
+              {%- liquid
+                assign card_product = block.settings.product
+              -%}
+              <div class="swiper-slide aria-best-sellers__slide" {{ block.shopify_attributes }}>
+                {%- if card_product != blank -%}
+                  {%- render 'aria-product-card',
+                    product: card_product,
+                    feature_tag_metafield: section.settings.feature_tag_metafield,
+                    section_id: section.id
+                  -%}
+                {%- else -%}
+                  <div class="aria-product-card aria-product-card--empty">
+                    <p>{{ 'onboarding.product_title' | t }}</p>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="aria-best-sellers__controls" data-aria-carousel-controls>
+          <div class="aria-best-sellers__progress">
+            {%- comment -%}
+              Dawn's base.css hides any empty div/section/etc. via a `:empty { display: none }`
+              cleanup rule — these decorative bars have no text content, so each needs a (fully
+              inert) child element to avoid being swept up by that rule.
+            {%- endcomment -%}
+            <div class="aria-best-sellers__progress-track"><span aria-hidden="true"></span></div>
+            <div class="aria-best-sellers__progress-fill" data-aria-carousel-progress><span aria-hidden="true"></span></div>
+          </div>
+          <div class="aria-best-sellers__nav">
+            <button type="button" class="aria-best-sellers__prev" data-aria-carousel-prev aria-label="{{ 'aria_theme.carousel.previous' | t }}">
+              {%- render 'aria-icon', name: 'arrow-left' -%}
+            </button>
+            <button type="button" class="aria-best-sellers__next" data-aria-carousel-next aria-label="{{ 'aria_theme.carousel.next' | t }}">
+              {%- render 'aria-icon', name: 'arrow-right' -%}
+            </button>
+          </div>
+        </div>
+      </div>
+    {%- else -%}
+      <p class="aria-best-sellers__empty">
+        {{ 'onboarding.collection_title' | t }}
+      </p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-best-sellers.name",
+  "tag": "section",
+  "class": "aria-best-sellers-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Best Sellers",
+      "label": "t:sections.aria-best-sellers.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "The styles our community can't stop buying.",
+      "label": "t:sections.aria-best-sellers.settings.subheading.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating_badge",
+      "default": true,
+      "label": "t:sections.aria-best-sellers.settings.show_rating_badge.label"
+    },
+    {
+      "type": "text",
+      "id": "rating_badge_text",
+      "default": "500+ verified 5-star reviews",
+      "label": "t:sections.aria-best-sellers.settings.rating_badge_text.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_start",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-best-sellers.settings.background_gradient_start.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_end",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-best-sellers.settings.background_gradient_end.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-best-sellers.settings.header_advanced.content"
+    },
+    {
+      "type": "text",
+      "id": "feature_tag_metafield",
+      "default": "custom.feature_tags",
+      "label": "t:sections.aria-best-sellers.settings.feature_tag_metafield.label",
+      "info": "t:sections.aria-best-sellers.settings.feature_tag_metafield.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "t:sections.aria-best-sellers.blocks.product.name",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.aria-best-sellers.blocks.product.settings.product.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "t:sections.aria-best-sellers.presets.name",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

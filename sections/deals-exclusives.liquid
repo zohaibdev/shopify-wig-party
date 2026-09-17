@@ -1,0 +1,148 @@
+{{ 'section-aria-deals-exclusives.css' | asset_url | stylesheet_tag }}
+
+<section class="aria-deals">
+  <div class="aria-deals__inner">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="aria-deals__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-deals__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="aria-deals__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="aria-deals__grid">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign col = block.settings.collection
+            assign card_title = block.settings.title_override | default: col.title
+            assign card_image = block.settings.image | default: col.featured_image
+            # One destination for the whole card: the block's own link when set, otherwise
+            # the selected collection's own url. Never hardcoded.
+            assign card_url = block.settings.link | default: col.url
+          -%}
+          {%- comment -%}
+            The card used to BE the <a>. It is a <div> now because the View More control has
+            to be a real link (Find Your Perfect Wig's button is the link, and that section
+            is the reference), and an <a> inside an <a> is invalid HTML that browsers
+            un-nest.
+
+            Whole-card clickability is preserved, not dropped: `.aria-deals__btn::after` is
+            stretched over the card, so clicking anywhere still opens the collection. That
+            also keeps ONE tab stop per card instead of two links to the same URL.
+          {%- endcomment -%}
+          <li class="aria-deals__item" {{ block.shopify_attributes }}>
+            <div class="aria-deals__card{% if card_url == blank %} aria-deals__card--empty{% endif %}">
+
+            <span class="aria-deals__media">
+              {%- if card_image != blank -%}
+                {{
+                  card_image
+                  | image_url: width: 660
+                  | image_tag:
+                    loading: 'lazy',
+                    sizes: '(min-width: 990px) 326px, (min-width: 750px) 45vw, 90vw',
+                    widths: '326,480,660',
+                    class: 'aria-deals__image',
+                    alt: card_image.alt | default: card_title
+                }}
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'aria-deals__image aria-deals__image--placeholder' }}
+              {%- endif -%}
+            </span>
+
+            <span class="aria-deals__title">
+              {{- card_title | default: 'Select a collection' -}}
+            </span>
+
+            {%- comment -%}
+              Rendered only when there is somewhere to go, so a card without a collection
+              never shows a dead control — the same rule the reference section applies.
+            {%- endcomment -%}
+            {%- if card_url != blank -%}
+              <a href="{{ card_url }}" class="aria-deals__btn">
+                {{- section.settings.button_label | default: 'View More' -}}
+              </a>
+            {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-deals-exclusives.name",
+  "tag": "section",
+  "class": "aria-deals-exclusives-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Deals & Exclusives",
+      "label": "t:sections.aria-deals-exclusives.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "Shop by what matters most to you.",
+      "label": "t:sections.aria-deals-exclusives.settings.subheading.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "View More",
+      "label": "t:sections.aria-deals-exclusives.settings.button_label.label",
+      "info": "t:sections.aria-deals-exclusives.settings.button_label.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "t:sections.aria-deals-exclusives.blocks.collection.name",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:sections.aria-deals-exclusives.blocks.collection.settings.collection.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-deals-exclusives.blocks.collection.settings.image.label",
+          "info": "t:sections.aria-deals-exclusives.blocks.collection.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "title_override",
+          "label": "t:sections.aria-deals-exclusives.blocks.collection.settings.title_override.label",
+          "info": "t:sections.aria-deals-exclusives.blocks.collection.settings.title_override.info"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.aria-deals-exclusives.blocks.collection.settings.link.label",
+          "info": "t:sections.aria-deals-exclusives.blocks.collection.settings.link.info"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "t:sections.aria-deals-exclusives.presets.name",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

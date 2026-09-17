@@ -1,0 +1,514 @@
+/* Wig Party — wishlist drawer.
+ *
+ * Layout follows the supplied reference: a right-hand side drawer with a solid title bar
+ * (title + heart, close on the right), an accent rule under the header, a scrolling list
+ * of rows (thumbnail | vendor / title / price / actions), and a pinned footer holding one
+ * full-width primary button. The reference's own purple/yellow belongs to a different
+ * store, so the palette here is the theme's: --py rose primary, --cream, --ink.
+ *
+ * Self-contained rather than reusing `.drawer` from component-cart-drawer.css, which only
+ * loads when `settings.cart_type == 'drawer'` — see the note in
+ * snippets/aria-wishlist-drawer.liquid.
+ */
+
+.aria-wl-drawer {
+  position: fixed;
+  z-index: 1001; /* one above the cart drawer's 1000, so an add hands over cleanly */
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  visibility: hidden;
+  pointer-events: none;
+  /* Load-bearing, and the reason the close animation was invisible before: `visibility`
+     is a discrete property, so transitioning it holds `visible` for the full duration and
+     only flips to `hidden` at the end. Without it, removing `.active` hid the whole drawer
+     in the same frame and neither the slide-out nor the fade-out ever rendered. Same trick
+     Dawn uses on `.drawer`. Keep the duration equal to the inner/overlay transitions. */
+  transition: visibility 0.3s ease;
+}
+
+.aria-wl-drawer.active {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* `hidden` has to actually hide. The UA's `[hidden] { display: none }` lives in the user-
+   agent origin, so ANY author rule that sets `display` outranks it — which is why the
+   empty-state <p> (display: flex) stayed on screen next to the product rows even though
+   JS had correctly set `.hidden = true`. Scoped to the drawer and written at (0,2,0) so it
+   beats the component's own class rules without `!important`, and so every element this
+   component toggles — now or later — is covered rather than just the one that broke. */
+.aria-wl-drawer [hidden] {
+  display: none;
+}
+
+/* Backdrop: covers the whole viewport, dims and subtly blurs the page behind. The dim is
+   lighter than the usual 0.5 because the blur is already doing separation work — together
+   they read as "page pushed back", not "lights out". `backdrop-filter` blurs what is
+   BEHIND this element only, so the drawer, being a later sibling painted above it, stays
+   completely sharp. */
+/* `display: block` is NOT redundant, and the extra class is NOT noise. base.css ships a
+   cleanup rule — `a:empty, ul:empty, div:empty, section:empty … { display: none }` — and
+   this overlay is an empty <div>, so it was being display:none'd: no dim, no blur, and no
+   clickable backdrop at all. `div:empty` scores (0,1,1), which beats a single class
+   whatever the load order, so the override is written at (0,2,0). Same gotcha the Best
+   Sellers progress bars hit; they solved it with an inert child span instead. */
+.aria-wl-drawer .aria-wl-drawer__overlay {
+  display: block;
+}
+
+.aria-wl-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.aria-wl-drawer.active .aria-wl-drawer__overlay {
+  opacity: 1;
+}
+
+.aria-wl-drawer__inner {
+  position: relative;
+  /* Above the backdrop explicitly: `backdrop-filter` makes the overlay a stacking context,
+     and the drawer must never be caught by its own blur. */
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+  /* Never wider than the viewport: the drawer must not be able to create a horizontal
+     scrollbar on a narrow screen. */
+  max-width: 100%;
+  height: 100%;
+  background: var(--white, #fff);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.18);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.aria-wl-drawer.active .aria-wl-drawer__inner {
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aria-wl-drawer,
+  .aria-wl-drawer__overlay,
+  .aria-wl-drawer__inner {
+    transition: none;
+  }
+}
+
+/* ---------- Header ---------- */
+
+.aria-wl-drawer__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--ink, #1f1c1c);
+  color: var(--white, #fff);
+  /* The reference's accent rule under the title bar. */
+  border-bottom: 3px solid var(--qi, #bc696b);
+}
+
+.aria-wl-drawer__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: var(--heading-h2-weight, 500);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+}
+
+/* section-aria-header.css defines a global `.aria-icon { width: 16px }` at the same
+   specificity and loads after this file, so the heading heart needs the extra class to
+   reach its intended size. */
+.aria-wl-drawer__heading .aria-wl-drawer__heading-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.aria-wl-drawer__close {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aria-wl-drawer__close:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+}
+
+.aria-wl-drawer__close:focus-visible {
+  outline: 2px solid var(--white, #fff);
+  outline-offset: -4px;
+}
+
+.aria-wl-drawer__close .aria-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Body ---------- */
+
+/* The list scrolls; the header and footer do not. `min-height: 0` is what actually lets a
+   flex child shrink below its content and become scrollable. */
+.aria-wl-drawer__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.aria-wl-drawer__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Empty state ---------- */
+
+/* Centred in the whole body rather than pinned to the top, so an empty drawer reads as
+   deliberate instead of looking like a list that failed to load. */
+.aria-wl-drawer--empty .aria-wl-drawer__body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aria-wl-drawer__empty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 32px 32px 64px;
+  text-align: center;
+}
+
+.aria-wl-drawer__empty-title {
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--sy, #000);
+}
+
+.aria-wl-drawer__empty-text {
+  font-size: 15px;
+  line-height: 24px;
+  color: #3f3e3e;
+}
+
+/* ---------- Item row ---------- */
+
+.aria-wl-item {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(var(--qi-rgb, 188, 105, 107), 0.18);
+}
+
+/* No image for this entry: collapse to one column so the details are not indented past a
+   72px hole. (The empty <a> is removed by the JS rather than left for base.css's `a:empty`
+   rule to hide, which would still have reserved the column.) */
+.aria-wl-item--no-media {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.aria-wl-item--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.aria-wl-item__media {
+  display: block;
+  width: 72px;
+  height: 72px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f1f1f1;
+}
+
+.aria-wl-item__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Keeps a portrait product shot from being stretched into the square thumbnail. */
+  object-fit: cover;
+}
+
+.aria-wl-item__details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* Paired with the grid's minmax(0, 1fr): without it a long unbroken title would push
+     the row wider than the drawer. */
+  min-width: 0;
+}
+
+.aria-wl-item__vendor {
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #787878;
+}
+
+.aria-wl-item__title {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--sy, #000);
+  text-decoration: none;
+  /* Two lines then ellipsis: long wig titles must not push the price and actions out of
+     view, and the full title is one tap away on the linked row. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aria-wl-item__title:hover {
+    text-decoration: underline;
+  }
+}
+
+.aria-wl-item__variant {
+  font-size: 13px;
+  line-height: 20px;
+  color: #3f3e3e;
+}
+
+.aria-wl-item__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  color: var(--sy, #000);
+}
+
+.aria-wl-item__price-compare {
+  font-size: 14px;
+  font-weight: 400;
+  color: #787878;
+}
+
+.aria-wl-item__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 8px;
+}
+
+.aria-wl-item__add {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 6px 18px;
+  border: 1px solid var(--py, #a64a4c);
+  border-radius: 2px;
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aria-wl-item__add:hover:not(:disabled) {
+    background: var(--sy, #000);
+    border-color: var(--sy, #000);
+  }
+}
+
+.aria-wl-item__add:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.aria-wl-item__add:focus-visible,
+.aria-wl-item__remove:focus-visible {
+  outline: 2px solid var(--sy, #000);
+  outline-offset: 2px;
+}
+
+/* Only rendered while a request is in flight. */
+.aria-wl-item__spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: var(--white, #fff);
+  border-radius: 50%;
+  animation: aria-wl-spin 0.6s linear infinite;
+}
+
+.aria-wl-item__add[aria-busy='true'] .aria-wl-item__spinner {
+  display: block;
+}
+
+@keyframes aria-wl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aria-wl-item__spinner {
+    animation-duration: 2s;
+  }
+}
+
+.aria-wl-item__remove {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #3f3e3e;
+  font-size: 14px;
+  line-height: 22px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aria-wl-item__remove:hover {
+    color: var(--py, #a64a4c);
+  }
+}
+
+.aria-wl-item__error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: #b3261e;
+}
+
+/* ---------- Footer ---------- */
+
+/* Outside the scrolling body, so Continue Shopping stays reachable however long the
+   list gets. */
+.aria-wl-drawer__footer {
+  flex: 0 0 auto;
+  padding: 16px 24px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(var(--qi-rgb, 188, 105, 107), 0.18);
+  background: var(--white, #fff);
+}
+
+.aria-wl-drawer__continue {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 24px;
+  border: 1px solid var(--py, #a64a4c);
+  border-radius: 2px;
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+  font-size: 17px;
+  line-height: 26px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aria-wl-drawer__continue:hover {
+    background: var(--sy, #000);
+    border-color: var(--sy, #000);
+  }
+}
+
+.aria-wl-drawer__continue:focus-visible {
+  outline: 2px solid var(--sy, #000);
+  outline-offset: 2px;
+}
+
+/* ---------- Mobile ---------- */
+
+@media screen and (max-width: 749px) {
+  /* Near full width, keeping a sliver of overlay so the drawer still reads as a layer
+     over the page rather than a new screen. */
+  .aria-wl-drawer__inner {
+    width: calc(100vw - 32px);
+  }
+
+  .aria-wl-drawer__header {
+    padding: 16px 18px;
+  }
+
+  .aria-wl-drawer__heading {
+    font-size: 18px;
+  }
+
+  .aria-wl-item {
+    /* The thumbnail shrinks rather than the text column, so titles and buttons keep
+       their room on a 375px screen. */
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+    padding: 16px 18px;
+  }
+
+  .aria-wl-item__media {
+    width: 64px;
+    height: 64px;
+  }
+
+  .aria-wl-item__add {
+    /* Comfortable touch target; the row still fits because Remove sits beside it and
+       wraps underneath when it cannot. */
+    min-height: 44px;
+    padding: 8px 16px;
+  }
+
+  .aria-wl-item__remove {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .aria-wl-drawer__footer {
+    padding: 14px 18px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+}

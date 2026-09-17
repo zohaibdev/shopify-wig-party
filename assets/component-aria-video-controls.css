@@ -1,0 +1,105 @@
+/* Wig Party — shared custom video controls.
+ *
+ * The look of the play/pause and mute/unmute buttons, shared by Real Customers and Why Wig
+ * Party so there is one copy to change. Behaviour lives in assets/aria-video-controls.js.
+ *
+ * This file owns APPEARANCE ONLY. Each section positions its own two buttons, because the
+ * two media boxes are different shapes (a 316/546 portrait card vs a wide landscape frame)
+ * and the design places the controls to suit each. Look for `bottom`/`left`/`right` in the
+ * section stylesheets, never here.
+ *
+ * Treatment is borrowed from the product card's wishlist button — translucent fill,
+ * backdrop blur, hairline white border — retuned for a dark video ground, so it reads as
+ * the same system. Deliberately two small discs rather than an opaque control bar. */
+
+.aria-video-ctrl {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.42);
+  color: var(--white, #fff);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aria-video-ctrl:hover {
+    background: rgba(20, 20, 20, 0.62);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.aria-video-ctrl:active {
+  transform: scale(0.94);
+}
+
+/* Inset focus ring: every media box that hosts these is `overflow: hidden`, so an outward
+   ring would be cropped. */
+.aria-video-ctrl:focus-visible {
+  outline: 2px solid var(--white, #fff);
+  outline-offset: -4px;
+  box-shadow: none;
+}
+
+.aria-video-ctrl__icon {
+  display: block;
+  width: 13px;
+  height: 13px;
+}
+
+.aria-video-ctrl--sound .aria-video-ctrl__icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* One icon per state, so a toggle is an attribute flip rather than an innerHTML rewrite. */
+.aria-video-ctrl--play[data-state='playing'] .aria-video-ctrl__icon--play,
+.aria-video-ctrl--play[data-state='paused'] .aria-video-ctrl__icon--pause,
+.aria-video-ctrl--sound[data-state='muted'] .aria-video-ctrl__icon--on,
+.aria-video-ctrl--sound[data-state='unmuted'] .aria-video-ctrl__icon--off {
+  display: none;
+}
+
+@media screen and (min-width: 750px) {
+  .aria-video-ctrl {
+    width: 40px;
+    height: 40px;
+  }
+
+  .aria-video-ctrl__icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .aria-video-ctrl--sound .aria-video-ctrl__icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Touch: the visible disc keeps its designed size and the hit area is grown with a
+   transparent overlay instead. The sections place the two controls far enough apart that
+   this expansion can never make them overlap. */
+@media (pointer: coarse) {
+  .aria-video-ctrl::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+  }
+}

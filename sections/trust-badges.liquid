@@ -1,0 +1,149 @@
+{{ 'section-aria-trust-badges.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .aria-trust {
+    --aria-trust-bg: {{ section.settings.background_color }};
+  }
+{%- endstyle -%}
+
+<section class="aria-trust">
+  <div class="aria-trust__inner">
+    {%- if section.blocks.size > 0 -%}
+      <ul class="aria-trust__list" role="list">
+        {%- for block in section.blocks -%}
+          <li class="aria-trust__item" {{ block.shopify_attributes }}>
+            <span class="aria-trust__icon">
+              {%- if block.settings.icon != blank -%}
+                {{
+                  block.settings.icon
+                  | image_url: width: 128
+                  | image_tag: loading: 'lazy', widths: '64,128', class: 'aria-trust__icon-img', alt: ''
+                }}
+              {%- elsif block.settings.default_icon != 'none' -%}
+                {%- comment -%}
+                  image_picker settings cannot be preset to a theme asset in JSON (they
+                  only accept shopify:// file URLs), so the shipped V4 icons are offered
+                  through this select. An uploaded icon always wins.
+                {%- endcomment -%}
+                <img
+                  src="{{ block.settings.default_icon | append: '.svg' | asset_url }}"
+                  alt=""
+                  width="64"
+                  height="64"
+                  loading="lazy"
+                  class="aria-trust__icon-img"
+                >
+              {%- endif -%}
+            </span>
+
+            {%- if block.settings.title != blank or block.settings.description != blank -%}
+              <span class="aria-trust__text">
+                {%- if block.settings.title != blank -%}
+                  <span class="aria-trust__title">{{ block.settings.title }}</span>
+                {%- endif -%}
+                {%- if block.settings.description != blank -%}
+                  <span class="aria-trust__description">{{ block.settings.description }}</span>
+                {%- endif -%}
+              </span>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-trust-badges.name",
+  "tag": "section",
+  "class": "aria-trust-badges-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-trust-badges.settings.background_color.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "t:sections.aria-trust-badges.blocks.badge.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Free Shipping",
+          "label": "t:sections.aria-trust-badges.blocks.badge.settings.title.label"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "default": "On all orders over $99",
+          "label": "t:sections.aria-trust-badges.blocks.badge.settings.description.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.aria-trust-badges.blocks.badge.settings.icon.label",
+          "info": "t:sections.aria-trust-badges.blocks.badge.settings.icon.info"
+        },
+        {
+          "type": "select",
+          "id": "default_icon",
+          "default": "wp-trust-free-shipping",
+          "label": "t:sections.aria-trust-badges.blocks.badge.settings.default_icon.label",
+          "options": [
+            { "value": "wp-trust-free-shipping", "label": "t:sections.aria-trust-badges.blocks.badge.settings.default_icon.options__1.label" },
+            { "value": "wp-trust-wear-share", "label": "t:sections.aria-trust-badges.blocks.badge.settings.default_icon.options__2.label" },
+            { "value": "wp-trust-easy-returns", "label": "t:sections.aria-trust-badges.blocks.badge.settings.default_icon.options__3.label" },
+            { "value": "wp-trust-pay-in-4", "label": "t:sections.aria-trust-badges.blocks.badge.settings.default_icon.options__4.label" },
+            { "value": "none", "label": "t:sections.aria-trust-badges.blocks.badge.settings.default_icon.options__5.label" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-trust-badges.presets.name",
+      "blocks": [
+        {
+          "type": "badge",
+          "settings": {
+            "default_icon": "wp-trust-free-shipping",
+            "title": "Free Shipping",
+            "description": "On all orders over $99"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "default_icon": "wp-trust-wear-share",
+            "title": "30-Day Wear & Share",
+            "description": "Try it. Love it. Then decide."
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "default_icon": "wp-trust-easy-returns",
+            "title": "Easy Returns",
+            "description": "No stress. We've got you."
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "default_icon": "wp-trust-pay-in-4",
+            "title": "Pay in 4",
+            "description": "Shop now. Pay later with Shop Pay."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

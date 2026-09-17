@@ -1,0 +1,1307 @@
+/* Wig Party — desktop mega menu (snippets/aria-mega-menu.liquid)
+
+   APPROVED SOURCE: client file GwwzFncuGYte0VMIN8G9UV, page 6337:3110
+   "Navigation - For Developer".
+     Shop 6337:4768 · Best Sellers 6337:3148 · Start Here 6337:3448
+     Live 6337:3786 · Community 6337:4126 · Dailey Deals 6337:4462
+
+   These frames SUPERSEDE the earlier V4 6316:* set this file was first built from. Where
+   the two disagree, the 6337 frames win — the differences are real, not drafting noise:
+     · the open parent KEEPS its chevron (V4 hid it)
+     · the Best Sellers product row sits on bare white (V4 gave every row a gradient shell)
+     · the Community CTA card has NO photo (V4's read as a photo card)
+     · the Dailey Deals card's visible corners are 4px, not a 20px rounded shell
+     · products columns are sized by their OUTER width, shell padding included
+
+   The recurring vocabulary, verified across all six frames:
+     panel inset 20px (1400px of content at 1440) · column gap 24px, or 20px on
+     Start Here / Deals · column head = 24px icon + 8px + Poppins Medium 16/26 uppercase
+     over a 1px #3f3e3e rule with 12px under it · 20px head-to-body · list gap 12px
+     · radius 8 on media, 4 on glass cards, 2 on buttons.
+*/
+
+/* ---------- Panel shell ---------- */
+
+/*
+ * Anchored to `.aria-header__nav-band` (full-bleed and `position: relative`), NOT to the
+ * menu item — `.aria-header__menu-item` is `position: relative` from 1280px up, so a panel
+ * nested inside one would be trapped in a ~100px-wide containing block. The markup
+ * therefore renders the panels as siblings of the nav and JS wires them to their trigger.
+ *
+ * z-index 3 sits above the band's own content but deliberately below the search dropdown's
+ * 20, so an open search panel still wins. It does NOT need to be higher to clear the page:
+ * the whole header group is z-index 4 and every section is <= 3 (see the header-group
+ * ceiling note in claude-context.md section 5).
+ */
+.aria-mega {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  box-sizing: border-box;
+  background: var(--white, #fff);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+  color: var(--sy, #000);
+  /*
+   * LETTER-SPACING 0, ON THE WHOLE PANEL.
+   *
+   * `theme.liquid` sets `body { letter-spacing: 0.06rem }` (0.6px) and it inherits in here,
+   * but EVERY type token in the approved frames is letterSpacing: 0 — Heading/H4,
+   * Body/Large, Body/Medium, Body/Small ALL CAP, Body/Extra Small, Tags+Labels, all of
+   * them. Inherited tracking is not a cosmetic difference at these widths: it added 18px
+   * to "Wig cap construction explained" (271px against the design's 254) inside a 260px
+   * row, which is what wrapped that Start Here item onto a second line. Widening the
+   * column to absorb tracking the design does not have would have been the wrong fix.
+   *
+   * Declared once at the panel root instead of per rule, so no text inside can miss it.
+   */
+  letter-spacing: 0;
+}
+
+.aria-mega[hidden] {
+  display: none;
+}
+
+/*
+ * CENTRED CONTENT CONTAINER inside the full-bleed panel.
+ *
+ * `.aria-mega` above stays 100% of the viewport so the white background and the shadow run
+ * edge to edge; this inner box is what holds the columns.
+ *
+ *   max-width  calc(--container + 80px) = 1440, reusing the theme's global `--container`
+ *              token (1360px) rather than a second, competing container width
+ *   margin     auto, so the surplus becomes equal whitespace on both sides and grows by
+ *              itself on wide screens
+ *   padding    20px, all round — the design's own panel inset
+ *
+ * THE INSET IS 20px, NOT THE HEADER'S 40px. Every one of the six approved frames puts the
+ * panel's first column at x20 and its last at x1420 while the header row above it keeps a
+ * 40px gutter: the design deliberately does not align them. An earlier pass matched the
+ * header instead, which cost 40px of content — and since the widest panels total exactly
+ * 1400, that shortfall was taken out of the columns by flex-shrink and is what wrapped
+ * "Wig cap construction explained" onto two lines and squeezed every 250px product card
+ * down to ~237. Alignment with the header and the design's own column widths are mutually
+ * exclusive; the design wins.
+ */
+.aria-mega__inner {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  max-width: calc(var(--container, 1360px) + 80px);
+  margin-inline: auto;
+  /* Overridden per panel by the block's `column_gap` setting. */
+  gap: var(--aria-mega-gap, 24px);
+}
+
+/*
+ * The design does not space the columns evenly: Shop runs three columns at a 24px gap,
+ * then a 60px void, then two more. Rather than hardcode that void, the column that starts
+ * the right-hand group carries `margin-left: auto` and the leftover width lands there.
+ * With the design's own widths that is exact: Shop's 1268 of columns plus four 24px gaps
+ * leaves 36px of slack, which lands on top of the gap before column 4 -> 60px. Live's
+ * leaves 108 -> a 132px void. Both match the frames to the pixel.
+ */
+.aria-mega__col--push {
+  margin-left: auto;
+}
+
+/*
+ * COLUMN SIZING, AND HOW THE PANEL FITS A 1280 VIEWPORT.
+ *
+ * The design is authored at 1440 (1400px of columns inside the 20px inset) but 1280 is the
+ * narrowest desktop width the mega menu has to serve — below it the mobile drawer takes
+ * over. At a 1280 viewport a scrollbar leaves ~1225px of content, so ~175px has to come out
+ * of a 1400px design. Rather than a per-panel media query, the shortfall is distributed by
+ * a WEIGHTED SHRINK so it always lands on whatever can afford to lose it. Flex shrinks in
+ * proportion to `factor x basis`, so the factor encodes priority:
+ *
+ *   products      50    absorb almost everything — a card losing width costs nothing
+ *   promo / media /
+ *   photo row      1    images, they rescale by aspect-ratio
+ *   text columns  0.35  shrink last: their rows are sized to fit and wrap if squeezed
+ *   feature cards  0    never — the design's 300/260/378 are fixed and must not squeeze
+ *
+ * At 1225 that yields: Shop 243/243/243/199/199 (text needs 209/120/120, so no wrap) ·
+ * Best Sellers 300 + 901 · Start Here 284/260/641 · Live 363/364/449 ·
+ * Community 378/485/314 · Deals 260/284/641. Every text column stays above its content
+ * width, every feature card keeps its exact size, and nothing overflows. At 1440 the
+ * design's own numbers apply untouched because there is no shortfall to distribute.
+ *
+ * This replaced a `flex-shrink: 0` + 1280-1439 guard pair. The guard let Shop overflow at
+ * 1280 (it is all fixed columns and has no products column to give), which is the case
+ * this model fixes.
+ */
+.aria-mega__col {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  /* 20px from the column head down to its body. */
+  gap: 20px;
+  min-width: 0;
+  flex: 0 1 var(--aria-mega-col-w, auto);
+  width: var(--aria-mega-col-w, auto);
+}
+
+.aria-mega__col--products {
+  flex-shrink: 50;
+}
+
+/*
+ * Text columns shrink LAST. At an even factor a 67px shortfall took 4px off Start Here's
+ * 284px column, which was enough to wrap "Wig cap construction explained" onto two lines.
+ */
+.aria-mega__col--menu-padded,
+.aria-mega__col--menu-divided,
+.aria-mega__col--style-cards {
+  flex-shrink: 0.35;
+}
+
+/* Feature cards never give ground: their width is the design, and squeezing one breaks the
+   glass panel's fixed 260/338 inner geometry. */
+.aria-mega__col--feature-card {
+  flex-shrink: 0;
+}
+
+/* ---------- Column head ---------- */
+
+.aria-mega__col-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--aria-mega-rule, #3f3e3e);
+}
+
+/*
+ * Column glyphs are Primary/Dark Pink at 24px; the label beside them stays black. Both are
+ * exceptions-by-modifier rather than per-column overrides:
+ *   --qi      the `gold-sell` glyph, which the design draws in Quaternary #BC696B
+ *   --accent  the Live media column's label, the one heading set in Primary/Dark Pink
+ *
+ * `align-self: flex-start` + a 1px nudge reproduces the frames, which sit every 24px glyph
+ * one pixel below the top of the 26px label line rather than optically centring it.
+ */
+.aria-mega__col-icon {
+  flex: none;
+  align-self: flex-start;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  color: var(--py, #a64a4c);
+}
+
+.aria-mega__col-icon--qi {
+  color: var(--qi, #bc696b);
+}
+
+.aria-mega__col-title {
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--sy, #000);
+}
+
+.aria-mega__col-title--accent {
+  color: var(--py, #a64a4c);
+}
+
+/* ---------- Link lists ---------- */
+
+.aria-mega__links {
+  display: flex;
+  flex-direction: column;
+  /* V4: 12px between rows. */
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-mega__links-item {
+  min-width: 0;
+}
+
+.aria-mega__link {
+  display: block;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--sy, #000);
+  text-decoration: none;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.aria-mega__link:hover,
+.aria-mega__link:focus-visible {
+  color: var(--py, #a64a4c);
+}
+
+/*
+ * V4 Shop columns 2-3: rows on a 51px pitch — a 26px row, 12px, a 1px #d9d9d9 rule, 12px.
+ * Drawing the rule as a border on the row (rather than as its own element) means an odd
+ * item count can never leave a dangling line under the last link.
+ */
+.aria-mega__links--divided .aria-mega__links-item:not(:last-child) {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+/*
+ * Start Here / Live / Community / Deals (e.g. node 6337:3508): these rows are OUTLINED
+ * CARDS, not plain padded links -- a 1px Primary/Cream border at radius 12 with no fill.
+ *
+ * The row is 58px tall and insets its label 12px from the left (measured on 6337:3509).
+ * Figma strokes sit INSIDE the frame, so the border is part of those numbers: 15px + a 26px
+ * line + 15px + 2px of border = 58, with the label 11 + 1 = 12px in. Padding of a flat
+ * 16px/12px made every row 60px and pushed the label to 13px.
+ */
+.aria-mega__links--padded .aria-mega__link {
+  box-sizing: border-box;
+  padding: 15px 11px;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 12px;
+}
+
+/* V4 shows no hover for these, so the cue stays in the design's own vocabulary: the border
+   and label pick up Primary/Dark Pink. No invented background fill. */
+.aria-mega__links--padded .aria-mega__link:hover,
+.aria-mega__links--padded .aria-mega__link:focus-visible {
+  border-color: var(--py, #a64a4c);
+  color: var(--py, #a64a4c);
+}
+
+/* ---------- Child / nested menu items ---------- */
+
+/*
+ * Shopify menus support one level of nesting, and the brief requires it be honoured rather
+ * than flattened. V4 mocks every column with a flat list, so it prescribes no nested
+ * treatment; these rules stay inside the design's vocabulary -- the child list is indented
+ * under its parent and set at Body/Extra Small (14/22) in Primary/Gray, the same pairing
+ * the style-card subtitle already uses.
+ */
+.aria-mega__sublinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0 0 0 12px;
+  border-left: 1px solid var(--cream, #eaddd4);
+  list-style: none;
+}
+
+.aria-mega__sublink {
+  display: block;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--aria-mega-rule, #3f3e3e);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.aria-mega__sublink:hover,
+.aria-mega__sublink:focus-visible {
+  color: var(--py, #a64a4c);
+}
+
+/* In the outlined-card rows the children live inside the card, so the card owns the
+   padding and the nested list only needs its rule and indent. */
+.aria-mega__links--padded .aria-mega__links-item:has(.aria-mega__sublinks) {
+  box-sizing: border-box;
+  padding: 15px 11px;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 12px;
+}
+
+/* ...which means the parent anchor must drop its own border so they do not double up. */
+.aria-mega__links--padded .aria-mega__links-item:has(.aria-mega__sublinks) > .aria-mega__link {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+/* ---------- Style cards (Shop column 1) ---------- */
+
+.aria-mega__styles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-mega__style {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.aria-mega__style:hover,
+.aria-mega__style:focus-visible {
+  background: rgba(var(--qi-rgb, 188, 105, 107), 0.08);
+}
+
+/* V4: 48px square, radius 8, on a #e9e9e9 ground that shows through where the cut-out
+   photo does not cover the box. */
+.aria-mega__style-thumb {
+  flex: none;
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e9e9e9;
+}
+
+.aria-mega__style-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dawn's base.css hides any empty div/span, so the fallback keeps an inert child. */
+.aria-mega__style-img-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-mega__style-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.aria-mega__style-title {
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--sy, #000);
+}
+
+.aria-mega__style-sub {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--aria-mega-rule, #3f3e3e);
+}
+
+/* ---------- Chip ---------- */
+
+/* V4: 18px tall, px-8 py-4, radius 8, Poppins Regular 12/14 uppercase. */
+.aria-mega__chip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: var(--sy, #000);
+  white-space: nowrap;
+}
+
+.aria-mega__chip--white {
+  background: var(--white, #fff);
+}
+
+.aria-mega__chip--amber {
+  background: #f79510;
+}
+
+/* The third badge fill -- the Dailey Deals "DEAL" chip (node 6337:4577). */
+.aria-mega__chip--pink {
+  background: #fbb2b2;
+}
+
+/* ---------- Promo card (Shop columns 4-5) ---------- */
+
+/* V4: 244 x 315, radius 8. */
+.aria-mega__promo {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 244 / 315;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  background: var(--white, #fff);
+}
+
+.aria-mega__promo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: bottom;
+}
+
+/* V4: welded to the bottom edge, 36px tall, full width, radius 2. */
+.aria-mega__promo-cta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 4px 24px;
+  border-radius: 2px;
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+  font-size: 18px;
+  line-height: 28px;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+.aria-mega__promo:hover .aria-mega__promo-cta,
+.aria-mega__promo:focus-visible .aria-mega__promo-cta {
+  background: var(--sy, #000);
+}
+
+/* ---------- Product cards (Best Sellers / Start Here / Deals) ---------- */
+
+/*
+ * THE GRADIENT SHELL — and which columns actually get it.
+ *
+ * A white->cream shell at radius 8 with 20px of side and bottom padding, wrapping a
+ * column's heading AND its body. THREE columns take it, not every products row:
+ *   Start Here products  6337:3548
+ *   Dailey Deals products 6337:4546
+ *   Community CTA        6337:4239
+ *
+ * BEST SELLERS DOES NOT (6337:3210 is bare #FFFFFF behind the cards, sampled off the
+ * frame). Putting it on `--products` unconditionally is exactly the unwanted background
+ * behind that panel's product wrapper: the panel's own white ground is the design.
+ *
+ * It is a shared modifier so the three columns cannot drift apart, and it is applied by
+ * `col_shell` in aria-mega-menu.liquid rather than by column type.
+ */
+.aria-mega__col--shell {
+  box-sizing: border-box;
+  padding: 0 20px 20px;
+  border-radius: 8px;
+  background-image: linear-gradient(to bottom, var(--white, #fff), var(--cream, #eaddd4));
+}
+
+.aria-mega__products {
+  display: flex;
+  /* V4: 250px cards on a 262px pitch. */
+  gap: 12px;
+  min-width: 0;
+}
+
+.aria-mega__product {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  /* V4: 315px media + 12px + 46px footer = the 373px card. */
+  gap: 12px;
+  /*
+   * Basis 250px, not 0. When the products column is set to its Figma OUTER width (1076 for
+   * the 4-up row, 814 for 3-up) and the shell takes its 40px, the remainder divides into
+   * exactly 250px cards; when the column
+   * is left on `auto` the basis is what gives the row a width at all, instead of collapsing
+   * every card to zero. `max-width` stops them growing past the design size in a wide slot.
+   */
+  flex: 1 1 250px;
+  max-width: 250px;
+  min-width: 0;
+}
+
+.aria-mega__product-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 250 / 315;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  /* `bg-white` on node 6337:3220. The `aspect-ratio` above already reserves the box, so a
+     lazy image arriving late cannot shift the row. */
+  background: var(--white, #fff);
+}
+
+/* V4 anchors the crop to the bottom of the shot so the hairline stays in frame. */
+.aria-mega__product-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: bottom;
+}
+
+/*
+ * V4 mocks this with a short two-word label ("City / Signature"), but real Belle Tress
+ * titles run to 60+ characters and wrapped to three lines, swallowing the bottom third of
+ * the photo. Clamped to two so the card keeps its proportions whatever the catalogue holds.
+ */
+.aria-mega__product-title {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  background-image: linear-gradient(to bottom, var(--white, #fff), var(--cream, #eaddd4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/*
+ * Node 6337:3224: the footer is an OUTLINED GLASS PILL -- 1px solid black at radius 8
+ * with a 6.7px backdrop blur and asymmetric 2px/4px padding -- not the bare row an earlier
+ * pass built. It holds the 40px cart tile, then the subtitle and price.
+ */
+.aria-mega__product-foot {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 2px 4px 2px 2px;
+  border: 1px solid var(--sy, #000);
+  border-radius: 8px;
+  backdrop-filter: blur(6.7px);
+}
+
+/*
+ * The add-to-cart control is the theme's own `aria-product-card-quick-add` snippet, so the
+ * <product-form> element and the AJAX cart drawer are shared rather than reimplemented.
+ * Only its box is restyled here to V4's 40px square, and the base properties are restated
+ * because `component-aria-product-card.css` is a section stylesheet and is not loaded on
+ * every page the header appears on.
+ */
+/*
+ * The explicit width matters: `<product-form>` is a custom element with no default display
+ * and its inner <form> is a block, so as a flex item the wrapper resolved to 0px wide even
+ * though the button inside it measured 40. It reserved no space and the button sat on top
+ * of the subtitle. Pinning both to the button's 40px keeps the footer a real three-part row.
+ */
+/*
+ * `opacity: 1` IS THE WHOLE POINT OF THIS RULE — without it the cart tile is invisible.
+ *
+ * `component-aria-product-card.css` hides the quick-add by default above 750px and reveals
+ * it on card hover, which is right for the section product cards:
+ *
+ *     @media (min-width: 750px) {
+ *       .aria-product-card__quick-add { width: 0; opacity: 0; overflow: hidden; }
+ *       .aria-product-card:hover .aria-product-card__quick-add { width: 54px; opacity: 1; }
+ *     }
+ *
+ * The mega menu reuses the shared `aria-product-card-quick-add` snippet but its cards are
+ * `.aria-mega__product`, NOT `.aria-product-card`, so that reveal selector can never match
+ * and the control stayed at opacity 0 permanently. The design shows the tile always, not on
+ * hover, so the state is reset here.
+ *
+ * WHY IT HID SO WELL: an `opacity: 0` element still takes layout and still hit-tests, and
+ * the `width: 40px` below already beat the `width: 0`. So the tile reserved its exact 40px,
+ * every computed style on the BUTTON read correctly, and `elementFromPoint` at its centre
+ * returned the icon — it just painted nothing. Only the wrapper's opacity was wrong, and
+ * the wrapper is the one element none of those checks looked at. It was also
+ * page-dependent: that stylesheet is a SECTION stylesheet, so the icon rendered fine on
+ * pages that do not load it and vanished on the ones that do.
+ */
+.aria-mega .aria-product-card__quick-add,
+.aria-mega .aria-product-card__quick-add-form {
+  display: block;
+  flex: none;
+  width: 40px;
+  margin: 0;
+  opacity: 1;
+  overflow: visible;
+}
+
+/*
+ * THE CART TILE (node 6337:3225 + the glyph at 6337:3230).
+ *
+ * A 40px radius-8 tile with a 1px WHITE border carrying a photo, and the design's own
+ * `shopping-cart-02` — 20x20, 1px stroke, round caps, white — centred on top. The glyph in
+ * `aria-icon.liquid` (`mega-cart-02`) is that node's exported path data, not a lookalike,
+ * and this is the ONLY cart treatment in the panels, so every mega menu with product cards
+ * gets the same one through the shared `aria-product-card-quick-add` snippet.
+ *
+ * TWO deliberate departures, both about the glyph staying visible:
+ *   · The frames tint the tile with a mid-dark hair close-up (#6E453D average), which the
+ *     white glyph reads over cleanly. Real catalogue shots are frequently near-white, and
+ *     a white-on-white add-to-cart button is not a cosmetic problem — it is an invisible
+ *     control. The photo therefore carries a flat 28% black wash, applied as a second
+ *     background layer so it costs no extra element.
+ *   · No drop-shadow on the glyph. That was an earlier invention to solve the same
+ *     legibility problem and the design does not draw one; the wash replaces it.
+ */
+.aria-mega .aria-product-card__cart-btn {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--white, #fff);
+  border-radius: 8px;
+  /* The product shot, handed down as a custom property by `.aria-mega__product-foot`. */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28)),
+    var(--aria-mega-cart-img, none);
+  background-color: var(--cream, #eaddd4);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: var(--white, #fff);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.aria-mega .aria-product-card__cart-btn:before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28));
+  filter: blur(5px);
+}
+
+.aria-mega .aria-product-card__cart-btn:hover,
+.aria-mega .aria-product-card__cart-btn:focus-visible {
+  border-color: var(--py, #a64a4c);
+}
+
+.aria-mega .aria-product-card__cart-btn .aria-icon {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}
+
+.aria-mega__product-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Node 6337:3228 sets this in BLACK. Primary/Gray is the STYLE-CARD subtitle colour;
+   reusing it here was wrong. */
+.aria-mega__product-sub {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--sy, #000);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* V4: Body/Medium/Medium -- Poppins Medium 18/28, not regular. */
+.aria-mega__product-price {
+  flex: none;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 500;
+  color: var(--sy, #000);
+}
+
+/* ---------- Feature (CTA) cards — THREE DISTINCT DESIGNS ---------- */
+
+/*
+ * Three CTA cards, one per panel, and they must NOT be normalised into one style. What they
+ * genuinely share is only the "glass" panel recipe -- rgba(255,255,255,0.13) over a 50px
+ * backdrop blur, 1px white border, radius 4. Everything else differs.
+ *
+ *   Best Sellers 6337:3200  WHITE card holding a radius-8 photo under a heavy dark double
+ *                           overlay; the glass panel is 260x410 CENTRED in the 300x449
+ *                           card; heading white; button WHITE with black text
+ *   Community    6337:4243  the shared white->cream GRADIENT SHELL and NO PHOTO AT ALL;
+ *                           the glass panel fills the 338 card at 410 tall; heading
+ *                           #1F1C1C; body a step larger (20/28); a centred Kristi
+ *                           signature between body and CTA; button BLACK
+ *   Dailey Deals 6337:4514  a radius-4 photo with the glass panel BOTTOM-ANCHORED and only
+ *                           as tall as its content, padded 13 with a 24px gap; heading
+ *                           Poppins Medium 18/28 (not Montserrat 24/32); body 14/22;
+ *                           button TERRACOTTA
+ *
+ * Community reaching for the Best Sellers look was NOT a CSS problem -- the variant CSS was
+ * already distinct. The Liquid rendered `col_image` as an absolutely positioned shell photo
+ * for every variant, which covered Community's gradient and turned its glass panel into a
+ * dark photo card. Fixed in aria-mega-column.liquid, which now skips the photo for that
+ * variant; the rule below is the belt-and-braces half so a future image source cannot
+ * reintroduce it.
+ */
+
+.aria-mega__col--feature-card {
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.aria-mega__col--feature-community .aria-mega__feature-shell-img {
+  display: none;
+}
+
+.aria-mega__feature-shell-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: bottom;
+}
+
+/* The shared glass recipe — the only thing all three cards have in common. */
+.aria-mega__feature {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--white, #fff);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(50px);
+}
+
+.aria-mega__feature-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Heading/H4 — Montserrat Medium 24/32, letter-spacing 0. `--font-heading-family` IS
+ * Montserrat on this store (`type_header_font: montserrat_n5`), so the token comes first
+ * and the literal is only a fallback.
+ */
+.aria-mega__feature-title {
+  margin: 0;
+  font-family: var(--font-heading-family, 'Montserrat', sans-serif);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Body/Medium/Regular — Poppins Regular 18/28. Set explicitly rather than inherited so a
+   variant that wants Body/Large (Community) or Extra Small (Deals) only overrides size. */
+.aria-mega__feature-text {
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* ---- Variant: Best Sellers (node 6337:3200) ---- */
+
+.aria-mega__col--feature-best-sellers {
+  /* The CARD is 300x449 and the glass panel inside it is 260x410 -- two distinct numbers,
+     so the height lives on the card and the panel carries its own. 449 - 410 = 39, split
+     as the 20px inset either side (the design rounds the top half to 19.5). */
+  min-height: 449px;
+  padding: 20px;
+  background: var(--white, #fff);
+}
+
+/*
+ * Two gradients stack over the photo: a flat 78% black wash plus an angled grey ramp.
+ * Without them the white heading is unreadable and the card reads nothing like the design.
+ */
+.aria-mega__col--feature-best-sellers .aria-mega__feature-shell-img {
+  border-radius: 8px;
+}
+
+.aria-mega__col--feature-best-sellers::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.78) 100%),
+    linear-gradient(101.6deg, rgba(47, 47, 47, 0.46) 12.738%, rgba(222, 222, 222, 0.46) 78.602%);
+  pointer-events: none;
+}
+
+.aria-mega__col--feature-best-sellers .aria-mega__feature {
+  z-index: 2;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 410px;
+  padding: 21px;
+}
+
+.aria-mega__col--feature-best-sellers .aria-mega__feature-body {
+  gap: 4px;
+}
+
+.aria-mega__col--feature-best-sellers .aria-mega__feature-title,
+.aria-mega__col--feature-best-sellers .aria-mega__feature-text {
+  color: var(--white, #fff);
+}
+
+/*
+ * CONTENT PROPORTIONS (node 6337:3203, the 218x369 content box inside the panel).
+ *
+ *   heading   Montserrat Medium 24/32, measured 201px WIDE -- the design constrains the
+ *             heading to 201 of the 218 available so "Top 3 this quarter" breaks after
+ *             "this" into two 32px lines. Left to fill 218 it sets on one line at some
+ *             viewport widths and two at others, which is why the block read as the wrong
+ *             size rather than the wrong width.
+ *   gap       4px
+ *   body      Poppins Regular 18/28 at the full 218 -> exactly three lines, 84px
+ *   CTA       218 x 52, bottom-anchored (317 + 52 = the 369 box)
+ *
+ * All four numbers are inherited from the shared rules above; only the heading's own
+ * measured width is variant-specific.
+ */
+.aria-mega__col--feature-best-sellers .aria-mega__feature-title {
+  max-width: 201px;
+}
+
+/* ---- Variant: Community (node 6337:4243) ---- */
+
+/*
+ * The gradient shell comes from the shared `.aria-mega__col--shell` (applied by
+ * `col_shell` in the Liquid), not from a second copy of the gradient here. This variant
+ * only sets what is genuinely its own.
+ */
+.aria-mega__col--feature-community .aria-mega__feature {
+  position: relative;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  /* 410px panel; the column's own height is head 39 + 20 + this + 20 of shell padding. */
+  min-height: 410px;
+  padding: 21px;
+}
+
+.aria-mega__col--feature-community .aria-mega__feature-body {
+  gap: 4px;
+}
+
+.aria-mega__col--feature-community .aria-mega__feature-title,
+.aria-mega__col--feature-community .aria-mega__feature-text {
+  color: var(--ink, #1f1c1c);
+}
+
+/* Body/Large/Regular — Community gets the largest body copy of the three. */
+.aria-mega__col--feature-community .aria-mega__feature-text {
+  font-size: 20px;
+}
+
+/* ---- Variant: Dailey Deals (node 6337:4514) ---- */
+
+/*
+ * SHARP-EDGED. The frame's outer box does carry a 20px radius, but it has NO FILL, so
+ * nothing of it is ever drawn; the only corners a shopper sees are the photo's and the
+ * glass panel's, both 4px. An earlier pass gave that outer box the radius AND a #2f2f2f
+ * fill, which is what turned the card into a visibly rounded dark tile.
+ *
+ * The panel is absolutely positioned and the photo is too, so NOTHING is in flow here --
+ * without an explicit height the card collapses.
+ */
+.aria-mega__col--feature-deals {
+  min-height: 450px;
+  border-radius: 0;
+  background: transparent;
+}
+
+.aria-mega__col--feature-deals .aria-mega__feature-shell-img {
+  border-radius: 4px;
+}
+
+/* Bottom-anchored and only as tall as its content — the biggest structural difference. */
+.aria-mega__col--feature-deals .aria-mega__feature {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: center;
+  gap: 24px;
+  padding: 13px;
+}
+
+.aria-mega__col--feature-deals .aria-mega__feature-body {
+  gap: 8px;
+  width: 100%;
+}
+
+/* Poppins Medium 18/28 here, NOT the Montserrat 24/32 the other two use. */
+.aria-mega__col--feature-deals .aria-mega__feature-title {
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 500;
+  color: var(--white, #fff);
+}
+
+/* Body/Extra Small/Regular. */
+.aria-mega__col--feature-deals .aria-mega__feature-text {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--white, #fff);
+}
+
+/* ---------- Kristi signature (Community CTA card + Live media card) ---------- */
+
+/*
+ * ONE element, two sizes, two colours — see snippets/aria-mega-signature.liquid. The size
+ * arrives as custom properties from the call site (the design's own 249x96.247 and
+ * 120x46.384) and the colour comes from `color`, because the asset is drawn as a mask
+ * rather than an <img>.
+ */
+.aria-mega__signature {
+  display: block;
+  flex: none;
+  width: var(--aria-mega-sig-w, 249px);
+  height: var(--aria-mega-sig-h, 96px);
+  background-color: currentColor;
+  -webkit-mask: var(--aria-mega-sig-src) no-repeat center / contain;
+  mask: var(--aria-mega-sig-src) no-repeat center / contain;
+}
+
+/*
+ * Community: black, and CENTRED in the card (node 6337:4249 sits at x44.5 of 338, i.e.
+ * (338 - 249) / 2). It rides the panel's `space-between` rhythm between the body copy and
+ * the CTA, which reproduces the design's 32px / 37px surrounding gaps.
+ */
+.aria-mega__col--feature-community .aria-mega__signature {
+  align-self: center;
+  color: var(--sy, #000);
+}
+
+/* Live: white, 16px in from the photo's bottom-left corner (node 6337:3949). */
+.aria-mega__signature--media {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  color: var(--white, #fff);
+}
+
+/* ---------- Buttons ---------- */
+
+/*
+ * A DIFFERENT fill per CTA card, so the base is neutral and each variant sets its own:
+ * Community black (6337:4248), Best Sellers white-on-black-text (6337:3209), Dailey Deals
+ * terracotta (6337:4521). All share radius 2, px-24 py-12 and Poppins Regular 18/28
+ * uppercase, giving the design's 52px height (12 + 28 + 12).
+ *
+ * `white-space: nowrap` is not a workaround — every button node in the frames carries
+ * whitespace-nowrap. "SHOP BEST SELLERS" sets at 161px inside the Best Sellers card's
+ * 170px of content box, so at the design's own column width it fits on one line with room
+ * to spare; it only broke because the panel was 40px narrow and flex-shrink took 3px off
+ * the card. Both of those are fixed above, and this makes the one-line rule explicit so no
+ * future width change can silently re-wrap it.
+ */
+.aria-mega__btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 24px;
+  /*
+   * NO BORDER on the filled buttons. 12 + 28 + 12 = the design's 52px exactly; a 1px
+   * border made every CTA 54. Only the outline variant is stroked, and 12 + 28 + 12 + 2
+   * is exactly the 54px the design gives THAT button (node 6337:4269).
+   */
+  border: 0;
+  border-radius: 2px;
+  background: var(--sy, #000);
+  color: var(--white, #fff);
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Best Sellers: white fill, black label (node 6337:3209). */
+.aria-mega__col--feature-best-sellers .aria-mega__btn {
+  background: var(--white, #fff);
+  color: var(--sy, #000);
+}
+
+.aria-mega__col--feature-best-sellers .aria-mega__btn:hover,
+.aria-mega__col--feature-best-sellers .aria-mega__btn:focus-visible {
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+/* Dailey Deals: terracotta fill (node 6337:4521). */
+.aria-mega__col--feature-deals .aria-mega__btn {
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-mega__col--feature-deals .aria-mega__btn:hover,
+.aria-mega__col--feature-deals .aria-mega__btn:focus-visible {
+  background: var(--sy, #000);
+}
+
+/* Community keeps the base black fill (node 6337:4248), so it needs no variant rule. */
+.aria-mega__btn:hover,
+.aria-mega__btn:focus-visible {
+  background: var(--sy, #000);
+}
+
+/*
+ * Node 6337:4269: the CTA under the photo row is outlined, sentence case (it reads
+ * "See the gallery  ->", not shouted), sized to its content rather than full width, and
+ * carries a trailing arrow. 12 + 28 + 12 + 2 of border = the design's 54px.
+ */
+.aria-mega__btn--outline {
+  align-self: flex-start;
+  width: auto;
+  background: transparent;
+  border: 1px solid var(--sy, #000);
+  color: var(--sy, #000);
+  text-transform: none;
+}
+
+.aria-mega__btn--outline:hover,
+.aria-mega__btn--outline:focus-visible {
+  background: var(--py, #a64a4c);
+  border-color: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+
+/* ---------- Media card (Live) ---------- */
+
+.aria-mega__media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 493 / 415;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f6ede5;
+}
+
+.aria-mega__media-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * THE PLAY AFFORDANCE (node 6337:3950) — 48px, 16px in from the photo's bottom-right.
+ *
+ * The design's disc is FROSTED, not solid: `#C0C0C0` at 50% opacity behind a 16.7px
+ * backdrop blur, carrying a rounded white triangle. That is exactly what the theme's
+ * `wp-play-button.svg` is (its Figma frame name is still in the file), so the asset is
+ * reused as-is at 48px instead of the earlier stand-in, which drew a solid terracotta
+ * disc with a hard-edged triangle.
+ *
+ * `<img>` cannot execute the asset's own `foreignObject` backdrop-filter, so the blur is
+ * re-created here on the wrapper — the disc's fill and glyph still come from the asset.
+ */
+.aria-mega__media-play {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(16.7px);
+  backdrop-filter: blur(16.7px);
+  transition: transform 0.2s ease;
+}
+
+.aria-mega__media-play img {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+.aria-mega__media:hover .aria-mega__media-play,
+.aria-mega__media:focus-visible .aria-mega__media-play {
+  transform: scale(1.06);
+}
+
+/* ---------- Photo row (Community) ---------- */
+
+/*
+ * V4 gives the middle photo a taller frame (238px against its neighbours' 214px) so the
+ * row reads as a stagger. `align-items: center` plus a taller middle track reproduces that
+ * without three separate image settings.
+ */
+.aria-mega__photos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/*
+ * Node 6337:4260 frames each photo in a Primary/Cream MAT -- the cream box is the
+ * frame and the image is inset ~6px inside it, like a polaroid. An earlier pass rendered
+ * bare images with no mat.
+ *
+ * The flex-grow numbers ARE V4's widths (158 / 176 / 158), so the three photos divide the
+ * column in exactly that ratio and `aspect-ratio` then yields V4's 214 / 238 / 214 heights.
+ * Plain `flex: 1 1 0` made all three equal width, which flattened the stagger to 1px.
+ */
+.aria-mega__photo {
+  box-sizing: border-box;
+  display: block;
+  flex: 158 1 0;
+  min-width: 0;
+  padding: 6px;
+  aspect-ratio: 158 / 214;
+  border-radius: 1px;
+  background: var(--cream, #eaddd4);
+}
+
+.aria-mega__photo:nth-child(2) {
+  flex: 176 1 0;
+  aspect-ratio: 176 / 238;
+}
+
+.aria-mega__photo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Ticker strip ---------- */
+
+/*
+ * Node 6337:3294. Corrected after an audit: this strip is Primary/Dark Pink with WHITE
+ * text, not the white strip with grey text an earlier pass built, and its type is 16/24
+ * capitalize rather than 14/24 uppercase. It has no top border.
+ *
+ * The three phrases the client reads as separate CTA cards are ONE centred line here,
+ * separated by "  ·  " with double spaces — hence `white-space: pre`, so those spaces are
+ * not collapsed.
+ *
+ * FONT NOTE: V4 sets this in Josefin Sans, which this theme does not load (it loads only
+ * the two Shopify font-picker families). It inherits the body font rather than pulling in a
+ * whole extra family for one line — the size, weight, colour and case all match.
+ */
+.aria-mega__ticker {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px;
+  background: var(--py, #a64a4c);
+}
+
+.aria-mega__ticker-text {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--container, 1360px) + 80px);
+  margin-inline: auto;
+  padding-inline: 20px;
+  font-size: 16px;
+  line-height: 24px;
+  text-transform: capitalize;
+  text-align: center;
+  color: var(--white, #fff);
+  white-space: pre;
+}
+
+/* ---------- Trigger state ---------- */
+
+/*
+ * The open/active parent is a pale pink PILL with the label still BLACK -- not terracotta
+ * text, which is what an earlier pass used. The same pill serves as the hover cue, so
+ * moving the cursor from the parent into the panel never changes the parent's appearance
+ * and there is nothing to flicker.
+ */
+.aria-header__menu-item--mega > .aria-header__menu-link:hover,
+.aria-header__menu-item--mega > .aria-header__menu-link:focus-visible,
+.aria-header__menu-item--mega > .aria-header__menu-link[aria-expanded='true'] {
+  /* `background-color` longhand + the `--mega` parent, so this cannot be reset by the base
+     rule's `background: none` shorthand regardless of load order.
+     MEASUREMENT NOTE: because of the `transition` on this property, reading the computed
+     background while the preview pane is hidden returns the FROZEN START FRAME
+     (transparent) — a hidden pane does not advance transitions. Verify the pill by
+     injecting `transition: none` first, or the value will look like it never applied. */
+  background-color: var(--pink-tint, #ebd8d9);
+  color: var(--sy, #000);
+}
+
+/*
+ * THE CHEVRON STAYS. In every approved frame the parent whose panel is open still shows
+ * its chevron inside the pill -- see the pill'd "Best Sellers ⌄" in 6337:3148, "Shop ⌄" in
+ * 6337:4768, "Start Here ⌄" in 6337:3448. An earlier pass read the V4 frames as hiding it
+ * and shipped `opacity: 0` on `[aria-expanded='true']`, which is the arrow vanishing on
+ * hover.
+ *
+ * Nothing replaces that rule: the caret keeps the same 14px `arrow-up-01` glyph, the same
+ * 1px stroke, the same 4px offset after the label and `currentColor`, which the pill holds
+ * at black. Stated here only so the deletion is deliberate and does not get "restored".
+ */
+
+/*
+ * The mega menu is a pointer-driven desktop affordance and only exists at the width where
+ * the header shows its inline nav (1280px, the same breakpoint the rest of the header uses
+ * to switch away from the drawer). Below that the panels are removed outright so they
+ * cannot affect the tablet or mobile header, which keeps using the existing drawer and its
+ * accordion — untouched by this component.
+ */
+@media screen and (max-width: 1279px) {
+  .aria-mega {
+    display: none;
+  }
+
+  /*
+   * ...and so must the parent's chevron. It only ever announced a mega panel, so inside the
+   * mobile/tablet drawer it read as an expand affordance with nothing to expand (V4's drawer
+   * items carry no chevron). Scoped to `--mega` so the real `--dropdown` carets, which do
+   * drive the drawer accordion, are untouched.
+   */
+  .aria-header__menu-item--mega > .aria-header__menu-link .aria-header__menu-caret {
+    display: none;
+  }
+}
+
+/*
+ * The right-hand group's `margin-left: auto` only has surplus to absorb once the panel is
+ * wide enough to hold the design outright. Below that the columns are already shrinking and
+ * there is no free space, so the push is a no-op and needs no media query of its own — the
+ * weighted-shrink model above handles every width from 1280 up on its own.
+ *
+ * NOT `flex-wrap: wrap`, which an earlier version used: wrapping a 1400px row into a
+ * viewport a few pixels short drops a whole column onto a second line and leaves a ragged
+ * panel. Proportional shrink degrades far more gracefully.
+ */

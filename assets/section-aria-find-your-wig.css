@@ -1,0 +1,235 @@
+/* Wig Party — Find Your Perfect Wig (sections/find-your-wig.liquid) */
+
+.aria-find-wig {
+  background: var(--aria-fw-bg, #fff);
+  padding-block: 48px 20px;
+}
+
+/* Container rule for this theme: cap OR pad on one element, never both — putting
+   max-width and padding-inline on the same box silently shrinks the content row. */
+.aria-find-wig__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- Header ---------- */
+
+.aria-find-wig__header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+}
+
+.aria-find-wig__heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--sy, #000);
+  overflow-wrap: break-word;
+}
+
+.aria-find-wig__subheading {
+  margin: 0;
+  font-size: 16px;
+  line-height: 26px;
+  color: #3f3e3e;
+}
+
+/* ---------- Grid ---------- */
+
+.aria-find-wig__grid {
+  display: grid;
+  /* Two across on mobile, per the V4 mobile behaviour used elsewhere in this theme. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-find-wig__item {
+  display: flex;
+  min-width: 0;
+}
+
+.aria-find-wig__card {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ---------- Media ---------- */
+
+.aria-find-wig__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--aria-fw-card-bg, #fff);
+  aspect-ratio: 326 / 296;
+}
+
+.aria-find-wig__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Cream "cap size" card holds a cut-out product shot that must not be cropped. */
+.aria-find-wig__media--contain {
+  border: 1px solid #ebe7e7;
+}
+
+.aria-find-wig__media--contain .aria-find-wig__image {
+  object-fit: contain;
+  padding: 18px;
+}
+
+/* ---------- Text ---------- */
+
+.aria-find-wig__text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.aria-find-wig__title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--sy, #000);
+  overflow-wrap: break-word;
+}
+
+.aria-find-wig__subtitle {
+  margin: 0;
+  font-size: 15px;
+  line-height: 24px;
+  color: #3f3e3e;
+  overflow-wrap: break-word;
+}
+
+/* ---------- Button ---------- */
+
+.aria-find-wig__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* margin-top:auto keeps buttons aligned across cards with different text lengths. */
+  margin-top: auto;
+  min-width: 0;
+  min-height: 44px;
+  padding: 12px 16px;
+  border: 1px solid var(--sy, #000);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--sy, #000);
+  font-size: 15px;
+  line-height: 24px;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.aria-find-wig__btn:hover,
+.aria-find-wig__btn:focus-visible {
+  background: var(--py, #a64a4c);
+  border-color: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (min-width: 750px) {
+  .aria-find-wig {
+    padding-block: 64px 20px;
+  }
+
+  .aria-find-wig__inner {
+    padding-inline: 40px;
+    gap: 40px;
+  }
+
+  .aria-find-wig__heading {
+    font-size: 44px;
+  }
+
+  .aria-find-wig__subheading {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .aria-find-wig__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .aria-find-wig__title {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-find-wig__subtitle {
+    font-size: 16px;
+    line-height: 26px;
+  }
+}
+
+/* ---------- Desktop ---------- */
+
+@media screen and (min-width: 990px) {
+  .aria-find-wig {
+    padding-inline: 40px;
+    padding-block: var(--section-spacing, 80px) 20px;
+  }
+
+  .aria-find-wig__inner {
+    padding-inline: 0;
+    gap: 48px;
+  }
+
+  .aria-find-wig__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  .aria-find-wig__subheading {
+    font-size: var(--title-content-size, 20px);
+    line-height: var(--title-content-line-height, 28px);
+  }
+
+  /* 4 × 326 + 3 × 18 = 1358, the exact V4 content row. */
+  .aria-find-wig__grid {
+    gap: 18px;
+  }
+
+  /* V4 spaces media→text at 13px and text→button at 21px. The card gap supplies 13; this
+     adds the remaining 8 below the text only, so the media→text gap stays correct. The
+     button keeps `margin-top: auto` so buttons still align across uneven cards. */
+  .aria-find-wig__text {
+    margin-bottom: 8px;
+  }
+
+  .aria-find-wig__subtitle {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .aria-find-wig__btn {
+    padding: 12px 24px;
+    font-size: 18px;
+    line-height: 28px;
+  }
+}

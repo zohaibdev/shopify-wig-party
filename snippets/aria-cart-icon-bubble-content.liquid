@@ -1,0 +1,15 @@
+{%- comment -%}
+  Shared cart-icon-bubble contents, rendered both by the custom header (sections/header.liquid)
+  and by sections/cart-icon-bubble.liquid (the fragment Dawn's cart-drawer.js re-fetches and
+  swaps into #cart-icon-bubble after every cart mutation). Keeping both call sites on this one
+  snippet guarantees the icon doesn't flicker back to a different style after add-to-cart.
+{%- endcomment -%}
+{%- render 'aria-icon', name: 'cart', class: 'aria-header__icon-svg' -%}
+<span class="visually-hidden">{{ 'general.cart.view' | t: count: cart.item_count }}</span>
+{%- if cart != empty -%}
+  <div class="aria-header__cart-bubble" aria-hidden="true">
+    {%- if cart.item_count < 100 -%}
+      {{ cart.item_count }}
+    {%- endif -%}
+  </div>
+{%- endif -%}

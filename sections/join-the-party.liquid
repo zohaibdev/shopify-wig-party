@@ -1,0 +1,234 @@
+{{ 'section-aria-join-the-party.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign collage_blocks = section.blocks | where: 'type', 'photo'
+
+  # Resolve the placeholder and button label BEFORE output. `setting | default: 'key' | t`
+  # does not work: Liquid applies filters left to right, so `default:` returns the
+  # merchant's own (non-blank) string and `t` then treats that English text as a
+  # translation key — rendering "Translation missing: en.Enter your email address".
+  # The fallback must be translated on its own, then used as the default.
+  assign placeholder_text = section.settings.placeholder
+  if placeholder_text == blank
+    assign placeholder_text = 'newsletter.label' | t
+  endif
+
+  assign submit_text = section.settings.button_label
+  if submit_text == blank
+    assign submit_text = 'aria_theme.join_the_party.button_label' | t
+  endif
+-%}
+
+<section class="aria-join">
+  {%- comment -%}
+    Full-bleed background photo with V4's diagonal scrim over it. The scrim is a real
+    element (not a background-image on the section) so the merchant's own photo can sit
+    beneath it untouched.
+  {%- endcomment -%}
+  <div class="aria-join__bg" aria-hidden="true">
+    {%- if section.settings.background_image != blank -%}
+      {{
+        section.settings.background_image
+        | image_url: width: 2880
+        | image_tag:
+          loading: 'lazy',
+          sizes: '100vw',
+          widths: '750,1100,1440,1920,2880',
+          class: 'aria-join__bg-img',
+          alt: ''
+      }}
+    {%- else -%}
+      <img
+        src="{{ 'wp-find-texture.jpg' | asset_url }}"
+        alt=""
+        width="1440"
+        height="802"
+        loading="lazy"
+        class="aria-join__bg-img"
+      >
+    {%- endif -%}
+    <span class="aria-join__scrim"><span></span></span>
+  </div>
+
+  <div class="aria-join__inner">
+    <div class="aria-join__panel">
+      <div class="aria-join__copy">
+        <div class="aria-join__text">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="aria-join__heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.subheading != blank -%}
+            <p class="aria-join__subheading">{{ section.settings.subheading }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%}
+          Shopify's real customer form (same `{% form 'customer' %}` + `contact[email]`
+          contract Dawn's newsletter section uses), so submissions actually create a
+          subscriber. The V4 mock input is reproduced as the field styling only.
+        {%- endcomment -%}
+        {%- form 'customer', class: 'aria-join__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+
+          <div class="aria-join__field">
+            <label class="visually-hidden" for="AriaJoinEmail-{{ section.id }}">
+              {{ 'newsletter.label' | t }}
+            </label>
+            <input
+              id="AriaJoinEmail-{{ section.id }}"
+              type="email"
+              name="contact[email]"
+              class="aria-join__input"
+              value="{{ form.email }}"
+              placeholder="{{ placeholder_text | escape }}"
+              aria-required="true"
+              autocorrect="off"
+              autocapitalize="off"
+              autocomplete="email"
+              required
+              {% if form.errors %}
+                autofocus
+                aria-invalid="true"
+                aria-describedby="AriaJoinError-{{ section.id }}"
+              {% elsif form.posted_successfully? %}
+                aria-describedby="AriaJoinSuccess-{{ section.id }}"
+              {% endif %}
+            >
+          </div>
+
+          <button type="submit" class="aria-join__submit" name="commit">
+            {{ submit_text }}
+          </button>
+
+          {%- if form.errors -%}
+            <p class="aria-join__message aria-join__message--error" id="AriaJoinError-{{ section.id }}">
+              {{- form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email -}}
+            </p>
+          {%- endif -%}
+
+          {%- if form.posted_successfully? -%}
+            <p
+              class="aria-join__message aria-join__message--success"
+              id="AriaJoinSuccess-{{ section.id }}"
+              tabindex="-1"
+            >
+              {{ 'newsletter.success' | t }}
+            </p>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+
+      {%- if collage_blocks.size > 0 -%}
+        {%- comment -%}
+          Decorative overlapping collage. Each photo's position comes from V4 and is
+          expressed in percentages of the 529x536 collage box so it scales intact.
+          aria-hidden: it carries no information the copy does not already give.
+        {%- endcomment -%}
+        <div class="aria-join__collage" aria-hidden="true">
+          {%- for block in collage_blocks limit: 4 -%}
+            <span class="aria-join__collage-item aria-join__collage-item--{{ forloop.index }}" {{ block.shopify_attributes }}>
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 560
+                  | image_tag: loading: 'lazy', widths: '280,560', class: 'aria-join__collage-img', alt: ''
+                }}
+              {%- else -%}
+                <img
+                  src="{{ block.settings.default_image | append: '.jpg' | asset_url }}"
+                  alt=""
+                  width="280"
+                  height="400"
+                  loading="lazy"
+                  class="aria-join__collage-img"
+                >
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-join-the-party.name",
+  "tag": "section",
+  "class": "aria-join-the-party-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Join the Party — Be the First to Know",
+      "label": "t:sections.aria-join-the-party.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "New styles, live shows & exclusive deals — plus 10% off your first order",
+      "label": "t:sections.aria-join-the-party.settings.subheading.label"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "default": "Enter your email address",
+      "label": "t:sections.aria-join-the-party.settings.placeholder.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Join the Party",
+      "label": "t:sections.aria-join-the-party.settings.button_label.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-join-the-party.settings.header_media.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:sections.aria-join-the-party.settings.background_image.label",
+      "info": "t:sections.aria-join-the-party.settings.background_image.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "t:sections.aria-join-the-party.blocks.photo.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-join-the-party.blocks.photo.settings.image.label"
+        },
+        {
+          "type": "select",
+          "id": "default_image",
+          "default": "wp-ugc-featured",
+          "label": "t:sections.aria-join-the-party.blocks.photo.settings.default_image.label",
+          "options": [
+            { "value": "wp-ugc-featured", "label": "t:sections.aria-join-the-party.blocks.photo.settings.default_image.options__1.label" },
+            { "value": "wp-find-length", "label": "t:sections.aria-join-the-party.blocks.photo.settings.default_image.options__2.label" },
+            { "value": "wp-join-collage-3", "label": "t:sections.aria-join-the-party.blocks.photo.settings.default_image.options__3.label" },
+            { "value": "wp-ugc-photo-1", "label": "t:sections.aria-join-the-party.blocks.photo.settings.default_image.options__4.label" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-join-the-party.presets.name",
+      "blocks": [
+        { "type": "photo", "settings": { "default_image": "wp-ugc-featured" } },
+        { "type": "photo", "settings": { "default_image": "wp-find-length" } },
+        { "type": "photo", "settings": { "default_image": "wp-join-collage-3" } },
+        { "type": "photo", "settings": { "default_image": "wp-ugc-photo-1" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

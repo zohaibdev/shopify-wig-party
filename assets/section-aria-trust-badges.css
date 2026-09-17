@@ -1,0 +1,147 @@
+/* Wig Party — Trust badges (sections/trust-badges.liquid), V4 node 1:1001 */
+
+.aria-trust {
+  background: var(--aria-trust-bg, var(--white, #fff));
+  color: var(--sy, #000);
+  padding-block: 48px;
+}
+
+.aria-trust__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+/*
+ * V4 lays the four badges out as a centred row of 255px columns with a 70px gap.
+ * Two-up on mobile keeps the row legible without breaking it into a tall stack.
+ */
+.aria-trust__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 16px;
+  justify-items: center;
+}
+
+/* `width: 100%` matters: as a centred grid item this would otherwise shrink to its
+   content, so the description wrapped at its natural width instead of V4's 255px. */
+.aria-trust__item {
+  min-width: 0;
+  width: 100%;
+  max-width: 255px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+/* V4 icon box is 64px; the exported glyphs are not all square, so the box is fixed and
+   the glyph is contained inside it to keep every badge on one baseline. */
+.aria-trust__icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+}
+
+.aria-trust__icon-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.aria-trust__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* V4: Montserrat Medium 20/28. Heading family so it stays merchant-controlled. */
+.aria-trust__title {
+  font-family: var(--font-heading-family);
+  font-size: var(--title-content-size, 20px);
+  font-weight: 500;
+  line-height: var(--title-content-line-height, 28px);
+  color: var(--sy, #000);
+}
+
+/* V4: Poppins 14/22, #3f3e3e. */
+.aria-trust__description {
+  font-size: 14px;
+  line-height: 22px;
+  color: #3f3e3e;
+}
+
+@media screen and (min-width: 750px) {
+  .aria-trust {
+    padding-block: 64px;
+  }
+
+  .aria-trust__inner {
+    padding-inline: 40px;
+  }
+
+  /* Stays 2-up here. Four columns at 768px came out ~138px each, too narrow for a 20px
+     title ("30-Day Wear & Share" wrapped to three lines). V4's 4-up row resumes at 990px,
+     where the 255px columns actually fit. */
+  .aria-trust__list {
+    gap: 40px 32px;
+  }
+}
+
+/* Desktop: V4 p-80 with a 70px gap between 255px columns. */
+@media screen and (min-width: 990px) {
+  .aria-trust {
+    padding-block: var(--section-spacing, 80px);
+    padding-inline: 40px;
+  }
+
+  .aria-trust__inner {
+    padding-inline: 0;
+  }
+
+  /*
+   * V4: four 255px columns 70px apart, centred (4 x 255 + 3 x 70 = 1230).
+   * `minmax(0, 255px)` rather than a bare `255px`: fixed tracks cannot shrink, so
+   * between 990px and ~1310px the 1230px row overflowed the container and pushed 111px
+   * of horizontal page scroll at 1024. The cap keeps V4's exact 255/70 wherever there
+   * is room and shrinks the columns below that instead of overflowing.
+   * `1fr` is not used because the badges are centred in their tracks, so the visual gap
+   * would become 70px plus the leftover column slack.
+   */
+  .aria-trust__list {
+    grid-template-columns: repeat(4, minmax(0, 255px));
+    justify-content: center;
+    gap: 70px;
+  }
+}
+
+
+/* ==========================================================================
+   1024px BAND ONLY — 990px to 1279px
+   --------------------------------------------------------------------------
+   Scoped to the theme's own existing breakpoints so nothing leaks: 1280 and
+   1440 keep the untouched desktop rules, 768 and below keep the untouched
+   tablet/mobile rules. Do not widen or narrow this range without re-measuring.
+   ========================================================================== */
+
+/*
+ * V4's 70px gutter assumes the 1328px row. In the 929px row it consumed 210px of the
+ * width, squeezing the four 255px columns down to 180px. Tightening the gutter to 28px
+ * returns that space to the columns (~211px each) without changing the column count.
+ */
+@media screen and (min-width: 990px) and (max-width: 1279px) {
+  .aria-trust__list {
+    gap: 28px;
+  }
+}

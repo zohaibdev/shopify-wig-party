@@ -1,0 +1,316 @@
+/* Wig Party — Start Here (sections/start-here.liquid) */
+
+.aria-start-here {
+  background: linear-gradient(
+    180deg,
+    var(--aria-sh-bg-from, #f5ebe2) 0%,
+    var(--aria-sh-bg-to, #ffffff) 55.171%
+  );
+  color: var(--sy, #000);
+  padding-block: 0 48px;
+}
+
+.aria-start-here__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header: stacked on mobile, heading left / description right at desktop */
+
+.aria-start-here__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.aria-start-here__heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--sy, #000);
+}
+
+.aria-start-here__description {
+  margin: 0;
+  font-size: 16px;
+  line-height: 26px;
+  color: #3f3e3e;
+}
+
+/* Grid: 2 columns on mobile (explicit V4 requirement), 6 across at desktop */
+
+.aria-start-here__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.aria-start-here__item {
+  min-width: 0;
+}
+
+.aria-start-here__card {
+  height: 100%;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 10px;
+  background: var(--white, #fff);
+  /* Figma specifies a white border. That works on desktop where the row sits on the
+     peach half of the gradient, but on mobile the cards wrap onto the white half and
+     lose all definition. A ~10% brand tint stays invisible against peach while still
+     describing the card edge against white. */
+  border: 1px solid rgba(var(--qi-rgb, 188, 105, 107), 0.1);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  /* 200ms sits mid-range for a lift this small, and easeOutCubic lets it settle rather
+     than stop dead. The resting shadow is written out as an explicit zero-spread
+     transparent shadow instead of being left at `none` so the hover-OUT direction
+     interpolates as smoothly as the hover-in on every engine. */
+  box-shadow: 0 0 0 0 rgba(var(--qi-rgb, 188, 105, 107), 0);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Lift + elevation.
+ *
+ * `@media (hover: hover) and (pointer: fine)` keeps this off touch screens, where :hover
+ * latches after a tap and would leave a card stuck in the raised state. The pre-existing
+ * border tint and 2px nudge are deliberately left OUTSIDE the query, exactly as they were,
+ * so touch behaviour is unchanged by this addition.
+ *
+ * `position: relative` + `z-index: 1` are what make the shadow actually visible: the cards
+ * are siblings in source order, so without it the next card's white background paints over
+ * the shadow spilling to the right. Neither property moves anything — `relative` with no
+ * offsets is layout-neutral.
+ *
+ * Two shadow layers: a soft, offset cast for the elevation and a tight ambient one to keep
+ * the card edge defined. Both are brand rose rather than black, so the elevation reads as
+ * part of the same palette as the border it sits inside. */
+/* Selectors are `.aria-start-here .aria-start-here__card`, NOT a bare class and NOT
+   `a.` — two deliberate choices:
+ *
+ * 1. The `.aria-start-here` ancestor scopes every hover rule to this section's container.
+ *    The `aria-start-here__*` classes are already unique to this one section and stylesheet
+ *    (the mega menu uses `aria-mega-*` / `aria-header-*` and shares nothing), so this is
+ *    belt-and-braces — but it means these rules cannot reach the mega menu even if a class
+ *    name is ever reused there.
+ * 2. The old rule was `a.aria-start-here__card:hover`. A block only renders as an <a> when
+ *    the merchant fills in its `link` setting, and none of the six blocks on this homepage
+ *    has one — all six are <div>s, so nothing here had ANY hover state. Matching the card
+ *    class regardless of tag is what makes all six behave identically. */
+.aria-start-here .aria-start-here__card:hover,
+.aria-start-here .aria-start-here__card:focus-visible {
+  border-color: var(--qi, #bc696b);
+  transform: translateY(-2px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .aria-start-here .aria-start-here__card:hover {
+    position: relative;
+    z-index: 1;
+    transform: translateY(-4px);
+    box-shadow:
+      0 12px 24px -10px rgba(var(--qi-rgb, 188, 105, 107), 0.28),
+      0 2px 6px -2px rgba(var(--qi-rgb, 188, 105, 107), 0.12);
+  }
+
+  /* The icon WRAPPER is scaled, never the <img> inside it: the wrapper carries
+     `overflow: hidden`, so scaling the image within it shaves the artwork edges, while
+     scaling the wrapper itself moves its clip box along with its contents and cannot clip
+     anything. The card has no `overflow`, and a transform is out of flow, so 1.03 on a
+     120px icon (123.6px, inside a 184px content box) shifts no layout and overflows
+     nothing at any breakpoint. */
+  .aria-start-here .aria-start-here__card:hover .aria-start-here__icon {
+    transform: scale(1.03);
+  }
+}
+
+/* Keyboard focus earns the same elevation, and must not be gated behind a hover query. */
+.aria-start-here .aria-start-here__card:focus-visible {
+  position: relative;
+  z-index: 1;
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 24px -10px rgba(var(--qi-rgb, 188, 105, 107), 0.28),
+    0 2px 6px -2px rgba(var(--qi-rgb, 188, 105, 107), 0.12);
+}
+
+/* Honour a reduced-motion preference by dropping the movement, keeping the elevation and
+   border tint so the hover target is still legible. */
+@media (prefers-reduced-motion: reduce) {
+  .aria-start-here__card,
+  .aria-start-here__icon {
+    transition-duration: 0.01ms;
+  }
+
+  .aria-start-here .aria-start-here__card:hover,
+  .aria-start-here .aria-start-here__card:focus-visible {
+    transform: none;
+  }
+
+  .aria-start-here .aria-start-here__card:hover .aria-start-here__icon {
+    transform: none;
+  }
+}
+
+.aria-start-here__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 8px;
+  background: var(--white, #fff);
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.aria-start-here__icon-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.aria-start-here__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.aria-start-here__title {
+  font-size: 15px;
+  line-height: 22px;
+  letter-spacing: 0px;
+  color: var(--sy, #000);
+}
+
+.aria-start-here__subtitle {
+  font-size: 14px;
+  line-height: 20px;
+  color: #787878;
+  text-transform: capitalize;
+}
+
+@media screen and (min-width: 750px) {
+  .aria-start-here {
+    padding-block: 0 64px;
+  }
+
+  .aria-start-here__inner {
+    padding-inline: 40px;
+    gap: 32px;
+  }
+
+  .aria-start-here__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aria-start-here__heading {
+    font-size: 44px;
+  }
+
+  .aria-start-here__icon {
+    width: 104px;
+    height: 104px;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .aria-start-here {
+    padding-inline: 40px;
+    padding-block: 0 var(--section-spacing, 80px);
+  }
+
+  .aria-start-here__inner {
+    padding-inline: 0;
+    gap: 40px;
+  }
+
+  .aria-start-here__header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .aria-start-here__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+    white-space: nowrap;
+  }
+
+  .aria-start-here__description {
+    width: 329px;
+    flex: 0 0 auto;
+  }
+
+  .aria-start-here__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .aria-start-here__card {
+    min-height: 225px;
+  }
+
+  .aria-start-here__icon {
+    width: 120px;
+    height: 120px;
+  }
+
+  .aria-start-here__title {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .aria-start-here__subtitle {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
+
+/* ==========================================================================
+   1024px BAND ONLY — 990px to 1279px
+   --------------------------------------------------------------------------
+   Scoped to the theme's own existing breakpoints so nothing leaks: 1280 and
+   1440 keep the untouched desktop rules, 768 and below keep the untouched
+   tablet/mobile rules. Do not widen or narrow this range without re-measuring.
+   ========================================================================== */
+
+/*
+ * Six columns in the 929px row gave 145px cards — and with 16px of padding either side
+ * that is a 113px content box holding a 120px icon, so the icon overflowed its own card.
+ * Three columns fit the icon comfortably and 6 blocks divide evenly into two rows of
+ * three (four columns would leave a ragged row of two).
+ *
+ * The 240px cap matters as much as the column count. Bare `1fr` would stretch the cards
+ * to 301px at 1024 and 387px at the top of this band — far past V4's 214px card, leaving
+ * a 120px icon swimming in space, and making the handoff to the 6-column desktop grid at
+ * 1280 a 387->188px cliff. Capping holds the card near its design size across the whole
+ * band and keeps that step small. Same `minmax` + centred idiom as the trust badges.
+ */
+@media screen and (min-width: 990px) and (max-width: 1279px) {
+  .aria-start-here__grid {
+    grid-template-columns: repeat(3, minmax(0, 240px));
+    justify-content: center;
+  }
+}

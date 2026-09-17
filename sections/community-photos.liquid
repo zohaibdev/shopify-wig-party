@@ -1,0 +1,250 @@
+{{ 'section-aria-community-photos.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="aria-ugc"
+  style="--aria-ugc-bg: {{ section.settings.background_color }};"
+>
+  <div class="aria-ugc__inner">
+    <div class="aria-ugc__layout">
+      {%- comment -%} Featured story: photo with the frosted testimonial pinned to its base. {%- endcomment -%}
+      <figure class="aria-ugc__feature">
+        <div class="aria-ugc__feature-media">
+          {%- if section.settings.featured_image != blank -%}
+            {{
+              section.settings.featured_image
+              | image_url: width: 1360
+              | image_tag:
+                loading: 'lazy',
+                sizes: '(min-width: 990px) 680px, 100vw',
+                widths: '375,680,1020,1360',
+                class: 'aria-ugc__feature-img',
+                alt: section.settings.featured_image.alt | default: section.settings.quote_author
+            }}
+          {%- else -%}
+            <img
+              src="{{ 'wp-ugc-featured.jpg' | asset_url }}"
+              alt=""
+              width="680"
+              height="820"
+              loading="lazy"
+              class="aria-ugc__feature-img"
+            >
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.quote != blank or section.settings.quote_button_label != blank -%}
+          <figcaption class="aria-ugc__quote-panel">
+            {%- if section.settings.show_quote_mark -%}
+              <img
+                src="{{ 'wp-quote-mark.svg' | asset_url }}"
+                alt=""
+                width="75"
+                height="60"
+                loading="lazy"
+                class="aria-ugc__quote-mark"
+              >
+            {%- endif -%}
+
+            {%- if section.settings.quote != blank -%}
+              <blockquote class="aria-ugc__quote">{{ section.settings.quote }}</blockquote>
+            {%- endif -%}
+
+            {%- if section.settings.quote_author != blank -%}
+              <p class="aria-ugc__quote-author">{{ section.settings.quote_author }}</p>
+            {%- endif -%}
+
+            {%- if section.settings.quote_button_label != blank and section.settings.quote_button_link != blank -%}
+              <a href="{{ section.settings.quote_button_link }}" class="aria-ugc__quote-btn">
+                {{- section.settings.quote_button_label -}}
+              </a>
+            {%- endif -%}
+          </figcaption>
+        {%- endif -%}
+      </figure>
+
+      <div class="aria-ugc__side">
+        {%- comment -%}
+          V4 nests these in two groups: heading + subheading at an 18px gap, then 80px
+          down to the CTA. The button used to sit inside `__header`, so it inherited that
+          18px gap and crowded the subheading.
+        {%- endcomment -%}
+        <div class="aria-ugc__side-top">
+          <div class="aria-ugc__header">
+            {%- if section.settings.heading != blank -%}
+              <h2 class="aria-ugc__heading">{{ section.settings.heading }}</h2>
+            {%- endif -%}
+            {%- if section.settings.subheading != blank -%}
+              <p class="aria-ugc__subheading">{{ section.settings.subheading }}</p>
+            {%- endif -%}
+          </div>
+
+          {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+            <a href="{{ section.settings.button_link }}" class="aria-ugc__btn">
+              {{- section.settings.button_label -}}
+            </a>
+          {%- endif -%}
+        </div>
+
+        {%- if section.blocks.size > 0 -%}
+          {%- comment -%}
+            V4 runs this strip of fixed 320px photos past the column edge, so only two are
+            visible at desktop. Driven by the shared Swiper carousel
+            (assets/aria-product-carousel.js + the vendored Swiper) with slidesPerView
+            'auto', which reproduces that exactly while keeping the off-canvas photos
+            reachable by drag. It must NOT be an `overflow-x: auto` container — that
+            renders a native horizontal scrollbar across the strip.
+          {%- endcomment -%}
+          <div
+            class="aria-ugc__strip-carousel"
+            data-aria-product-carousel
+            data-slides-mobile="auto"
+            data-slides-sm="auto"
+            data-slides-md="auto"
+            data-slides-desktop="auto"
+            data-space-between="13"
+          >
+            <div class="swiper aria-ugc__strip" data-aria-carousel-swiper>
+              <div class="swiper-wrapper">
+                {%- for block in section.blocks -%}
+                  <div class="swiper-slide aria-ugc__strip-item" {{ block.shopify_attributes }}>
+                    {%- if block.settings.link != blank -%}
+                      <a href="{{ block.settings.link }}" class="aria-ugc__strip-link">
+                    {%- endif -%}
+                    {%- if block.settings.image != blank -%}
+                      {{
+                        block.settings.image
+                        | image_url: width: 640
+                        | image_tag:
+                          loading: 'lazy',
+                          sizes: '320px',
+                          widths: '320,480,640',
+                          class: 'aria-ugc__strip-img',
+                          alt: block.settings.image.alt | default: ''
+                      }}
+                    {%- else -%}
+                      <img
+                        src="{{ 'wp-ugc-photo-1.jpg' | asset_url }}"
+                        alt=""
+                        width="320"
+                        height="351"
+                        loading="lazy"
+                        class="aria-ugc__strip-img"
+                      >
+                    {%- endif -%}
+                    {%- if block.settings.link != blank -%}</a>{%- endif -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-community-photos.name",
+  "tag": "section",
+  "class": "aria-ugc-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Real Women. Real Wigs. Real Confidence.",
+      "label": "t:sections.aria-community-photos.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "Tag us #WigParty to be featured!",
+      "label": "t:sections.aria-community-photos.settings.subheading.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "See All Community Photos",
+      "label": "t:sections.aria-community-photos.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.aria-community-photos.settings.button_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-community-photos.settings.featured_header.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "featured_image",
+      "label": "t:sections.aria-community-photos.settings.featured_image.label"
+    },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "default": "Because of Kristi, I finally had the confidence to change my profile picture. This is HUGE for me! Thank you!",
+      "label": "t:sections.aria-community-photos.settings.quote.label"
+    },
+    {
+      "type": "text",
+      "id": "quote_author",
+      "default": "— Michelle",
+      "label": "t:sections.aria-community-photos.settings.quote_author.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quote_mark",
+      "default": true,
+      "label": "t:sections.aria-community-photos.settings.show_quote_mark.label"
+    },
+    {
+      "type": "text",
+      "id": "quote_button_label",
+      "default": "Share Your Story",
+      "label": "t:sections.aria-community-photos.settings.quote_button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "quote_button_link",
+      "label": "t:sections.aria-community-photos.settings.quote_button_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-community-photos.settings.appearance_header.content"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#ffffff",
+      "label": "t:sections.aria-community-photos.settings.background_color.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "t:sections.aria-community-photos.blocks.photo.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-community-photos.blocks.photo.settings.image.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.aria-community-photos.blocks.photo.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "t:sections.aria-community-photos.presets.name",
+      "blocks": [{ "type": "photo" }, { "type": "photo" }, { "type": "photo" }]
+    }
+  ]
+}
+{% endschema %}

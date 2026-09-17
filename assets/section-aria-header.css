@@ -1,0 +1,1213 @@
+/* Aria & Co. — announcement bar + custom navigation (sections/header.liquid) */
+
+/*
+ * STICKY HEADER.
+ *
+ * `position: sticky` also satisfies the reason this rule originally existed: Dawn's
+ * base.css assigns z-index:4 to this Shopify-generated wrapper (see
+ * .shopify-section-group-header-group in assets/base.css) but that only takes effect on a
+ * positioned element. Dawn's stock header supplies `position` via its own sticky-header
+ * classes, which this custom header does not use, so the wrapper was staying
+ * `position: static` and silently ignoring its z-index — dropdowns and the mobile menu
+ * (both absolute, escaping the header's own box) painted underneath the next section.
+ * Sticky is positioned, so the z-index keeps working exactly as before.
+ *
+ * Sticky lives HERE, on the group, not on `.aria-header__nav-band`. A sticky element is
+ * contained by its parent, and the nav band's parent (`.aria-header`) is only as tall as
+ * the header itself — it would have nothing to travel down. The group's parent is <body>,
+ * so it can pin for the whole page. Verified there is no `overflow`/`transform`/`filter`
+ * ancestor to trap it: the group is a direct child of <body>.
+ *
+ * Deliberately NOT raised above z-index 4 — see the header-group ceiling in section 5 of
+ * claude-context.md. Every section on the page is <= 3, and the cart drawer (1000) and the
+ * fixed mobile nav/search panels are unaffected.
+ */
+.shopify-section-group-header-group {
+  --aria-announcement-height: 42px;
+  position: sticky;
+  top: 0;
+}
+
+/*
+ * The announcement band is promotional, so it scrolls away and only the nav band pins;
+ * keeping all 110px pinned would eat an eighth of a phone viewport permanently.
+ *
+ * Pinning the group at a NEGATIVE offset equal to the band's height does this with no JS:
+ * the group stops moving once its own top passes -42px, which is exactly the moment the
+ * nav band's top edge reaches y=0. The band is a deterministic 42px — 10px of vertical
+ * padding either side of a fixed 22px track whose items are `position: absolute` and
+ * `white-space: nowrap`, so it cannot reflow — and its vertical padding does not change at
+ * any breakpoint (measured 42px at 375, 768 and 1440; only padding-inline varies).
+ *
+ * Guarded by :has() so a store with no announcements and no store badges (the band is not
+ * rendered at all then) still pins flush at top: 0 instead of hiding 42px of nav.
+ */
+.shopify-section-group-header-group:has(.aria-header__announcement) {
+  top: calc(-1 * var(--aria-announcement-height));
+}
+
+/*
+ * Consequence of the above: in-page anchor targets — including the "Skip to content" link
+ * that jumps to #MainContent — would otherwise land underneath the pinned nav band. 72px
+ * is the tallest that band gets (at 768px; it is 68px at both 375 and 1440), and since
+ * this is only a scroll offset, erring slightly generous costs nothing.
+ */
+html {
+  scroll-padding-top: 72px;
+}
+
+.aria-header {
+  position: relative;
+  z-index: 10;
+}
+
+.aria-header__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+/* ---------- Announcement band ---------- */
+
+.aria-header__announcement {
+  color: rgb(var(--color-background));
+  background-color: rgb(var(--color-foreground));
+}
+
+.aria-header__announcement-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  max-width: calc(var(--container, 1360px) + 80px);
+  margin-inline: auto;
+}
+
+.aria-header__announcement-track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  text-align: center;
+}
+
+.aria-header__announcement-item {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  font-size: 14px;
+  line-height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aria-header__announcement-item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.aria-header__announcement-item p {
+  margin: 0;
+}
+
+.aria-header__announcement-track:has(> :only-child) .aria-header__announcement-item {
+  opacity: 1;
+  position: static;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .aria-header__announcement-track:not(:has(> :only-child)) .aria-header__announcement-item {
+    animation-name: aria-announce-cycle;
+    animation-duration: calc(var(--aria-announce-count, 1) * 4s);
+    animation-iteration-count: infinite;
+    animation-delay: calc(var(--aria-announce-index, 0) * -4s);
+  }
+}
+
+@keyframes aria-announce-cycle {
+
+  0%,
+  4% {
+    opacity: 1;
+  }
+
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.aria-header__store-links {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.aria-header__store-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* V4 badge height is 19px. An explicit height is required: with width/height:auto these
+   are flex items whose intrinsic size resolved to 0, which then gave the lazy loader a
+   zero-area target so the images were never fetched at all. */
+.aria-header__store-link img {
+  display: block;
+  flex: none;
+  border-radius: 2px;
+  width: auto;
+  height: 19px;
+}
+
+/* ---------- Nav band ---------- */
+
+.aria-header__nav-band {
+  position: relative;
+  z-index: 21;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+.aria-header__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  max-width: calc(var(--container, 1360px) + 80px);
+  margin-inline: auto;
+}
+
+.aria-header__nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.aria-header__logo {
+  display: block;
+  line-height: 0;
+  /*
+   * A flex item's automatic minimum size is its min-content width, which here is the
+   * wordmark's fixed 110px -- so below ~390px the logo refused to give way and simply
+   * overlapped the icon row instead of shrinking. `min-width: 0` lets flex resolve the
+   * row properly, and the image's `max-width: 100%` below keeps it proportional.
+   *
+   * Desktop is unaffected: from 750px up the logo is `flex-shrink: 0`, so it still
+   * renders at its exact designed width and never compresses.
+   */
+  min-width: 0;
+}
+
+/*
+ * V4's wordmark is 152x40, which is the desktop size (applied from 750px up).
+ * At 375px the nav row only offers 171px for the hamburger + gap + logo, so a 152px
+ * logo forces the 44px toggle to shrink. The logo gives way instead.
+ */
+.aria-header__logo-img {
+  display: block;
+  width: 110px;
+  max-width: 100%;
+  height: auto;
+}
+
+.aria-header__logo-text {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgb(var(--color-foreground));
+}
+
+/* Menu toggle (mobile hamburger) */
+
+.aria-header__menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* `flex: none` is required, not cosmetic: as a shrinkable flex item this 44px button
+     was being squeezed to 30px at 375px, because the row needs 44 + 12 + 152 = 208px and
+     only has 171. The primary mobile nav control must never shrink below its tap target
+     — the logo gives way instead (see `__logo-img`). */
+  flex: none;
+  width: 44px;
+  height: 44px;
+  /* Derived from the active colour scheme's foreground — a hardcoded white border
+     disappears entirely on the light scheme V4 actually specifies. */
+  border: 1px solid rgba(var(--color-foreground), 0.3);
+  border-radius: 2px;
+  background: transparent;
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+}
+
+.aria-header__menu-icon-close {
+  display: none;
+}
+
+.aria-header__menu-toggle[aria-expanded='true'] .aria-header__menu-icon-open {
+  display: none;
+}
+
+.aria-header__menu-toggle[aria-expanded='true'] .aria-header__menu-icon-close {
+  display: block;
+}
+
+.aria-header__nav-panel {
+  /* Hidden by default; JS (assets/aria-header.js) toggles `.is-open` on click. Uses plain
+     classes rather than <details>/[open] because a closed <details> silently suppresses
+     its content in a way CSS can't reliably force open for "always visible at desktop". */
+  display: none;
+}
+
+.aria-header__nav-panel.is-open {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  overflow-y: auto;
+  padding: 72px 16px 40px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+}
+
+/*
+ * SCOPED BELOW 1280px. This class is set by `aria-header.js` whenever a search panel is
+ * open, and below the desktop breakpoint that panel is a full-screen overlay, so locking
+ * the page is right. From 1280 up the search is a small header dropdown and locking the
+ * whole page behind it would be wrong — which became reachable the moment the compact
+ * search toggle at 1280-1335px made that panel openable at a desktop width.
+ */
+@media screen and (max-width: 1279px) {
+  body.aria-header-drawer-open {
+    overflow: hidden;
+  }
+}
+
+.aria-header__drawer-close {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(var(--color-foreground), 0.2);
+  border-radius: 2px;
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+}
+
+.aria-header__nav-panel.is-open .aria-header__drawer-close,
+.aria-header__search-panel.is-open .aria-header__drawer-close {
+  display: flex;
+}
+
+.aria-header__nav-close {
+  top: 16px;
+}
+
+.aria-header__search-close {
+  top: 20px;
+}
+
+/* Nudge the overlay's top padding down when the announcement band is also present,
+   so the menu content clears both bands instead of only the nav band. */
+.aria-header:has(.aria-header__announcement) .aria-header__nav-panel.is-open {
+  padding-top: 136px;
+}
+
+.aria-header__primary-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.aria-header__menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aria-header__menu-item {
+  border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+}
+
+.aria-header__menu-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: rgb(var(--color-foreground));
+  text-decoration: none;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.aria-header__menu-caret {
+  width: 12px;
+  height: 12px;
+  margin-left: auto;
+  transition: transform var(--duration-short, 100ms) ease;
+}
+
+.aria-header__menu-item--dropdown.is-open>.aria-header__submenu-toggle .aria-header__menu-caret {
+  transform: rotate(180deg);
+}
+
+.aria-header__dropdown {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0 0 0 12px;
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aria-header__menu-item--dropdown.is-open .aria-header__dropdown {
+  display: flex;
+}
+
+.aria-header__dropdown a {
+  display: block;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: rgb(var(--color-foreground));
+  opacity: 0.85;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+/* V4 uses a dedicated alert red here, not the brand terracotta.
+   Pulse comes from the shared `.aria-live-pulse` in style.css. At 6px the ring needs to
+   travel further than the hero's 11px dot to read as a pulse at all, hence the larger
+   scale; the nav band is `overflow: visible`, so the ring is not clipped. */
+.aria-header__live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e8332a;
+  margin-left: 4px;
+  margin-top: -15px;
+  --aria-pulse-color: #e8332a;
+  --aria-pulse-scale: 3.2;
+}
+
+/* Applied dynamically to whichever menu item is last (see `highlight_last_item` setting).
+   Combined-class selector so it always wins over the plain `.aria-header__menu-link`
+   min-height/padding reset in the desktop media query below, regardless of source order. */
+.aria-header__menu-link.aria-header__menu-link--highlight {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 4px 16px;
+  background: var(--qi);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  border-radius: 4px;
+  opacity: 1;
+}
+
+/* V4 renders one nav item in rose. That is the active/hover state rather than a fixed
+   position, so it is bound to `aria-current` and `:hover` instead of hardcoding the
+   first item — which would look wrong the moment a merchant reorders the menu.
+   The highlight pill is excluded: it is already white-on-rose. */
+.aria-header__menu-link:not(.aria-header__menu-link--highlight):hover,
+.aria-header__menu-link:not(.aria-header__menu-link--highlight)[aria-current='page'] {
+  color: #d05654;
+}
+
+/* ---------- Right side: search / account / cart ---------- */
+
+.aria-header__nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.aria-header__search-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: rgb(var(--color-foreground));
+}
+
+/*
+ * THE TRIGGER'S DEFAULT STATE: magnifier only.
+ *
+ * The button carries two glyphs so the compact desktop search (1280-1335px) can swap it to
+ * a close control. This is the BASE rule that hides the second one, and it belongs here —
+ * unscoped, mobile-first — not inside that media query.
+ *
+ * REGRESSION THIS FIXES: the `display: none` originally lived only inside the 1280-1335
+ * block, so at every OTHER width the close glyph had no rule at all and rendered next to
+ * the magnifier. The mobile and tablet search buttons showed a magnifier AND an X side by
+ * side inside one 44px control. The swap was defined without ever defining the state it
+ * swaps away from.
+ *
+ * The lesson is the architecture, not the property: markup added for one breakpoint is
+ * global, so its resting state must be global too. Only the EXCEPTION gets a media query.
+ */
+.aria-header__search-icon-close {
+  display: none;
+}
+
+.aria-header__search-panel {
+  display: none;
+}
+
+.aria-header__search-panel.is-open {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: rgb(var(--color-background));
+  padding: 72px 16px 24px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+  z-index: 40;
+}
+
+.aria-header__search-form-wrap {
+  display: block;
+  position: relative;
+  width: min(100%, 640px);
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+/* V4: pill 248x36, pl-12 pr-10 py-6, radius 130. */
+.aria-header__search-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(var(--it-rgb), 0.08);
+  border-radius: 130px;
+  padding: 6px 10px 6px 12px;
+}
+
+.aria-header__search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--color-foreground));
+  font-size: 14px;
+  min-height: 32px;
+}
+
+.aria-header__search-input:focus,
+.aria-header__search-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.aria-header__search-input::placeholder {
+  color: rgba(7, 6, 6, 0.46);
+}
+
+.aria-header__search-input:focus {
+  outline: none;
+}
+
+.aria-header__search-reset,
+.aria-header__search-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 0;
+  color: rgb(var(--it-rgb));
+  cursor: pointer;
+}
+
+.aria-header__search-reset.hidden {
+  display: none;
+}
+
+/* ---------- Predictive search dropdown ---------- */
+
+/*
+ * Dawn lays its results out as TWO side-by-side columns from 750px up, with the
+ * suggestions column pinned at `flex: 0 0 26.4rem` (264px). In a header dropdown that
+ * never has 550px+ to spend, the Products column was squeezed to ~26px and then clipped
+ * away by an `overflow: hidden` — so only query suggestions were visible, and the
+ * squeezed product rows still forced the panel hundreds of pixels tall, which is what
+ * produced the big empty area and the scrollbar. The columns are stacked here instead.
+ *
+ * Do not re-add `width: 100%` to `__results-groups-wrapper` / `__result-group`: in a flex
+ * row that makes each column demand the full panel width and reintroduces the clipping.
+ */
+
+.aria-header__search-results {
+  display: none;
+}
+
+predictive-search[open] .aria-header__search-results,
+predictive-search[loading] .aria-header__search-results {
+  display: block;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  /* 520px fits the trimmed set (2 products + 5 suggestions + the "search for" row = ~500px)
+     without a scrollbar, while still capping to the viewport on short screens. */
+  max-height: min(72vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--white, #fff);
+  border: 1px solid rgba(var(--qi-rgb, 188, 105, 107), 0.25);
+  border-radius: var(--border-radius, 4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.14);
+  /* Thin, brand-tinted scrollbar rather than the default chrome. */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--qi-rgb, 188, 105, 107), 0.45) transparent;
+}
+
+.aria-header__search-results::-webkit-scrollbar {
+  width: 6px;
+}
+
+.aria-header__search-results::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: rgba(var(--qi-rgb, 188, 105, 107), 0.45);
+}
+
+/* Stack the result groups. The `:first-child`/`:only-child` selectors are needed to beat
+   Dawn's own 750px+ column sizing. */
+.aria-header__search-results .predictive-search__results-groups-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+  overflow: visible;
+}
+
+.aria-header__search-results .predictive-search__result-group,
+.aria-header__search-results .predictive-search__result-group:first-child,
+.aria-header__search-results .predictive-search__result-group:only-child {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  gap: 0;
+}
+
+/*
+ * Products first. Dawn's DOM order is [suggestions, products], and with 8 query
+ * suggestions the product hits — the commercially useful ones, with thumbnail and price —
+ * were pushed 360px down, below the dropdown's scroll fold.
+ */
+.aria-header__search-results .predictive-search__result-group:nth-child(2) {
+  order: -1;
+}
+
+/*
+ * Cap the suggestion list so the panel stays compact and the products stay visible
+ * without scrolling. Safe for keyboard navigation: Dawn selects candidates with
+ * `offsetParent !== null` (assets/predictive-search.js), so `display: none` rows are
+ * skipped rather than becoming invisible focus traps. The complete result set is one
+ * Enter away on the search page.
+ */
+.aria-header__search-results
+  .predictive-search__result-group:first-child
+  .predictive-search__results-list
+  > li:nth-child(n + 6) {
+  display: none;
+}
+
+/* Group heading: small caps rule in the brand rose. */
+.aria-header__search-results .predictive-search__heading {
+  margin: 0;
+  padding: 14px 16px 8px;
+  border-bottom: 1px solid rgba(var(--qi-rgb, 188, 105, 107), 0.18);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--qi, #bc696b);
+}
+
+.aria-header__search-results .predictive-search__results-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-header__search-results .predictive-search__item {
+  gap: 12px;
+  width: auto;
+  padding: 10px 16px;
+  text-decoration: none;
+}
+
+.aria-header__search-results .predictive-search__item[aria-selected='true'],
+.aria-header__search-results .predictive-search__item:hover {
+  background: rgba(var(--qi-rgb, 188, 105, 107), 0.08);
+}
+
+/* Product rows: 48px thumbnail + content. */
+.aria-header__search-results .predictive-search__item--link-with-thumbnail {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  grid-column-gap: 12px;
+  align-items: center;
+}
+
+.aria-header__search-results .predictive-search__image {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.aria-header__search-results .predictive-search__item-heading {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: #3f3e3e;
+}
+
+.aria-header__search-results .price {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--sy, #000);
+}
+
+/*
+ * Dawn bolds the UNMATCHED part of a suggestion and lightens the match, which reads
+ * backwards ("am" faint, "sterdam" bold). Inverted so the matched characters are the
+ * emphasised, brand-coloured ones.
+ */
+.aria-header__search-results .predictive-search__item-query-result *:not(mark) {
+  font-weight: 400;
+}
+
+.aria-header__search-results .predictive-search__item-query-result mark {
+  background: transparent;
+  color: var(--qi, #bc696b);
+  font-weight: 600;
+}
+
+/* "Search for …" footer row. */
+.aria-header__search-results .predictive-search__search-for-button {
+  padding: 8px 16px 12px;
+  border-top: 1px solid rgba(var(--qi-rgb, 188, 105, 107), 0.18);
+}
+
+.aria-header__search-results .predictive-search__item,
+.aria-header__search-results .predictive-search__list-item,
+.aria-header__search-results .predictive-search__item * {
+  pointer-events: auto;
+}
+
+/* 44px is the touch floor below the inline-nav breakpoint; V4's 36px is applied at
+   >=1280px where the header is mouse-driven (see the desktop block). */
+.aria-header__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  background: rgba(var(--it-rgb), 0.08);
+  border-radius: 100%;
+  color: rgb(var(--it-rgb));
+  text-decoration: none;
+  /*
+   * This class was originally written for <a> (cart) and <shopify-account>, neither of
+   * which carries UA button defaults, so it never needed to declare these. The wishlist
+   * trigger is a <button>, which inherits `border: 2px outset`, `padding: 1px 6px`,
+   * `appearance: auto` and `font: 13.3px Arial` from the UA stylesheet -- that outset
+   * border was the box drawn around the heart, and the Arial default leaked into the
+   * count badge's typeface.
+   *
+   * Declaring the resets on the shared class rather than on `.aria-header__wishlist` is
+   * the actual fix: it makes the class element-agnostic, so any future <button> in this
+   * row is correct by default. It is a no-op for the two existing icons, whose computed
+   * values here are already 0 / 0 / none / inherited.
+   */
+  padding: 0;
+  border: 0;
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.aria-header__icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+ * Shopify injects an empty <shopify-store store-domain country language> alongside
+ * <shopify-account> at runtime. It renders nothing -- 0x0, no children, no shadow root,
+ * pure context metadata -- but as a flex child of the icon row it still consumes a gap on
+ * each side, so the two icons it sits between end up 16px apart while every other pair is
+ * 8px. Taking it out of flow fixes the spacing without hiding or removing it: the element
+ * stays in the DOM and stays upgraded, it just stops occupying a slot in the flex line.
+ */
+.aria-header__nav-right > shopify-store {
+  position: absolute;
+}
+
+/*
+ * Count badge, shared by the cart and the wishlist.
+ *
+ * It used to be `background: var(--white)` -- a white pill on a button whose own
+ * background is `rgba(var(--it-rgb), 0.08)`, i.e. rgb(251,245,245) over the white header.
+ * That is a contrast ratio of about 1.03:1, so the badge was invisible and the count
+ * looked like it had simply failed to render. It was also only 10px across with an 8px
+ * digit, and sat at top/right 9px (5px on desktop), which put it on top of the glyph.
+ *
+ * Now it uses `--color-button` (166,74,76), a token the theme already defines, which
+ * carries white text at 5.66:1 -- above the 4.5:1 AA floor for small text. Sizing it 12px
+ * with a 9px semibold digit is what keeps it clear of the artwork: the glyph's painted top
+ * edge is 12px down from the button on desktop and 16px on mobile, so a badge pinned to
+ * the corner at 12px tall ends exactly where the artwork begins and never covers it.
+ * `padding` lets a two-digit count grow leftwards into empty space instead of downwards.
+ */
+.aria-header__cart-bubble {
+  position: absolute;
+  top: 0;
+  right: 0;
+  box-sizing: border-box;
+  min-width: 12px;
+  height: 12px;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgb(var(--color-button));
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.aria-header__search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.aria-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Tablet / desktop ---------- */
+
+@media screen and (min-width: 750px) {
+  .aria-header__announcement-inner {
+    /* V4: px-56 on the announcement band (wider than the nav band's 40). */
+    padding: 10px 56px;
+  }
+
+  .aria-header__store-links {
+    display: flex;
+  }
+
+  /* V4: 152x40 wordmark, from tablet up where the nav row has room for it. */
+  .aria-header__logo-img {
+    width: 152px;
+  }
+
+  .aria-header__nav {
+    padding: 14px 40px;
+  }
+
+  .aria-header__search-form-wrap {
+    width: min(100%, 420px);
+  }
+}
+
+/* Tablet / small desktop nav.
+   The full inline desktop nav needs ~1325px (logo 130 + menu 727 + inline search 248 +
+   two 44px icon buttons + gutters). Below that the nowrap menu overflows its flex parent
+   and collides with the search field, so this range keeps the hamburger + search-toggle
+   pattern instead. */
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  .aria-header__nav {
+    gap: 12px;
+    padding-inline: 20px;
+  }
+
+  .aria-header__nav-left {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: flex-start;
+  }
+
+  .aria-header__logo {
+    order: 0;
+    flex-shrink: 0;
+  }
+
+  .aria-header__menu-toggle {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .aria-header__nav-panel {
+    display: none;
+  }
+
+  .aria-header__nav-panel.is-open {
+    display: block;
+  }
+
+  .aria-header__primary-nav {
+    gap: 18px;
+  }
+
+  .aria-header__menu {
+    gap: 10px;
+  }
+
+  .aria-header__nav-right {
+    flex-shrink: 0;
+    gap: 6px;
+  }
+
+  .aria-header__search-trigger {
+    display: flex;
+  }
+
+  .aria-header__search-panel {
+    display: none;
+  }
+
+  .aria-header__search-panel.is-open {
+    display: block;
+  }
+
+  .aria-header__search-form {
+    width: min(100%, 220px);
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .aria-header__menu-toggle {
+    display: none;
+  }
+
+  /*
+   * THE DESKTOP ROW'S WIDTH BUDGET (revised 2026-09-08).
+   *
+   * Every parent that owns a mega panel now draws a chevron rather than only three of
+   * them (see the note in sections/header.liquid). Three more 14px glyphs at a 4px offset
+   * is +54px of nav, and the row did not have 54px: measured `menu.right - navRight.left`
+   * went from -6/-26/-41 at 1420/1440/1460+ to +48/+28/+13, i.e. the PRE-ORDER pill ran
+   * into the search pill on an ordinary laptop. Above ~1460 it could never clear, because
+   * the row is capped at `--container + 80` and the overlap simply plateaus.
+   *
+   * The 54px comes from the SHELL, not from the nav items. Nothing the frames specify for
+   * a nav item moves: the 12px item gap, each item's 8px gutter, the 14px chevron and its
+   * 4px offset, the 248px search pill and the 152px wordmark are all unchanged. What gives
+   * way is the logo->menu gap (28px -> 16px, 12px) and the row's side inset (40px -> 20px,
+   * 40px) -- 52px, which restores the overlap to parity with the pre-chevron header at
+   * every width: -76/+80/+15/-4/-24/-39 at 1280/1336/1401/1420/1440/1460+.
+   *
+   * The 20px inset is not an arbitrary pick. `.aria-mega__inner` is `padding: 20px` inside
+   * the same `--container + 80` cap, so the row and the panel beneath it now share ONE
+   * 1400px content box and their left and right edges line up. claude-context.md called
+   * that 40-vs-20 mismatch out as a trade-off; this closes it.
+   *
+   * Do not restore either number without re-measuring the overlap table -- the row has no
+   * slack left to give.
+   */
+  .aria-header__nav {
+    padding-inline: 20px;
+  }
+
+  .aria-header__nav-left {
+    gap: 16px;
+  }
+
+  .aria-header__logo {
+    order: 1;
+  }
+
+  /* Desktop: the nav panel is always visible inline (not a toggled overlay) — this
+     unconditional `display: block` overrides the mobile-default `display: none` and
+     doesn't depend on the `.is-open` class at all. */
+  .aria-header__nav-panel {
+    order: 2;
+    display: block;
+    position: static;
+    inset: auto;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    overflow: visible;
+    box-shadow: none;
+    z-index: auto;
+  }
+
+  .aria-header__primary-nav {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /*
+   * V4 (node 6316:3412) spaces the item BOXES 12px apart and gives each an 8px inner
+   * gutter, so the gap between two labels reads as 28px. An earlier pass used a 32px gap
+   * with no padding, which looked close but left no room for the active pill to sit behind
+   * the label. Net effect on nav width is -8px, so nothing gets tighter.
+   */
+  .aria-header__menu {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .aria-header__menu-item {
+    position: relative;
+    border-bottom: 0;
+  }
+
+  /* V4: Poppins 16/26, 4px gap to the caret, px-8 py-4 inside a 120px pill. The padding
+     and radius are what the active/hover pill fills. */
+  .aria-header__menu-link {
+    width: auto;
+    min-height: auto;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 120px;
+    font-size: 16px;
+    line-height: 26px;
+    white-space: nowrap;
+    transition: background-color var(--duration-short, 100ms) ease;
+  }
+
+  .aria-header__menu-caret {
+    width: 14px;
+    height: 14px;
+    margin-left: 0;
+  }
+
+  /* V4 sizes the icon buttons and the search pill at 36px, giving the 68px nav band
+     (14 + 40 + 14). Applied only here, where the header is mouse-driven; the 44px
+     touch target is retained at every width that uses the hamburger. */
+  .aria-header__icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .aria-header__search-input {
+    min-height: 24px;
+  }
+
+  .aria-header__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 12px;
+    padding: 8px 0;
+    min-width: 180px;
+    background: rgb(var(--color-background));
+    border: 1px solid rgba(var(--color-foreground), 0.12);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+    z-index: 5;
+  }
+
+  .aria-header__menu-item--dropdown:hover .aria-header__dropdown,
+  .aria-header__menu-item--dropdown:focus-within .aria-header__dropdown {
+    display: flex;
+  }
+
+  .aria-header__dropdown a {
+    padding-inline: 16px;
+  }
+
+  /* Desktop: the search bar is always inline (matches Figma), not an icon-triggered toggle */
+  .aria-header__search {
+    position: relative;
+  }
+
+  .aria-header__search-trigger {
+    display: none;
+  }
+
+  .aria-header__search-panel {
+    display: block;
+    position: static;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    z-index: auto;
+  }
+
+  .aria-header__search-form {
+    width: 248px;
+  }
+
+  /* The inline search field is only 248px, which is too narrow for a thumbnail + title +
+     price row, so the dropdown is wider than its field and anchored to the right edge.
+     Panel chrome itself lives in the base rule. */
+  predictive-search[open] .aria-header__search-results,
+  predictive-search[loading] .aria-header__search-results {
+    left: auto;
+    right: 0;
+    width: 380px;
+  }
+}
+
+
+/*
+ * NO PER-RANGE MENU GAP. There used to be a `1280-1400px { .aria-header__menu { gap: 16px } }`
+ * override here. The >=1280 desktop block sets the approved 12px (V4 6316:3412 spaces the item
+ * BOXES 12px apart, giving a 28px optical gap once each item's 8px gutter is counted), so the
+ * override made the nav 24px WIDER in the 1280-1400 range -- the range with the LEAST room --
+ * than it is at 1401+. It reads like a leftover from the pass when the base gap was 32px, where
+ * 16px was a reduction; once the base became 12px the same rule silently became an increase.
+ *
+ * Retiring it returns those 24px to exactly the widths that need them (see the compact-search
+ * budget below) and makes the desktop gap one number at every width. Do not reintroduce a
+ * per-range gap without re-measuring the overlap table.
+ */
+
+/* ---------- COMPACT SEARCH: 1280px – 1335px ---------- */
+
+/*
+ * WHY THIS RANGE EXISTS.
+ *
+ * The nav row has to hold the logo, the seven-item menu, a 248px search pill and three icon
+ * buttons. `.aria-header__nav-right` is `flex: 0 0 auto`, so when the row runs short it is
+ * `.aria-header__nav-left` that shrinks — and the menu `<ul>` inside it does not shrink with
+ * it, because every item is `white-space: nowrap`. The list simply overflows its container
+ * and lands ON TOP of the search pill. Measured `menu.right` minus `search.left`:
+ *
+ *     1440   -20   (clean)
+ *     1400   +44
+ *     1336  +108
+ *     1300  +144
+ *     1280  +164
+ *
+ * At 1300 that put "Dailey Deals" through the search placeholder and the PRE-ORDER button
+ * over the field.
+ *
+ * THE FIX, per the approved requirement: in 1280-1335 the inline pill collapses to the icon
+ * trigger the header already ships for mobile, reclaiming 248 - 36 = 212px — more than the
+ * 164px worst-case overlap — and the expanded field becomes a dropdown BELOW the nav row,
+ * where it has room and cannot touch the nav, the logo or the icon buttons.
+ *
+ * Reusing the existing trigger + panel means NO JavaScript: `aria-header.js`'s generic
+ * `[data-aria-toggle]` already handles click-to-open, click-to-close, outside-click and
+ * Escape, and the button already carries `aria-controls` / `aria-expanded`.
+ *
+ * Deliberately bounded at 1335 because the requirement fixes 1336+ as unchanged. NOTE that
+ * the overlap above does not actually clear until ~1420 — see the handoff doc; extending
+ * this range's upper bound to 1419 is the one-line change that would close it.
+ */
+@media screen and (min-width: 1280px) and (max-width: 1335px) {
+  /* The icon comes back, at the 36px the other desktop icon buttons use. */
+  .aria-header__search-trigger {
+    display: flex;
+    width: 36px;
+    height: 36px;
+  }
+
+  /*
+   * ONLY THE EXCEPTION lives here: while the panel is open the trigger becomes a close
+   * control. The resting state (magnifier only) is the unscoped base rule next to
+   * `.aria-header__search-trigger` — duplicating it in here is what broke mobile/tablet.
+   */
+  .aria-header__search-trigger[aria-expanded='true'] .aria-header__search-icon-open {
+    display: none;
+  }
+
+  .aria-header__search-trigger[aria-expanded='true'] .aria-header__search-icon-close {
+    display: block;
+  }
+
+  /* Collapsed by default — overrides the `display: block` the 1280+ block sets. */
+  .aria-header__search-panel {
+    display: none;
+  }
+
+  /*
+   * Expanded: a dropdown under the row, NOT an inline expansion. Inline is what caused the
+   * problem; there is no width in this range to grow into without pushing the nav.
+   *
+   * `inset` is restated in full because the base `.is-open` rule is `position: fixed;
+   * inset: 0` for the mobile overlay, and a stray `inset: 0` here would stretch this
+   * dropdown over the whole viewport. Anchored to `.aria-header__search`, which the 1280+
+   * block already makes `position: relative`.
+   *
+   * z-index 30 clears the mega panels (3) and stays under the mobile overlays (40).
+   */
+  .aria-header__search-panel.is-open {
+    display: block;
+    position: absolute;
+    inset: calc(100% + 10px) 0 auto auto;
+    width: 360px;
+    max-width: calc(100vw - 80px);
+    padding: 12px;
+    background: rgb(var(--color-background));
+    border: 1px solid var(--cream, #eaddd4);
+    border-radius: 2px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+    z-index: 30;
+  }
+
+  /* The pill fills the dropdown instead of holding its inline 248px. */
+  .aria-header__search-form {
+    width: 100%;
+  }
+
+  /*
+   * The panel's own 44px close button is for the full-screen mobile overlay; in a 360px
+   * dropdown it would sit on top of the input. The trigger is the close control here — it
+   * shows an X while open — alongside Escape and click-outside.
+   */
+  .aria-header__search-panel.is-open .aria-header__drawer-close {
+    display: none;
+  }
+
+  /* Predictive results match the dropdown's width rather than the 380px the 1280+ block
+     gives the inline field, so they cannot spill past its edge. */
+  predictive-search[open] .aria-header__search-results,
+  predictive-search[loading] .aria-header__search-results {
+    left: 0;
+    right: 0;
+    width: auto;
+  }
+}

@@ -1,0 +1,24 @@
+{%- comment -%}
+  Wig Party — child items for one mega-menu link.
+
+  Shopify navigation supports one level of nesting and the mega menu honours it rather than
+  flattening it. Extracted into its own snippet so the divided and padded list renderers
+  share one copy instead of each carrying a duplicate nested loop.
+
+  Titles and URLs come straight from the menu — nothing here is hardcoded, so a merchant
+  adding or removing a child item in Admin → Content → Menus changes the panel with no code
+  change.
+
+  Params: link — a `linklists[...].links` item that has `link.links`
+{%- endcomment -%}
+<ul class="aria-mega__sublinks" role="list">
+  {%- for child in link.links -%}
+    <li>
+      <a
+        href="{{ child.url }}"
+        class="aria-mega__sublink"
+        {% if child.current %}aria-current="page"{% endif %}
+      >{{ child.title }}</a>
+    </li>
+  {%- endfor -%}
+</ul>

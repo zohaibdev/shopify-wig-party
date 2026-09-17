@@ -1,0 +1,165 @@
+{{ 'section-aria-start-here.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="aria-start-here"
+  style="--aria-sh-bg-from: {{ section.settings.background_gradient_start }}; --aria-sh-bg-to: {{ section.settings.background_gradient_end }};"
+>
+  <div class="aria-start-here__inner">
+    {%- if section.settings.heading != blank or section.settings.description != blank -%}
+      <div class="aria-start-here__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-start-here__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="aria-start-here__description">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="aria-start-here__grid">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign has_link = false
+            if block.settings.link != blank
+              assign has_link = true
+            endif
+          -%}
+          <li class="aria-start-here__item" {{ block.shopify_attributes }}>
+            <{% if has_link %}a href="{{ block.settings.link }}"{% else %}div{% endif %} class="aria-start-here__card">
+              <span class="aria-start-here__icon">
+                {%- if block.settings.icon != blank -%}
+                  {{
+                    block.settings.icon
+                    | image_url: width: 240
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '120,240',
+                      class: 'aria-start-here__icon-img',
+                      alt: block.settings.icon.alt | default: block.settings.title
+                  }}
+                {%- elsif block.settings.default_icon != 'none' -%}
+                  {%- comment -%}
+                    Falls back to the matching V4 line-art asset so the section looks correct
+                    before a merchant uploads anything. Decorative — the title carries meaning.
+                  {%- endcomment -%}
+                  <img
+                    src="{{ block.settings.default_icon | append: '.svg' | asset_url }}"
+                    alt=""
+                    width="120"
+                    height="120"
+                    loading="lazy"
+                    class="aria-start-here__icon-img"
+                  >
+                {%- endif -%}
+              </span>
+
+              <span class="aria-start-here__text">
+                {%- if block.settings.title != blank -%}
+                  <span class="aria-start-here__title">{{ block.settings.title }}</span>
+                {%- endif -%}
+                {%- if block.settings.subtitle != blank -%}
+                  <span class="aria-start-here__subtitle">{{ block.settings.subtitle }}</span>
+                {%- endif -%}
+              </span>
+            </{% if has_link %}a{% else %}div{% endif %}>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-start-here.name",
+  "tag": "section",
+  "class": "aria-start-here-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Start Here",
+      "label": "t:sections.aria-start-here.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "default": "Everything you wish you knew before you bought your first wig.",
+      "label": "t:sections.aria-start-here.settings.description.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_start",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-start-here.settings.background_gradient_start.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_end",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-start-here.settings.background_gradient_end.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:sections.aria-start-here.blocks.item.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.aria-start-here.blocks.item.settings.icon.label",
+          "info": "t:sections.aria-start-here.blocks.item.settings.icon.info"
+        },
+        {
+          "type": "select",
+          "id": "default_icon",
+          "default": "wp-icon-measure-head",
+          "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.label",
+          "options": [
+            { "value": "wp-icon-measure-head", "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.options__1.label" },
+            { "value": "wp-icon-wig-101", "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.options__2.label" },
+            { "value": "wp-icon-cap-construction", "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.options__3.label" },
+            { "value": "wp-icon-hair-cut", "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.options__4.label" },
+            { "value": "wp-icon-color-guide", "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.options__5.label" },
+            { "value": "wp-icon-common-mistakes", "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.options__6.label" },
+            { "value": "none", "label": "t:sections.aria-start-here.blocks.item.settings.default_icon.options__7.label" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Measure Your Head",
+          "label": "t:sections.aria-start-here.blocks.item.settings.title.label"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "default": "Get the perfect fit",
+          "label": "t:sections.aria-start-here.blocks.item.settings.subtitle.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.aria-start-here.blocks.item.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "t:sections.aria-start-here.presets.name",
+      "blocks": [
+        { "type": "item", "settings": { "default_icon": "wp-icon-measure-head", "title": "Measure Your Head", "subtitle": "Get the perfect fit" } },
+        { "type": "item", "settings": { "default_icon": "wp-icon-wig-101", "title": "Wig 101", "subtitle": "Choose carefree" } },
+        { "type": "item", "settings": { "default_icon": "wp-icon-cap-construction", "title": "Cap Construction Guide", "subtitle": "Learn the right way" } },
+        { "type": "item", "settings": { "default_icon": "wp-icon-hair-cut", "title": "Hair Cut Guide", "subtitle": "Making it easy" } },
+        { "type": "item", "settings": { "default_icon": "wp-icon-color-guide", "title": "Color Guide", "subtitle": "All options for you" } },
+        { "type": "item", "settings": { "default_icon": "wp-icon-common-mistakes", "title": "Common Mistakes", "subtitle": "Here to help you" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

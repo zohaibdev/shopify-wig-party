@@ -1,0 +1,312 @@
+{%- comment -%}
+  Wig Party — mega menu panel for ONE parent nav item.
+
+  ARCHITECTURE. There is one dedicated block type per parent menu —
+  `shop_mega_menu`, `best_sellers_mega_menu`, `start_here_mega_menu`, `live_mega_menu`,
+  `community_mega_menu`, `daily_deals_mega_menu` — and this snippet holds each one's PRESET
+  layout. Everything the Figma frames already decide lives here as literal arguments:
+  the Shopify menu handles, the column order and types, the column widths and card
+  heights, the icons, the column gap and which column starts the right-hand group.
+
+  That means the Theme Editor exposes only what a merchant can sensibly change (images,
+  copy, CTA links, a product source). No handles to paste, no parent labels to type, no
+  child-menu wiring, no column-type pickers.
+
+  Adding a seventh parent menu is: one block type in the schema, one `when` branch here.
+
+  APPROVED FRAMES — client file GwwzFncuGYte0VMIN8G9UV, page 6337:3110
+  ("Navigation - For Developer"). These SUPERSEDE the earlier V4 6316:* frames; the two
+  sets differ (no shell behind the Best Sellers row, no photo on the Community card, a
+  visible chevron on the open parent, sharper Deals corners), so do not mix them.
+    Shop 6337:4768 · Best Sellers 6337:3148 · Start Here 6337:3448
+    Live 6337:3786 · Community 6337:4126 · Dailey Deals 6337:4462
+
+  Panel geometry, identical in all six: content inset 20px from the viewport edges, so
+  1400px of columns at a 1440 reference width.
+
+  ONE DEFINITION, TWO PRESENTATIONS. `context` selects which:
+
+    context: (omitted)   the desktop hover panel — a full-bleed row of columns plus the
+                         ticker strip, hidden below 1280px
+    context: 'mobile'    the same columns re-flowed as a stacked block for a level-2 panel
+                         of the mobile drawer (snippets/aria-mobile-nav.liquid)
+
+  The `case` below — which columns each parent has, their menus, widths, icons and copy —
+  is NOT duplicated for mobile. Both presentations walk the identical branch and the same
+  block settings, so adding a column or changing a menu handle updates desktop and mobile
+  together. Only the wrapper markup differs here; the rest of the difference is CSS.
+
+  The one CONTENT difference is product cards, which the mobile drawer must not render at
+  all. That is carried by `col_context` on the `products` calls (see the note there) rather
+  than hidden with CSS, so their images are never even referenced on mobile.
+
+  Params: block (required), id (required), ticker (optional string),
+          placeholders (optional bool — show the Figma row labels while a menu is empty),
+          context (optional — 'mobile' for the drawer presentation)
+{%- endcomment -%}
+
+{%- liquid
+  assign panel_id = id
+  assign is_mobile = false
+  if context == 'mobile'
+    assign is_mobile = true
+  endif
+  assign panel_slug = block.type | replace: '_mega_menu', '' | replace: '_', '-'
+
+  comment
+    The provided handles, preset per parent. Each is named after the column heading it
+    feeds, so `aria-mega-column` takes the menu's own title as the heading and the literal
+    strings below act only as fallbacks while a menu is still missing.
+  endcomment
+  assign h_shop_collection = 'header-shop-shop-by-collection'
+  assign h_shop_color = 'header-shop-shop-by-color'
+  assign h_sh_basics = 'header-start-here-wig-101-the-basics'
+  assign h_sh_guides = 'header-start-here-guides-answers'
+  assign h_live_catchup = 'header-live-catch-up'
+  assign h_live_schedule = 'header-live-this-week-s-schedule'
+  assign h_comm_heart = 'header-community-our-heart'
+  assign h_deals_save = 'header-dailey-deals-all-the-ways-to-save'
+
+  comment
+    Shop / Best Sellers / Live / Community run on a 24px column gap, Start Here / Deals
+    on 20px.
+  endcomment
+  assign gap = 24
+  if block.type == 'start_here_mega_menu' or block.type == 'daily_deals_mega_menu'
+    assign gap = 20
+  endif
+
+  comment
+    The row labels each Figma frame shows, kept here so a column whose Shopify menu does not
+    exist yet still renders with the design's structure and copy length instead of a headed
+    but empty box. They are used ONLY while that menu is missing — the moment it exists,
+    Shopify's items replace them and these are ignored. The section's "Show placeholder rows"
+    switch turns them off for launch.
+  endcomment
+  assign ph_shop_style = 'Long & Wavy|Mid-Length Lob|Short Bob|Pixie|Toppers'
+  assign ph_shop_style_subs = 'soft, romantic volume|the everyday favorite|chic and easy|light and carefree|Add volume on top'
+  assign ph_shop_collection = 'City|Café Extended|Icons|Kristi Collection|Toppers'
+  assign ph_shop_color = 'City|Café Extended|Icons|Kristi Collection|Toppers'
+  assign ph_sh_basics = 'How to measure your head|Wig cap construction explained|Washing & care|Color & fit guide'
+  assign ph_sh_guides = 'Color Comparison|Belle Tress catalogs|Belle Tress wig collections|FAQ'
+  assign ph_live_catchup = 'Watch past replays|This week’s new styles|How Live shopping works|Join the Facebook group'
+  assign ph_live_schedule = 'Mon · New Arrivals|Wed · Dailey Deals|Fri · Community Try-On'
+  assign ph_comm_heart = 'Kristi’s story|Our mission|Reviews & testimonials'
+  assign ph_deals_save = 'Today’s Dailey Deals|Clearance / Retired|Last few in stock|Open box & SE|Shop all Sale'
+-%}
+
+{%- comment -%}
+  Both presentations keep the same two-element wrapper (outer + inner) so the tag structure
+  is identical and only the class names and the desktop-only attributes change. Writing this
+  as two separate `if` branches with their own opening and closing tags is how unbalanced
+  Liquid markup happens.
+{%- endcomment -%}
+<div
+  class="{% if is_mobile %}aria-mnav__mega aria-mnav__mega--{{ panel_slug }}{% else %}aria-mega aria-mega--{{ panel_slug }}{% endif %}"
+  {% unless is_mobile %}
+    id="{{ panel_id }}"
+    data-aria-mega
+    hidden
+  {% endunless %}
+  style="--aria-mega-gap: {{ gap }}px;"
+>
+  <div class="{% if is_mobile %}aria-mnav__mega-inner{% else %}aria-mega__inner{% endif %}">
+    {%- case block.type -%}
+
+      {%- when 'shop_mega_menu' -%}
+        {%- comment -%}
+          Node 6337:4818 — 260/260/260, then a 60px void, then 244/244. The void is not
+          hardcoded: column 4 carries `col_push` and the leftover width lands there.
+          "Shop by Style" is the one column the design draws for which no handle was supplied, so it
+          takes a menu PICKER rather than a pasted handle; its thumbnails and subtitles come
+          from each linked collection's own image and description.
+        {%- endcomment -%}
+        {%- render 'aria-mega-column',
+          col_type: 'style_cards', col_icon: 'mega-style', col_width: 260,
+          col_heading: 'Shop by Style',
+          col_menu_handle: block.settings.style_menu,
+          col_placeholders: ph_shop_style, col_placeholder_subs: ph_shop_style_subs,
+          placeholders: placeholders,
+          shopify_attributes: block.shopify_attributes -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_divided', col_icon: 'mega-collection', col_width: 260,
+          col_heading: 'Shop by Collection', col_menu_handle: h_shop_collection,
+          col_placeholders: ph_shop_collection, placeholders: placeholders -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_divided', col_icon: 'mega-color', col_width: 260,
+          col_heading: 'Shop by Color', col_menu_handle: h_shop_color,
+          col_placeholders: ph_shop_color, placeholders: placeholders -%}
+        {%- render 'aria-mega-column',
+          col_type: 'promo_card', col_icon: 'mega-bestseller', col_icon_tone: 'qi',
+          col_width: 244,
+          col_push: true, col_heading: 'Best Seller Style',
+          col_image: block.settings.promo_1_image,
+          col_chip: block.settings.promo_1_badge,
+          col_chip_style: block.settings.promo_1_badge_style,
+          col_btn_label: block.settings.promo_1_button_label,
+          col_btn_url: block.settings.promo_1_button_url -%}
+        {%- render 'aria-mega-column',
+          col_type: 'promo_card', col_icon: 'mega-daily', col_width: 244,
+          col_heading: 'New markdown daily',
+          col_image: block.settings.promo_2_image,
+          col_chip: block.settings.promo_2_badge,
+          col_chip_style: block.settings.promo_2_badge_style,
+          col_btn_label: block.settings.promo_2_button_label,
+          col_btn_url: block.settings.promo_2_button_url -%}
+
+      {%- when 'best_sellers_mega_menu' -%}
+        {%- comment -%}
+          Node 6337:3198 — a 300x449 feature card, then a 1076px products column pushed to
+          the right edge. 1076 is the OUTER width: the column carries the design's 20px
+          side padding, leaving 1036 of cards, which divides into exactly 4 x 250 on 12px
+          gaps. Feeding 1036 as the width (an earlier pass) shrank every card by 10px.
+
+          NO `col_shell` here. Unlike Start Here and Deals, this row sits on bare white
+          (verified against 6337:3210 — pure #FFFFFF behind the cards); the gradient that
+          used to be on every products column was the unwanted background.
+        {%- endcomment -%}
+        {%- render 'aria-mega-column',
+          col_type: 'feature_card', col_width: 300,
+          col_variant: 'best-sellers',
+          col_image: block.settings.feature_image,
+          col_chip: block.settings.feature_heading,
+          col_body: block.settings.feature_text,
+          col_btn_label: block.settings.feature_button_label,
+          col_btn_url: block.settings.feature_button_url,
+          shopify_attributes: block.shopify_attributes -%}
+        {%- render 'aria-mega-column',
+          col_type: 'products', col_context: context, col_icon: 'mega-bestseller', col_icon_tone: 'qi',
+          col_width: 1076,
+          col_push: true,
+          col_heading: block.settings.products_heading,
+          col_collection: block.settings.collection,
+          col_count: 4, panel_id: panel_id -%}
+
+      {%- when 'start_here_mega_menu' -%}
+        {%- comment -%}
+          Node 6337:3498 — two outlined-card menu columns (284 / 260) on a 20px gap, then
+          the products column pushed right at an OUTER 814 (20px of shell padding either
+          side, 774 of cards = 3 x 250 on 12px gaps). This one DOES take the gradient
+          shell (6337:3548).
+
+          284 is not decorative: the design's longest row, "Wig cap construction
+          explained", measures 254px and the row insets it 12px each side, so anything
+          under ~278 wraps it to two lines.
+        {%- endcomment -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_padded', col_icon: 'mega-collection', col_width: 284,
+          col_heading: 'Wig 101 — The Basics', col_menu_handle: h_sh_basics,
+          col_placeholders: ph_sh_basics, placeholders: placeholders,
+          shopify_attributes: block.shopify_attributes -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_padded', col_icon: 'mega-color', col_width: 260,
+          col_heading: 'Guides & Answers', col_menu_handle: h_sh_guides,
+          col_placeholders: ph_sh_guides, placeholders: placeholders -%}
+        {%- render 'aria-mega-column',
+          col_type: 'products', col_context: context, col_icon: 'mega-bestseller', col_icon_tone: 'qi',
+          col_width: 814, col_shell: true,
+          col_push: true,
+          col_heading: block.settings.products_heading,
+          col_collection: block.settings.collection,
+          col_count: 3, panel_id: panel_id -%}
+
+      {%- when 'live_mega_menu' -%}
+        {%- comment -%}
+          Node 6337:3897 — 375 / 376 outlined-card menu columns, then a 493px media card
+          pushed right. Its heading is the one column label the design sets in
+          Primary/Dark Pink rather than black, hence `col_title_tone: 'accent'`.
+        {%- endcomment -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_padded', col_icon: 'mega-collection', col_width: 375,
+          col_heading: 'Catch Up', col_menu_handle: h_live_catchup,
+          col_placeholders: ph_live_catchup, placeholders: placeholders,
+          shopify_attributes: block.shopify_attributes -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_padded', col_icon: 'mega-calendar', col_width: 376,
+          col_heading: 'This Week’s Schedule', col_menu_handle: h_live_schedule,
+          col_placeholders: ph_live_schedule, placeholders: placeholders -%}
+        {%- render 'aria-mega-column',
+          col_type: 'media_card', col_icon: 'mega-live', col_width: 493,
+          col_title_tone: 'accent',
+          col_push: true,
+          col_heading: block.settings.media_heading,
+          col_image: block.settings.media_image,
+          col_btn_label: block.settings.media_button_label,
+          col_btn_url: block.settings.media_button_url -%}
+
+      {%- when 'community_mega_menu' -%}
+        {%- comment -%}
+          Node 6337:4238 — a 378 feature column (20px of gradient-shell padding either
+          side of a 338 card), a 515 photo row, and a 320 menu column. This is the one
+          panel whose last column is NOT flush right (the design leaves 139px of trailing
+          space), so no column here carries `col_push`. Its feature card has a heading and
+          no icon, and — unlike Best Sellers and Deals — NO PHOTO.
+        {%- endcomment -%}
+        {%- render 'aria-mega-column',
+          col_type: 'feature_card', col_width: 378, col_shell: true,
+          col_variant: 'community',
+          col_heading: 'The Sisterhood',
+          col_image: block.settings.feature_image,
+          col_chip: block.settings.feature_heading,
+          col_body: block.settings.feature_text,
+          col_btn_label: block.settings.feature_button_label,
+          col_btn_url: block.settings.feature_button_url,
+          shopify_attributes: block.shopify_attributes -%}
+        {%- render 'aria-mega-column',
+          col_type: 'photo_row', col_icon: 'mega-calendar', col_width: 515,
+          col_heading: 'Real Women, Real Wigs',
+          col_collection: block.settings.gallery_collection,
+          col_btn_label: block.settings.gallery_button_label,
+          col_btn_url: block.settings.gallery_button_url -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_padded', col_icon: 'mega-collection', col_width: 320,
+          col_heading: 'Our Heart', col_menu_handle: h_comm_heart,
+          col_placeholders: ph_comm_heart, placeholders: placeholders -%}
+
+      {%- when 'daily_deals_mega_menu' -%}
+        {%- comment -%}
+          Node 6337:4512 — a 260x450 feature card, a 284 menu column on a 20px gap, then
+          the products column pushed right at an OUTER 814 with the gradient shell
+          (6337:4546). The design badges these cards with copy ("Dailey Deal") rather than
+          the best-seller rank, so the badge is a setting here.
+        {%- endcomment -%}
+        {%- render 'aria-mega-column',
+          col_type: 'feature_card', col_width: 260,
+          col_variant: 'deals',
+          col_image: block.settings.feature_image,
+          col_chip: block.settings.feature_heading,
+          col_body: block.settings.feature_text,
+          col_btn_label: block.settings.feature_button_label,
+          col_btn_url: block.settings.feature_button_url,
+          shopify_attributes: block.shopify_attributes -%}
+        {%- render 'aria-mega-column',
+          col_type: 'menu_padded', col_icon: 'mega-collection', col_width: 284,
+          col_heading: 'All the Ways to Save', col_menu_handle: h_deals_save,
+          col_placeholders: ph_deals_save, placeholders: placeholders -%}
+        {%- render 'aria-mega-column',
+          col_type: 'products', col_context: context, col_icon: 'mega-bestseller', col_icon_tone: 'qi',
+          col_width: 814, col_shell: true,
+          col_push: true,
+          col_heading: block.settings.products_heading,
+          col_collection: block.settings.collection,
+          col_count: 3,
+          col_chip: block.settings.product_badge,
+          col_chip_style: block.settings.product_badge_style, panel_id: panel_id -%}
+
+    {%- endcase -%}
+  </div>
+
+  {%- if ticker != blank and is_mobile == false -%}
+    {%- comment -%}
+      Every desktop panel closes with the same full-width 44px promo strip (node
+      6337:3294), so the copy is one section setting rather than six block settings.
+
+      The drawer omits it: the strip is a full-bleed band spanning the viewport under the
+      panel, which has no equivalent inside a 360px-wide drawer, and repeating it at the
+      foot of all six level-2 panels would be noise rather than the design.
+    {%- endcomment -%}
+    <div class="aria-mega__ticker">
+      <span class="aria-mega__ticker-text">{{ ticker }}</span>
+    </div>
+  {%- endif -%}
+</div>

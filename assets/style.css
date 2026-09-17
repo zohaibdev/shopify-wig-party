@@ -1,0 +1,174 @@
+:root {
+    --py: #A64A4C;
+    --sy: #000000;
+    --it: #CD8080;
+    --qi: #BC696B;
+    /* Primary/Cream from the V4 design system. Used by the mega menu for the bordered
+       menu rows, the photo-row mats and the feature-card gradient. */
+    --cream: #EADDD4;
+    /* V4's active nav pill (node 6316:3420). */
+    --pink-tint: #EBD8D9;
+    --cream-rgb: 234, 221, 212;
+    /* V4's copy colour inside the mega-menu feature cards (Figma node 6316:3455). */
+    --ink: #1F1C1C;
+    --py-rgb: 166, 74, 76;
+    --sy-rgb: 0, 0, 0;
+    --it-rgb: 205, 128, 128;
+    --qi-rgb: 188, 105, 107;
+    --black: #000;
+    --white: #fff;
+    --input-border: #E2E2E2;
+    --input-placeholder: rgba(255, 255, 255, 0.55);
+    --heading-h1-size: 86px;
+    --heading-h1-weight: 600;
+    --heading-h2-size: 56px;
+    --heading-h2-weight: 500;
+    --heading-h2-line-height: 64px;
+    --heading-h3-size: 24px;
+    --heading-h3-weight: 400;
+    --subtitle-size: 14px;
+    --title-content-size: 20px;
+    --title-content-line-height: 28px;
+    --body-size: 14px;
+    --border-radius: 4px;
+    --section-spacing: 80px;
+    --title-bar-spacing: 40px;
+    --row-gap: 40px;
+    --col-gap: 15px;
+    --container: 1360px;
+}
+
+.py {
+    color: var(--py);
+}
+
+.sy {
+    color: var(--sy);
+}
+
+
+.th-btn {
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 400;
+    text-transform: capitalize;
+    height: 56px;
+    color: var(--white);
+    background-color: var(--py);
+    border: 1px solid var(--sy);
+    padding-block: 15px;
+    padding-inline: 24px;
+    transition: all 0.5s;
+}
+
+.th-btn--secondary {
+    background-color: var(--sy);
+    border-color: var(--sy);
+}
+
+.th-btn--borderd {
+    background-color: transparent;
+    color: var(--black);
+    border-color: var(--black);
+    border-radius: 2px;
+}
+
+.th-btn:hover {
+    background-color: var(--sy);
+    border-color: var(--sy);
+}
+
+.th-btn--secondary:hover {
+    background-color: var(--py);
+    border-color: var(--py);
+}
+
+.th-btn--borderd:hover {
+    background-color: var(--py);
+    border-color: var(--py);
+    color: var(--white);
+}
+
+/* ==========================================================================
+   Live pulse — shared broadcast indicator
+   --------------------------------------------------------------------------
+   Used by the header's "Live" nav dot and the hero Watch Live badge dot. It
+   lives here rather than in either section stylesheet so the keyframes are
+   declared once; both are loaded on the homepage, so duplicating them would
+   mean two copies of the same animation in the cascade.
+
+   Two layers read as a broadcast signal: the dot core breathes, and a ring
+   expands out of it and fades. The ring is a pseudo-element so it costs no
+   markup, and being absolutely positioned it expands OUTSIDE the dot's box
+   without affecting layout or nudging neighbouring text.
+
+   Consumers set --aria-pulse-color (defaults to the dot's own currentColor via
+   `background`) and --aria-pulse-scale (how far the ring travels). Only
+   `transform` and `opacity` are animated, so this stays on the compositor.
+   ========================================================================== */
+
+.aria-live-pulse {
+  position: relative;
+  /* The ring must not intercept clicks — both dots sit inside links. */
+  pointer-events: none;
+}
+
+.aria-live-pulse::after {
+  content: '';
+  position: absolute;
+  /* Anchored to the dot's centre so the ring grows symmetrically regardless of
+     the dot's size or any margin offset the consumer applies. */
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--aria-pulse-color, currentColor);
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+}
+
+/*
+ * Opt-in rather than opt-out: with `no-preference` the animation simply never
+ * starts for anyone who has asked for reduced motion, instead of starting and
+ * being switched off. Matches the announcement-bar cycle in
+ * section-aria-header.css. A pulsing dot is decorative, so there is no
+ * reduced-motion fallback to provide.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .aria-live-pulse {
+    animation: aria-live-pulse-core 2s ease-in-out infinite;
+  }
+
+  .aria-live-pulse::after {
+    animation: aria-live-pulse-ring 2s ease-out infinite;
+  }
+}
+
+@keyframes aria-live-pulse-core {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.65;
+    transform: scale(0.88);
+  }
+}
+
+@keyframes aria-live-pulse-ring {
+  0% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* Faded out well before the cycle ends, so there is a beat of stillness
+     between pulses — a continuous ripple reads as a loading spinner. */
+  70%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(var(--aria-pulse-scale, 2.6));
+  }
+}

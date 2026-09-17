@@ -1,0 +1,438 @@
+{%- comment -%}
+  Shared product card.
+
+  Params:
+    product                - product object (required)
+    feature_tag_metafield  - "namespace.key" for the badge metafield (default custom.feature_tags)
+    section_id             - string, keeps quick-add form ids unique
+
+  There is deliberately ONE card design. This snippet used to take a `card_style` param
+  with a 'compact' variant for New & Trending (taller 262/320 media, chip badge, in-image
+  quick-add, no View Product button); New & Trending now renders this same default card, so
+  the variant and its CSS were removed rather than left to drift out of sync again.
+{%- endcomment -%}
+{%- liquid
+  assign is_sold_out = true
+  if product.available
+    assign is_sold_out = false
+  endif
+
+  assign mf_parts = feature_tag_metafield | default: 'custom.feature_tags' | split: '.'
+  assign mf_namespace = mf_parts[0]
+  assign mf_key = mf_parts[1]
+  assign feature_tags = product.metafields[mf_namespace][mf_key].value
+
+  assign swatch_option = null
+  for option in product.options_with_values
+    assign option_has_swatch = false
+    for value in option.values
+      if value.swatch != blank
+        assign option_has_swatch = true
+      endif
+    endfor
+    if option_has_swatch and swatch_option == null
+      assign swatch_option = option
+    endif
+  endfor
+
+  # Fallback: many stores set up a "Color"/"Colour" option without configuring Shopify's
+  # native swatch feature on it. When no option has native swatch data, still show swatches
+  # for the color-named option using each value's own matching variant image instead.
+  if swatch_option == null
+    for option in product.options_with_values
+      assign option_name_lower = option.name | downcase
+      if option_name_lower == 'color' or option_name_lower == 'colour'
+        assign swatch_option = option
+      endif
+    endfor
+  endif
+
+  # Some merchants add an instructional pseudo-value to the colour option — on this store
+  # "Choose Color From Drop Down" / "Choose Color From Dropdown" — so the product page
+  # dropdown opens on a prompt rather than a real colour. It is not a colour: rendering it
+  # gave a swatch whose tooltip read "Choose Color From Drop Down" and, being first in the
+  # option order, it became the card's default variant and left Add to Cart disabled
+  # (it is also permanently sold out). Values whose name contains any of these fragments
+  # are skipped everywhere on the card — swatch row, default variant and colour count.
+  #
+  # Matched on prompt WORDING, not on a colour name, so it stays data-driven: no variant id,
+  # colour, image or variant name is hardcoded. Add a fragment here if another prompt
+  # spelling turns up; keep them lowercase.
+  assign swatch_prompt_fragments = 'choose,dropdown,drop down' | split: ','
+
+  # One pass over the option values: how many real colours there are (drives "+N more
+  # colors") and which is the first (drives the default variant and the initial ring).
+  assign swatch_colour_count = 0
+  assign first_colour_value = null
+  if swatch_option
+    for value in swatch_option.values
+      assign value_candidate = value.name | default: value | strip
+      assign candidate_lower = value_candidate | downcase
+      assign candidate_is_prompt = false
+      for fragment in swatch_prompt_fragments
+        if candidate_lower contains fragment
+          assign candidate_is_prompt = true
+        endif
+      endfor
+      unless candidate_is_prompt
+        assign swatch_colour_count = swatch_colour_count | plus: 1
+        if first_colour_value == null
+          assign first_colour_value = value_candidate
+        endif
+      endunless
+    endfor
+  endif
+
+  assign review_rating = product.metafields.reviews.rating.value
+  assign review_count = product.metafields.reviews.rating_count.value | default: 0
+  assign rating_rounded = 0
+  if review_rating
+    assign rating_rounded = review_rating.rating | round
+  endif
+
+  # ONE source of truth for the card's initial variant. The ringed swatch, the quick-add
+  # form's hidden id and the price are all derived from `card_variant` below, so the ring
+  # can never disagree with what Add to Cart posts.
+  #
+  # Default order of preference:
+  #   1. product.selected_variant  — only set when a ?variant= url picked one, so this
+  #      snippet stays correct if it is ever rendered on a product page.
+  #   2. the FIRST colour in the product's own option order (not Shopify's
+  #      `first_available`, which skips a sold-out first colour and would ring the second
+  #      swatch — the very thing this is not allowed to do).
+  #   3. selected_or_first_available_variant, when there is no colour option at all or the
+  #      first colour resolves to no variant.
+  assign card_variant = product.selected_or_first_available_variant
+
+  if first_colour_value and product.selected_variant == blank
+    assign first_value_string = first_colour_value
+
+    assign first_colour_variant = null
+    assign first_colour_fallback = null
+    for variant in product.variants
+      assign variant_value = variant.option1
+      if swatch_option.position == 2
+        assign variant_value = variant.option2
+      elsif swatch_option.position == 3
+        assign variant_value = variant.option3
+      endif
+
+      if variant_value == first_value_string
+        if first_colour_fallback == null
+          assign first_colour_fallback = variant
+        endif
+        if variant.available and first_colour_variant == null
+          assign first_colour_variant = variant
+        endif
+      endif
+    endfor
+    # Same rule the swatch loop uses: prefer a purchasable variant of this colour, and
+    # only fall back to a sold-out one when the colour has none.
+    if first_colour_variant == null
+      assign first_colour_variant = first_colour_fallback
+    endif
+    if first_colour_variant
+      assign card_variant = first_colour_variant
+    endif
+  elsif product.selected_variant
+    assign card_variant = product.selected_variant
+  endif
+
+  assign compare_at_price = card_variant.compare_at_price | default: product.compare_at_price
+  assign price = card_variant.price | default: product.price
+
+  # The quick-add button starts disabled when the variant the form starts on is not
+  # purchasable, which on this store happens whenever the first colour is a sold-out
+  # "Choose Color From Drop Down" placeholder. Without this the button looks live but the
+  # POST fails invisibly (the form runs with data-hide-errors="true"), and it would also
+  # contradict what aria-product-card.js does the moment any swatch is clicked.
+  # Deliberately NOT folded into `is_sold_out`: that drives the SOLD OUT badge and the
+  # --sold-out card class, which must stay product-level.
+  assign quick_add_disabled = is_sold_out
+  if card_variant and card_variant.available == false
+    assign quick_add_disabled = true
+  endif
+
+  # Which swatch gets the ring: whichever value `card_variant` actually has.
+  assign selected_swatch_value = null
+  if swatch_option
+    case swatch_option.position
+      when 1
+        assign selected_swatch_value = card_variant.option1
+      when 2
+        assign selected_swatch_value = card_variant.option2
+      when 3
+        assign selected_swatch_value = card_variant.option3
+    endcase
+  endif
+
+  # Every colour is rendered; the ones past the fifth ship `hidden` and are revealed in
+  # place by the "+N more colours" button (no reload, no second request). The count is
+  # therefore how many are hidden, not how many exist beyond a truncated list.
+  assign swatch_visible_limit = 5
+  assign swatch_overflow_count = 0
+  if swatch_colour_count > swatch_visible_limit
+    assign swatch_overflow_count = swatch_colour_count | minus: swatch_visible_limit
+  endif
+  # Counts swatches actually RENDERED, so skipped prompt values do not eat a visible slot
+  # and leave the row showing four colours behind a "+8 more" button.
+  assign swatch_rendered_count = 0
+-%}
+
+<article class="aria-product-card{% if is_sold_out %} aria-product-card--sold-out{% endif %}">
+  <div class="aria-product-card__media">
+    <a href="{{ product.url }}" class="aria-product-card__media-link" aria-hidden="true" tabindex="-1">
+      {%- if product.featured_image != blank -%}
+        {{
+          product.featured_image
+          | image_url: width: 500
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 990px) 260px, 45vw',
+            widths: '228,320,456,500',
+            class: 'aria-product-card__image aria-product-card__image--primary',
+            alt: product.featured_image.alt | default: product.title
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'aria-product-card__image aria-product-card__image--primary' }}
+      {%- endif -%}
+      {%- if product.images[1] != blank -%}
+        {{
+          product.images[1]
+          | image_url: width: 500
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 990px) 260px, 45vw',
+            widths: '228,320,456,500',
+            class: 'aria-product-card__image aria-product-card__image--secondary',
+            alt: ''
+        }}
+      {%- endif -%}
+    </a>
+
+    {%- comment -%}
+      The wishlist drawer renders entirely from localStorage, so everything it needs to draw
+      a row has to be captured at click time — there is no server-side list of wishlisted
+      products to render from. These attributes are the fallback snapshot;
+      assets/aria-wishlist.js prefers the card's LIVE values (variant id from the quick-add
+      input, image from the primary img, price from the price row) so a colour chosen via
+      the swatches is what gets wishlisted, not the default variant.
+    {%- endcomment -%}
+    <button
+      type="button"
+      class="aria-product-card__wishlist"
+      data-wishlist-toggle
+      data-product-id="{{ product.id }}"
+      data-variant-id="{{ card_variant.id }}"
+      data-product-handle="{{ product.handle }}"
+      data-product-title="{{ product.title | escape }}"
+      data-product-url="{{ product.url }}"
+      data-product-vendor="{{ product.vendor | escape }}"
+      {% if product.featured_image != blank %}
+        data-product-image="{{ product.featured_image | image_url: width: 200 }}"
+      {% endif %}
+      data-product-price="{{ price | money }}"
+      {% if compare_at_price > price %}
+        data-product-compare-price="{{ compare_at_price | money }}"
+      {% endif %}
+      data-product-available="{% if card_variant.available %}true{% else %}false{% endif %}"
+      aria-pressed="false"
+      aria-label="{{ 'aria_theme.product_card.wishlist_named' | t: product_name: product.title }}"
+    >
+      {%- render 'aria-icon', name: 'heart', class: 'aria-product-card__wishlist-outline' -%}
+      {%- render 'aria-icon', name: 'heart-filled', class: 'aria-product-card__wishlist-filled' -%}
+    </button>
+
+    {%- if is_sold_out -%}
+      <span class="aria-product-card__badges">
+        <span class="aria-product-card__badge aria-product-card__badge--sold-out">
+          {{- 'products.product.sold_out' | t -}}
+        </span>
+      </span>
+    {%- elsif feature_tags.size > 0 -%}
+      <span class="aria-product-card__badges">
+        {%- for tag in feature_tags -%}
+          <span class="aria-product-card__badge aria-product-card__badge--tag">{{ tag }}</span>
+        {%- endfor -%}
+      </span>
+    {%- endif -%}
+
+  </div>
+
+  <div class="aria-product-card__body">
+    <div class="aria-product-card__rating">
+      <span class="aria-product-card__stars" aria-hidden="true">
+        {%- for i in (1..5) -%}
+          {%- if i <= rating_rounded -%}
+            {%- render 'aria-icon', name: 'star' -%}
+          {%- else -%}
+            {%- render 'aria-icon', name: 'star-outline' -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </span>
+      {%- if review_rating -%}
+        <span class="aria-product-card__rating-value">
+          <span class="visually-hidden">{{ 'accessibility.star_reviews_info' | t: rating_value: review_rating.rating, rating_max: review_rating.scale_max }}</span>
+          <span aria-hidden="true">{{ review_rating.rating }} ({{ review_count }})</span>
+        </span>
+      {%- else -%}
+        <span class="aria-product-card__rating-value aria-product-card__rating-value--empty">
+          {{ 'aria_theme.product_card.no_reviews' | t }}
+        </span>
+      {%- endif -%}
+    </div>
+
+    <h3 class="aria-product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    {%- if swatch_option -%}
+      <div class="aria-product-card__swatches" role="group" aria-label="{{ swatch_option.name }}">
+        {%- for value in swatch_option.values -%}
+          {%- liquid
+            # `value` is a product_option_value DROP on current API versions (and a plain
+            # string on older ones). `variant.optionN` is always a string, so comparing the
+            # drop directly (`variant.option1 == value`) is *always* false — that is why every
+            # swatch used to resolve to no variant, leaving the card submitting the default
+            # one and swapping in no image. `| strip` forces `to_s` on a drop and is a no-op
+            # on a string, so one expression normalises both shapes.
+            assign value_string = value.name | default: value | strip
+
+            # Skip the instructional pseudo-value (see swatch_prompt_fragments above).
+            assign value_lower = value_string | downcase
+            assign is_prompt_value = false
+            for fragment in swatch_prompt_fragments
+              if value_lower contains fragment
+                assign is_prompt_value = true
+              endif
+            endfor
+            if is_prompt_value
+              continue
+            endif
+
+            assign swatch_rendered_count = swatch_rendered_count | plus: 1
+
+            assign matched_variant = null
+            assign fallback_variant = null
+            for variant in product.variants
+              assign variant_value = variant.option1
+              if swatch_option.position == 2
+                assign variant_value = variant.option2
+              elsif swatch_option.position == 3
+                assign variant_value = variant.option3
+              endif
+
+              if variant_value == value_string
+                if fallback_variant == null
+                  assign fallback_variant = variant
+                endif
+                if variant.available and matched_variant == null
+                  assign matched_variant = variant
+                endif
+              endif
+            endfor
+
+            # Prefer a purchasable variant for this colour (on a product with a second option
+            # the first match can be sold out); fall back to a sold-out one only when the
+            # colour has no available variant at all.
+            if matched_variant == null
+              assign matched_variant = fallback_variant
+            endif
+
+            assign variant_image = matched_variant.featured_image
+
+            assign is_selected_swatch = false
+            if value_string == selected_swatch_value
+              assign is_selected_swatch = true
+            endif
+
+            # The visible disc is drawn by ::before (the button box itself is the ring
+            # gutter), so the fill travels as a custom property instead of as background-*
+            # on the button.
+            assign swatch_background = null
+            if value.swatch.color
+              assign swatch_background = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+            elsif value.swatch.image
+              assign swatch_thumb = value.swatch.image | image_url: width: 42
+              assign swatch_background = 'url(' | append: swatch_thumb | append: ')'
+            elsif variant_image
+              assign swatch_thumb = variant_image | image_url: width: 42
+              assign swatch_background = 'url(' | append: swatch_thumb | append: ')'
+            endif
+
+            assign variant_compare_at = null
+            if matched_variant.compare_at_price > matched_variant.price
+              assign variant_compare_at = matched_variant.compare_at_price
+            endif
+
+            # Overflow colours are rendered in place and hidden, so revealing them is a
+            # `hidden = false` on markup that already exists: the order is the product
+            # option order, and a colour cannot be duplicated by being rendered twice.
+            assign is_hidden_swatch = false
+            if swatch_rendered_count > swatch_visible_limit
+              assign is_hidden_swatch = true
+            endif
+          -%}
+          {%- comment -%}
+            data-variant-image ships both a src and a matching srcset so the swap needs no
+            network round trip beyond the image bytes themselves, and so the swapped-in image
+            keeps the same responsive `sizes` contract as the Liquid-rendered one.
+          {%- endcomment -%}
+          <button
+            type="button"
+            class="aria-product-card__swatch{% if is_selected_swatch %} aria-product-card__swatch--selected{% endif %}"
+            {% if swatch_background %}
+              style="--aria-swatch-background: {{ swatch_background }};"
+            {% endif %}
+            aria-label="{{ swatch_option.name | escape }}: {{ value_string | escape }}"
+            aria-pressed="{% if is_selected_swatch %}true{% else %}false{% endif %}"
+            {% if is_hidden_swatch %}hidden{% endif %}
+            data-swatch-value="{{ value_string | escape }}"
+            {% if matched_variant %}
+              data-variant-id="{{ matched_variant.id }}"
+              data-variant-available="{% if matched_variant.available %}true{% else %}false{% endif %}"
+              data-variant-price="{{ matched_variant.price | money }}"
+              {% if variant_compare_at %}
+                data-variant-compare-price="{{ variant_compare_at | money }}"
+              {% endif %}
+            {% endif %}
+            {% if variant_image %}
+              data-variant-image="{{ variant_image | image_url: width: 500 }}"
+              data-variant-image-srcset="{{ variant_image | image_url: width: 228 }} 228w, {{ variant_image | image_url: width: 320 }} 320w, {{ variant_image | image_url: width: 456 }} 456w, {{ variant_image | image_url: width: 500 }} 500w"
+              data-variant-image-alt="{{ variant_image.alt | default: product.title | escape }}"
+            {% endif %}
+          ></button>
+        {%- endfor -%}
+        {%- comment -%}
+          Only rendered when colours are actually hidden, so it is never a control that
+          does nothing; aria-product-card.js removes it once they are all revealed.
+        {%- endcomment -%}
+        {%- if swatch_overflow_count > 0 -%}
+          <button
+            type="button"
+            class="aria-product-card__swatch-more"
+            data-swatch-more
+            aria-expanded="false"
+          >
+            {{- 'aria_theme.product_card.more_colors' | t: count: swatch_overflow_count -}}
+          </button>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="aria-product-card__price">
+      <span class="aria-product-card__price-current">{{ price | money }}</span>
+      {%- if compare_at_price > price -%}
+        <span class="aria-product-card__price-compare">{{ compare_at_price | money }}</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="aria-product-card__actions">
+    <a href="{{ product.url }}" class="aria-product-card__view-btn">
+      {{ 'aria_theme.product_card.view_product' | t }}
+    </a>
+
+    {%- render 'aria-product-card-quick-add', product: product, section_id: section_id, is_sold_out: quick_add_disabled, variant_id: card_variant.id -%}
+  </div>
+</article>

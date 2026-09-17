@@ -1,0 +1,302 @@
+{{ 'section-aria-instagram-feed.css' | asset_url | stylesheet_tag }}
+{%- comment -%} Powers the <product-form> element the quick-add snippet renders. {%- endcomment -%}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .aria-insta {
+    --aria-insta-bg-from: {{ section.settings.background_gradient_start }};
+    --aria-insta-bg-to: {{ section.settings.background_gradient_end }};
+  }
+{%- endstyle -%}
+
+<section class="aria-insta">
+  <div class="aria-insta__inner">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="aria-insta__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-insta__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="aria-insta__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      {%- comment -%}
+        V4's card row is 1400px wide, not the 1360 container — the slide track breaks out
+        by 20px a side (see the `__swiper` rule in the section CSS). 3.59 slides across
+        that 1400 track with an 8px gap yields exactly V4's 384px card:
+        (1400 - 8 x 2.59) / 3.59 = 384.2.
+
+        This comment sits ABOVE the tag on purpose. A whitespace-trimming Liquid comment
+        placed between two HTML attributes eats the newline and welds them into one name
+        (data-aria-product-carouseldata-slides-mobile), which silently stops the shared
+        carousel script from finding this element at all.
+      {%- endcomment -%}
+      <div
+        class="aria-insta__carousel-wrap"
+        data-aria-product-carousel
+        data-slides-mobile="1.15"
+        data-slides-sm="2.1"
+        data-slides-md="2.6"
+        data-slides-desktop="3.59"
+        data-slides-lg="2.6"
+        data-space-between="8"
+      >
+        <div class="swiper aria-insta__swiper" data-aria-carousel-swiper>
+          <div class="swiper-wrapper">
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign post_product = block.settings.product
+                assign post_url = block.settings.link
+                if post_url == blank and post_product != blank
+                  assign post_url = post_product.url
+                endif
+              -%}
+              <div class="swiper-slide aria-insta__slide" {{ block.shopify_attributes }}>
+                <article class="aria-insta__card">
+                  <div class="aria-insta__media">
+                    {%- if block.settings.image != blank -%}
+                      {{
+                        block.settings.image
+                        | image_url: width: 768
+                        | image_tag:
+                          loading: 'lazy',
+                          sizes: '(min-width: 990px) 384px, 70vw',
+                          widths: '384,576,768',
+                          class: 'aria-insta__image',
+                          alt: block.settings.image.alt | default: ''
+                      }}
+                    {%- elsif post_product != blank and post_product.featured_image != blank -%}
+                      {%- comment -%}
+                        Falls back to the linked product's own image so a block is never
+                        blank just because no lifestyle photo was uploaded.
+                      {%- endcomment -%}
+                      {{
+                        post_product.featured_image
+                        | image_url: width: 768
+                        | image_tag:
+                          loading: 'lazy',
+                          sizes: '(min-width: 990px) 384px, 70vw',
+                          widths: '384,576,768',
+                          class: 'aria-insta__image',
+                          alt: post_product.featured_image.alt | default: post_product.title
+                      }}
+                    {%- else -%}
+                      <span class="aria-insta__placeholder">
+                        {{ 'collection-1' | placeholder_svg_tag: 'aria-insta__image' }}
+                      </span>
+                    {%- endif -%}
+
+                    {%- if post_url != blank -%}
+                      <a href="{{ post_url }}" class="aria-insta__media-link">
+                        <span class="visually-hidden">
+                          {{- block.settings.caption | default: post_product.title | default: section.settings.heading -}}
+                        </span>
+                      </a>
+                    {%- endif -%}
+
+                    <span class="aria-insta__glyph" aria-hidden="true">
+                      <img
+                        src="{{ 'wp-instagram-glyph.svg' | asset_url }}"
+                        alt=""
+                        width="40"
+                        height="40"
+                        loading="lazy"
+                      >
+                    </span>
+                  </div>
+
+                  {%- comment -%}
+                    Product strip: title, price and quick-add all come from the real
+                    Shopify product object, so nothing here is hardcoded copy.
+                  {%- endcomment -%}
+                  {%- if post_product != blank or block.settings.avatar != blank -%}
+                    <div class="aria-insta__bar">
+                      {%- if block.settings.avatar != blank -%}
+                        <span class="aria-insta__avatar">
+                          {{
+                            block.settings.avatar
+                            | image_url: width: 120
+                            | image_tag: loading: 'lazy', widths: '60,120', class: 'aria-insta__avatar-img', alt: ''
+                          }}
+                        </span>
+                      {%- elsif post_product != blank and post_product.featured_image != blank -%}
+                        <span class="aria-insta__avatar">
+                          {{
+                            post_product.featured_image
+                            | image_url: width: 120
+                            | image_tag: loading: 'lazy', widths: '60,120', class: 'aria-insta__avatar-img', alt: ''
+                          }}
+                        </span>
+                      {%- endif -%}
+
+                      {%- if post_product != blank -%}
+                        <div class="aria-insta__meta">
+                          <a href="{{ post_product.url }}" class="aria-insta__product-title">
+                            {{- post_product.title -}}
+                          </a>
+                          <div class="aria-insta__price-row">
+                            <span class="aria-insta__price">{{ post_product.price | money }}</span>
+
+                            {%- comment -%}
+                              Shared quick-add snippet (one copy of the <product-form>
+                              wiring), which brings the theme's AJAX add, cart drawer,
+                              loading state and in-flight duplicate guard with it. Its own
+                              classes are styled here via descendant selectors rather than
+                              loading the whole product-card stylesheet for one button.
+
+                              The button is rendered for EVERY product card, sold out or
+                              not. It used to be wrapped in `if post_product.available`,
+                              which left a sold-out product's card with no button at all —
+                              a silently different card from its neighbours. Passing
+                              `is_sold_out` instead gets the snippet's existing
+                              `aria-disabled` treatment, exactly as Best Sellers and New &
+                              Trending do, so the control is present but unusable and
+                              `product-form.js` refuses the submit.
+
+                              No `variant_id` is passed: this section has no variant
+                              selector, so the snippet's default of
+                              `selected_or_first_available_variant.id` is what should post —
+                              a variant id, never a product id.
+                            {%- endcomment -%}
+                            {%- liquid
+                              assign insta_sold_out = true
+                              if post_product.available
+                                assign insta_sold_out = false
+                              endif
+                            -%}
+                            {%- render 'aria-product-card-quick-add',
+                              product: post_product,
+                              section_id: section.id,
+                              is_sold_out: insta_sold_out,
+                              hard_disable: true
+                            -%}
+                          </div>
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </article>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="aria-insta__controls" data-aria-carousel-controls>
+          <div class="aria-insta__progress">
+            {%- comment -%}
+              Dawn's base.css `:empty { display: none }` sweeps up childless decorative
+              elements, so each bar carries an inert span.
+            {%- endcomment -%}
+            <div class="aria-insta__progress-track"><span aria-hidden="true"></span></div>
+            <div class="aria-insta__progress-fill" data-aria-carousel-progress><span aria-hidden="true"></span></div>
+          </div>
+          <div class="aria-insta__nav">
+            <button
+              type="button"
+              class="aria-insta__prev"
+              data-aria-carousel-prev
+              aria-label="{{ 'aria_theme.carousel.previous' | t }}"
+            >
+              {%- render 'aria-icon', name: 'arrow-left' -%}
+            </button>
+            <button
+              type="button"
+              class="aria-insta__next"
+              data-aria-carousel-next
+              aria-label="{{ 'aria_theme.carousel.next' | t }}"
+            >
+              {%- render 'aria-icon', name: 'arrow-right' -%}
+            </button>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-instagram-feed.name",
+  "tag": "section",
+  "class": "aria-instagram-feed-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "@WigParty on Instagram",
+      "label": "t:sections.aria-instagram-feed.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "Tag #WigParty to be featured",
+      "label": "t:sections.aria-instagram-feed.settings.subheading.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_start",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-instagram-feed.settings.background_gradient_start.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_end",
+      "default": "#EADDD4",
+      "label": "t:sections.aria-instagram-feed.settings.background_gradient_end.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "post",
+      "name": "t:sections.aria-instagram-feed.blocks.post.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-instagram-feed.blocks.post.settings.image.label",
+          "info": "t:sections.aria-instagram-feed.blocks.post.settings.image.info"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.aria-instagram-feed.blocks.post.settings.product.label",
+          "info": "t:sections.aria-instagram-feed.blocks.post.settings.product.info"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "t:sections.aria-instagram-feed.blocks.post.settings.avatar.label",
+          "info": "t:sections.aria-instagram-feed.blocks.post.settings.avatar.info"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.aria-instagram-feed.blocks.post.settings.link.label",
+          "info": "t:sections.aria-instagram-feed.blocks.post.settings.link.info"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:sections.aria-instagram-feed.blocks.post.settings.caption.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-instagram-feed.presets.name",
+      "blocks": [
+        { "type": "post" },
+        { "type": "post" },
+        { "type": "post" },
+        { "type": "post" },
+        { "type": "post" }
+      ]
+    }
+  ]
+}
+{% endschema %}

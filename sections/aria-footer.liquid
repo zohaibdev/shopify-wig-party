@@ -1,0 +1,386 @@
+{{ 'section-aria-footer.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign menu_blocks = section.blocks | where: 'type', 'menu'
+  assign social_blocks = section.blocks | where: 'type', 'social'
+
+  # Translate the fallbacks on their own. `setting | default: 'key' | t` does NOT work:
+  # Liquid applies filters left to right, so `default:` returns the merchant's own
+  # string and `t` then treats that English text as a translation key.
+  assign placeholder_text = section.settings.newsletter_placeholder
+  if placeholder_text == blank
+    assign placeholder_text = 'newsletter.label' | t
+  endif
+
+  assign submit_text = section.settings.newsletter_button_label
+  if submit_text == blank
+    assign submit_text = 'newsletter.button_label' | t
+  endif
+
+  assign watermark_text = section.settings.watermark_text | default: shop.name
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .aria-footer {
+    --aria-footer-bg: {{ section.settings.background_color }};
+  }
+{%- endstyle -%}
+
+<footer class="aria-footer">
+  <div class="aria-footer__inner">
+    {%- if menu_blocks.size > 0 -%}
+      <div class="aria-footer__columns">
+        {%- for block in menu_blocks -%}
+          <div class="aria-footer__column" {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h2 class="aria-footer__column-heading">{{ block.settings.heading }}</h2>
+            {%- endif -%}
+
+            {%- comment -%}
+              Links come from a Shopify menu, never hardcoded. V4's placeholder copy in
+              this area ("Hunter Business Insider", "How to Choose a Ceiling Fan") is
+              leftover from an unrelated project and is deliberately not reproduced.
+            {%- endcomment -%}
+            {%- if block.settings.menu != blank and block.settings.menu.links.size > 0 -%}
+              <ul class="aria-footer__links" role="list">
+                {%- for link in block.settings.menu.links -%}
+                  <li class="aria-footer__links-item">
+                    <a
+                      href="{{ link.url }}"
+                      class="aria-footer__link"
+                      {% if link.active %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      {{- link.title -}}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="aria-footer__signup">
+      {%- if section.settings.newsletter_heading != blank or section.settings.newsletter_text != blank -%}
+        <div class="aria-footer__signup-text">
+          {%- if section.settings.newsletter_heading != blank -%}
+            <h2 class="aria-footer__signup-heading">{{ section.settings.newsletter_heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.newsletter_text != blank -%}
+            <p class="aria-footer__signup-body">{{ section.settings.newsletter_text }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_newsletter -%}
+        {%- comment -%}
+          Shopify's real customer form, same contract as Dawn's newsletter section and the
+          Join the Party section, so submissions actually create a subscriber.
+        {%- endcomment -%}
+        {%- form 'customer', class: 'aria-footer__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+
+          <label class="visually-hidden" for="AriaFooterEmail-{{ section.id }}">
+            {{ 'newsletter.label' | t }}
+          </label>
+          <input
+            id="AriaFooterEmail-{{ section.id }}"
+            type="email"
+            name="contact[email]"
+            class="aria-footer__input"
+            value="{{ form.email }}"
+            placeholder="{{ placeholder_text | escape }}"
+            aria-required="true"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="email"
+            required
+            {% if form.errors %}
+              autofocus
+              aria-invalid="true"
+              aria-describedby="AriaFooterError-{{ section.id }}"
+            {% elsif form.posted_successfully? %}
+              aria-describedby="AriaFooterSuccess-{{ section.id }}"
+            {% endif %}
+          >
+
+          <button type="submit" class="aria-footer__submit" name="commit">
+            {{ submit_text }}
+          </button>
+
+          {%- if form.errors -%}
+            <p class="aria-footer__message aria-footer__message--error" id="AriaFooterError-{{ section.id }}">
+              {{- form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email -}}
+            </p>
+          {%- endif -%}
+
+          {%- if form.posted_successfully? -%}
+            <p
+              class="aria-footer__message aria-footer__message--success"
+              id="AriaFooterSuccess-{{ section.id }}"
+              tabindex="-1"
+            >
+              {{ 'newsletter.success' | t }}
+            </p>
+          {%- endif -%}
+        {%- endform -%}
+      {%- endif -%}
+
+      {%- if social_blocks.size > 0 -%}
+        {%- comment -%}
+          Glyphs are Dawn's own `icon-<platform>.svg` assets. A block with no URL yet
+          still shows its icon on a `#` placeholder rather than leaving the row blank.
+        {%- endcomment -%}
+        <ul class="aria-footer__social" role="list">
+          {%- for block in social_blocks -%}
+            {%- liquid
+              assign platform = block.settings.platform
+              assign icon_asset = 'icon-' | append: platform | append: '.svg'
+              assign platform_name = 'general.social.links.' | append: platform | t
+            -%}
+            <li class="aria-footer__social-item" {{ block.shopify_attributes }}>
+              <a
+                href="{{ block.settings.url | default: '#' }}"
+                class="aria-footer__social-link"
+                {% if block.settings.url != blank %}
+                  target="_blank"
+                  rel="noopener"
+                {% endif %}
+              >
+                <span class="aria-footer__social-icon">{{- icon_asset | inline_asset_content -}}</span>
+                <span class="visually-hidden">{{ platform_name }}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.settings.show_watermark and watermark_text != blank -%}
+    {%- comment -%}
+      Oversized decorative wordmark. In V4 this is its own horizontal band between the
+      link columns and the bottom bar — NOT a background wash behind the columns — so it
+      sits in normal flow here and reserves its own height. Gradient-clipped text at 14%
+      opacity. aria-hidden: it repeats the shop name, which the copyright line below
+      already gives to assistive tech.
+    {%- endcomment -%}
+    <span class="aria-footer__watermark" aria-hidden="true">{{ watermark_text }}</span>
+  {%- endif -%}
+
+  <div class="aria-footer__bar">
+    <ul class="aria-footer__legal" role="list">
+      <li class="aria-footer__legal-item aria-footer__copyright">
+        &copy;&nbsp;{{ 'now' | date: '%Y' }}&nbsp;{{ shop.name }}
+      </li>
+      {%- if section.settings.legal_menu != blank -%}
+        {%- for link in section.settings.legal_menu.links -%}
+          <li class="aria-footer__legal-item">
+            <a href="{{ link.url }}" class="aria-footer__legal-link">{{ link.title }}</a>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+
+    {%- if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 -%}
+      {%- comment -%}
+        V4 shows a curated row of card marks, but this store enables 17 payment types —
+        including region-specific European methods (blik, eps, mb, mobilepay, przelewy24)
+        that are noise on a US storefront and wrapped the row onto a second line.
+
+        `payment_icons` is an allow-list of Shopify payment-type handles, and it is
+        INTERSECTED with `shop.enabled_payment_types` rather than replacing it: the row
+        can only ever narrow what the store genuinely accepts, never advertise a method a
+        customer cannot actually pay with. Blank shows everything enabled (Dawn's
+        behaviour).
+
+        Handle gotcha: Shopify's handle for Mastercard is `master`, and Shop Pay is
+        `shopify_pay`. Merchants type the brand name, so common aliases are normalised
+        below — otherwise a perfectly reasonable entry silently matches nothing.
+      {%- endcomment -%}
+      {%- liquid
+        assign allowed = section.settings.payment_icons | default: '' | downcase
+        assign allowed = allowed | replace: 'mastercard', 'master'
+        assign allowed = allowed | replace: 'shop_pay', 'shopify_pay'
+        assign allowed = allowed | replace: 'shop pay', 'shopify_pay'
+        assign allowed = allowed | replace: 'amex', 'american_express'
+        assign allowed = allowed | replace: 'american express', 'american_express'
+        assign allowed = allowed | replace: 'apple pay', 'apple_pay'
+        assign allowed = allowed | replace: 'google pay', 'google_pay'
+        assign allowed = allowed | replace: 'diners club', 'diners_club'
+        assign allowed = allowed | replace: ' ', ''
+        assign allowed_list = allowed | split: ','
+      -%}
+      {%- capture payment_row -%}
+        {%- for type in shop.enabled_payment_types -%}
+          {%- if allowed_list.size == 0 or allowed_list contains type -%}
+            <li class="aria-footer__payment-item">
+              {{ type | payment_type_svg_tag: class: 'aria-footer__payment-icon' }}
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endcapture -%}
+      {%- if payment_row != blank -%}
+        <ul class="aria-footer__payment" role="list">{{ payment_row }}</ul>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "t:sections.aria-footer.name",
+  "tag": "footer",
+  "class": "aria-footer-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.aria-footer.settings.header_newsletter.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "default": true,
+      "label": "t:sections.aria-footer.settings.show_newsletter.label"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "default": "Join the Party",
+      "label": "t:sections.aria-footer.settings.newsletter_heading.label"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "default": "New styles, live shows & deals — plus 10% off your first order.",
+      "label": "t:sections.aria-footer.settings.newsletter_text.label"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "default": "Enter your email address",
+      "label": "t:sections.aria-footer.settings.newsletter_placeholder.label"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button_label",
+      "default": "Subscribe",
+      "label": "t:sections.aria-footer.settings.newsletter_button_label.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-footer.settings.header_bottom.content"
+    },
+    {
+      "type": "link_list",
+      "id": "legal_menu",
+      "label": "t:sections.aria-footer.settings.legal_menu.label",
+      "info": "t:sections.aria-footer.settings.legal_menu.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "default": true,
+      "label": "t:sections.aria-footer.settings.show_payment_icons.label",
+      "info": "t:sections.aria-footer.settings.show_payment_icons.info"
+    },
+    {
+      "type": "text",
+      "id": "payment_icons",
+      "default": "visa, master, american_express, discover, diners_club, jcb, paypal, apple_pay, google_pay, shopify_pay",
+      "label": "t:sections.aria-footer.settings.payment_icons.label",
+      "info": "t:sections.aria-footer.settings.payment_icons.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-footer.settings.header_appearance.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_watermark",
+      "default": true,
+      "label": "t:sections.aria-footer.settings.show_watermark.label"
+    },
+    {
+      "type": "text",
+      "id": "watermark_text",
+      "label": "t:sections.aria-footer.settings.watermark_text.label",
+      "info": "t:sections.aria-footer.settings.watermark_text.info"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#1A1A1A",
+      "label": "t:sections.aria-footer.settings.background_color.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "t:sections.aria-footer.blocks.menu.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Online Ordering",
+          "label": "t:sections.aria-footer.blocks.menu.settings.heading.label"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "default": "footer",
+          "label": "t:sections.aria-footer.blocks.menu.settings.menu.label"
+        }
+      ]
+    },
+    {
+      "type": "social",
+      "name": "t:sections.aria-footer.blocks.social.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "platform",
+          "default": "instagram",
+          "label": "t:sections.aria-footer.blocks.social.settings.platform.label",
+          "options": [
+            { "value": "facebook", "label": "Facebook" },
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "tiktok", "label": "TikTok" },
+            { "value": "youtube", "label": "YouTube" },
+            { "value": "pinterest", "label": "Pinterest" },
+            { "value": "twitter", "label": "X (Twitter)" },
+            { "value": "snapchat", "label": "Snapchat" },
+            { "value": "tumblr", "label": "Tumblr" },
+            { "value": "vimeo", "label": "Vimeo" }
+          ]
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.aria-footer.blocks.social.settings.url.label",
+          "info": "t:sections.aria-footer.blocks.social.settings.url.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-footer.presets.name",
+      "blocks": [
+        { "type": "menu", "settings": { "heading": "Online Ordering", "menu": "footer" } },
+        { "type": "menu", "settings": { "heading": "Learn & Support", "menu": "footer" } },
+        { "type": "menu", "settings": { "heading": "Community", "menu": "footer" } },
+        { "type": "social", "settings": { "platform": "facebook" } },
+        { "type": "social", "settings": { "platform": "instagram" } },
+        { "type": "social", "settings": { "platform": "tiktok" } },
+        { "type": "social", "settings": { "platform": "youtube" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

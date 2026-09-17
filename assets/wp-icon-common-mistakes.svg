@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 1707483314">
+<g id="chart-column-stacked">
+<path id="Vector" d="M37.5 63.75H33.75C31.6789 63.75 30 62.0711 30 60V37.5C30 35.4289 31.6789 33.75 33.75 33.75H37.5C39.5711 33.75 41.25 35.4289 41.25 37.5V60C41.25 62.0711 39.5711 63.75 37.5 63.75Z" stroke="#BC696B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M63.75 63.75H60C57.9289 63.75 56.25 62.0711 56.25 60V22.5C56.25 20.4289 57.9289 18.75 60 18.75H63.75C65.8211 18.75 67.5 20.4289 67.5 22.5V60C67.5 62.0711 65.8211 63.75 63.75 63.75Z" stroke="#BC696B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M67.5 33.75H56.25" stroke="#BC696B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M41.25 48.75H30" stroke="#BC696B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_5" d="M11.25 11.25V48.75C11.25 62.892 11.25 69.9634 15.6434 74.3565C20.0368 78.75 27.1079 78.75 41.25 78.75H78.75" stroke="#BC696B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path id="Vector_6" d="M17.1521 31.04C18.0228 31.1723 18.8669 31.4502 19.711 31.6989C20.5551 32.5012 20.9851 33.2296 21.2187 34.3534C22.2964 39.5003 18.8085 45.5866 16.0904 49.7713L14.3862 50.8286L13.7598 50.5831C14.9755 44.0537 16.2656 37.63 17.1521 31.04Z" fill="#F9F7F6"/>
+</g>
+</svg>

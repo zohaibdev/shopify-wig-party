@@ -1,0 +1,26 @@
+{%- comment -%}
+  Wig Party — the "♥ Kristi" script signature used inside two mega-menu cards.
+
+  ONE element for both because it is ONE piece of artwork at two sizes and two colours:
+    Community CTA card  node 6337:4249  249 x 96.247  black, centred between body and CTA
+    Live media card     node 6337:3949  120 x 46.384  white, over the photo bottom-left
+
+  Drawn as a MASK rather than an <img> so the colour comes from `color` and the single
+  asset (`wp-mega-kristi-signature.svg`, black artwork on transparent) serves both. An
+  <img> would need a second, inverted copy of a 40-path file.
+
+  It is decorative — the card's own heading and CTA carry the meaning — so it is
+  aria-hidden with no text alternative.
+
+  Params: width (required, px), height (required, px), class (optional extra class)
+{%- endcomment -%}
+{%- comment -%}
+  `--aria-mega-sig-ar` carries the same two numbers as a ratio because the mobile drawer
+  sizes the signature as `width: min(<w>, 100%)` + `height: auto` + `aspect-ratio`, and CSS
+  cannot divide the two length properties to derive it. Desktop uses the fixed w/h.
+{%- endcomment -%}
+<span
+  class="aria-mega__signature{% if class %} {{ class }}{% endif %}"
+  style="--aria-mega-sig-w: {{ width }}px; --aria-mega-sig-h: {{ height }}px; --aria-mega-sig-ar: {{ width }} / {{ height }}; --aria-mega-sig-src: url({{ 'wp-mega-kristi-signature.svg' | asset_url }});"
+  aria-hidden="true"
+></span>

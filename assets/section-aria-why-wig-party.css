@@ -1,0 +1,338 @@
+/* Wig Party — Why Wig Party (sections/why-wig-party.liquid) */
+
+.aria-why {
+  background: var(--aria-why-bg, #f5ebe2);
+  color: var(--sy, #000);
+  padding-block: 48px;
+}
+
+.aria-why__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.aria-why__heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--sy, #000);
+  text-align: center;
+}
+
+/* V4 caps the media + feature stack at 872px, centred inside the container. */
+
+.aria-why__column {
+  width: 100%;
+  max-width: 872px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Media frame: white mat + 1px rose border, 12px inset around the media. */
+
+.aria-why__frame {
+  background: var(--white, #fff);
+  border: 1px solid var(--aria-why-frame-border, var(--qi, #bc696b));
+  border-radius: var(--border-radius, 4px);
+  padding: 8px;
+}
+
+.aria-why__media {
+  position: relative;
+  aspect-ratio: 846 / 474;
+  border-radius: var(--border-radius, 4px);
+  overflow: hidden;
+}
+
+/*
+ * The media itself. object-fit: cover rather than V4's exact placeholder crop —
+ * the still is a stand-in for merchant-supplied video, so a hardcoded crop would
+ * fight whatever they upload.
+ */
+
+/*
+ * Scoped to the media elements by class only. A broad
+ * `.aria-why__media :is(img, video, iframe)` descendant rule scores (0,1,1) and
+ * silently out-specifies the (0,1,0) overlay classes below, stretching the play
+ * glyph and signature to fill the whole frame. Do not reintroduce it.
+ */
+
+.aria-why__image,
+.aria-why__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-why__video-external {
+  width: 100%;
+  height: 100%;
+}
+
+iframe.aria-why__video {
+  border: 0;
+  object-fit: fill;
+}
+
+/* Click-to-play poster button (Dawn's <deferred-media>). Fills the media box so the whole
+   still is the hit area, and is removed from flow once the video is loaded. */
+
+.aria-why__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.aria-why__media--deferred[loaded] .aria-why__poster {
+  display: none;
+}
+
+/*
+ * Play affordance, centred on the still. `pointer-events: none` so clicks fall through
+ * to the poster button underneath — without it the glyph would swallow the click that is
+ * supposed to start the video.
+ */
+
+.aria-why__play {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  translate: -50% -50%;
+  display: block;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+}
+
+.aria-why__play img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-why__poster:hover .aria-why__play,
+.aria-why__poster:focus-visible .aria-why__play {
+  scale: 1.06;
+}
+
+.aria-why__poster:focus-visible {
+  outline: 2px solid var(--qi, #bc696b);
+  outline-offset: 2px;
+}
+
+/*
+ * Kristi signature, pinned inside the media's lower-right. Sized and offset in
+ * percentages of the media box (158/846, 21/846, 16/474) so it scales with the
+ * frame instead of drifting at narrow widths.
+ */
+
+.aria-why__signature {
+  position: absolute;
+  inset-inline-end: 2.48%;
+  inset-block-end: 3.38%;
+  width: 18.68%;
+  max-width: 158px;
+  line-height: 0;
+  pointer-events: none;
+}
+
+/* Keeps the white wordmark readable even if a merchant uploads a very bright still —
+   the V4 scrim handles the shipped photo, this covers the rest. */
+.aria-why__signature-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+}
+
+/* V4: flat 20% black over the poster (node 1:886). Sits above the media but below the
+   play glyph and the signature, both of which are rendered after it. */
+.aria-why__scrim {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* Feature row: 3-up from the start — the labels are short and stay legible. */
+
+.aria-why__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.aria-why__feature {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.aria-why__badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(var(--qi-rgb, 188, 105, 107), 0.2);
+}
+
+.aria-why__badge-icon {
+  display: block;
+  width: 28px;
+  height: auto;
+  max-height: 28px;
+  object-fit: contain;
+}
+
+.aria-why__label {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: #090909;
+  max-width: 210px;
+}
+
+/* Tablet */
+
+@media screen and (min-width: 750px) {
+  .aria-why {
+    padding-block: 64px;
+  }
+
+  .aria-why__inner {
+    padding-inline: 40px;
+    gap: 44px;
+  }
+
+  .aria-why__heading {
+    font-size: 44px;
+    line-height: 1.15;
+  }
+
+  .aria-why__column {
+    gap: 32px;
+  }
+
+  .aria-why__frame {
+    padding: 12px;
+  }
+
+  .aria-why__play {
+    width: 70px;
+    height: 70px;
+  }
+
+  .aria-why__features {
+    gap: 40px;
+  }
+
+  .aria-why__feature {
+    gap: 19px;
+  }
+
+  .aria-why__label {
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+/*
+ * Desktop. Per the theme's container rule the section supplies the gutter and the
+ * inner wrapper drops to padding-inline: 0, so the 872px column is never squeezed.
+ */
+
+@media screen and (min-width: 990px) {
+  .aria-why {
+    padding-block: var(--section-spacing, 80px);
+    padding-inline: 40px;
+  }
+
+  .aria-why__inner {
+    max-width: var(--container, 1360px);
+    padding-inline: 0;
+    gap: 56px;
+  }
+
+  .aria-why__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  .aria-why__features {
+    gap: 61px;
+  }
+}
+
+/* ---------- Custom video controls: POSITIONS ONLY ----------
+   Appearance, sizes, state-icon switching, hover/active/focus and the touch target are
+   shared and live in component-aria-video-controls.css. This section only says WHERE its
+   two controls sit.
+
+   NOT the same corners as Real Customers, deliberately. That section's media is a 316/546
+   portrait card with nothing else in it, so play/sound sit bottom-left and bottom-right.
+   This frame is a wide 846/474 landscape box and its bottom-RIGHT corner is already
+   occupied by `.aria-why__signature` (inset-inline-end 2.48%, inset-block-end 3.38%,
+   up to 158px wide). Putting the sound button there would land it on the wordmark.
+
+   So the two controls take diagonally opposite corners: play bottom-left, sound top-right.
+   Separate, both well inside the box, clear of the signature, and impossible to overlap
+   each other on any frame width. */
+.aria-video-ctrl--play.aria-why__ctrl {
+  left: 12px;
+  bottom: 12px;
+}
+
+.aria-video-ctrl--sound.aria-why__ctrl {
+  right: 12px;
+  top: 12px;
+}
+
+@media screen and (min-width: 990px) {
+  .aria-video-ctrl--play.aria-why__ctrl {
+    left: 16px;
+    bottom: 16px;
+  }
+
+  .aria-video-ctrl--sound.aria-why__ctrl {
+    right: 16px;
+    top: 16px;
+  }
+}
+
+/* An autoplaying video has no click-to-play poster, so the decorative centre glyph must
+   not render over it. */
+.aria-why__media--video .aria-why__play {
+  display: none;
+}
+
+/* Respect reduced-motion for autoplaying video. */
+
+@media (prefers-reduced-motion: reduce) {
+  .aria-why__video[autoplay] {
+    animation-play-state: paused;
+  }
+}

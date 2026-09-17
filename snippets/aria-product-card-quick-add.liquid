@@ -1,0 +1,72 @@
+{%- comment -%}
+  Quick add-to-cart control for a product card.
+  Rendered in two places by aria-product-card.liquid: inside the actions row (default
+  card) or pinned inside the media (compact card). Extracted so both call sites share
+  one copy of the <product-form> wiring.
+
+  Params: product, section_id, is_sold_out, icon (optional), variant_id (optional),
+          hard_disable (optional)
+
+  `hard_disable` emits the NATIVE `disabled` attribute alongside `aria-disabled` when the
+  product is sold out. `aria-disabled` alone stops product-form.js, but this store also runs
+  Rebuy Smart Cart, whose own script listens for clicks on add-to-cart buttons and posts
+  `/cart/add.js` itself, ignoring `aria-disabled` entirely (verified: the theme handler
+  returned and Rebuy still added the item). `pointer-events: none` blocks a real mouse
+  click but not a keyboard Enter on a focused button, so only a natively disabled button —
+  which cannot be focused or activated at all — closes the hole for a sold-out product.
+  Opt-in, so existing call sites render byte-identically.
+
+  `variant_id` lets a call site pin the variant this form starts on. aria-product-card
+  passes the variant its ringed colour swatch resolves to, so the ring and the posted
+  variant agree on first load. Omitted everywhere else, which keeps the previous default
+  (`selected_or_first_available_variant`) for the mega menu and Instagram call sites.
+
+  `icon` lets a call site swap the glyph without forking this snippet. The mega menu passes
+  V4's own `mega-cart-02`; everywhere else keeps the theme's `cart`.
+{%- endcomment -%}
+<product-form class="aria-product-card__quick-add">
+  <form
+    method="post"
+    action="{{ routes.cart_add_url }}"
+    id="AriaQuickAdd-{{ section_id }}-{{ product.id }}"
+    accept-charset="UTF-8"
+    class="aria-product-card__quick-add-form"
+    data-hide-errors="true"
+  >
+    {%- liquid
+      assign quick_add_variant_id = variant_id
+      if quick_add_variant_id == blank
+        assign quick_add_variant_id = product.selected_or_first_available_variant.id
+      endif
+    -%}
+    <input type="hidden" name="id" value="{{ quick_add_variant_id }}">
+    <input type="hidden" name="quantity" value="1">
+    <button
+      type="submit"
+      name="add"
+      class="aria-product-card__cart-btn"
+      aria-haspopup="dialog"
+      {% if is_sold_out %}
+        aria-disabled="true"
+        {% if hard_disable %}
+          disabled
+        {% endif %}
+      {% endif %}
+      aria-label="{{ 'aria_theme.product_card.add_to_cart_named' | t: product_name: product.title }}"
+    >
+      {%- comment -%}
+        Resolved with `assign` first rather than `name: icon | default: 'cart'`. Filters on a
+        `render` argument work at runtime but `theme check` rejects them
+        (UnsupportedFilterArguments), and the two-line form is what the rule asks for.
+      {%- endcomment -%}
+      {%- liquid
+        assign quick_add_icon = icon
+        if quick_add_icon == blank
+          assign quick_add_icon = 'cart'
+        endif
+      -%}
+      {%- render 'aria-icon', name: quick_add_icon -%}
+      <span class="loading__spinner hidden" aria-hidden="true"></span>
+    </button>
+  </form>
+</product-form>

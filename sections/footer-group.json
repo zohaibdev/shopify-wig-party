@@ -1,0 +1,95 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "Footer group",
+  "type": "footer",
+  "sections": {
+    "footer": {
+      "type": "aria-footer",
+      "blocks": {
+        "menu-1": {
+          "type": "menu",
+          "settings": {
+            "heading": "Online Ordering",
+            "menu": "online-ordering"
+          }
+        },
+        "menu-2": {
+          "type": "menu",
+          "settings": {
+            "heading": "Learn & Support",
+            "menu": "learn-support"
+          }
+        },
+        "menu-3": {
+          "type": "menu",
+          "settings": {
+            "heading": "Community",
+            "menu": "community"
+          }
+        },
+        "social-1": {
+          "type": "social",
+          "settings": {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/groups/wigpartyshop"
+          }
+        },
+        "social-2": {
+          "type": "social",
+          "settings": {
+            "platform": "instagram",
+            "url": "https://www.facebook.com/groups/wigpartyshop"
+          }
+        },
+        "social-3": {
+          "type": "social",
+          "settings": {
+            "platform": "tiktok",
+            "url": "https://www.tiktok.com/@kristi.dailey"
+          }
+        },
+        "social-4": {
+          "type": "social",
+          "disabled": true,
+          "settings": {
+            "platform": "youtube",
+            "url": ""
+          }
+        }
+      },
+      "block_order": [
+        "menu-1",
+        "menu-2",
+        "menu-3",
+        "social-1",
+        "social-2",
+        "social-3",
+        "social-4"
+      ],
+      "settings": {
+        "show_newsletter": true,
+        "newsletter_heading": "Join the Party",
+        "newsletter_text": "New styles, live shows & deals — plus 10% off your first order.",
+        "newsletter_placeholder": "Enter your email address",
+        "newsletter_button_label": "Subscribe",
+        "legal_menu": "footer-bottom",
+        "show_payment_icons": true,
+        "payment_icons": "visa, master, american_express, discover, diners_club, jcb, paypal, apple_pay, google_pay, shopify_pay",
+        "show_watermark": true,
+        "watermark_text": "Wig Party",
+        "background_color": "#1a1a1a"
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

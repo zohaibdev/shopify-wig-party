@@ -1,0 +1,271 @@
+{%- comment -%}
+  Wig Party — MOBILE DRAWER NAVIGATION (below 1280px).
+
+  A different interaction pattern over the same content, not a shrunken mega menu. Desktop
+  is hover + a full-bleed panel of columns; this is tap + a nested drawer that drills down
+  one level at a time.
+
+  STRUCTURE
+
+    .aria-mnav                     fixed, full-viewport, holds the overlay and the drawer
+      .aria-mnav__overlay          backdrop; tapping it closes everything
+      .aria-mnav__drawer           the sliding panel — role="dialog" aria-modal="true"
+        .aria-mnav__level--root    LEVEL 1: the main menu list
+        .aria-mnav__level--child   LEVEL 2: one per parent that owns a mega menu
+
+  DRILL-DOWN, NOT ACCORDION. Each level is its own absolutely-positioned layer filling the
+  drawer. Level 2 sits off-canvas at translateX(100%) and slides over level 1 when opened,
+  so the previous level is REPLACED rather than pushed down. Nothing expands underneath a
+  parent. `assets/aria-mobile-nav.js` drives the state; CSS owns the motion.
+
+  BACK vs CLOSE are deliberately different controls with different jobs:
+    Back  (level 2 only)  returns to level 1 and never closes the drawer
+    Close (both levels)   closes the whole drawer from wherever you are
+
+  CONTENT COMES FROM THE MEGA MENU BLOCKS. Level 2 renders `aria-mega-menu` with
+  `context: 'mobile'`, so the columns, menus, headings, icons, feature cards, promo cards,
+  photo rows and media cards are the same definitions the desktop panel uses — one source,
+  two presentations. Product cards are the single exception and are skipped in
+  `aria-mega-column` (see the note there). Nothing about the menu content is restated here.
+
+  A parent with no mega block stays a plain link, exactly as it does in the desktop header.
+
+  Params:
+    section       (required) the header section, for its blocks and settings
+    menu          (required) the main_menu link_list
+    mega_names    (required) '~'-joined parent labels that own a panel  } built once in
+    mega_ids      (required) '~'-joined block ids, parallel to the above } header.liquid
+    placeholders  (optional) pass through the placeholder-rows switch
+{%- endcomment -%}
+
+{%- liquid
+  assign mnav_id = 'AriaMnav-' | append: section.id
+  assign name_list = mega_names | split: '~'
+  assign id_list = mega_ids | split: '~'
+-%}
+
+<div class="aria-mnav" id="{{ mnav_id }}" data-aria-mnav hidden>
+  {%- comment -%}
+    The overlay is a sibling of the drawer, not a parent, so the drawer is never inside a
+    fading element — animating the backdrop's opacity would otherwise take the drawer's
+    contents with it.
+  {%- endcomment -%}
+  <div class="aria-mnav__overlay" data-mnav-close tabindex="-1" aria-hidden="true"></div>
+
+  <div
+    class="aria-mnav__drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'aria_theme.header.primary_nav' | t }}"
+    data-mnav-drawer
+  >
+    {%- comment -%} ---------- LEVEL 1: the main menu ---------- {%- endcomment -%}
+    <div class="aria-mnav__level aria-mnav__level--root is-active" data-mnav-level="root">
+      <div class="aria-mnav__head">
+        <span class="aria-mnav__title">{{ 'aria_theme.header.menu_title' | t }}</span>
+        <button
+          type="button"
+          class="aria-mnav__icon-btn aria-mnav__close"
+          data-mnav-close
+        >
+          {%- render 'aria-icon', name: 'close' -%}
+          <span class="visually-hidden">{{ 'aria_theme.header.close_menu' | t }}</span>
+        </button>
+      </div>
+
+      <div class="aria-mnav__body">
+        <ul class="aria-mnav__list" role="list">
+          {%- for link in menu.links -%}
+            {%- liquid
+              comment
+                Same lookup the desktop nav loop uses, against the same two parallel lists,
+                so a parent owns a drawer panel on exactly the same condition that it owns
+                a mega panel.
+              endcomment
+              assign has_panel = false
+              assign panel_block_id = ''
+              for mega_name in name_list
+                if mega_name == link.title
+                  assign has_panel = true
+                  assign panel_block_id = id_list[forloop.index0]
+                  break
+                endif
+              endfor
+
+              assign show_dot = false
+              if section.settings.show_live_dot and section.settings.live_dot_menu_item != blank and link.title == section.settings.live_dot_menu_item
+                assign show_dot = true
+              endif
+            -%}
+
+            <li class="aria-mnav__item">
+              {%- if has_panel -%}
+                {%- comment -%}
+                  A real <button>: it opens a panel rather than navigating, and the parent's
+                  own URL stays reachable from the "View all" link at the foot of level 2.
+                {%- endcomment -%}
+                <button
+                  type="button"
+                  class="aria-mnav__link aria-mnav__link--parent"
+                  data-mnav-open="{{ mnav_id }}-{{ panel_block_id }}"
+                >
+                  <span class="aria-mnav__link-label">
+                    {{ link.title }}
+                    {%- if show_dot -%}
+                      <span class="aria-header__live-dot aria-live-pulse" aria-hidden="true"></span>
+                      <span class="visually-hidden">{{ 'aria_theme.header.live_now' | t }}</span>
+                    {%- endif -%}
+                  </span>
+                  {%- render 'aria-icon', name: 'arrow-right', class: 'aria-mnav__chevron' -%}
+                </button>
+              {%- elsif link.links.size > 0 -%}
+                {%- comment -%}
+                  A plain Shopify parent with children and no mega block: it drills down
+                  too, into a generated level-2 list, so the drawer has ONE interaction
+                  model rather than an accordion for some items and a drill-down for
+                  others. (The store's `navigation` menu is currently flat, so this branch
+                  is a robustness path, not the common case.)
+                {%- endcomment -%}
+                <button
+                  type="button"
+                  class="aria-mnav__link aria-mnav__link--parent"
+                  data-mnav-open="{{ mnav_id }}-sub-{{ forloop.index }}"
+                >
+                  <span class="aria-mnav__link-label">{{ link.title }}</span>
+                  {%- render 'aria-icon', name: 'arrow-right', class: 'aria-mnav__chevron' -%}
+                </button>
+              {%- else -%}
+                <a
+                  href="{{ link.url }}"
+                  class="aria-mnav__link"
+                  {% if link.active %}aria-current="page"{% endif %}
+                >
+                  <span class="aria-mnav__link-label">
+                    {{ link.title }}
+                    {%- if show_dot -%}
+                      <span class="aria-header__live-dot aria-live-pulse" aria-hidden="true"></span>
+                      <span class="visually-hidden">{{ 'aria_theme.header.live_now' | t }}</span>
+                    {%- endif -%}
+                  </span>
+                </a>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- comment -%}
+          NO account/cart buttons here. An earlier version repeated them at the foot of the
+          drawer, but both already sit in the mobile header row itself and stay reachable
+          while the drawer is open, so the pair was duplicate navigation. The drawer holds
+          menu content only.
+        {%- endcomment -%}
+      </div>
+    </div>
+
+    {%- comment -%} ---------- LEVEL 2: one panel per mega parent ---------- {%- endcomment -%}
+    {%- for link in menu.links -%}
+      {%- liquid
+        assign has_panel = false
+        assign panel_block_id = ''
+        for mega_name in name_list
+          if mega_name == link.title
+            assign has_panel = true
+            assign panel_block_id = id_list[forloop.index0]
+            break
+          endif
+        endfor
+      -%}
+
+      {%- if has_panel -%}
+        <div
+          class="aria-mnav__level aria-mnav__level--child"
+          id="{{ mnav_id }}-{{ panel_block_id }}"
+          data-mnav-level="child"
+          hidden
+        >
+          <div class="aria-mnav__head">
+            <button type="button" class="aria-mnav__icon-btn aria-mnav__back" data-mnav-back>
+              {%- render 'aria-icon', name: 'arrow-left' -%}
+              <span class="visually-hidden">{{ 'aria_theme.header.back' | t }}</span>
+            </button>
+            <span class="aria-mnav__title">{{ link.title }}</span>
+            <button type="button" class="aria-mnav__icon-btn aria-mnav__close" data-mnav-close>
+              {%- render 'aria-icon', name: 'close' -%}
+              <span class="visually-hidden">{{ 'aria_theme.header.close_menu' | t }}</span>
+            </button>
+          </div>
+
+          <div class="aria-mnav__body">
+            {%- comment -%}
+              THE SHARED CONTENT. Same snippet, same block, same branch as desktop — only
+              `context` differs. Product cards drop out inside `aria-mega-column`; the
+              feature cards, promo cards, photo rows, media card and every menu column
+              stay, and go responsive via component-aria-mobile-nav.css.
+            {%- endcomment -%}
+            {%- for mega in section.blocks -%}
+              {%- if mega.id == panel_block_id -%}
+                {%- render 'aria-mega-menu',
+                  block: mega,
+                  id: mnav_id,
+                  context: 'mobile',
+                  placeholders: placeholders
+                -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- comment -%}
+              The parent's own destination. The level-1 row is a <button> that opens this
+              panel, so without this the parent link itself would be unreachable on mobile.
+            {%- endcomment -%}
+            {%- if link.url != blank and link.url != '#' -%}
+              <a href="{{ link.url }}" class="aria-mnav__viewall">
+                {{ 'aria_theme.header.view_all' | t }}
+                {{ link.title }}
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- elsif link.links.size > 0 -%}
+        <div
+          class="aria-mnav__level aria-mnav__level--child"
+          id="{{ mnav_id }}-sub-{{ forloop.index }}"
+          data-mnav-level="child"
+          hidden
+        >
+          <div class="aria-mnav__head">
+            <button type="button" class="aria-mnav__icon-btn aria-mnav__back" data-mnav-back>
+              {%- render 'aria-icon', name: 'arrow-left' -%}
+              <span class="visually-hidden">{{ 'aria_theme.header.back' | t }}</span>
+            </button>
+            <span class="aria-mnav__title">{{ link.title }}</span>
+            <button type="button" class="aria-mnav__icon-btn aria-mnav__close" data-mnav-close>
+              {%- render 'aria-icon', name: 'close' -%}
+              <span class="visually-hidden">{{ 'aria_theme.header.close_menu' | t }}</span>
+            </button>
+          </div>
+          <div class="aria-mnav__body">
+            <ul class="aria-mnav__list" role="list">
+              {%- for childlink in link.links -%}
+                <li class="aria-mnav__item">
+                  <a
+                    href="{{ childlink.url }}"
+                    class="aria-mnav__link"
+                    {% if childlink.active %}aria-current="page"{% endif %}
+                  >
+                    <span class="aria-mnav__link-label">{{ childlink.title }}</span>
+                  </a>
+                </li>
+              {%- endfor -%}
+            </ul>
+            {%- if link.url != blank and link.url != '#' -%}
+              <a href="{{ link.url }}" class="aria-mnav__viewall">
+                {{ 'aria_theme.header.view_all' | t }}
+                {{ link.title }}
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>

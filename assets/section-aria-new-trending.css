@@ -1,0 +1,131 @@
+/* Wig Party — New and trending (sections/new-trending.liquid)
+   Product card styling lives in component-aria-product-card.css (--compact variant). */
+
+.aria-new-trending {
+  background: linear-gradient(
+    180deg,
+    var(--aria-nt-bg-from, #ffffff) 0%,
+    var(--aria-nt-bg-to, #eaddd4) 100%
+  );
+  color: var(--sy, #000);
+  padding-block: 48px;
+}
+
+.aria-new-trending__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.aria-new-trending__heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  text-align: center;
+}
+
+.aria-new-trending__empty {
+  text-align: center;
+  padding: 40px 16px;
+  opacity: 0.7;
+}
+
+.aria-new-trending__carousel-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.aria-new-trending__swiper {
+  /* Without min-width:0 a flex child can size to its content and overflow the viewport. */
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.aria-new-trending__slide {
+  height: auto;
+  display: flex;
+}
+
+.aria-new-trending__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.aria-new-trending__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.aria-new-trending__nav--prev {
+  background: var(--white, #fff);
+  color: #111;
+  border: 1px solid #a9aab5;
+}
+
+.aria-new-trending__nav--next {
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+  border: 0;
+}
+
+.aria-new-trending__nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.aria-new-trending__nav .aria-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media screen and (min-width: 750px) {
+  .aria-new-trending {
+    padding-block: 64px;
+  }
+
+  .aria-new-trending__inner {
+    padding-inline: 40px;
+    gap: 40px;
+  }
+
+  .aria-new-trending__heading {
+    font-size: 44px;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .aria-new-trending {
+    padding-inline: 40px;
+    padding-block: var(--section-spacing, 80px);
+  }
+
+  .aria-new-trending__inner {
+    padding-inline: 0;
+    gap: 48px;
+  }
+
+  .aria-new-trending__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  /* V4: 5 x 262px cards + 4 x 12px gaps = 1358px, the full container. */
+  .aria-new-trending__controls {
+    justify-content: flex-end;
+  }
+}

@@ -1,0 +1,521 @@
+/* Wig Party - shared product card component.
+   ONE card design, rendered identically by Best Sellers and New & Trending. Each section
+   owns its own outer layout (heading, spacing, slider config) but not the card.
+   Extracted from section-aria-best-sellers.css so both sections share one copy. */
+
+/* ---------- Product card ---------- */
+
+/* V4 light: the card is transparent and unpadded — it sits directly on the section
+   gradient. (The superseded dark variant used a white panel with 16px padding.) */
+.aria-product-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: transparent;
+  color: #2b2c2b;
+  border-radius: 2px;
+  padding: 0;
+}
+
+.aria-product-card--empty {
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  opacity: 0.6;
+}
+
+/* V4 Best Sellers media is 331x320 on a 331px card (radius 4). The previous 228/240
+   made the media ~28px too tall at desktop. The card is fluid, so a section with narrower
+   slides gets a smaller card at the same ratio. */
+.aria-product-card__media {
+  position: relative;
+  border-radius: var(--border-radius, 4px);
+  overflow: hidden;
+  aspect-ratio: 331 / 320;
+  background: #f1f1f1;
+}
+
+.aria-product-card__media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-product-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.aria-product-card__image--secondary {
+  opacity: 0;
+}
+
+.aria-product-card:hover .aria-product-card__image--secondary,
+.aria-product-card:focus-within .aria-product-card__image--secondary {
+  opacity: 1;
+}
+
+/* Once a swatch has swapped in a specific variant's image, the product-level second image
+   would hover-flip to a different colour. Same specificity as the rule above, so it wins
+   on source order — no !important needed. */
+.aria-product-card--variant-image:hover .aria-product-card__image--secondary,
+.aria-product-card--variant-image:focus-within .aria-product-card__image--secondary {
+  opacity: 0;
+}
+
+/* V4: 28px, 12px from the media's top-right. box-sizing must be explicit — the 1px
+   border was being added outside the 28px box, rendering 30px. The dead `border: 0`
+   that the later border declaration already overrode has been removed. */
+.aria-product-card__wishlist {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 29%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.aria-product-card__wishlist-filled {
+  display: none;
+  color: #fff;
+}
+
+/* Wishlisted state is toggled client-side by assets/aria-wishlist.js (localStorage-backed) */
+.aria-product-card__wishlist[aria-pressed='true'] {
+  background: #BC696B;
+  color: #fff;
+}
+
+.aria-product-card__wishlist[aria-pressed='true'] .aria-product-card__wishlist-outline {
+  display: none;
+}
+
+.aria-product-card__wishlist[aria-pressed='true'] .aria-product-card__wishlist-filled {
+  display: block;
+}
+
+.aria-product-card__wishlist .aria-icon {
+  width: 15px;
+  height: 13px;
+}
+
+/* V4 pins the chip 8px from the media's bottom-left. */
+.aria-product-card__badges {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+/* V4 chip: px-8 py-4, radius 8, 12/14 uppercase. */
+.aria-product-card__badge {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 14px;
+  background: #fff;
+  color: #1f1f1f;
+}
+
+.aria-product-card__badge--sold-out {
+  background: #fa5656;
+  color: #fff;
+}
+
+/* V4 body: 8px between rating / title / swatches, then 24px down to the price row.
+   The price margins that used to supply this spacing have been removed. */
+.aria-product-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Was `:not(.aria-product-card--compact)`; the compact modifier no longer exists, so the
+   qualifier only obscured the rule. */
+.aria-product-card__body > .aria-product-card__price {
+  margin-top: 16px;
+}
+
+.aria-product-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.aria-product-card__stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--py);
+}
+
+.aria-product-card__stars .aria-icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* V4: Poppins 12/14 uppercase. */
+.aria-product-card__rating-value {
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #333131;
+}
+
+.aria-product-card__rating-value--empty {
+  opacity: 0.6;
+}
+
+/* V4 Best Sellers title: Poppins 18/28, black. */
+.aria-product-card__title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.aria-product-card__title a {
+  color: var(--black, #000);
+  text-decoration: none;
+}
+
+/* V4 node I1:473;6283:597 is five 15px discs on a 19px pitch, flush with the title's
+   left edge; it specifies no selected state, so the ring below is this theme's own.
+ *
+ * The ring is drawn INSIDE each button's box, not around it. Each button is a 22px
+ * transparent ring gutter and the visible 15px disc is a ::before. That is the root-cause
+ * fix for the clipped first swatch: an `outline`/`box-shadow` painted *around* a 15px
+ * button reaches ~3px past the card's left edge, and the card sits flush against
+ * `.aria-best-sellers__swiper { overflow: hidden }` (best-sellers CSS), which cropped
+ * exactly that overhang — visibly on the first swatch, and on the last one once a card
+ * ended at the container edge. Keeping the ring inside the box means nothing can reach
+ * outside the card at any breakpoint, and first/middle/last swatches all get identical
+ * breathing room without a single `overflow: visible` or `!important` anywhere.
+ *
+ * `gap` is 0 by consequence: the 3.5px gutter each side of every disc supplies the
+ * spacing, giving a 22px pitch against the design's 19px — the cost of having a ring at
+ * all, and the reason the discs are not simply spaced further apart instead. */
+.aria-product-card__swatches {
+  /* Containing block for the colour-name tooltip, which is positioned and clamped against
+     this row precisely so it can never reach outside the card. */
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.aria-product-card__swatch {
+  position: relative;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* The disc. `--aria-swatch-background` is set per swatch by aria-product-card.liquid and
+   holds either a colour or a `url()`, which is why this is the `background` shorthand. */
+.aria-product-card__swatch::before {
+  content: '';
+  position: absolute;
+  inset: 3.5px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1px solid #b5b5b5;
+  background: var(--aria-swatch-background, #e5e5e5) center / cover no-repeat;
+}
+
+/* 1.5px ring on the button's own edge => a 2px gap to the 15px disc, complete on all four
+   sides. `inset` is what keeps it inside the box; a plain (outer) box-shadow or outline
+   here is the bug this replaces. */
+.aria-product-card__swatch--selected {
+  box-shadow: inset 0 0 0 1.5px var(--py);
+}
+
+/* Keyboard focus is inset for the same no-clipping reason (negative outline-offset draws
+   the ring inside the border box).
+   `box-shadow: none` is load-bearing, not tidying: base.css sets
+   `*:focus-visible { box-shadow: var(--focused-base-box-shadow) }`, which is an OUTER glow
+   reaching 7px past the button — on the first swatch that lands outside the card and gets
+   cropped by the swiper, the same bug as the old selected outline. The rule below is
+   restated for the selected state because this one would otherwise erase its ring while
+   the swatch has keyboard focus. */
+.aria-product-card__swatch:focus-visible {
+  outline: 2px solid var(--sy, #000);
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+.aria-product-card__swatch--selected:focus-visible {
+  box-shadow: inset 0 0 0 1.5px var(--py);
+}
+
+/* Keeps the 15px disc from the design while giving touch devices a 24px target. Replaces
+   an `::after { inset: -6px }` overlay, which — now that the buttons are edge to edge —
+   would have made neighbouring hit zones overlap. */
+@media (pointer: coarse) {
+  .aria-product-card__swatch {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+  }
+
+  .aria-product-card__swatch::before {
+    inset: 4.5px;
+  }
+
+  /* The +N label is a real control now, so it needs a touch target. Grown to the same 24px
+     the swatches get, using the row's own vertical slack (the 14px label is centred in a
+     24px row) — going bigger would either overlap the product title above it or push the
+     mobile card taller. Transparent overlay, so nothing moves. */
+  .aria-product-card__swatch-more::after {
+    content: '';
+    position: absolute;
+    inset: -5px -6px;
+  }
+}
+
+/* Overflow colours are rendered up front and revealed in place, so this has to beat the
+   UA `[hidden]` rule being overridden by nothing — stated explicitly rather than relied on. */
+.aria-product-card__swatch[hidden] {
+  display: none;
+}
+
+/* Colour-name tooltip. A 15px disc cannot tell you it is "CRUSHED ALMOND BLONDE - R", so
+   the name is shown on hover / keyboard focus / selection.
+ *
+ * Anchored to the swatch ROW, not to the swatch, and its left offset is clamped to the
+ * row's width by aria-product-card.js. Anchoring it to the swatch is the obvious approach
+ * and the wrong one: a pill centred on a 22px button overhangs the card by ~40px on the
+ * first swatch, and the card sits flush against the swiper's `overflow: hidden` — the same
+ * clipping the selected ring had to be redesigned to avoid.
+ *
+ * Out of flow, so it adds nothing to the row and shifts nothing. It sits over the product
+ * title above it, which is inside the card and therefore safe. Borrows the badge chip's
+ * padding/radius/type so it reads as part of the same system, inverted to dark so it is
+ * legible over the title and distinct from a badge.
+ * `pointer-events: none` keeps it out of the way of both the swatches and Swiper's drag. */
+.aria-product-card__swatch-tooltip {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #2b2c2b;
+  color: #fff;
+  font-size: 12px;
+  line-height: 14px;
+  text-transform: none;
+  /* Wraps rather than truncates: reading the full colour name is the entire point. */
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.aria-product-card__swatch-tooltip--visible {
+  opacity: 1;
+}
+
+/* V4 sets the +N label 4px after the last disc; that disc's own gutter supplies 3.5px.
+   It is now a <button> (it reveals the hidden colours), so the UA button chrome has to be
+   reset to keep the label looking exactly as the old <span> did. */
+.aria-product-card__swatch-more {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: inherit;
+  color: #302e2e;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Inset focus ring: this control is the LAST thing in the row, so an outward ring would
+   overhang the card's right edge and be cropped by the swiper, exactly as the swatch ring
+   was. `box-shadow: none` cancels base.css's outer `*:focus-visible` glow. */
+.aria-product-card__swatch-more:focus-visible {
+  outline: 2px solid var(--sy, #000);
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+/* V4: Montserrat Medium, 6px gap, current 24/32 black, compare 20/28 #3f3e3e. */
+.aria-product-card__price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-heading-family);
+  font-size: 24px;
+  line-height: 32px;
+  margin: 0;
+}
+
+.aria-product-card__price-current {
+  font-weight: 500;
+  color: var(--black, #000);
+}
+
+.aria-product-card__price-compare {
+  font-weight: 500;
+  color: #3f3e3e;
+  text-decoration: line-through;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.aria-product-card__actions {
+  display: flex;
+  gap: 12px;
+}
+
+/*
+ * V4: px-24 py-12 with 18/28 type and a 1px border => 54px tall.
+ * `box-sizing` must be stated explicitly: this element was resolving to content-box, so
+ * min-height was ADDED to padding and border and the button rendered 78px tall — far
+ * taller than the adjacent cart button. Both buttons are pinned to 54px below.
+ */
+.aria-product-card__view-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 12px 24px;
+  border: 1px solid var(--sy, #000);
+  color: var(--sy, #000);
+  text-decoration: none;
+  text-transform: none;
+  /* Single line is what keeps this button's height equal to the adjacent cart button;
+     a wrapped label silently makes it 28px taller. */
+  white-space: nowrap;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+  border-radius: 2px;
+  text-align: center;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.aria-product-card__quick-add {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.aria-product-card__quick-add-form {
+  margin: 0;
+}
+
+/* Height, padding and radius are matched to the View Product button so the two sit on
+   one baseline with equal height (54px). */
+.aria-product-card__cart-btn {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #BC696B;
+  color: #BC696B;
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.aria-product-card__cart-btn .aria-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.aria-product-card__cart-btn .loading__spinner {
+  display: none;
+}
+
+.aria-product-card__cart-btn[aria-disabled='true'] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Mobile: quick-add is always shown next to the view button (no hover dependency) */
+
+@media screen and (max-width: 749px) {
+  .aria-product-card__view-btn {
+    background: var(--py);
+    color: #fff;
+    border-color: var(--py);
+  }
+}
+
+@media screen and (min-width: 750px) {
+  /* Default (non-hover) state on desktop matches the outline button; hovering/focusing
+     the card switches to the filled button + reveals the quick-add cart icon, per Figma. */
+  .aria-product-card__quick-add {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      width 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .aria-product-card:hover .aria-product-card__quick-add,
+  .aria-product-card:focus-within .aria-product-card__quick-add {
+    width: 54px;
+    opacity: 1;
+  }
+
+  .aria-product-card:hover .aria-product-card__view-btn,
+  .aria-product-card:focus-within .aria-product-card__view-btn {
+    background: var(--py);
+    color: #fff;
+    border-color: var(--py);
+  }
+}
+

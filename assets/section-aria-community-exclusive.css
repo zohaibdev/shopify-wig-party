@@ -1,0 +1,384 @@
+/* Wig Party — Community Exclusive / Deals & Exclusives (sections/community-exclusive.liquid) */
+
+.aria-community-exclusive {
+  background: var(--aria-ce-bg, #1a1a1a);
+  color: var(--white, #fff);
+  padding-block: 48px;
+}
+
+.aria-community-exclusive__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- Header ---------- */
+
+.aria-community-exclusive__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aria-community-exclusive__eyebrow {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  text-transform: uppercase;
+}
+
+.aria-community-exclusive__heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--white, #fff);
+}
+
+.aria-community-exclusive__description {
+  margin: 4px 0 0;
+  max-width: 829px;
+  font-size: 16px;
+  line-height: 26px;
+}
+
+/* ---------- Feature card ---------- */
+
+.aria-community-exclusive__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.aria-community-exclusive__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius, 4px);
+  background: #f6ede5;
+  aspect-ratio: 630 / 474;
+}
+
+.aria-community-exclusive__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-community-exclusive__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 8px;
+  border-radius: 2px;
+  background: #b94e50;
+  color: var(--white, #fff);
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.aria-community-exclusive__panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  background: var(--white, #fff);
+  color: var(--sy, #000);
+  border-radius: var(--border-radius, 4px);
+}
+
+.aria-community-exclusive__panel-top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aria-community-exclusive__deal-eyebrow {
+  margin: 0;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--py, #a64a4c);
+}
+
+.aria-community-exclusive__deal-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.18;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--sy, #000);
+}
+
+.aria-community-exclusive__deal-description {
+  margin: 0;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--sy, #000);
+}
+
+/* `flex-wrap` matters: the 48px current price plus the 28px compare-at price need ~291px,
+   and between 990px and ~1300px the panel only offers ~195px. Without wrapping the
+   compare price ran straight out of the section and pushed page-level horizontal scroll
+   (16px at 1024). There is ample room at 1440, so this stays on one line there. */
+.aria-community-exclusive__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  margin: 12px 0 0;
+  color: var(--sy, #000);
+}
+
+.aria-community-exclusive__price-current {
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: var(--heading-h2-weight, 500);
+}
+
+.aria-community-exclusive__price-compare {
+  font-size: 20px;
+  line-height: 1.2;
+  text-decoration: line-through;
+  opacity: 0.67;
+}
+
+/* ---------- Actions ---------- */
+
+.aria-community-exclusive__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.aria-community-exclusive__btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 12px 24px;
+  border-radius: 2px;
+  font-size: 16px;
+  line-height: 28px;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.aria-community-exclusive__btn--primary {
+  background: var(--py, #a64a4c);
+  border: 1px solid var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-community-exclusive__btn--primary:hover,
+.aria-community-exclusive__btn--primary:focus-visible {
+  background: var(--sy, #000);
+  border-color: var(--sy, #000);
+}
+
+.aria-community-exclusive__btn--secondary {
+  background: transparent;
+  border: 1px solid var(--sy, #000);
+  color: var(--sy, #000);
+}
+
+.aria-community-exclusive__btn--secondary:hover,
+.aria-community-exclusive__btn--secondary:focus-visible {
+  background: var(--py, #a64a4c);
+  border-color: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+/* ---------- Footer row ---------- */
+
+.aria-community-exclusive__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.aria-community-exclusive__footer-link {
+  color: var(--white, #fff);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 500;
+  font-style: italic;
+  text-transform: uppercase;
+  text-decoration: underline;
+}
+
+.aria-community-exclusive__info-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--qi, #bc696b);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--white, #fff);
+  font-size: 14px;
+  line-height: 24px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-community-exclusive__info-pill:hover,
+.aria-community-exclusive__info-pill:focus-visible {
+  background: var(--py, #a64a4c);
+}
+
+@media screen and (min-width: 750px) {
+  .aria-community-exclusive {
+    padding-block: 64px;
+  }
+
+  .aria-community-exclusive__inner {
+    padding-inline: 40px;
+    gap: 40px;
+  }
+
+  .aria-community-exclusive__heading {
+    font-size: 44px;
+  }
+
+  .aria-community-exclusive__panel {
+    padding: 32px;
+  }
+
+  .aria-community-exclusive__deal-title {
+    font-size: 36px;
+  }
+
+  .aria-community-exclusive__price-current {
+    font-size: 40px;
+  }
+
+  .aria-community-exclusive__btn {
+    flex: 1 1 0;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .aria-community-exclusive {
+    padding-inline: 40px;
+    padding-block: var(--section-spacing, 80px);
+  }
+
+  .aria-community-exclusive__inner {
+    padding-inline: 0;
+    gap: 48px;
+  }
+
+  .aria-community-exclusive__eyebrow {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .aria-community-exclusive__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  .aria-community-exclusive__description {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  /* 630px media + 24px gap + flexible panel = the 1328px V4 content row */
+  .aria-community-exclusive__card {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  /* `0 1 630px` rather than `0 0 630px`: it still measures V4's 630px wherever there is
+     room (1440 has surplus), but is allowed to give some back between 990 and ~1300px
+     instead of starving the copy panel to ~195px. */
+  .aria-community-exclusive__media {
+    flex: 0 1 630px;
+    min-width: 0;
+    max-width: 630px;
+    aspect-ratio: auto;
+    min-height: 474px;
+  }
+
+  .aria-community-exclusive__panel {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 40px;
+  }
+
+  .aria-community-exclusive__deal-eyebrow {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .aria-community-exclusive__deal-title {
+    font-size: 48px;
+    line-height: 56px;
+  }
+
+  .aria-community-exclusive__deal-description {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-community-exclusive__price-current {
+    font-size: 48px;
+    line-height: 56px;
+  }
+
+  .aria-community-exclusive__price-compare {
+    font-size: 28px;
+    line-height: 38px;
+  }
+
+  .aria-community-exclusive__btn {
+    font-size: 18px;
+  }
+}
+
+
+@media screen and (max-width: 767px) {
+  .aria-community-exclusive__footer {
+    justify-content: center;
+  }
+}
+
+
+/* ==========================================================================
+   1024px BAND ONLY — 990px to 1279px
+   --------------------------------------------------------------------------
+   Scoped to the theme's own existing breakpoints so nothing leaks: 1280 and
+   1440 keep the untouched desktop rules, 768 and below keep the untouched
+   tablet/mobile rules. Do not widen or narrow this range without re-measuring.
+   ========================================================================== */
+
+/*
+ * The media's 630px basis won almost the whole 929px row, leaving the copy panel 275px —
+ * which forced the card to 990px tall as the price, buttons and description stacked up.
+ * V4's own split is the other way round: 630 media / 674 panel, so the panel is meant to
+ * be the WIDER half. Sharing the row restores that.
+ */
+@media screen and (min-width: 990px) and (max-width: 1279px) {
+  .aria-community-exclusive__media {
+    flex: 1 1 0;
+  }
+}

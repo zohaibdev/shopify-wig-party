@@ -1,0 +1,650 @@
+{%- comment -%}
+  Wig Party — ONE column of a mega-menu panel.
+
+  Extracted so the six dedicated panel types (shop / best_sellers / start_here / live /
+  community / daily_deals) share a single copy of every column renderer instead of each
+  repeating it. A panel is now just a short list of `render 'aria-mega-column'` calls whose
+  arguments ARE the preset design values from the Figma frames.
+
+  Column types, mapped 1:1 onto the distinct shapes in the design:
+    menu_divided  26px text rows with 1px rules between      (Shop cols 2-3)
+    menu_padded   outlined 58px cards, 1px #EADDD4 at r12    (Start Here / Live / Community / Deals)
+    style_cards   48px thumb + title + subtitle              (Shop col 1)
+    promo_card    244x315 image card, badge + full-width CTA (Shop cols 4-5)
+    products      250px product cards, auto-populated        (Best Sellers / Start Here / Deals)
+    feature_card  glass card on a photo OR gradient shell    (Best Sellers / Community / Deals)
+    media_card    large image + signature + play affordance  (Live)
+    photo_row     cream-matted photos + outlined CTA         (Community)
+
+  Params (all optional except col_type):
+    col_type, col_heading, col_icon, col_menu_handle, col_width, col_push,
+    col_image, col_body, col_chip, col_chip_style, col_btn_label, col_btn_url,
+    col_collection, col_count, panel_id, shopify_attributes,
+    col_variant                              -- feature-card design variant:
+                                                'best-sellers' | 'community' | 'deals'
+    col_shell                                -- bool: wrap the column in the shared
+                                                white->cream gradient shell (radius 8,
+                                                20px side + bottom padding). Start Here /
+                                                Deals product rows and Community's CTA
+                                                column only — Best Sellers has none.
+    col_icon_tone                            -- 'qi' for the #BC696B gold-sell glyph
+    col_title_tone                           -- 'accent' for a Primary/Dark Pink label
+    col_placeholders, col_placeholder_subs   -- '|'-joined Figma row labels, used only
+                                                while the column's menu is missing
+    placeholders                             -- the section's placeholder switch
+
+  `col_heading` is only a FALLBACK: when the column is fed by a Shopify menu, that menu's
+  own title wins, because every handle is named after the heading it feeds
+  (header-shop-shop-by-collection -> "Shop by Collection").
+{%- endcomment -%}
+
+{%- liquid
+  comment
+    `col_menu_handle` arrives in two shapes: a preset STRING handle for the columns whose
+    menu this spec fixes, or a link_list OBJECT from a menu picker (Shop by Style, the one
+    column with no supplied handle). Looking a string up in `linklists` works; passing the
+    object through it yields nil, so fall back to using the object directly.
+  endcomment
+  assign col_menu = nil
+  if col_menu_handle != blank
+    assign col_menu = linklists[col_menu_handle]
+    if col_menu.links.size == 0 and col_menu_handle.links.size > 0
+      assign col_menu = col_menu_handle
+    endif
+  endif
+
+  comment
+    Nil-safe emptiness test. `col_menu.links.size == 0` is NOT safe here: for a nil menu the
+    size is nil, and `nil == 0` is false in Liquid, so an empty column silently skipped its
+    placeholders. Asking `> 0` and inverting handles nil and 0 alike.
+  endcomment
+  assign menu_has_links = false
+  if col_menu.links.size > 0
+    assign menu_has_links = true
+  endif
+  if col_menu.title != blank
+    assign col_heading = col_menu.title
+  endif
+
+  assign col_count_setting = col_count
+  if col_chip_style == blank
+    assign col_chip_style = 'white'
+  endif
+
+  comment
+    FALLBACKS, so no column ever renders as a headed but empty box while the real content
+    is still being produced. Three layers, most-preferred first:
+
+    1. `col_placeholders` - the row labels straight from the Figma frame, used ONLY when the
+       column's Shopify menu is missing or empty and the section's placeholder switch is on.
+       Real menu items take over the moment the menu exists; nothing here needs rebuilding.
+    2. images - the block's own image, else a real product shot from the column's collection
+       (or the catalogue), and only then Shopify's line-art placeholder. A real photo reads
+       far closer to the design than a wireframe.
+    3. links - a genuine destination instead of '#': the column's collection where it has
+       one, otherwise the all-products route.
+  endcomment
+  assign ph_rows = ''
+  if col_placeholders != blank and menu_has_links == false and placeholders
+    assign ph_rows = col_placeholders | split: '|'
+  endif
+  assign ph_subs = ''
+  if col_placeholder_subs != blank
+    assign ph_subs = col_placeholder_subs | split: '|'
+  endif
+
+  assign fallback_url = routes.all_products_collection_url
+  if col_collection != blank and col_collection.url != blank
+    assign fallback_url = col_collection.url
+  endif
+  assign resolved_url = col_btn_url
+  if resolved_url == blank
+    assign resolved_url = fallback_url
+  endif
+
+  assign fallback_img = nil
+  if col_image == blank
+    if col_collection.products.first.featured_image != blank
+      assign fallback_img = col_collection.products.first.featured_image
+    elsif collections.all.products.first.featured_image != blank
+      assign fallback_img = collections.all.products.first.featured_image
+    endif
+  endif
+-%}
+
+{%- comment -%}
+  Only the WIDTH travels as a custom property. There used to be a `col_height` /
+  `--aria-mega-feature-h` pair here as well, from when feature-card heights were settings;
+  every card height is now a design constant in the variant CSS (449 / 410 / 450), no panel
+  passed it and no rule consumed it.
+{%- endcomment -%}
+{%- capture col_style -%}
+  {%- if col_width > 0 -%}--aria-mega-col-w: {{ col_width }}px;{%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%}
+  NO PRODUCT CARDS ON MOBILE, and not rendered rather than hidden.
+
+  The drawer's level-2 panels reuse these exact renderers, but a `products` column has no
+  place in a 360px drawer — and the requirement is that the desktop product grid is not
+  loaded there at all, so `display: none` would not do: the markup, the `<product-form>`
+  elements and every `image_url` would still be emitted. The whole column is skipped
+  instead, HEAD INCLUDED — returning just the "Best Sellers · the styles that actually
+  sell" heading over an empty body would be worse than omitting it.
+
+  This is the ONE content difference between the two presentations. Everything else adapts
+  in CSS, which is why only the `products` call sites pass `col_context`. The desktop
+  panels never pass it, so their product data and rendering are completely untouched.
+{%- endcomment -%}
+{%- unless col_context == 'mobile' and col_type == 'products' -%}
+
+{%- comment -%}
+  `col_shell` is the white->cream gradient SHELL the design wraps around two column types:
+  the Start Here / Dailey Deals product rows and the Community CTA column. It is a shared
+  modifier rather than three copies of the same gradient, and it is deliberately NOT on
+  every products column — Best Sellers (6337:3210) draws its row on bare white.
+
+  `col_icon_tone` picks the glyph colour. Every column glyph is Primary/Dark Pink except
+  `gold-sell`, which the design draws in Quaternary `#BC696B`.
+
+  `col_title_tone` does the same for the label: black everywhere except the Live media
+  column, whose "LIVE TONIGHT · 7:00 PM CT" is Primary/Dark Pink (node 6337:3942).
+{%- endcomment -%}
+<div
+  class="aria-mega__col aria-mega__col--{{ col_type | replace: '_', '-' }}{% if col_variant != blank %} aria-mega__col--feature-{{ col_variant }}{% endif %}{% if col_shell %} aria-mega__col--shell{% endif %}{% if col_push %} aria-mega__col--push{% endif %}"
+  {% if col_style != blank %}style="{{ col_style }}"{% endif %}
+  {{ shopify_attributes }}
+>
+  {%- if col_heading != blank -%}
+    <div class="aria-mega__col-head">
+      {%- if col_icon != blank and col_icon != 'none' -%}
+        {%- liquid
+          assign icon_class = 'aria-mega__col-icon'
+          if col_icon_tone != blank
+            assign icon_class = icon_class | append: ' aria-mega__col-icon--' | append: col_icon_tone
+          endif
+        -%}
+        {%- render 'aria-icon', name: col_icon, class: icon_class -%}
+      {%- endif -%}
+      <span class="aria-mega__col-title{% if col_title_tone != blank %} aria-mega__col-title--{{ col_title_tone }}{% endif %}">{{ col_heading }}</span>
+    </div>
+  {%- endif -%}
+
+  {%- case col_type -%}
+    {%- when 'menu_divided' -%}
+      {%- if menu_has_links == false and ph_rows != '' -%}
+        <ul class="aria-mega__links aria-mega__links--divided" role="list">
+          {%- for row in ph_rows -%}
+            <li class="aria-mega__links-item">
+              <a href="{{ fallback_url }}" class="aria-mega__link">{{ row }}</a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      {%- comment -%}
+        V4 Shop cols 2-3: 26px rows, 12px apart, a 1px #d9d9d9 rule BETWEEN rows and
+        not after the last. The rule is drawn with a border on every row except the
+        last rather than as separate elements, so an odd item count cannot leave a
+        dangling line.
+      {%- endcomment -%}
+      {%- if menu_has_links -%}
+        <ul class="aria-mega__links aria-mega__links--divided" role="list">
+          {%- for link in col_menu.links -%}
+            <li class="aria-mega__links-item">
+              <a
+                href="{{ link.url }}"
+                class="aria-mega__link"
+                {% if link.current %}aria-current="page"{% endif %}
+              >{{ link.title }}</a>
+              {%- if link.links.size > 0 -%}
+                {%- render 'aria-mega-sublinks', link: link -%}
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+    {%- when 'menu_padded' -%}
+
+      {%- if menu_has_links == false and ph_rows != '' -%}
+
+        <ul class="aria-mega__links aria-mega__links--padded" role="list">
+
+          {%- for row in ph_rows -%}
+
+            <li class="aria-mega__links-item">
+
+              <a href="{{ fallback_url }}" class="aria-mega__link">{{ row }}</a>
+
+            </li>
+
+          {%- endfor -%}
+
+        </ul>
+
+      {%- endif -%}
+      {%- comment -%}
+        V4 Start Here / Live / Community / Deals: 58px rows on a 70px pitch (so a
+        12px gap), label inset 12px from the left. The row is the hit area, which is
+        why the padding lives on the <a> and not on the <li>.
+      {%- endcomment -%}
+      {%- if menu_has_links -%}
+        <ul class="aria-mega__links aria-mega__links--padded" role="list">
+          {%- for link in col_menu.links -%}
+            <li class="aria-mega__links-item">
+              <a
+                href="{{ link.url }}"
+                class="aria-mega__link"
+                {% if link.current %}aria-current="page"{% endif %}
+              >{{ link.title }}</a>
+              {%- if link.links.size > 0 -%}
+                {%- render 'aria-mega-sublinks', link: link -%}
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+    {%- when 'style_cards' -%}
+
+      {%- if menu_has_links == false and ph_rows != '' -%}
+
+        <ul class="aria-mega__styles" role="list">
+
+          {%- for row in ph_rows -%}
+
+            <li class="aria-mega__styles-item">
+
+              <a href="{{ fallback_url }}" class="aria-mega__style">
+
+                <span class="aria-mega__style-thumb">
+
+                  <span class="aria-mega__style-img-fallback"><span></span></span>
+
+                </span>
+
+                <span class="aria-mega__style-text">
+
+                  <span class="aria-mega__style-title">{{ row }}</span>
+
+                  {%- assign sub_label = ph_subs[forloop.index0] -%}
+
+                  {%- if sub_label != blank -%}
+
+                    <span class="aria-mega__style-sub">{{ sub_label }}</span>
+
+                  {%- endif -%}
+
+                </span>
+
+              </a>
+
+            </li>
+
+          {%- endfor -%}
+
+        </ul>
+
+      {%- endif -%}
+      {%- comment -%}
+        V4 Shop col 1: 48x48 thumbnail + title + subtitle. A Shopify menu only
+        carries a title and a URL, so the thumbnail and subtitle are pulled from the
+        linked RESOURCE instead of being hardcoded: `link.object` is the collection
+        (or product) the menu item points at, giving us its image and description for
+        free and keeping the column fully dynamic. Rows whose target has no image
+        fall back to the tinted empty thumb, which is what V4 shows behind the photo.
+      {%- endcomment -%}
+      {%- if menu_has_links -%}
+        <ul class="aria-mega__styles" role="list">
+          {%- for link in col_menu.links -%}
+            {%- liquid
+              assign target = link.object
+              assign thumb = nil
+              assign subtitle = ''
+
+              if link.type == 'collection_link' and target != nil
+                if target.image != blank
+                  assign thumb = target.image
+                elsif target.products.first.featured_image != blank
+                  assign thumb = target.products.first.featured_image
+                endif
+                assign subtitle = target.description | strip_html | truncate: 40
+              elsif link.type == 'product_link' and target != nil
+                assign thumb = target.featured_image
+                assign subtitle = target.description | strip_html | truncate: 40
+              endif
+            -%}
+            <li class="aria-mega__styles-item">
+              <a href="{{ link.url }}" class="aria-mega__style">
+                <span class="aria-mega__style-thumb">
+                  {%- if thumb != blank -%}
+                    {{
+                      thumb
+                      | image_url: width: 96
+                      | image_tag:
+                        loading: 'lazy',
+                        widths: '48,96',
+                        class: 'aria-mega__style-img',
+                        alt: ''
+                    }}
+                  {%- else -%}
+                    <span class="aria-mega__style-img-fallback"><span></span></span>
+                  {%- endif -%}
+                </span>
+                <span class="aria-mega__style-text">
+                  <span class="aria-mega__style-title">{{ link.title }}</span>
+                  {%- if subtitle != blank -%}
+                    <span class="aria-mega__style-sub">{{ subtitle }}</span>
+                  {%- endif -%}
+                </span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+    {%- when 'promo_card' -%}
+      {%- comment -%}
+        V4 Shop cols 4-5: a 244x315 image card with a chip pinned top-left and a
+        full-width 36px terracotta CTA welded to the bottom edge.
+      {%- endcomment -%}
+      <a href="{{ resolved_url }}" class="aria-mega__promo">
+        <span class="aria-mega__promo-media">
+          {%- if col_image != blank -%}
+            {{
+              col_image
+              | image_url: width: 640
+              | image_tag:
+                loading: 'lazy',
+                widths: '244,488,640',
+                sizes: '(max-width: 1279px) 92vw, 244px',
+                class: 'aria-mega__promo-img',
+                alt: col_image.alt | default: col_heading
+            }}
+          {%- else -%}
+            {%- if fallback_img != blank -%}
+              {{ fallback_img | image_url: width: 640 | image_tag: loading: 'lazy', widths: '244,488,640', sizes: '(max-width: 1279px) 92vw, 244px', class: 'aria-mega__promo-img', alt: '' }}
+            {%- else -%}
+              {{ 'collection-1' | placeholder_svg_tag: 'aria-mega__promo-img aria-mega__promo-img--placeholder' }}
+            {%- endif -%}
+          {%- endif -%}
+        </span>
+        {%- if col_chip != blank -%}
+          <span class="aria-mega__chip aria-mega__chip--{{ col_chip_style | default: 'white' }}">{{ col_chip }}</span>
+        {%- endif -%}
+        {%- if col_btn_label != blank -%}
+          <span class="aria-mega__promo-cta">{{ col_btn_label }}</span>
+        {%- endif -%}
+      </a>
+
+    {%- when 'products' -%}
+      {%- comment -%}
+        V4 Best Sellers / Start Here / Deals: a row of 250px product cards.
+
+        AUTOMATIC by design — there is no manual product list. The source is resolved
+        in this order, and in every case the products come out in the COLLECTION's own
+        sort order, so setting that collection to "Best selling" in Admin is what makes
+        this a live best-seller feed that re-orders itself as sales change:
+          1. the block's collection setting, when the merchant picked one
+          2. a collection handled `best-sellers`, if the store has one
+          3. `collections.all` as the last resort so the column is never empty
+        Sold-out and unavailable products are skipped; draft products are never
+        exposed to Liquid in the first place.
+      {%- endcomment -%}
+      {%- liquid
+        assign source = nil
+        if col_collection != blank and col_collection.products.size > 0
+          assign source = col_collection
+        elsif collections['best-sellers'].products.size > 0
+          assign source = collections['best-sellers']
+        else
+          assign source = collections.all
+        endif
+
+        assign wanted = col_count_setting | default: 4
+        assign shown = 0
+      -%}
+      {%- if source.products.size > 0 -%}
+        <div class="aria-mega__products">
+          {%- for product in source.products -%}
+            {%- if shown >= wanted -%}
+              {%- break -%}
+            {%- endif -%}
+            {%- unless product.available -%}
+              {%- continue -%}
+            {%- endunless -%}
+            {%- liquid
+              assign shown = shown | plus: 1
+              assign card_sub = product.type | default: product.vendor
+            -%}
+            <div class="aria-mega__product">
+              <a href="{{ product.url }}" class="aria-mega__product-media">
+                {%- if product.featured_image != blank -%}
+                  {{
+                    product.featured_image
+                    | image_url: width: 640
+                    | image_tag:
+                      loading: 'lazy',
+                      widths: '250,500,640',
+                      class: 'aria-mega__product-img',
+                      alt: product.featured_image.alt | default: product.title
+                  }}
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'aria-mega__product-img' }}
+                {%- endif -%}
+                {%- comment -%}
+                  The badge is a RANK -- node 6337:3222 reads literally "#1" in amber
+                  on the first card. So the default is the position in the row, which
+                  makes it self-maintaining as the best-seller order changes. The
+                  column's chip setting overrides it where the design shows copy
+                  instead (Deals uses "Dailey Deal").
+                {%- endcomment -%}
+                {%- comment -%}
+                  The design badges these cards from PRODUCT data, not one fixed string: card 1 reads
+                  "-30%", card 2 "DEAL", card 3 its collection name. So a product actually on
+                  sale shows its own discount in amber (exactly card 1), otherwise the
+                  column's badge setting applies, and failing that the best-seller rank.
+                  One fixed label on every card was wrong.
+                {%- endcomment -%}
+                {%- liquid
+                  assign badge_style = col_chip_style
+                  if product.compare_at_price > product.price
+                    assign pct = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round
+                    assign badge_text = '−' | append: pct | append: '%'
+                    assign badge_style = 'amber'
+                  elsif col_chip != blank
+                    assign badge_text = col_chip
+                  else
+                    assign badge_text = '#' | append: shown
+                    assign badge_style = 'amber'
+                  endif
+                -%}
+                <span class="aria-mega__chip aria-mega__chip--{{ badge_style | default: 'white' }}">{{ badge_text }}</span>
+                <span class="aria-mega__product-title">{{ product.title }}</span>
+              </a>
+              {%- comment -%}
+                The cart tile carries a photo (node 6337:3225). The image is handed to
+                it as a custom property on this row rather than as markup, because the
+                button itself comes from the shared `aria-product-card-quick-add`
+                snippet and custom properties inherit into it.
+              {%- endcomment -%}
+              <div
+                class="aria-mega__product-foot"
+                {% if product.featured_image != blank %}style="--aria-mega-cart-img: url({{ product.featured_image | image_url: width: 120 }});"{% endif %}
+              >
+                {%- render 'aria-product-card-quick-add',
+                  product: product,
+                  section_id: panel_id,
+                  is_sold_out: false,
+                  icon: 'mega-cart-02'
+                -%}
+                <div class="aria-mega__product-meta">
+                  {%- if card_sub != blank -%}
+                    <span class="aria-mega__product-sub">{{ card_sub }}</span>
+                  {%- endif -%}
+                  <span class="aria-mega__product-price">{{ product.price | money }}</span>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    {%- when 'feature_card' -%}
+      {%- comment -%}
+        The design nests a glass card inside a shell. The shell is this column itself;
+        when a PHOTO is set it becomes the shell's backdrop.
+
+        COMMUNITY HAS NO PHOTO (node 6337:4243) — its shell is the white->cream gradient
+        and nothing else. Rendering the block's image here regardless is what made the
+        Community card look like a copy of Best Sellers: an absolutely positioned photo
+        covered the gradient and the glass panel then read as a dark photo card. The
+        image setting stays in the schema (harmless, and the variant may want it later);
+        this variant simply does not draw it.
+      {%- endcomment -%}
+      {%- unless col_variant == 'community' -%}
+        {%- if col_image == blank and fallback_img != blank -%}
+          {{ fallback_img | image_url: width: 900 | image_tag: loading: 'lazy', widths: '300,600,900', sizes: '(max-width: 1279px) 92vw, 380px', class: 'aria-mega__feature-shell-img', alt: '' }}
+        {%- endif -%}
+        {%- if col_image != blank -%}
+          {{
+            col_image
+            | image_url: width: 900
+            | image_tag:
+              loading: 'lazy',
+              widths: '300,600,900',
+              sizes: '(max-width: 1279px) 92vw, 380px',
+              class: 'aria-mega__feature-shell-img',
+              alt: col_image.alt | default: ''
+          }}
+        {%- endif -%}
+      {%- endunless -%}
+      <div class="aria-mega__feature">
+        <div class="aria-mega__feature-body">
+          {%- if col_chip != blank -%}
+            <p class="aria-mega__feature-title">{{ col_chip }}</p>
+          {%- endif -%}
+          {%- if col_body != blank -%}
+            <p class="aria-mega__feature-text">{{ col_body }}</p>
+          {%- endif -%}
+        </div>
+        {%- if col_variant == 'community' -%}
+          {%- comment -%}
+            Node 6337:4249 — the heart + "Kristi" script sits between the body copy and the
+            CTA, CENTRED in the card at its own 249x96.247. Same artwork the Live media
+            card uses at 120x46.384, so both go through `aria-mega-signature`.
+          {%- endcomment -%}
+          {%- render 'aria-mega-signature', width: 249, height: 96.247 -%}
+        {%- endif -%}
+        {%- if col_btn_label != blank -%}
+          <a href="{{ resolved_url }}" class="aria-mega__btn">{{ col_btn_label }}</a>
+        {%- endif -%}
+      </div>
+
+    {%- when 'media_card' -%}
+      {%- comment -%}
+        Live right column (node 6337:3937): a 493 x 414.63 image at radius 8 carrying TWO
+        overlays — the white Kristi signature 16px in from the bottom-left (6337:3949) and
+        a 48px play affordance 16px in from the bottom-right (6337:3950). Both were
+        missing/wrong: there was no signature at all, and the play glyph was a solid
+        terracotta disc rather than the design's frosted one.
+
+        Rendered as a link rather than a video element so the panel stays lightweight —
+        the destination is the live stream.
+      {%- endcomment -%}
+      <a href="{{ resolved_url }}" class="aria-mega__media">
+        {%- if col_image != blank -%}
+          {{
+            col_image
+            | image_url: width: 1000
+            | image_tag:
+              loading: 'lazy',
+              widths: '493,986,1000',
+              sizes: '(max-width: 1279px) 92vw, 493px',
+              class: 'aria-mega__media-img',
+              alt: col_image.alt | default: col_heading
+          }}
+        {%- else -%}
+          {%- if fallback_img != blank -%}
+            {{ fallback_img | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '493,986,1000', sizes: '(max-width: 1279px) 92vw, 493px', class: 'aria-mega__media-img', alt: '' }}
+          {%- else -%}
+            {{ 'lifestyle-2' | placeholder_svg_tag: 'aria-mega__media-img' }}
+          {%- endif -%}
+        {%- endif -%}
+        {%- render 'aria-mega-signature', width: 120, height: 46.384, class: 'aria-mega__signature--media' -%}
+        {%- comment -%}
+          `wp-play-button.svg` IS node 6337:3950 (its own frame name, "Frame 2147239667",
+          is still in the file) — a 70px frosted disc, `#C0C0C0` at 50% behind a 16.7px
+          backdrop blur, with a rounded white triangle. The theme already ships it and
+          two other sections already use it, so it is reused here at the design's 48px
+          rather than redrawn as an inline glyph.
+        {%- endcomment -%}
+        <span class="aria-mega__media-play">
+          <img
+            src="{{ 'wp-play-button.svg' | asset_url }}"
+            alt=""
+            width="48"
+            height="48"
+            loading="lazy"
+          >
+        </span>
+        {%- if col_btn_label != blank -%}
+          <span class="visually-hidden">{{ col_btn_label }}</span>
+        {%- endif -%}
+      </a>
+
+    {%- when 'photo_row' -%}
+      {%- comment -%}
+        Community middle column (node 6337:4259): three photos whose middle frame is
+        taller than its neighbours, then a CTA. The photos come from the linked
+        collection's products so the row stays dynamic; the middle one is scaled up
+        by CSS rather than by three separate image settings.
+      {%- endcomment -%}
+      {%- liquid
+        assign photo_source = col_collection
+      -%}
+      <div class="aria-mega__photos">
+        {%- if photo_source.products.size > 0 -%}
+          {%- for product in photo_source.products limit: 3 -%}
+            <span class="aria-mega__photo">
+              {%- if product.featured_image != blank -%}
+                {{
+                  product.featured_image
+                  | image_url: width: 400
+                  | image_tag:
+                    loading: 'lazy',
+                    widths: '176,352,400',
+                    sizes: '(max-width: 1279px) 30vw, 176px',
+                    class: 'aria-mega__photo-img',
+                    alt: product.featured_image.alt | default: product.title
+                }}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'aria-mega__photo-img' }}
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for product in collections.all.products limit: 3 -%}
+            <span class="aria-mega__photo">
+              {%- if product.featured_image != blank -%}
+                {{ product.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '176,352,400', sizes: '(max-width: 1279px) 30vw, 176px', class: 'aria-mega__photo-img', alt: '' }}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'aria-mega__photo-img' }}
+              {%- endif -%}
+            </span>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+      {%- if col_btn_label != blank -%}
+        {%- comment -%}
+          Node 6337:4269 — 211x54, outlined, sentence case, and it carries a trailing
+          arrow ("See the gallery  →"). The arrow is NOT added here: the block's own
+          button-label setting already ends in "→", so rendering an icon as well printed
+          two of them. Left to the label, which is where the copy belongs.
+        {%- endcomment -%}
+        <a href="{{ resolved_url }}" class="aria-mega__btn aria-mega__btn--outline">{{ col_btn_label }}</a>
+      {%- endif -%}
+  {%- endcase -%}
+</div>
+
+{%- endunless -%}

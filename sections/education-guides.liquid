@@ -1,0 +1,252 @@
+{{ 'section-aria-education-guides.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-education-guides.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign autoplay_ms = section.settings.autoplay_interval | times: 1000
+-%}
+
+<section
+  class="aria-education"
+  style="--aria-eg-bg-from: {{ section.settings.background_gradient_start }}; --aria-eg-bg-to: {{ section.settings.background_gradient_end }}; --aria-eg-panel-from: {{ section.settings.panel_gradient_start }}; --aria-eg-panel-to: {{ section.settings.panel_gradient_end }};"
+>
+  {%- if section.settings.show_decoration -%}
+    {%- comment -%}
+      Purely decorative botanical flourish from V4. Hidden on small screens where it has no
+      room and would only risk horizontal overflow.
+    {%- endcomment -%}
+    <img
+      src="{{ 'wp-education-leaf.svg' | asset_url }}"
+      alt=""
+      width="362"
+      height="273"
+      loading="lazy"
+      class="aria-education__decoration"
+    >
+  {%- endif -%}
+
+  <div class="aria-education__layout">
+    {%- comment -%}
+      The rotation attributes live on the media, because the media is what rotates. They
+      used to sit on the copy card, back when the guide list was a tab strip that drove
+      the image; the guides are now plain links and select nothing.
+    {%- endcomment -%}
+    <div
+      class="aria-education__media"
+      data-aria-eg-rotate
+      data-autoplay="{{ section.settings.autoplay }}"
+      data-interval="{{ autoplay_ms }}"
+    >
+      {%- if section.blocks.size > 0 -%}
+        {%- for block in section.blocks -%}
+          <div
+            class="aria-education__media-item{% if forloop.first %} is-active{% endif %}"
+            data-aria-eg-media
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 1484
+                | image_tag:
+                  loading: 'lazy',
+                  sizes: '(min-width: 990px) 52vw, 100vw',
+                  widths: '375,750,1100,1484',
+                  class: 'aria-education__image',
+                  alt: block.settings.image.alt | default: block.settings.title
+              }}
+            {%- else -%}
+              {%- comment -%}
+                Falls back to the V4 reference photo so the section reads correctly before a
+                merchant uploads their own imagery.
+              {%- endcomment -%}
+              <img
+                src="{{ 'wp-education-feature.jpg' | asset_url }}"
+                alt=""
+                width="1264"
+                height="670"
+                loading="lazy"
+                class="aria-education__image"
+              >
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        <div class="aria-education__media-item is-active">
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'aria-education__image' }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-education__panel">
+      <div class="aria-education__card">
+        {%- if section.settings.show_signature -%}
+          <div class="aria-education__signature">
+            {%- if section.settings.signature_image != blank -%}
+              {{
+                section.settings.signature_image
+                | image_url: width: 552
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '276,552',
+                  class: 'aria-education__signature-img',
+                  alt: section.settings.signature_image.alt | default: ''
+              }}
+            {%- else -%}
+              <img
+                src="{{ 'wp-kristi-signature.svg' | asset_url }}"
+                alt=""
+                width="276"
+                height="106"
+                loading="lazy"
+                class="aria-education__signature-img"
+              >
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-education__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.blocks.size > 0 -%}
+          {%- comment -%}
+            Every guide is a plain navigational link — no tab or slider behaviour, no
+            selected state, and nothing here drives the image. A guide with no URL set yet
+            still renders as a link on a '#' placeholder rather than as dead text, so the
+            row stays visually consistent and the merchant can see what needs filling in
+            (same convention as the About and Footer social links).
+          {%- endcomment -%}
+          <ul class="aria-education__links">
+            {%- for block in section.blocks -%}
+              {%- assign guide_url = block.settings.link | default: '#' -%}
+              <li class="aria-education__link-item" {{ block.shopify_attributes }}>
+                <a href="{{ guide_url }}" class="aria-education__link">
+                  <span class="aria-education__link-label">{{ block.settings.title }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-education-guides.name",
+  "tag": "section",
+  "class": "aria-education-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Education and guides",
+      "label": "t:sections.aria-education-guides.settings.heading.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_signature",
+      "default": true,
+      "label": "t:sections.aria-education-guides.settings.show_signature.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "signature_image",
+      "label": "t:sections.aria-education-guides.settings.signature_image.label",
+      "info": "t:sections.aria-education-guides.settings.signature_image.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-education-guides.settings.rotation_header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "default": true,
+      "label": "t:sections.aria-education-guides.settings.autoplay.label",
+      "info": "t:sections.aria-education-guides.settings.autoplay.info"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 5,
+      "label": "t:sections.aria-education-guides.settings.autoplay_interval.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-education-guides.settings.appearance_header.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_decoration",
+      "default": true,
+      "label": "t:sections.aria-education-guides.settings.show_decoration.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_start",
+      "default": "#ffffff",
+      "label": "t:sections.aria-education-guides.settings.background_gradient_start.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_end",
+      "default": "#f5ebe2",
+      "label": "t:sections.aria-education-guides.settings.background_gradient_end.label"
+    },
+    {
+      "type": "color",
+      "id": "panel_gradient_start",
+      "default": "#f5e9e9",
+      "label": "t:sections.aria-education-guides.settings.panel_gradient_start.label"
+    },
+    {
+      "type": "color",
+      "id": "panel_gradient_end",
+      "default": "#ffffff",
+      "label": "t:sections.aria-education-guides.settings.panel_gradient_end.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "t:sections.aria-education-guides.blocks.tab.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Where to start",
+          "label": "t:sections.aria-education-guides.blocks.tab.settings.title.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.aria-education-guides.blocks.tab.settings.link.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-education-guides.blocks.tab.settings.image.label",
+          "info": "t:sections.aria-education-guides.blocks.tab.settings.image.info"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.aria-education-guides.presets.name",
+      "blocks": [
+        { "type": "tab", "settings": { "title": "Where to start" } },
+        { "type": "tab", "settings": { "title": "How to measure your head" } },
+        { "type": "tab", "settings": { "title": "Cap construction" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

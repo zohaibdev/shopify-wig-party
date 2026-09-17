@@ -1,0 +1,273 @@
+{{ 'section-aria-community-exclusive.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign deal = section.settings.product
+
+  # Product data wins where a product is selected; text settings act as overrides so a
+  # merchant can also run a non-product deal (a category or a flash discount).
+  assign deal_title = section.settings.deal_title
+  if deal_title == blank and deal != blank
+    assign deal_title = deal.title
+  endif
+
+  assign deal_url = section.settings.primary_button_link
+  if deal_url == blank and deal != blank
+    assign deal_url = deal.url
+  endif
+
+  assign deal_image = section.settings.image
+  if deal_image == blank and deal != blank
+    assign deal_image = deal.featured_image
+  endif
+
+  assign show_price = false
+  if deal != blank
+    assign show_price = true
+    assign deal_price = deal.price
+    assign deal_compare = deal.compare_at_price
+  endif
+-%}
+
+<section
+  class="aria-community-exclusive"
+  style="--aria-ce-bg: {{ section.settings.background_color }};"
+>
+  <div class="aria-community-exclusive__inner">
+    <div class="aria-community-exclusive__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="aria-community-exclusive__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="aria-community-exclusive__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <p class="aria-community-exclusive__description">{{ section.settings.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-community-exclusive__card">
+      <div class="aria-community-exclusive__media">
+        {%- if deal_image != blank -%}
+          {{
+            deal_image
+            | image_url: width: 1260
+            | image_tag:
+              loading: 'lazy',
+              sizes: '(min-width: 990px) 630px, 100vw',
+              widths: '480,630,960,1260',
+              class: 'aria-community-exclusive__image',
+              alt: deal_image.alt | default: deal_title
+          }}
+        {%- else -%}
+          <img
+            src="{{ 'wp-deal-feature.png' | asset_url }}"
+            alt=""
+            width="630"
+            height="474"
+            loading="lazy"
+            class="aria-community-exclusive__image"
+          >
+        {%- endif -%}
+
+        {%- if section.settings.badge_text != blank -%}
+          <span class="aria-community-exclusive__badge">{{ section.settings.badge_text }}</span>
+        {%- endif -%}
+      </div>
+
+      <div class="aria-community-exclusive__panel">
+        <div class="aria-community-exclusive__panel-top">
+          {%- if section.settings.deal_eyebrow != blank -%}
+            <p class="aria-community-exclusive__deal-eyebrow">{{ section.settings.deal_eyebrow }}</p>
+          {%- endif -%}
+
+          {%- if deal_title != blank -%}
+            <h3 class="aria-community-exclusive__deal-title">{{ deal_title }}</h3>
+          {%- endif -%}
+
+          {%- if section.settings.deal_description != blank -%}
+            <p class="aria-community-exclusive__deal-description">{{ section.settings.deal_description }}</p>
+          {%- endif -%}
+
+          {%- if show_price -%}
+            <p class="aria-community-exclusive__price">
+              <span class="aria-community-exclusive__price-current">{{ deal_price | money }}</span>
+              {%- if deal_compare > deal_price -%}
+                <span class="aria-community-exclusive__price-compare">{{ deal_compare | money }}</span>
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.primary_button_label != blank or section.settings.secondary_button_label != blank -%}
+          <div class="aria-community-exclusive__actions">
+            {%- if section.settings.primary_button_label != blank -%}
+              <a
+                href="{{ deal_url | default: routes.all_products_collection_url }}"
+                class="aria-community-exclusive__btn aria-community-exclusive__btn--primary"
+              >
+                {{ section.settings.primary_button_label }}
+              </a>
+            {%- endif -%}
+            {%- if section.settings.secondary_button_label != blank -%}
+              <a
+                href="{{ section.settings.secondary_button_link | default: deal_url | default: routes.all_products_collection_url }}"
+                class="aria-community-exclusive__btn aria-community-exclusive__btn--secondary"
+              >
+                {{ section.settings.secondary_button_label }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if section.settings.footer_link_label != blank or section.settings.info_label != blank -%}
+      <div class="aria-community-exclusive__footer">
+        {%- if section.settings.footer_link_label != blank -%}
+          <a
+            href="{{ section.settings.footer_link_url | default: routes.all_products_collection_url }}"
+            class="aria-community-exclusive__footer-link"
+          >
+            {{ section.settings.footer_link_label }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.info_label != blank -%}
+          <a
+            href="{{ section.settings.info_link | default: '#' }}"
+            class="aria-community-exclusive__info-pill"
+          >
+            {{ section.settings.info_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-community-exclusive.name",
+  "tag": "section",
+  "class": "aria-community-exclusive-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "Community exclusive",
+      "label": "t:sections.aria-community-exclusive.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Deals & Exclusives",
+      "label": "t:sections.aria-community-exclusive.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "default": "A rotating deal picked by Kristi — sometimes a favorite product, sometimes a whole category, sometimes a flash discount. New one, regularly.",
+      "label": "t:sections.aria-community-exclusive.settings.description.label"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#1A1A1A",
+      "label": "t:sections.aria-community-exclusive.settings.background_color.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-community-exclusive.settings.header_deal.content"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.aria-community-exclusive.settings.product.label",
+      "info": "t:sections.aria-community-exclusive.settings.product.info"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.aria-community-exclusive.settings.image.label",
+      "info": "t:sections.aria-community-exclusive.settings.image.info"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "default": "Flash Discount",
+      "label": "t:sections.aria-community-exclusive.settings.badge_text.label"
+    },
+    {
+      "type": "text",
+      "id": "deal_eyebrow",
+      "default": "Ends tonight at 11:59pm",
+      "label": "t:sections.aria-community-exclusive.settings.deal_eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "deal_title",
+      "label": "t:sections.aria-community-exclusive.settings.deal_title.label",
+      "info": "t:sections.aria-community-exclusive.settings.deal_title.info"
+    },
+    {
+      "type": "textarea",
+      "id": "deal_description",
+      "default": "Today's Dailey Deal: our most-requested trench, in the last of the Fog colorway.",
+      "label": "t:sections.aria-community-exclusive.settings.deal_description.label"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_label",
+      "default": "Shop the deal",
+      "label": "t:sections.aria-community-exclusive.settings.primary_button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "t:sections.aria-community-exclusive.settings.primary_button_link.label",
+      "info": "t:sections.aria-community-exclusive.settings.primary_button_link.info"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_label",
+      "default": "View detail",
+      "label": "t:sections.aria-community-exclusive.settings.secondary_button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "t:sections.aria-community-exclusive.settings.secondary_button_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-community-exclusive.settings.header_footer.content"
+    },
+    {
+      "type": "text",
+      "id": "footer_link_label",
+      "default": "Shop all Dailey Deals",
+      "label": "t:sections.aria-community-exclusive.settings.footer_link_label.label"
+    },
+    {
+      "type": "url",
+      "id": "footer_link_url",
+      "label": "t:sections.aria-community-exclusive.settings.footer_link_url.label"
+    },
+    {
+      "type": "text",
+      "id": "info_label",
+      "default": "New here? How this works",
+      "label": "t:sections.aria-community-exclusive.settings.info_label.label"
+    },
+    {
+      "type": "url",
+      "id": "info_link",
+      "label": "t:sections.aria-community-exclusive.settings.info_link.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-community-exclusive.presets.name"
+    }
+  ]
+}
+{% endschema %}

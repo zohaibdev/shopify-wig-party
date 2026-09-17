@@ -1,0 +1,366 @@
+/* Wig Party — Real Women. Real Wigs. Real Confidence. (sections/community-photos.liquid) */
+
+.aria-ugc {
+  background: var(--aria-ugc-bg, #fff);
+  padding-block: 48px;
+  /* The photo strip deliberately runs past the column edge in V4; clipping here keeps
+     that look without letting it create page-level horizontal scroll. */
+  overflow: hidden;
+}
+
+.aria-ugc__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+.aria-ugc__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- Featured story ---------- */
+
+.aria-ugc__feature {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--white, #fff);
+}
+
+.aria-ugc__feature-media {
+  aspect-ratio: 680 / 820;
+}
+
+.aria-ugc__feature-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Frosted testimonial panel, same treatment as Meet the Icons. */
+.aria-ugc__quote-panel {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  color: var(--white, #fff);
+}
+
+.aria-ugc__quote-mark {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 52px;
+  height: auto;
+  pointer-events: none;
+}
+
+.aria-ugc__quote {
+  margin: 0;
+  max-width: 577px;
+  font-size: 16px;
+  line-height: 26px;
+  font-style: italic;
+  color: var(--white, #fff);
+}
+
+.aria-ugc__quote-author {
+  margin: 0;
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 500;
+  color: var(--white, #fff);
+}
+
+.aria-ugc__quote-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 2px;
+  background: var(--white, #fff);
+  color: #111;
+  font-size: 12px;
+  line-height: 22px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-ugc__quote-btn:hover,
+.aria-ugc__quote-btn:focus-visible {
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+/* ---------- Side column ---------- */
+
+.aria-ugc__side {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}
+
+/* Heading + subheading + CTA group. V4 keeps 18px inside the heading pair and 80px
+   from there down to the button (80px applied at desktop, below). */
+.aria-ugc__side-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.aria-ugc__header {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.aria-ugc__heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: var(--heading-h2-weight, 500);
+  color: var(--sy, #000);
+  overflow-wrap: break-word;
+}
+
+.aria-ugc__subheading {
+  margin: 0;
+  font-size: 16px;
+  line-height: 26px;
+  color: #3f3e3e;
+}
+
+.aria-ugc__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 24px;
+  border: 1px solid var(--sy, #000);
+  border-radius: 2px;
+  background: var(--sy, #000);
+  color: var(--white, #fff);
+  font-size: 16px;
+  line-height: 28px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.aria-ugc__btn:hover,
+.aria-ugc__btn:focus-visible {
+  background: var(--py, #a64a4c);
+  border-color: var(--py, #a64a4c);
+}
+
+/* ---------- Photo strip ---------- */
+
+/*
+ * Swiper-driven (see sections/community-photos.liquid). The previous implementation was
+ * `overflow-x: auto` + scroll-snap, which painted a native horizontal scrollbar under the
+ * strip. Swiper's own `.swiper` clips instead, so V4's "two photos and the next one cut
+ * off at the column edge" is reproduced with no scrollbar.
+ * Do NOT add overflow-x / scrollbar-width here.
+ */
+.aria-ugc__strip-carousel {
+  width: 100%;
+  min-width: 0;
+}
+
+.aria-ugc__strip {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Slides are a fixed width and Swiper runs slidesPerView:'auto' against it.
+   220 mobile -> 280 tablet -> 320 desktop, the last being V4's spec. */
+.aria-ugc__strip-item {
+  flex: 0 0 auto;
+  width: 220px;
+  height: auto;
+}
+
+.aria-ugc__strip-link {
+  display: block;
+  text-decoration: none;
+}
+
+.aria-ugc__strip-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 320 / 351;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+
+/* ---------- Tablet ---------- */
+
+@media screen and (min-width: 750px) {
+  .aria-ugc {
+    padding-block: 64px;
+  }
+
+  .aria-ugc__inner {
+    padding-inline: 40px;
+  }
+
+  .aria-ugc__layout {
+    gap: 40px;
+  }
+
+  /* V4: p-25 with a 24px gap between the quote block and the Share Your Story button. */
+  .aria-ugc__quote-panel {
+    gap: 24px;
+    padding: 25px;
+  }
+
+  .aria-ugc__quote {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .aria-ugc__heading {
+    font-size: 44px;
+  }
+
+  .aria-ugc__subheading {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .aria-ugc__strip-item {
+    width: 280px;
+  }
+
+  .aria-ugc__quote-mark {
+    width: 64px;
+  }
+}
+
+/* ---------- Desktop ---------- */
+
+@media screen and (min-width: 990px) {
+  .aria-ugc {
+    padding-inline: 40px;
+    padding-block: var(--section-spacing, 80px);
+  }
+
+  .aria-ugc__inner {
+    padding-inline: 0;
+  }
+
+  /* 680px feature + 20px gap + flexible side column = the 1360 V4 content row. */
+  .aria-ugc__layout {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .aria-ugc__feature {
+    flex: 0 0 680px;
+    max-width: 680px;
+  }
+
+  .aria-ugc__feature-media {
+    aspect-ratio: auto;
+    height: 820px;
+  }
+
+  .aria-ugc__side {
+    flex: 1 1 0;
+    min-width: 0;
+    align-self: stretch;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  /* V4: 80px from the heading pair down to the CTA. */
+  .aria-ugc__side-top {
+    gap: 80px;
+  }
+
+  .aria-ugc__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  .aria-ugc__subheading {
+    font-size: var(--title-content-size, 20px);
+    line-height: var(--title-content-line-height, 28px);
+  }
+
+  .aria-ugc__btn {
+    font-size: 18px;
+  }
+
+  .aria-ugc__quote {
+    font-size: var(--title-content-size, 20px);
+    line-height: var(--title-content-line-height, 28px);
+  }
+
+  .aria-ugc__quote-author {
+    font-size: 16px;
+  }
+
+  .aria-ugc__quote-mark {
+    width: 75px;
+    right: 25px;
+    bottom: 60px;
+  }
+
+  .aria-ugc__strip-item {
+    width: 320px;
+  }
+}
+
+
+/* ==========================================================================
+   1024px BAND ONLY — 990px to 1279px
+   --------------------------------------------------------------------------
+   Scoped to the theme's own existing breakpoints so nothing leaks: 1280 and
+   1440 keep the untouched desktop rules, 768 and below keep the untouched
+   tablet/mobile rules. Do not widen or narrow this range without re-measuring.
+   ========================================================================== */
+
+/*
+ * `flex: 0 0 680px` on the feature is V4's desktop measurement, and it fits the 1328px
+ * V4 content row. At a 1024 viewport the row is only 929px, so the fixed 680px plus the
+ * 20px gap left the side column just 229px — the "Real Women. Real Wigs. Real Confidence."
+ * heading wrapped to SEVEN lines, and the side carousel's own 320px slides were wider than
+ * their 229px track. `shrink: 0` meant the column could not give anything back.
+ *
+ * Letting both columns share the row restores V4's actual PROPORTION (at 1440 it is
+ * 680 feature / 645 side — essentially half each) rather than its absolute pixel value,
+ * which is the part that does not survive a narrower viewport.
+ */
+@media screen and (min-width: 990px) and (max-width: 1279px) {
+  .aria-ugc__feature {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 680px;
+  }
+
+  .aria-ugc__side {
+    min-width: 0;
+  }
+}

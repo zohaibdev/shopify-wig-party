@@ -1,0 +1,153 @@
+{{ 'component-aria-product-card.css' | asset_url | stylesheet_tag }}
+{{ 'section-aria-new-trending.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign product_blocks = section.blocks | where: 'type', 'product'
+-%}
+
+<section
+  class="aria-new-trending"
+  style="--aria-nt-bg-from: {{ section.settings.background_gradient_start }}; --aria-nt-bg-to: {{ section.settings.background_gradient_end }};"
+>
+  <div class="aria-new-trending__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="aria-new-trending__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if product_blocks.size > 0 -%}
+      <div
+        class="aria-new-trending__carousel-wrap"
+        data-aria-product-carousel
+        data-slides-mobile="1.4"
+        data-slides-sm="2.4"
+        data-slides-md="3.4"
+        data-slides-desktop="5"
+        data-slides-lg="4"
+        data-space-between="12"
+      >
+        <div class="swiper aria-new-trending__swiper" data-aria-carousel-swiper>
+          <div class="swiper-wrapper">
+            {%- for block in product_blocks -%}
+              <div class="swiper-slide aria-new-trending__slide" {{ block.shopify_attributes }}>
+                {%- if block.settings.product != blank -%}
+                  {%- comment -%}
+                    Renders the SAME default card as Best Sellers, deliberately with no
+                    `card_style` argument. This section used to pass `card_style: 'compact'`,
+                    which swapped in a different media ratio, an in-image quick-add and no
+                    View Product button — two card designs to keep in sync. The section keeps
+                    its own outer layout (heading, spacing, 5-up slider); only the card is
+                    shared.
+                  {%- endcomment -%}
+                  {%- render 'aria-product-card',
+                    product: block.settings.product,
+                    feature_tag_metafield: section.settings.feature_tag_metafield,
+                    section_id: section.id
+                  -%}
+                {%- else -%}
+                  <div class="aria-product-card aria-product-card--empty">
+                    <p>{{ 'onboarding.product_title' | t }}</p>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- if section.settings.show_navigation -%}
+          <div class="aria-new-trending__controls" data-aria-carousel-controls>
+            <button
+              type="button"
+              class="aria-new-trending__nav aria-new-trending__nav--prev"
+              data-aria-carousel-prev
+              aria-label="{{ 'aria_theme.carousel.previous' | t }}"
+            >
+              {%- render 'aria-icon', name: 'arrow-left' -%}
+            </button>
+            <button
+              type="button"
+              class="aria-new-trending__nav aria-new-trending__nav--next"
+              data-aria-carousel-next
+              aria-label="{{ 'aria_theme.carousel.next' | t }}"
+            >
+              {%- render 'aria-icon', name: 'arrow-right' -%}
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- else -%}
+      <p class="aria-new-trending__empty">{{ 'onboarding.product_title' | t }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-new-trending.name",
+  "tag": "section",
+  "class": "aria-new-trending-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "New and trending",
+      "label": "t:sections.aria-new-trending.settings.heading.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "default": true,
+      "label": "t:sections.aria-new-trending.settings.show_navigation.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_start",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-new-trending.settings.background_gradient_start.label"
+    },
+    {
+      "type": "color",
+      "id": "background_gradient_end",
+      "default": "#EADDD4",
+      "label": "t:sections.aria-new-trending.settings.background_gradient_end.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-new-trending.settings.header_advanced.content"
+    },
+    {
+      "type": "text",
+      "id": "feature_tag_metafield",
+      "default": "custom.feature_tags",
+      "label": "t:sections.aria-new-trending.settings.feature_tag_metafield.label",
+      "info": "t:sections.aria-new-trending.settings.feature_tag_metafield.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "t:sections.aria-new-trending.blocks.product.name",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.aria-new-trending.blocks.product.settings.product.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "t:sections.aria-new-trending.presets.name",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

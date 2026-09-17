@@ -1,0 +1,170 @@
+/* Aria & Co. — Shop By Collection (sections/shop-by-collection.liquid) */
+
+.aria-shop-collection {
+  background: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  padding-block: 48px;
+}
+
+.aria-shop-collection__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* V4 caps the header block at 624px. */
+.aria-shop-collection__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  max-width: 624px;
+  margin-inline: auto;
+}
+
+/*
+ * Mobile base, stepping up to 44px at 750 and V4's 56/64 at 990 — the same ladder every
+ * other section in this theme uses. This rule previously started at 56px with a fixed
+ * 64px line-height, so mobile rendered a 56px heading and tablet rendered 44px type on a
+ * 64px line (a 1.45 ratio against V4's 1.14).
+ */
+.aria-shop-collection__heading {
+  margin: 0;
+  font-size: 32px;
+  font-weight: var(--heading-h2-weight, 500);
+  line-height: 1.15;
+}
+
+.aria-shop-collection__subheading {
+  margin: 0;
+  font-size: var(--title-content-size, 20px);
+  line-height: var(--title-content-line-height, 28px);
+}
+
+.aria-shop-collection__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* V4: 40px between rows, 16px between columns. `--col-gap` is 15px, which left the
+     four desktop cards 1px wide each of the 328px the design specifies. */
+  gap: 40px 16px;
+}
+
+.aria-shop-collection__item {
+  min-width: 0;
+}
+
+.aria-shop-collection__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+}
+
+/* V4 card media is 328x418 at desktop: (1360 - 3x16px gaps) / 4 = 328. */
+.aria-shop-collection__image-wrap {
+  display: block;
+  width: 100%;
+  aspect-ratio: 328 / 418;
+  overflow: hidden;
+  background: #463e3e;
+  border-radius: var(--border-radius, 4px);
+}
+
+.aria-shop-collection__image,
+.aria-shop-collection__placeholder-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.aria-shop-collection__card:hover .aria-shop-collection__image,
+.aria-shop-collection__card:focus-visible .aria-shop-collection__image {
+  transform: scale(1.05);
+}
+
+/* V4: Montserrat Medium 20/28. The heading family is used (not a hardcoded font) so it
+   stays merchant-controlled via the theme's heading-font setting. */
+.aria-shop-collection__title {
+  font-family: var(--font-heading-family);
+  font-size: var(--title-content-size, 20px);
+  font-weight: 500;
+  line-height: var(--title-content-line-height, 28px);
+  color: var(--white);
+  text-align: center;
+}
+
+.aria-shop-collection__card--empty {
+  opacity: 0.6;
+}
+
+.aria-shop-collection__empty {
+  text-align: center;
+  padding: 40px 16px;
+  opacity: 0.7;
+}
+
+@media screen and (min-width: 750px) {
+  .aria-shop-collection {
+    padding-block: 64px;
+  }
+
+  .aria-shop-collection__inner {
+    padding-inline: 40px;
+  }
+
+  .aria-shop-collection__heading {
+    font-size: 44px;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .aria-shop-collection {
+    padding-block: var(--section-spacing, 80px);
+    padding-inline: 40px;
+  }
+
+  .aria-shop-collection__inner {
+    padding-inline: 0;
+    gap: 48px;
+  }
+
+  /* V4's 2x4 grid holds its 328px card proportions from 990px up. Below that the four
+     columns collapsed to ~160px at 768px, which is too narrow for a 20px title, so
+     tablet stays 2-up. */
+  .aria-shop-collection__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* V4: Montserrat Medium 56/64. */
+  .aria-shop-collection__heading {
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  .aria-shop-collection__subheading {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 980px) {
+  .aria-shop-collection__title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 767px) {
+  .aria-shop-collection__title {
+    font-size: 16px;
+  }
+}

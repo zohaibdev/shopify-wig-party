@@ -1,0 +1,220 @@
+{%- comment -%}
+  Renders a small inline line-art SVG icon used by the Aria & Co. custom sections.
+  Usage: {% render 'aria-icon', name: 'search' %}
+  Accepts optional `class` string appended to the wrapping svg's class attribute.
+{%- endcomment -%}
+{%- liquid
+  assign icon_class = 'aria-icon'
+  if class
+    assign icon_class = icon_class | append: ' ' | append: class
+  endif
+-%}
+{%- case name -%}
+  {%- when 'search' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+      <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M11.2 11.2L14.5 14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  {%- when 'account' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+      <circle cx="8" cy="5.2" r="2.7" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M2.6 14c.9-2.7 3-4.2 5.4-4.2s4.5 1.5 5.4 4.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  {%- when 'cart' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7.66415 17.8022L17.3526 16.9302C20.3841 16.6575 21.0646 15.9423 21.4006 12.6771L22.1078 5.80273" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M5.4454 5.80273H23.2222" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M5.44485 25.001C6.67208 25.001 7.66694 23.9265 7.66694 22.6011C7.66694 21.2756 6.67208 20.2012 5.44485 20.2012C4.21762 20.2012 3.22275 21.2756 3.22275 22.6011C3.22275 23.9265 4.21762 25.001 5.44485 25.001Z" stroke="currentColor" stroke-width="2"/>
+      <path d="M17.6675 25.001C18.8947 25.001 19.8896 23.9265 19.8896 22.6011C19.8896 21.2756 18.8947 20.2012 17.6675 20.2012C16.4403 20.2012 15.4454 21.2756 15.4454 22.6011C15.4454 23.9265 16.4403 25.001 17.6675 25.001Z" stroke="currentColor" stroke-width="2"/>
+      <path d="M7.66415 22.5996H15.4415" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M1 1H2.07327C3.12286 1 4.03776 1.74948 4.29233 2.81784L7.59799 16.6911C7.76503 17.3923 7.62208 18.1349 7.20881 18.7132L6.14652 20.1992" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  {%- when 'heart' -%}
+    <svg class="{{ icon_class }}"  viewBox="0 0 15 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+     <path d="M6.30802 12.5929C4.19206 10.9795 0 7.29127 0 3.97219C0 1.77841 1.57894 0 3.75 0C4.875 0 6 0.382349 7.5 1.91175C9 0.382349 10.125 0 11.25 0C13.421 0 15 1.77841 15 3.97219C15 7.29127 10.808 10.9795 8.69197 12.5929C7.97993 13.1357 7.02007 13.1357 6.30802 12.5929Z" fill="white"/>
+    </svg>
+
+
+  {%- when 'heart-filled' -%}
+    <svg class="{{ icon_class }}"  viewBox="0 0 15 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+     <path d="M6.30802 12.5929C4.19206 10.9795 0 7.29127 0 3.97219C0 1.77841 1.57894 0 3.75 0C4.875 0 6 0.382349 7.5 1.91175C9 0.382349 10.125 0 11.25 0C13.421 0 15 1.77841 15 3.97219C15 7.29127 10.808 10.9795 8.69197 12.5929C7.97993 13.1357 7.02007 13.1357 6.30802 12.5929Z" fill="white"/>
+    </svg>
+  {%- comment -%}
+    Outline heart for the header icon row. `heart` above is a solid white glyph on a
+    non-square 15x13 viewBox, drawn for the product card's translucent pill over a photo;
+    dropped into the header it renders a different shape family, ignores `color` entirely
+    (its fill is hardcoded white, so it barely reads on the pale icon button) and sits at a
+    different optical height because the viewBox is not square.
+
+    This one follows the exact recipe the header's own icons use -- see 'account' and
+    'search': a square 0 0 16 16 viewBox, `fill="none"`, `stroke="currentColor"` and
+    `stroke-width="1.3"`. That makes the rendered stroke 1.3px, identical to the account
+    icon, and within 0.07px of the cart (whose 25x26 viewBox scales its stroke-width 2
+    down to 1.23px). Inheriting currentColor is also what gives it the same colour and
+    hover behaviour as its neighbours for free.
+  {%- endcomment -%}
+  {%- when 'heart-outline' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+      <path d="M8 13.7C8 13.7 1.5 9.6 1.5 5.5C1.5 3.4 3.1 2 5 2C6.4 2 7.5 2.8 8 4C8.5 2.8 9.6 2 11 2C12.9 2 14.5 3.4 14.5 5.5C14.5 9.6 8 13.7 8 13.7Z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'star' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clip-path="url(#clip0_1_141)">
+      <path d="M7.9974 0.832047C8.69691 0.832047 9.24792 1.3604 9.59969 2.07332L10.7744 4.44215C10.81 4.51547 10.8944 4.6187 11.0214 4.71314C11.1482 4.80748 11.2724 4.85952 11.3541 4.87325L13.4805 5.22946C14.2486 5.35854 14.8924 5.73504 15.1014 6.39065C15.3102 7.04571 15.0042 7.72645 14.4519 8.27981L14.4514 8.28035L12.7994 9.94595C12.7339 10.012 12.6606 10.1363 12.6146 10.2983C12.5689 10.4593 12.5649 10.6058 12.5856 10.7005L12.5859 10.7019L13.0585 12.7623C13.2545 13.6199 13.1896 14.4703 12.5847 14.9148C11.9778 15.3609 11.1485 15.1632 10.395 14.7145L8.4017 13.5247C8.318 13.4747 8.17424 13.4342 8.00073 13.4342C7.82849 13.4342 7.68171 13.4742 7.59256 13.526L7.5913 13.5268L5.60192 14.7142C4.84937 15.1645 4.02103 15.3587 3.41407 14.9122C2.80966 14.4675 2.74143 13.6187 2.93807 12.7619L3.4106 10.7019L3.41089 10.7005C3.43161 10.6058 3.42755 10.4593 3.38187 10.2983C3.33587 10.1363 3.26252 10.012 3.19705 9.94595L1.5439 8.27914C0.995098 7.7258 0.690138 7.04565 0.897298 6.39155C1.10506 5.73554 1.74762 5.35858 2.51622 5.22942L4.64088 4.87351L4.64156 4.87339C4.71945 4.85988 4.8418 4.80842 4.96832 4.71384C5.09507 4.61908 5.17973 4.51562 5.21541 4.44215L5.21721 4.43849L6.39041 2.0727L6.39088 2.07176C6.74597 1.35943 7.29869 0.832047 7.9974 0.832047Z" fill="currentColor" stroke="#EBC1C0" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <defs>
+        <clipPath id="clip0_1_141">
+          <rect width="16" height="16" fill="white"/>
+        </clipPath>
+      </defs>
+    </svg>
+  {%- when 'star-outline' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+      <path d="M8 1.4l1.9 4.13 4.4.5-3.28 3.06.87 4.5L8 11.4l-3.9 2.2.87-4.5L1.7 6.03l4.4-.5L8 1.4Z" stroke="currentColor" stroke-width="1"/>
+    </svg>
+  {%- when 'chevron-down' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+      <path d="M2.5 5l4.5 4.5L11.5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'arrow-left' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">
+      <path d="M17.5 6.5L10 14l7.5 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'arrow-right' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">
+      <path d="M10.5 6.5L18 14l-7.5 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'close' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+      <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  {%- when 'menu' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 20 16" fill="none" aria-hidden="true" focusable="false">
+      <path d="M1 2h18M1 8h18M1 14h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  {%- comment -%}
+    MEGA-MENU COLUMN ICONS — the client file's OWN exported glyphs, path for path.
+
+    Nodes (client file GwwzFncuGYte0VMIN8G9UV, "Navigation - For Developer" 6337:3110):
+      mega-style       6337:4822  fluent:line-style-sketch-28-filled  (Shop by Style)
+      mega-collection  6337:4858  stack-star        (Shop by Collection / Wig 101 /
+                                                     Our Heart / All the Ways to Save /
+                                                     Catch Up)
+      mega-color       6337:4885  paint-board       (Shop by Color / Guides & Answers)
+      mega-bestseller  6337:4914  gold-sell         (Best Sellers / Dailey Deals rows)
+      mega-daily       6337:4926  task-daily-02     (New markdown daily)
+      mega-calendar    6337:3921  calendar-03       (This Week's Schedule /
+                                                     Real Women, Real Wigs)
+      mega-live        6337:3943  live-streaming-01 (Live Tonight)
+
+    All are 24x24 with a 1.5px stroke on round caps and joins — the earlier lookalikes
+    were hand-drawn at mixed weights, which is what read as "inconsistent icons". The one
+    filled glyph is `mega-style`; it has no stroke at all, so it takes `fill`.
+
+    Stroke/fill is `currentColor` so the column head owns the colour: the design draws
+    every glyph in Primary/Dark Pink `#A64A4C` except `gold-sell`, which is Quaternary
+    `#BC696B` (see `.aria-mega__col-icon--qi`).
+  {%- endcomment -%}
+  {%- when 'mega-style' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M1.7149 5.14328C1.7149 4.91595 1.80521 4.69793 1.96596 4.53718C2.1267 4.37644 2.34472 4.28613 2.57205 4.28613H21.4266C21.6539 4.28613 21.872 4.37644 22.0327 4.53718C22.1935 4.69793 22.2838 4.91595 22.2838 5.14328C22.2838 5.3706 22.1935 5.58862 22.0327 5.74937C21.872 5.91011 21.6539 6.00042 21.4266 6.00042H2.57205C2.34472 6.00042 2.1267 5.91011 1.96596 5.74937C1.80521 5.58862 1.7149 5.3706 1.7149 5.14328ZM11.5378 11.9318C12.4335 12.3587 13.4826 12.8576 14.9758 12.8576C16.2803 12.8576 17.2789 12.4676 18.1052 12.1444L18.4378 12.0158C19.3189 11.6833 20.1049 11.4587 21.256 11.697C21.3663 11.7197 21.48 11.7205 21.5905 11.6993C21.7011 11.6782 21.8064 11.6354 21.9004 11.5735C21.9945 11.5116 22.0754 11.4318 22.1386 11.3387C22.2018 11.2455 22.246 11.1408 22.2688 11.0306C22.2915 10.9203 22.2923 10.8067 22.2711 10.6961C22.2499 10.5855 22.2072 10.4802 22.1453 10.3862C22.0834 10.2921 22.0036 10.2112 21.9104 10.148C21.8173 10.0848 21.7126 10.0406 21.6023 10.0178C19.9883 9.68442 18.8398 10.0316 17.8309 10.413L17.4692 10.5518C16.6378 10.8733 15.9392 11.1433 14.9758 11.1433C13.8872 11.1433 13.1415 10.7961 12.2432 10.3693L12.2132 10.3547C11.3149 9.92785 10.2675 9.42899 8.77433 9.42899C7.28033 9.42899 6.23205 9.92785 5.33548 10.3547L5.30462 10.3693C4.40633 10.7961 3.66062 11.1433 2.57205 11.1433C2.34472 11.1433 2.1267 11.2336 1.96596 11.3943C1.80521 11.5551 1.7149 11.7731 1.7149 12.0004C1.7149 12.2277 1.80521 12.4458 1.96596 12.6065C2.1267 12.7673 2.34472 12.8576 2.57205 12.8576C4.06519 12.8576 5.11433 12.3587 6.0109 11.9318L6.0409 11.9173C6.93919 11.4904 7.68576 11.1433 8.77433 11.1433C9.8629 11.1433 10.6086 11.4904 11.5069 11.9173L11.5378 11.9318ZM2.05005 19.5381C2.13942 19.6066 2.2414 19.6567 2.35016 19.6858C2.45892 19.7148 2.57233 19.7221 2.68392 19.7073C2.79552 19.6925 2.9031 19.6559 3.00053 19.5995C3.09796 19.5431 3.18333 19.4681 3.25176 19.3787L3.28776 19.3341C3.31862 19.2981 3.36576 19.2424 3.42919 19.1747C3.55776 19.0384 3.74376 18.8558 3.97433 18.675C4.45262 18.2996 5.03205 18.0004 5.62862 18.0004C5.91062 18.0004 6.03662 18.0647 6.11033 18.1161C6.21405 18.1881 6.30148 18.2918 6.47719 18.5216L6.4969 18.5473C6.65033 18.7478 6.88519 19.0556 7.22976 19.2947C7.62062 19.5647 8.09548 19.7147 8.6869 19.7147C9.81833 19.7147 10.6609 19.1618 11.2832 18.753L11.3372 18.717C12.0169 18.2713 12.466 18.0004 13.0472 18.0004C13.6163 18.0004 14.0192 18.2593 14.65 18.7024L14.6989 18.7367C15.286 19.1481 16.0918 19.7147 17.2378 19.7147C18.3323 19.7147 19.5392 19.197 20.3818 18.7616C20.9119 18.4862 21.4256 18.1802 21.9203 17.8453C22.0125 17.7807 22.0911 17.6985 22.1515 17.6036C22.212 17.5086 22.2531 17.4026 22.2726 17.2918C22.2921 17.1809 22.2896 17.0673 22.2652 16.9574C22.2408 16.8475 22.1949 16.7435 22.1303 16.6513C22.0657 16.5591 21.9836 16.4805 21.8886 16.4201C21.7936 16.3596 21.6877 16.3185 21.5768 16.299C21.466 16.2795 21.3523 16.282 21.2424 16.3064C21.1325 16.3308 21.0285 16.3767 20.9363 16.4413L20.8446 16.5038C20.4413 16.7706 20.0241 17.0158 19.5949 17.2384C18.778 17.661 17.8892 18.0004 17.2378 18.0004C16.6695 18.0004 16.2658 17.7416 15.6349 17.2984L15.586 17.2641C15.0006 16.8536 14.1949 16.2861 13.048 16.2861C11.9166 16.2861 11.0749 16.839 10.4526 17.2478L10.3978 17.2838C9.7189 17.7296 9.26976 18.0004 8.68776 18.0004C8.40662 18.0004 8.28062 17.9361 8.2069 17.8847C8.10319 17.8127 8.01576 17.709 7.84005 17.4793L7.81947 17.4536C7.6669 17.253 7.43205 16.9453 7.08662 16.7061C6.69662 16.4361 6.22176 16.2861 5.62947 16.2861C4.4809 16.2861 3.53119 16.8441 2.91662 17.3258C2.57333 17.5965 2.25778 17.9005 1.97462 18.2336L1.89319 18.3347L1.89233 18.3356L1.89148 18.3364C1.82303 18.4258 1.77286 18.5278 1.74383 18.6365C1.71481 18.7453 1.70748 18.8587 1.72229 18.9703C1.73709 19.0819 1.77373 19.1895 1.83012 19.2869C1.8865 19.3843 1.96067 19.4697 2.05005 19.5381Z" fill="currentColor"/>
+    </svg>
+  {%- when 'mega-collection' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M16.8284 7.06234C18 8.12469 18 9.83451 18 13.2541V14.7459C18 18.1655 18 19.8753 16.8284 20.9377C15.6569 22 13.7712 22 10 22C6.22876 22 4.34315 22 3.17157 20.9377C2 19.8753 2 18.1655 2 14.7459V13.2541C2 9.83451 2 8.12469 3.17157 7.06234C4.34315 6 6.22876 6 10 6C13.7712 6 15.6569 6 16.8284 7.06234Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6.06641 6C6.17344 4.61213 6.451 3.71504 7.1708 3.06234C8.34237 2 10.228 2 13.9992 2C17.7705 2 19.6561 2 20.8277 3.06234C21.9992 4.12469 21.9992 5.83451 21.9992 9.25414V10.7459C21.9992 14.1655 21.9992 15.8753 20.8277 16.9377C20.1745 17.5299 19.2993 17.792 17.9992 17.908" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10.6911 10.5777L11.395 11.9972C11.491 12.1947 11.7469 12.3843 11.9629 12.4206L13.2388 12.6343C14.0547 12.7714 14.2467 13.3682 13.6587 13.957L12.6668 14.9571C12.4989 15.1265 12.4069 15.4531 12.4589 15.687L12.7428 16.925C12.9668 17.9049 12.4509 18.284 11.591 17.7718L10.3951 17.0581C10.1791 16.929 9.82315 16.929 9.60318 17.0581L8.40731 17.7718C7.5514 18.284 7.03146 17.9009 7.25543 16.925L7.5394 15.687C7.5914 15.4531 7.49941 15.1265 7.33143 14.9571L6.33954 13.957C5.7556 13.3682 5.94358 12.7714 6.75949 12.6343L8.03535 12.4206C8.24732 12.3843 8.5033 12.1947 8.59929 11.9972L9.30321 10.5777C9.68717 9.80744 10.3111 9.80744 10.6911 10.5777Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'mega-color' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C12.8417 22 14 22.1163 14 21C14 20.391 13.6832 19.9212 13.3686 19.4544C12.9082 18.7715 12.4523 18.0953 13 17C13.6667 15.6667 14.7778 15.6667 16.4815 15.6667C17.3334 15.6667 18.3334 15.6667 19.5 15.5C21.601 15.1999 22 13.9084 22 12Z" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M9.5 10C10.3284 10 11 9.32843 11 8.5C11 7.67157 10.3284 7 9.5 7C8.67157 7 8 7.67157 8 8.5C8 9.32843 8.67157 10 9.5 10Z" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M16.5 11C17.3284 11 18 10.3284 18 9.5C18 8.67157 17.3284 8 16.5 8C15.6716 8 15 8.67157 15 9.5C15 10.3284 15.6716 11 16.5 11Z" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M7.125 15H7M7.25 15C7.25 15.1381 7.13807 15.25 7 15.25C6.86193 15.25 6.75 15.1381 6.75 15C6.75 14.8619 6.86193 14.75 7 14.75C7.13807 14.75 7.25 14.8619 7.25 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'mega-bestseller' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M19 2.5V7M21 4L20.5617 3.4231C19.841 2.47437 19.4806 2 19 2C18.5194 2 18.159 2.47437 17.4383 3.4231L17 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20 9.87791C20.6667 10.6661 21 11.2926 21 12C21 13.2081 20.0278 14.1803 18.0834 16.1247L16.1247 18.0834C14.1803 20.0278 13.2081 21 12 21C10.7919 21 9.81971 20.0278 7.87531 18.0834L5.9166 16.1247C3.9722 14.1803 3 13.2081 3 12C3 10.7919 3.9722 9.81971 5.9166 7.87531L7.87531 5.9166C9.81971 3.9722 10.7919 3 12 3C12.7074 3 13.3339 3.33333 14.1221 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'mega-daily' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M20 16V8C20 5.17157 20 3.75736 19.1213 2.87868C18.2426 2 16.8284 2 14 2H10C7.17157 2 5.75736 2 4.87868 2.87868C4 3.75736 4 5.17157 4 8V16C4 18.8284 4 20.2426 4.87868 21.1213C5.75736 22 7.17157 22 10 22H14C16.8284 22 18.2426 22 19.1213 21.1213C20 20.2426 20 18.8284 20 16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M15.5 2H8.5C8.5 3.41421 8.5 4.12132 8.93934 4.56066C9.37868 5 10.0858 5 11.5 5H12.5C13.9142 5 14.6213 5 15.0607 4.56066C15.5 4.12132 15.5 3.41421 15.5 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7.5 11L8.5 12L10.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13.5 17H16.5M13.5 11H16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.625 17H8.5M8.75 17C8.75 17.1381 8.63807 17.25 8.5 17.25C8.36193 17.25 8.25 17.1381 8.25 17C8.25 16.8619 8.36193 16.75 8.5 16.75C8.63807 16.75 8.75 16.8619 8.75 17Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'mega-calendar' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12.1258 14H12.0008M12.1258 18H12.0008M7.625 14H7.5M7.625 18H7.5M16.625 14H16.5M12.2508 14C12.2508 14.1381 12.1389 14.25 12.0008 14.25C11.8628 14.25 11.7508 14.1381 11.7508 14C11.7508 13.8619 11.8628 13.75 12.0008 13.75C12.1389 13.75 12.2508 13.8619 12.2508 14ZM12.2508 18C12.2508 18.1381 12.1389 18.25 12.0008 18.25C11.8628 18.25 11.7508 18.1381 11.7508 18C11.7508 17.8619 11.8628 17.75 12.0008 17.75C12.1389 17.75 12.2508 17.8619 12.2508 18ZM7.75 14C7.75 14.1381 7.63807 14.25 7.5 14.25C7.36193 14.25 7.25 14.1381 7.25 14C7.25 13.8619 7.36193 13.75 7.5 13.75C7.63807 13.75 7.75 13.8619 7.75 14ZM7.75 18C7.75 18.1381 7.63807 18.25 7.5 18.25C7.36193 18.25 7.25 18.1381 7.25 18C7.25 17.8619 7.36193 17.75 7.5 17.75C7.63807 17.75 7.75 17.8619 7.75 18ZM16.75 14C16.75 14.1381 16.6381 14.25 16.5 14.25C16.3619 14.25 16.25 14.1381 16.25 14C16.25 13.8619 16.3619 13.75 16.5 13.75C16.6381 13.75 16.75 13.8619 16.75 14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- when 'mega-live' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M17 21C18.8692 21 19.8038 21 20.5 20.5981C20.9561 20.3348 21.3348 19.9561 21.5981 19.5C22 18.8038 22 17.8692 22 16C22 14.1308 22 13.1962 21.5981 12.5C21.3348 12.0439 20.9561 11.6652 20.5 11.4019C19.8038 11 18.8692 11 17 11H7C5.13077 11 4.19615 11 3.5 11.4019C3.04394 11.6652 2.66523 12.0439 2.40192 12.5C2 13.1962 2 14.1308 2 16C2 17.8692 2 18.8038 2.40192 19.5C2.66523 19.9561 3.04394 20.3348 3.5 20.5981C4.19615 21 5.13077 21 7 21H17Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16 6C15.0227 4.77354 13.5929 4 12 4C10.4071 4 8.97726 4.77354 8 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 8C13.5114 7.38677 12.7965 7 12 7C11.2035 7 10.4886 7.38677 10 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5 14V18H6.5M19 18H17V16M17 16V14H19M17 16H18.5M9 14V18M11.5 14L13 18L14.5 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  {%- comment -%}
+    NOTE: there is no `mega-cart`. A hand-drawn 1.5px cart lookalike used to live here
+    beside the real one; it was never rendered, and keeping two near-identical mega cart
+    glyphs is exactly how the wrong one gets picked. `mega-cart-02` below is the design's
+    own export and is the only cart the panels use.
+  {%- endcomment -%}
+  {%- comment -%}
+    The two glyphs below are the client file's OWN exported SVGs, path-for-path, not
+    lookalikes: `arrow-up-01` (the parent nav chevron, 14x14) and `shopping-cart-02`
+    (the product-card cart, 20x20, node 6337:3230). Both are 1px-stroke line icons on
+    round caps, which is why substituting the theme's chunkier `chevron-down` / `cart`
+    read as wrong. Stroke is `currentColor` so each inherits its context's colour.
+  {%- endcomment -%}
+  {%- when 'mega-chevron' -%}
+    {%- comment -%}
+      The design draws this pointing UP and rotates the instance 180 degrees, so the rotation is
+      baked in here and the icon needs no CSS transform to sit correctly.
+    {%- endcomment -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+      <g transform="rotate(180 7 7)">
+        <path d="M10.4999 8.75C10.4999 8.75 7.92219 5.25001 6.99988 5.25C6.07758 5.24999 3.49991 8.75 3.49991 8.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </svg>
+  {%- when 'mega-cart-02' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+      <path d="M6.66797 13.3333L13.9347 12.7277C16.2085 12.5383 16.7189 12.0417 16.9709 9.77408L17.5013 5" stroke="currentColor" stroke-linecap="round"/>
+      <path d="M5 5H18.3333" stroke="currentColor" stroke-linecap="round"/>
+      <path d="M4.9987 18.3333C5.91917 18.3333 6.66536 17.5871 6.66536 16.6667C6.66536 15.7462 5.91917 15 4.9987 15C4.07822 15 3.33203 15.7462 3.33203 16.6667C3.33203 17.5871 4.07822 18.3333 4.9987 18.3333Z" stroke="currentColor"/>
+      <path d="M14.1667 18.3333C15.0871 18.3333 15.8333 17.5871 15.8333 16.6667C15.8333 15.7462 15.0871 15 14.1667 15C13.2462 15 12.5 15.7462 12.5 16.6667C12.5 17.5871 13.2462 18.3333 14.1667 18.3333Z" stroke="currentColor"/>
+      <path d="M6.66797 16.666H12.5013" stroke="currentColor" stroke-linecap="round"/>
+      <path d="M1.66797 1.66602H2.47297C3.2602 1.66602 3.94642 2.18651 4.13735 2.92846L6.61674 12.5631C6.74203 13.05 6.6348 13.5658 6.32484 13.9674L5.52808 14.9994" stroke="currentColor" stroke-linecap="round"/>
+    </svg>
+  {%- comment -%}
+    Video controls for the Real Customers carousel. Play/pause are Dawn's own
+    assets/icon-play.svg and icon-pause.svg geometry (filled, currentColor) rather than a
+    new drawing; the two speaker glyphs are line-art in this dispatcher's house style so
+    they sit with the rest of the set. Purely additive — no existing icon changed.
+  {%- endcomment -%}
+  {%- when 'play' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 10 14" fill="none" aria-hidden="true" focusable="false">
+      <path fill="currentColor" fill-rule="evenodd" d="M1.482.815A1 1 0 0 0 0 1.69v10.517a1 1 0 0 0 1.525.851L10.54 7.5a1 1 0 0 0-.043-1.728z" clip-rule="evenodd"/>
+    </svg>
+  {%- when 'pause' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 8 12" fill="none" aria-hidden="true" focusable="false">
+      <path fill="currentColor" d="M1.2.75c-.387 0-.7.235-.7.525v9.45c0 .29.313.525.7.525s.7-.235.7-.525v-9.45c0-.29-.313-.525-.7-.525m5.6 0c-.387 0-.7.235-.7.525v9.45c0 .29.313.525.7.525s.7-.235.7-.525v-9.45c0-.29-.313-.525-.7-.525"/>
+    </svg>
+  {%- when 'sound-on' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 18 18" fill="none" aria-hidden="true" focusable="false">
+      <path d="M9.25 3.4v11.2a.6.6 0 0 1-.98.47L5.1 12.5H3.2a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h1.9l3.17-2.57a.6.6 0 0 1 .98.47Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M12.3 6.4a3.7 3.7 0 0 1 0 5.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M14.5 4.4a6.6 6.6 0 0 1 0 9.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  {%- when 'sound-off' -%}
+    <svg class="{{ icon_class }}" viewBox="0 0 18 18" fill="none" aria-hidden="true" focusable="false">
+      <path d="M9.25 3.4v11.2a.6.6 0 0 1-.98.47L5.1 12.5H3.2a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h1.9l3.17-2.57a.6.6 0 0 1 .98.47Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M12.4 7.1l3.4 3.8M15.8 7.1l-3.4 3.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+{%- endcase -%}

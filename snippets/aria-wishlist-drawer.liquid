@@ -1,0 +1,116 @@
+{%- comment -%}
+  Wishlist drawer — rendered ONCE from layout/theme.liquid, on every page.
+
+  Deliberately mirrors Dawn's cart drawer contract rather than inventing a second drawer
+  system: a custom element that toggles `.active`, a sibling overlay that closes on click,
+  Escape to close, `document.body.classList.add('overflow-hidden')` for scroll lock, and
+  Dawn's own `trapFocus`/`removeTrapFocus` from global.js. Behaviour lives in
+  assets/aria-wishlist.js.
+
+  It does NOT reuse the `.drawer` CSS classes, on purpose: `component-cart-drawer.css` is
+  only loaded when `settings.cart_type == 'drawer'`, so borrowing those class names would
+  make the wishlist silently lose all its styling the day a merchant switches the cart to
+  a notification/page. The wishlist ships its own stylesheet instead.
+
+  The item list is empty in the markup and filled by JS from localStorage. There is no
+  server-side record of what a visitor has wishlisted, so Liquid has nothing to render.
+{%- endcomment -%}
+<aria-wishlist-drawer
+  class="aria-wl-drawer"
+  data-wishlist-drawer
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="AriaWishlistDrawer-Heading"
+  aria-hidden="true"
+>
+  <div class="aria-wl-drawer__overlay" data-wishlist-overlay></div>
+
+  <div class="aria-wl-drawer__inner">
+    <header class="aria-wl-drawer__header">
+      <h2 class="aria-wl-drawer__heading" id="AriaWishlistDrawer-Heading">
+        {{ 'aria_theme.wishlist.title' | t }}
+        {%- render 'aria-icon', name: 'heart', class: 'aria-wl-drawer__heading-icon' -%}
+      </h2>
+
+      <button
+        type="button"
+        class="aria-wl-drawer__close"
+        data-wishlist-close
+        aria-label="{{ 'aria_theme.wishlist.close' | t }}"
+      >
+        {%- render 'aria-icon', name: 'close' -%}
+      </button>
+    </header>
+
+    {%- comment -%}
+      Both states live in the markup and JS toggles `hidden` between them, so switching to
+      and from the empty state never rebuilds the drawer chrome.
+    {%- endcomment -%}
+    <div class="aria-wl-drawer__body" data-wishlist-body>
+      <p class="aria-wl-drawer__empty" data-wishlist-empty>
+        <span class="aria-wl-drawer__empty-title">{{ 'aria_theme.wishlist.empty_title' | t }}</span>
+        <span class="aria-wl-drawer__empty-text">{{ 'aria_theme.wishlist.empty_text' | t }}</span>
+      </p>
+
+      <ul class="aria-wl-drawer__items" data-wishlist-items role="list" hidden></ul>
+    </div>
+
+    <footer class="aria-wl-drawer__footer">
+      <button type="button" class="aria-wl-drawer__continue" data-wishlist-close>
+        {{ 'aria_theme.wishlist.continue' | t }}
+      </button>
+    </footer>
+  </div>
+</aria-wishlist-drawer>
+
+{%- comment -%}
+  Row template. Kept as a <template> rather than built with innerHTML strings in JS so the
+  markup stays reviewable next to the rest of the theme, and so every translated string is
+  resolved by Liquid instead of being hardcoded in a script.
+{%- endcomment -%}
+<template id="AriaWishlistItemTemplate">
+  <li class="aria-wl-item" data-wishlist-item>
+    <a class="aria-wl-item__media" data-wl-link tabindex="-1" aria-hidden="true">
+      <img class="aria-wl-item__image" data-wl-image alt="" loading="lazy" width="72" height="72">
+    </a>
+
+    <div class="aria-wl-item__details">
+      <span class="aria-wl-item__vendor" data-wl-vendor hidden></span>
+      <a class="aria-wl-item__title" data-wl-link data-wl-title></a>
+      <span class="aria-wl-item__variant" data-wl-variant hidden></span>
+
+      <span class="aria-wl-item__price">
+        <span class="aria-wl-item__price-current" data-wl-price></span>
+        <s class="aria-wl-item__price-compare" data-wl-compare hidden></s>
+      </span>
+
+      <div class="aria-wl-item__actions">
+        <button
+          type="button"
+          class="aria-wl-item__add"
+          data-wl-add
+          data-sold-out-label="{{ 'aria_theme.wishlist.sold_out' | t | escape }}"
+        >
+          <span class="aria-wl-item__add-label">{{ 'aria_theme.wishlist.add_to_cart' | t }}</span>
+          <span class="aria-wl-item__spinner" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="aria-wl-item__remove" data-wl-remove>
+          {{ 'aria_theme.wishlist.remove' | t }}
+        </button>
+      </div>
+
+      {%- comment -%}
+        Errors are announced politely and shown inline on the row that failed, so a failed
+        add never silently leaves the item sitting there looking untouched.
+      {%- endcomment -%}
+      <p
+        class="aria-wl-item__error"
+        data-wl-error
+        data-fallback="{{ 'aria_theme.wishlist.error' | t | escape }}"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></p>
+    </div>
+  </li>
+</template>

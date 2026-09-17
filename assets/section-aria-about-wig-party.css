@@ -1,0 +1,317 @@
+/* Wig Party — About Wig Party (sections/about-wig-party.liquid), V4 node 1:942 */
+
+.aria-about {
+  background: var(--aria-about-bg, var(--white, #fff));
+  color: var(--sy, #000);
+  padding-block: 48px;
+  overflow: hidden;
+}
+
+.aria-about__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+.aria-about__layout {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 32px;
+}
+
+/* ---------- Copy column ---------- */
+
+.aria-about__copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* V4 nests the copy as: 15px eyebrow -> heading, 16px -> body, 12px -> tagline,
+   then the CTA pinned to the bottom of a 390px block. Expressed as margins so the
+   ladder is exact without extra wrappers. */
+.aria-about__copy-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.aria-about__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  border: 1px solid var(--sy, #000);
+  border-radius: 8px;
+  background: var(--white, #fff);
+  color: var(--sy, #000);
+  font-size: 12px;
+  line-height: 14px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+
+.aria-about__heading {
+  margin: 0 0 16px;
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 600;
+  color: var(--sy, #000);
+}
+
+/* V4: Poppins 20/28 in a 481px measure. */
+.aria-about__body {
+  margin: 0 0 12px;
+  max-width: 481px;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--sy, #000);
+}
+
+.aria-about__body p {
+  margin: 0;
+}
+
+/* V4: Poppins Medium Italic 14/22 uppercase. */
+.aria-about__tagline {
+  margin: 0 0 24px;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  text-transform: uppercase;
+  color: var(--sy, #000);
+}
+
+.aria-about__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 52px;
+  padding: 12px 24px;
+  border-radius: 2px;
+  background: var(--sy, #000);
+  color: var(--white, #fff);
+  font-size: 18px;
+  line-height: 28px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-about__btn:hover,
+.aria-about__btn:focus-visible {
+  background: var(--py, #a64a4c);
+}
+
+/* ---------- Social row ---------- */
+
+/*
+ * V4 draws these as 34px circles with a 16px glyph and a 12px gap. On this white section
+ * V4's white ring would vanish, so the ring is a brand tint instead.
+ * 44px at touch widths (the theme's tap-target floor), stepping down to V4's 34px at
+ * 1280px where the layout is mouse-driven — the same rule the header icons follow.
+ */
+.aria-about__social {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-about__social-item {
+  margin: 0;
+  min-width: 0;
+}
+
+.aria-about__social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(var(--qi-rgb, 188, 105, 107), 0.4);
+  border-radius: 50%;
+  background: rgba(var(--qi-rgb, 188, 105, 107), 0.08);
+  color: var(--sy, #000);
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-about__social-link:hover,
+.aria-about__social-link:focus-visible {
+  background: var(--qi, #bc696b);
+  border-color: var(--qi, #bc696b);
+  color: var(--white, #fff);
+}
+
+/* Dawn's inlined SVGs carry no width/height of their own, so the wrapper sets the box
+   and the glyph inherits the link's colour via `currentColor`. */
+.aria-about__social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.aria-about__social-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+/* ---------- Signature ---------- */
+
+.aria-about__signature {
+  display: block;
+  line-height: 0;
+  max-width: 345px;
+}
+
+.aria-about__signature-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Media ---------- */
+
+/* V4: 680 x 625, radius 2. */
+.aria-about__media {
+  min-width: 0;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-about__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 680 / 625;
+  object-fit: cover;
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (min-width: 750px) {
+  .aria-about {
+    padding-block: 64px;
+  }
+
+  .aria-about__inner {
+    padding-inline: 40px;
+  }
+
+  .aria-about__heading {
+    font-size: 44px;
+  }
+
+  .aria-about__body {
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+/* ---------- Desktop ---------- */
+
+/* V4: pt-80 pb-20 px-80, copy column and a 680px photo with a 20px gutter, both
+   bottom-aligned. */
+@media screen and (min-width: 990px) {
+  .aria-about {
+    padding-block: var(--section-spacing, 80px) 20px;
+    padding-inline: 40px;
+  }
+
+  .aria-about__inner {
+    padding-inline: 0;
+  }
+
+  .aria-about__layout {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  .aria-about__copy {
+    flex: 1 1 0;
+    align-self: stretch;
+    justify-content: space-between;
+    /* Room for the signature, which V4 parks below the social row. */
+    padding-bottom: 158px;
+  }
+
+  .aria-about__media {
+    flex: 0 0 680px;
+    max-width: 680px;
+  }
+
+  .aria-about__heading {
+    /* V4: Montserrat SemiBold 56/64. */
+    font-size: var(--heading-h2-size, 56px);
+    line-height: var(--heading-h2-line-height, 64px);
+  }
+
+  .aria-about__body {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-about__btn {
+    width: 211px;
+  }
+
+  /* V4 places the wordmark at the bottom-left of the copy column, at its full 345px.
+     A percentage cap here shrank it to ~290px once the scrollbar narrowed the column. */
+  .aria-about__signature {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 345px;
+    max-width: 100%;
+  }
+}
+
+/* V4's 34px social circles, applied only where the layout is mouse-driven. Touch widths
+   keep the 44px target (theme rule, section 4.5). */
+@media screen and (min-width: 1280px) {
+  .aria-about__social-link {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+
+/* ==========================================================================
+   1024px BAND ONLY — 990px to 1279px
+   --------------------------------------------------------------------------
+   Scoped to the theme's own existing breakpoints so nothing leaks: 1280 and
+   1440 keep the untouched desktop rules, 768 and below keep the untouched
+   tablet/mobile rules. Do not widen or narrow this range without re-measuring.
+   ========================================================================== */
+
+/*
+ * Same root cause as Real Women: the media is `flex: 0 0 680px` with shrink disabled, so
+ * in the 929px row at a 1024 viewport the copy column collapsed to 229px. V4's proportion
+ * at 1440 is 645 copy / 680 media, so sharing the row is truer to the design than holding
+ * the literal 680px and starving the text.
+ *
+ * The 345px signature is absolutely positioned inside the copy column, so the copy must
+ * stay wider than that — at 929px this yields ~455px, which clears it.
+ */
+@media screen and (min-width: 990px) and (max-width: 1279px) {
+  .aria-about__media {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}

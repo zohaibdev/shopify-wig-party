@@ -1,0 +1,402 @@
+/* Aria & Co. — hero (sections/hero.liquid) */
+
+.aria-hero {
+  position: relative;
+  background: var(--aria-hero-bg, #f1e3d8);
+  overflow: hidden;
+}
+
+.aria-hero__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: 70vh;
+  overflow: hidden;
+}
+
+.aria-hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.aria-hero__inner {
+  position: relative;
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+/*
+ * V4 nests the copy in three auto-layout groups whose gaps are 8 (rating -> logo),
+ * 16 (logo -> word row), 12 (word row -> description) and 48 (description -> buttons).
+ * Expressed as explicit margins on a single flat column so the exact ladder is
+ * reproduced without adding wrapper elements to the markup.
+ */
+.aria-hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  padding: 32px 0 40px;
+}
+
+.aria-hero__rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FAF8F5;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 24px;
+  color: #2b2c2b;
+  margin-bottom: 8px;
+}
+
+.aria-hero__rating-stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--qi);
+}
+
+/* V4 star is 16px, not 14. */
+.aria-hero__rating-stars .aria-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.aria-hero__heading {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.05;
+  font-weight: var(--heading-h2-weight, 600);
+  color: var(--py);
+}
+
+/* V4: Montserrat Medium 28/38, 12px between words, 12px down to the description. */
+.aria-hero__eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 12px;
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 38px;
+  text-transform: none;
+}
+
+/* V4: 48px from the description down to the CTA row. */
+.aria-hero__description {
+  font-size: 18px;
+  margin-bottom: 48px;
+  line-height: 28px;
+  color: #4D4B4E;
+}
+
+.aria-hero__description p {
+  margin: 0;
+}
+
+.aria-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* V4: px-24 py-12 with 18/28 type => 52px tall, radius 2px. */
+.aria-hero__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 12px 24px;
+  border-radius: 2px;
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 400;
+  text-transform: capitalize;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.aria-hero__btn--primary {
+  background: var(--py);
+  color: var(--white);
+}
+
+.aria-hero__btn--secondary {
+  background: var(--black);
+  color: var(--white);
+}
+
+.aria-hero__btn:hover {
+  opacity: 0.85;
+}
+
+/* Live badge */
+
+.aria-hero__live-badge {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--qi);
+  border: 1px solid var(--white);
+  border-radius: var(--border-radius, 4px);
+  color: var(--white);
+  /* V4: pt-15 pb-16 px-18. */
+  padding: 15px 18px 16px;
+}
+
+.aria-hero__live-badge-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+/* V4 avatar is 40px. */
+.aria-hero__live-avatar {
+  display: block;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.aria-hero__live-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-hero__live-title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.aria-hero__live-brand {
+  font-weight: 600;
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+.aria-hero__live-subtitle {
+  margin: 0;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 27px;
+}
+
+.aria-hero__live-description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  margin-bottom: 24px;
+}
+
+/* V4: px-16 py-8.5, radius 2, Poppins Bold 12/22 uppercase. */
+.aria-hero__live-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  background: var(--white);
+  color: #111;
+  min-height: 44px;
+  padding: 8.5px 16px;
+  border-radius: 2px;
+  font-size: 12px;
+  line-height: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* Pulse comes from the shared `.aria-live-pulse` in style.css. The ring is held to 2.2x
+   (24px from an 11px dot) because the CTA only leaves an 8px gap to the label — a wider
+   ring would wash over the text. */
+.aria-hero__live-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--qi);
+  --aria-pulse-color: var(--qi);
+  --aria-pulse-scale: 2.2;
+}
+
+.aria-hero__logo {
+  line-height: 0;
+  margin-bottom: 16px;
+}
+
+@media screen and (min-width: 750px) {
+  .aria-hero__content {
+    padding: 40px 0 48px;
+  }
+
+
+  .aria-hero__heading {
+    font-size: 64px;
+  }
+
+
+}
+
+
+@media screen and (max-width: 1024px) {
+  .aria-hero__content {
+    padding-inline: 40px;
+  }
+}
+
+
+@media screen and (min-width: 990px) {
+  .aria-hero {
+    height: 739px;
+  }
+
+  .aria-hero__media {
+    position: absolute;
+    inset: 0;
+    left: 0%;
+    right: 0%;
+    height: 100%;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  /*
+   * V4 anchors the copy panel to the LEFT edge of the viewport (left: 0) with an 80px
+   * inner gutter, holding a 607px column — it is not centred inside the 1360px
+   * container. Centring it put the copy ~250px too far right over the model's face.
+   */
+  /*
+   * `z-index: 1`, deliberately not higher. All this needs to do is sit above
+   * `.aria-hero__media`, which is absolute + `z-index: auto` and precedes it in the
+   * markup, so 1 is already more than enough. Every ancestor up to <body> is
+   * static/auto, so whatever value lands here competes in the ROOT stacking context —
+   * and Dawn caps the header group at `z-index: 4` (base.css,
+   * `.shopify-section-group-header-group`), which is a stacking context, so the search
+   * dropdown's own `z-index: 20` cannot escape past 4. At 10 this panel therefore
+   * painted over the open predictive-search results and swallowed every click on a
+   * suggestion (`elementFromPoint` over a suggestion returned `.aria-hero__inner`).
+   */
+  .aria-hero__inner {
+    position: relative;
+    height: 100%;
+    max-width: 1496px;
+    margin-inline: auto;
+    padding-inline: 80px;
+    z-index: 1;
+    /*
+     * This box is full-width and full-height but its only visible content is the 607px
+     * `__content` column on the left, so the empty right-hand two thirds of it sat on
+     * top of the Watch Live badge (which lives inside `.aria-hero__media`, earlier in
+     * the markup) and swallowed every click on it. Letting the pointer pass through the
+     * wrapper and re-arming it on the column keeps the badge reachable without moving
+     * anything. `__content` is `__inner`'s only child.
+     */
+    pointer-events: none;
+  }
+
+  .aria-hero__content {
+    pointer-events: auto;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    max-width: 607px;
+    margin-inline: 0;
+    /* V4's panel is py-64 symmetric. The inherited 40/48 asymmetry biased the centred
+       column 4px upward. */
+    padding-block: 64px;
+    /* V4 centres the panel 16.5px above the media box's own centre. */
+    translate: 0 -16.5px;
+  }
+
+  .aria-hero__heading {
+    font-size: var(--heading-h1-size, 86px);
+    line-height: 86px;
+  }
+
+  .aria-hero__eyebrow {
+    font-size: 28px;
+  }
+
+  /* V4: pinned 40px from the bottom-right of the media box, 296px wide. */
+  .aria-hero__live-badge {
+    left: auto;
+    right: 40px;
+    bottom: 40px;
+    width: 296px;
+  }
+}
+
+/* V4's Watch Live pill is 39px tall (py-8.5 + 22px line). Applied only from 1280px up,
+   where the layout is mouse-driven; below that the 44px touch floor is kept. */
+@media screen and (min-width: 1280px) {
+  .aria-hero__live-cta {
+    min-height: 39px;
+  }
+}
+
+@media screen and (max-width: 980px) {
+  .aria-hero:before {
+    display: none;
+  }
+
+  .aria-hero__media {
+    aspect-ratio: 4 / 5;
+  }
+
+  .aria-hero__image {
+    object-position: right;
+  }
+
+  .aria-hero__content {
+    padding-inline: 40px;
+  }
+
+  .aria-hero__description {
+    max-width: 100%;
+  }
+}
+
+@media screen and (max-width: 750px) {
+
+  .aria-hero__content {
+    padding-inline: 16px;
+  }
+
+  .aria-hero__eyebrow,
+  .aria-hero__description {
+    font-size: 16px;
+  }
+
+
+  .aria-hero__logo img {
+    max-width: 300px;
+    height: auto;
+  }
+
+
+  .aria-hero__actions {
+    justify-content: center;
+  }
+}

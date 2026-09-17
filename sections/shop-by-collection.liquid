@@ -1,0 +1,126 @@
+{{ 'section-aria-shop-by-collection.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign collection_blocks = section.blocks | where: 'type', 'collection'
+-%}
+
+<section class="aria-shop-collection color-{{ section.settings.color_scheme }}">
+  <div class="aria-shop-collection__inner">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="aria-shop-collection__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-shop-collection__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="aria-shop-collection__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if collection_blocks.size > 0 -%}
+      <ul class="aria-shop-collection__grid" style="--aria-shop-collection-count: {{ collection_blocks.size }};">
+        {%- for block in collection_blocks -%}
+          {%- liquid
+            assign collection_item = block.settings.collection
+            assign card_title = block.settings.title_override | default: collection_item.title
+          -%}
+          <li class="aria-shop-collection__item" {{ block.shopify_attributes }}>
+            {%- if collection_item != blank -%}
+              <a href="{{ collection_item.url }}" class="aria-shop-collection__card">
+                <span class="aria-shop-collection__image-wrap">
+                  {%- if collection_item.featured_image != blank -%}
+                    {{
+                      collection_item.featured_image
+                      | image_url: width: 800
+                      | image_tag:
+                        loading: 'lazy',
+                        sizes: '(min-width: 990px) 328px, 50vw',
+                        widths: '328,480,656,800,984',
+                        class: 'aria-shop-collection__image',
+                        alt: collection_item.featured_image.alt | default: card_title
+                    }}
+                  {%- else -%}
+                    <span class="aria-shop-collection__placeholder">
+                      {{ 'collection-1' | placeholder_svg_tag: 'aria-shop-collection__image aria-shop-collection__placeholder-svg' }}
+                    </span>
+                  {%- endif -%}
+                </span>
+                <span class="aria-shop-collection__title">{{ card_title }}</span>
+              </a>
+            {%- else -%}
+              <div class="aria-shop-collection__card aria-shop-collection__card--empty">
+                <span class="aria-shop-collection__image-wrap">
+                  <span class="aria-shop-collection__placeholder">
+                    {{ 'collection-1' | placeholder_svg_tag: 'aria-shop-collection__image aria-shop-collection__placeholder-svg' }}
+                  </span>
+                </span>
+                <span class="aria-shop-collection__title">{{ card_title | default: 'Select a collection' }}</span>
+              </div>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="aria-shop-collection__empty">{{ 'aria_theme.collection_card.shop_now' | t }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-shop-by-collection.name",
+  "tag": "section",
+  "class": "aria-shop-by-collection-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Shop By Collection",
+      "label": "t:sections.aria-shop-by-collection.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "default": "The styles our community can't stop buying.",
+      "label": "t:sections.aria-shop-by-collection.settings.subheading.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "scheme-1",
+      "label": "t:sections.aria-shop-by-collection.settings.color_scheme.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "t:sections.aria-shop-by-collection.blocks.collection.name",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:sections.aria-shop-by-collection.blocks.collection.settings.collection.label"
+        },
+        {
+          "type": "text",
+          "id": "title_override",
+          "label": "t:sections.aria-shop-by-collection.blocks.collection.settings.title_override.label",
+          "info": "t:sections.aria-shop-by-collection.blocks.collection.settings.title_override.info"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "t:sections.aria-shop-by-collection.presets.name",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

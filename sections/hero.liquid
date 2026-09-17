@@ -1,0 +1,337 @@
+{{ 'section-aria-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign word_blocks = section.blocks | where: 'type', 'highlight_word'
+  assign button_blocks = section.blocks | where: 'type', 'button'
+-%}
+
+<section
+  class="aria-hero"
+  style="--aria-hero-bg: {{ section.settings.background_color }};"
+>
+  <div class="aria-hero__media">
+    {%- if section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 1600
+        | image_tag:
+          loading: 'eager',
+          fetchpriority: 'high',
+          sizes: '100vw',
+          widths: '480,768,1024,1400,1600,1920',
+          class: 'aria-hero__image',
+          alt: section.settings.image.alt | default: section.settings.heading
+      }}
+    {%- else -%}
+      {%- comment -%}
+        Sensible default so the section isn't empty until a merchant picks an image.
+        V4's hero media is full-bleed 1440x739, not the 788x631 box this previously
+        declared — the wrong intrinsic ratio skewed the reserved space before load.
+      {%- endcomment -%}
+      <img
+        src="{{ 'hero.jpg' | asset_url }}"
+        alt="{{ section.settings.heading }}"
+        loading="eager"
+        fetchpriority="high"
+        width="1440"
+        height="739"
+        class="aria-hero__image"
+      >
+    {%- endif -%}
+    {%- comment -%}
+      V4 puts no scrim or gradient over the hero photo — the copy sits directly on the
+      naturally light left side of the image. The `.aria-hero__fade` element that used to
+      sit here had no CSS rule backing it at all, so it rendered as a 0px no-op; removed
+      rather than left as dead markup. Do not reintroduce a fade here.
+    {%- endcomment -%}
+    {%- if section.settings.show_live_badge -%}
+      <div class="aria-hero__live-badge">
+        <div class="aria-hero__live-badge-header">
+          {%- if section.settings.live_badge_avatar != blank -%}
+            <span class="aria-hero__live-avatar">
+              {{
+                section.settings.live_badge_avatar
+                | image_url: width: 80
+                | image_tag: loading: 'eager', width: 40, height: 40, alt: ''
+              }}
+            </span>
+          {%- endif -%}
+          <p class="aria-hero__live-title">
+            {{ section.settings.live_badge_title }}
+            {% if section.settings.live_badge_brand != blank %}
+              <span class="aria-hero__live-brand">{{ section.settings.live_badge_brand }}</span>
+            {% endif %}
+          </p>
+        </div>
+        {%- if section.settings.live_badge_subtitle != blank -%}
+          <p class="aria-hero__live-subtitle">{{ section.settings.live_badge_subtitle }}</p>
+        {%- endif -%}
+        {%- if section.settings.live_badge_description != blank -%}
+          <p class="aria-hero__live-description">{{ section.settings.live_badge_description }}</p>
+        {%- endif -%}
+        {%- if section.settings.live_badge_url != blank -%}
+          <a href="{{ section.settings.live_badge_url }}" class="aria-hero__live-cta">
+            <span class="aria-hero__live-dot aria-live-pulse" aria-hidden="true"></span>
+            {{ section.settings.live_badge_button_label }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="aria-hero__inner">
+    <div class="aria-hero__content">
+      {%- if section.settings.show_rating_badge and section.settings.rating_badge_text != blank -%}
+        <div class="aria-hero__rating-badge">
+          <span class="aria-hero__rating-stars" aria-hidden="true">
+            {%- for i in (1..5) -%}
+              {%- render 'aria-icon', name: 'star' -%}
+            {%- endfor -%}
+          </span>
+          <span>{{ section.settings.rating_badge_text }}</span>
+        </div>
+      {%- endif -%}
+
+      {% if section.settings.logo_image != blank %}
+        <div class="aria-hero__logo">
+          {%- comment -%}
+            Above the fold and part of the hero's LCP candidate set, so it must not be
+            lazy — a lazy wordmark here renders as a 407x107 hole on first paint.
+          {%- endcomment -%}
+          {{
+            section.settings.logo_image
+            | image_url: width: 814
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              widths: '407,814',
+              width: 407,
+              height: 107,
+              alt: ''
+          }}
+        </div>
+      {% else %}
+        <div class="aria-hero__logo">
+          <h1 class="aria-hero__heading">{{ section.settings.heading }}</h1>
+        </div>
+      {% endif %}
+
+      {%- if word_blocks.size > 0 -%}
+        <p class="aria-hero__eyebrow">
+          {%- for block in word_blocks -%}
+            <span style="color: {{ block.settings.color }};" {{ block.shopify_attributes }}>
+              {{- block.settings.text -}}
+            </span>
+          {%- endfor -%}
+        </p>
+      {%- endif -%}
+
+      {%- if section.settings.description != blank -%}
+        <div class="aria-hero__description">{{ section.settings.description }}</div>
+      {%- endif -%}
+
+      {%- if button_blocks.size > 0 -%}
+        <div class="aria-hero__actions">
+          {%- for block in button_blocks -%}
+            <a
+              href="{{ block.settings.url | default: '#' }}"
+              class="aria-hero__btn aria-hero__btn--{{ block.settings.style }}"
+              {{ block.shopify_attributes }}
+            >
+              {{ block.settings.text }}
+            </a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.aria-hero.name",
+  "tag": "section",
+  "class": "aria-hero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "t:sections.aria-hero.settings.logo_image.label",
+      "info": "t:sections.aria-hero.settings.logo_image.info"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.aria-hero.settings.image.label"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#F1E3D8",
+      "label": "t:sections.aria-hero.settings.background_color.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-hero.settings.header_rating.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating_badge",
+      "default": true,
+      "label": "t:sections.aria-hero.settings.show_rating_badge.label"
+    },
+    {
+      "type": "text",
+      "id": "rating_badge_text",
+      "default": "500+ verified 5-star reviews",
+      "label": "t:sections.aria-hero.settings.rating_badge_text.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-hero.settings.header_content.content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Wig Party",
+      "label": "t:sections.aria-hero.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "default": "<p>Helping women discover confidence through beautiful wigs, trusted education, and a community that understands.</p>",
+      "label": "t:sections.aria-hero.settings.description.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-hero.settings.header_live.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_live_badge",
+      "default": true,
+      "label": "t:sections.aria-hero.settings.show_live_badge.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "live_badge_avatar",
+      "label": "t:sections.aria-hero.settings.live_badge_avatar.label"
+    },
+    {
+      "type": "text",
+      "id": "live_badge_title",
+      "default": "Live with",
+      "label": "t:sections.aria-hero.settings.live_badge_title.label"
+    },
+    {
+      "type": "text",
+      "id": "live_badge_brand",
+      "label": "t:sections.aria-hero.settings.live_badge_brand.label"
+    },
+    {
+      "type": "text",
+      "id": "live_badge_subtitle",
+      "default": "Join us live on Facebook",
+      "label": "t:sections.aria-hero.settings.live_badge_subtitle.label"
+    },
+    {
+      "type": "text",
+      "id": "live_badge_description",
+      "default": "See the wigs. Ask questions. Laugh with friends.",
+      "label": "t:sections.aria-hero.settings.live_badge_description.label"
+    },
+    {
+      "type": "url",
+      "id": "live_badge_url",
+      "label": "t:sections.aria-hero.settings.live_badge_url.label"
+    },
+    {
+      "type": "text",
+      "id": "live_badge_button_label",
+      "default": "Watch Live",
+      "label": "t:sections.aria-hero.settings.live_badge_button_label.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "highlight_word",
+      "name": "t:sections.aria-hero.blocks.highlight_word.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "default": "CONFIDENCE.",
+          "label": "t:sections.aria-hero.blocks.highlight_word.settings.text.label"
+        },
+        {
+          "type": "color",
+          "id": "color",
+          "default": "#050505",
+          "label": "t:sections.aria-hero.blocks.highlight_word.settings.color.label"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.aria-hero.blocks.button.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "default": "Shop In-Stock Wigs",
+          "label": "t:sections.aria-hero.blocks.button.settings.text.label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.aria-hero.blocks.button.settings.url.label"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "default": "primary",
+          "label": "t:sections.aria-hero.blocks.button.settings.style.label",
+          "options": [
+            {
+              "value": "primary",
+              "label": "t:sections.aria-hero.blocks.button.settings.style.options__1.label"
+            },
+            {
+              "value": "secondary",
+              "label": "t:sections.aria-hero.blocks.button.settings.style.options__2.label"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.aria-hero.presets.name",
+      "blocks": [
+        {
+          "type": "highlight_word",
+          "settings": { "text": "EDUCATION.", "color": "#050505" }
+        },
+        {
+          "type": "highlight_word",
+          "settings": { "text": "COMMUNITY.", "color": "#050505" }
+        },
+        {
+          "type": "highlight_word",
+          "settings": { "text": "CONFIDENCE.", "color": "#A64A4C" }
+        },
+        {
+          "type": "button",
+          "settings": { "text": "Shop In-Stock Wigs", "style": "primary" }
+        },
+        {
+          "type": "button",
+          "settings": { "text": "Meet the Founder", "style": "secondary" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
