@@ -1305,3 +1305,108 @@
  * viewport a few pixels short drops a whole column onto a second line and leaves a ragged
  * panel. Proportional shrink degrades far more gracefully.
  */
+
+/* ---------- ADDED 2026-10-26 — Shop: 3 new filter columns (Figma 7169:2908) ---------- */
+
+/*
+ * Wraps the EXISTING Shop by Style / Shop by Collection / (dead) Shop by Color columns
+ * together with the 3 new filter columns below into a 4-up grid that fills the space left of
+ * the two promo cards (1fr tracks shrink the long-overflowing text; minmax(0, ...) lets a
+ * long label wrap instead of pushing the grid wider). `flex: 1 1 0%` on the group itself is
+ * what gives the grid a definite width to divide — without it a grid placed in a flex
+ * container with no explicit width sizes to its content instead of the free space.
+ */
+.aria-mega__group--shop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--aria-mega-gap, 24px);
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/*
+ * Shop by Collection's render call still sets `--aria-mega-col-w: 260px` (untouched, see
+ * snippets/aria-mega-menu.liquid) because other panels still size columns that way. Inside
+ * this grid every column must fill its own 1fr track instead, so only `width` is overridden
+ * here — two classes beat `.aria-mega__col`'s one, so this wins without `!important`, and
+ * `flex-basis`/`flex-shrink` are left alone since flex properties have no effect on a grid
+ * item anyway.
+ */
+.aria-mega__group--shop-grid > .aria-mega__col {
+  width: auto;
+}
+
+/*
+ * UPDATED 2026-10-26 — By Cap Construction / Shop by Collection / Shop by Color / By Size &
+ * Length now read a variable-length Shopify menu, so the heading and every row label must
+ * stay on one line rather than wrap to two or push the 1fr track wider (the overall grid
+ * already shrinks every track equally, see `.aria-mega__group--shop-grid` above). Scoped to
+ * just these two col_types so no other mega-menu column's heading is affected.
+ */
+.aria-mega__col--items-photos .aria-mega__col-title,
+.aria-mega__col--items-divided .aria-mega__col-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  /* 2026-11-06: headings were cut with an ellipsis ("SHOP BY COLLE..."); they now wrap
+     to a second line inside the same 1fr track instead of truncating. Track widths are
+     unchanged (min-width: 0 still stops a long word pushing the grid wider). */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: break-word;
+}
+
+/*
+ * By Cap Construction (node 7169:2960/2966): 48px round thumb + one-line label, 12px row
+ * gap (pitch 60), no divider. Reuses `.aria-mega__styles`' list spacing and
+ * `.aria-mega__link`'s hover/focus colour; only the row layout and the thumb box are new.
+ */
+.aria-mega__link--photo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* UPDATED 2026-10-26 — round ("gol"), not a radius-8 square: the design calls for a circular
+   48px thumbnail here, unlike Shop by Style's `.aria-mega__style-thumb` (radius 8). */
+.aria-mega__link-thumb {
+  flex: none;
+  display: block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e9e9e9;
+}
+
+.aria-mega__link-thumb-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* No image set and no default left for this slot: the thumb's own #e9e9e9 ground shows
+   through as a plain tinted circle. Dawn's base.css hides any empty div/span, so this inert
+   child (same technique as `.aria-mega__style-img-fallback`) keeps it visible. */
+.aria-mega__link-thumb-empty {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * UPDATED 2026-10-26 — By Cap Construction / Shop by Collection / Shop by Color / By Size &
+ * Length labels, one line each (see the matching `.aria-mega__col-title` rule above).
+ */
+.aria-mega__link-label {
+  display: block;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aria-mega__link--photo .aria-mega__link-label {
+  flex: 1 1 auto;
+}

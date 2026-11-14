@@ -1,0 +1,13 @@
+{%- comment -%}
+  API-only section (not in any template). assets/wp-search-overlay.js fetches
+  /search?q=..&type=product&section_id=wp-search-count and reads data-count, so the overlay's
+  "See all N results" number comes from one small cached request.
+{%- endcomment -%}
+<span data-wp-search-count="{% if search.performed %}{{ search.results_count }}{% endif %}"></span>
+
+{% schema %}
+{
+  "name": "Search result count",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,42 @@
+{%- comment -%}
+  One article row of the Learn library (sections/learn-library.liquid), Figma 7546:30067:
+  80 thumbnail, title (2 lines), date + read time, and a round arrow. The whole row links.
+  Read time is the article's word count at 200 words a minute, at least 1.
+
+  Accepts:
+  - article: the article to show
+{%- endcomment -%}
+
+{%- liquid
+  assign words = article.content | strip_html | split: ' '
+  assign minutes = words.size | divided_by: 200.0 | ceil
+  if minutes < 1
+    assign minutes = 1
+  endif
+-%}
+<li class="aria-learn-library__row">
+  <a class="aria-learn-library__link" href="{{ article.url }}">
+    <span class="aria-learn-library__thumb">
+      {%- if article.image != blank -%}
+        {{ article.image | image_url: width: 160, height: 160, crop: 'center' | image_tag: width: 80, height: 80, alt: '', loading: 'lazy' }}
+      {%- else -%}
+        <img src="{{ 'wp-learn-library-thumb.jpg' | asset_url }}" alt="" width="160" height="160" loading="lazy">
+      {%- endif -%}
+    </span>
+    <span class="aria-learn-library__body">
+      <span class="aria-learn-library__info">
+        <span class="aria-learn-library__name">{{ article.title | escape }}</span>
+        <span class="aria-learn-library__meta">
+          <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+            {{- article.published_at | date: '%m/%d/%y' -}}
+          </time>
+          <span class="aria-learn-library__dot" aria-hidden="true"></span>
+          <span>{{ 'aria_theme.learn.read_time' | t: minutes: minutes }}</span>
+        </span>
+      </span>
+      <span class="aria-learn-library__arrow" aria-hidden="true">
+        <img src="{{ 'wp-learn-arrow.svg' | asset_url }}" alt="" width="10.1879" height="10.1879">
+      </span>
+    </span>
+  </a>
+</li>

@@ -8,27 +8,172 @@
  * ------------------------------------------------------------
  */
 {
-  "sections": {
-    "main": {
-      "type": "main-page",
-      "settings": {
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "form": {
-      "type": "contact-form",
-      "settings": {
-        "heading": "",
-        "heading_size": "h1",
-        "color_scheme": "scheme-1",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    }
-  },
-  "order": [
-    "main",
-    "form"
-  ]
+    "sections":  {
+                     "contact-hero":  {
+                                          "type":  "contact-hero",
+                                          "settings":  {
+                                                           "home_label":  "Home",
+                                                           "parent_label":  "Help",
+                                                           "parent_url":  "/pages/shipping-returns",
+                                                           "current_label":  "Contact",
+                                                           "heading":  "Talk to us",
+                                                           "text":  "Questions regarding products, orders, or policies can come to us here. All sales are final, so if you have questions before you buy, we encourage you to contact us before placing your order."
+                                                       }
+                                      },
+                     "contact-body":  {
+                                          "type":  "contact-body",
+                                          "blocks":  {
+                                                         "faq-1":  {
+                                                                       "type":  "faq_item",
+                                                                       "settings":  {
+                                                                                        "question":  "Where is my order?",
+                                                                                        "answer":  "\u003cp\u003eOnce your order ships, tracking information is provided by email. Please allow up to 24 to 48 hours for tracking to become active.\u003c/p\u003e",
+                                                                                        "link_label":  "Track an order",
+                                                                                        "link_url":  "/account"
+                                                                                    }
+                                                                   },
+                                                         "faq-2":  {
+                                                                       "type":  "faq_item",
+                                                                       "settings":  {
+                                                                                        "question":  "When will my order ship?",
+                                                                                        "answer":  "\u003cp\u003eMost orders ship the next business day. Please allow 1 to 3 business days for order processing.\u003c/p\u003e",
+                                                                                        "link_label":  "Shipping \u0026 returns",
+                                                                                        "link_url":  "/pages/shipping-returns"
+                                                                                    }
+                                                                   },
+                                                         "faq-3":  {
+                                                                       "type":  "faq_item",
+                                                                       "settings":  {
+                                                                                        "question":  "Which colour or style should I get?",
+                                                                                        "answer":  "\u003cp\u003eSend us a message before you order and Kristi\u0027s team will help. You can also watch Kristi try wigs on in the replays.\u003c/p\u003e",
+                                                                                        "link_label":  "Watch the replays",
+                                                                                        "link_url":  "/pages/replays"
+                                                                                    }
+                                                                   },
+                                                         "faq-4":  {
+                                                                       "type":  "faq_item",
+                                                                       "settings":  {
+                                                                                        "question":  "Can I return or exchange something?",
+                                                                                        "answer":  "\u003cp\u003eAll sales are final. We do not accept returns, exchanges, or cancellations. If your item arrives damaged, defective or wrong, contact us immediately.\u003c/p\u003e",
+                                                                                        "link_label":  "Read the policy",
+                                                                                        "link_url":  "/pages/shipping-returns"
+                                                                                    }
+                                                                   },
+                                                         "other-1":  {
+                                                                         "type":  "other_way",
+                                                                         "settings":  {
+                                                                                          "title":  "Email",
+                                                                                          "subtitle":  "Questions on products, orders or policies",
+                                                                                          "value":  "shopwigparty@gmail.com",
+                                                                                          "value_url":  "mailto:shopwigparty@gmail.com"
+                                                                                      }
+                                                                     },
+                                                         "other-2":  {
+                                                                         "type":  "other_way",
+                                                                         "settings":  {
+                                                                                          "title":  "Wig Party Live",
+                                                                                          "subtitle":  "Ask in the chat",
+                                                                                          "value":  "Watch live",
+                                                                                          "value_url":  "/pages/live"
+                                                                                      }
+                                                                     },
+                                                         "other-3":  {
+                                                                         "type":  "other_way",
+                                                                         "settings":  {
+                                                                                          "title":  "The group",
+                                                                                          "subtitle":  "The Wig Party community",
+                                                                                          "value":  "Facebook",
+                                                                                          "value_url":  "https://www.facebook.com/groups/wigpartyshop"
+                                                                                      }
+                                                                     },
+                                                         "other-4":  {
+                                                                         "type":  "other_way",
+                                                                         "settings":  {
+                                                                                          "title":  "Mail",
+                                                                                          "subtitle":  "Wig Party, Kristi Dailey LLC",
+                                                                                          "value":  "13322 Highway 99, Suite 201, Everett, WA 98204",
+                                                                                          "value_url":  ""
+                                                                                      }
+                                                                     }
+                                                     },
+                                          "block_order":  [
+                                                              "faq-1",
+                                                              "faq-2",
+                                                              "faq-3",
+                                                              "faq-4",
+                                                              "other-1",
+                                                              "other-2",
+                                                              "other-3",
+                                                              "other-4"
+                                                          ],
+                                          "settings":  {
+                                                           "self_serve_eyebrow":  "QUICK ANSWERS",
+                                                           "self_serve_heading":  "Four things people usually want",
+                                                           "turnup_eyebrow":  "OR JOIN A LIVE",
+                                                           "turnup_text":  "Kristi tries wigs on during Wig Party Live and you can ask your question in the chat.",
+                                                           "turnup_button_label":  "WATCH A LIVE",
+                                                           "turnup_button_url":  "/pages/live",
+                                                           "form_heading":  "Send a message",
+                                                           "form_sub":  "Message Kristi\u0027s team. Add your order number if it is about an order.",
+                                                           "privacy_note":  "\u003cp\u003ePrefer email? Write to \u003ca href=\"mailto:shopwigparty@gmail.com\"\u003eshopwigparty@gmail.com\u003c/a\u003e.\u003c/p\u003e",
+                                                           "other_ways_eyebrow":  "OTHER WAYS"
+                                                       }
+                                      },
+                     "contact-trust":  {
+                                           "type":  "cart-trust-strip",
+                                           "blocks":  {
+                                                          "trust-approved-1":  {
+                                                                                   "type":  "trust_item",
+                                                                                   "settings":  {
+                                                                                                    "default_icon":  "live",
+                                                                                                    "heading":  "Tried on Live by Kristi",
+                                                                                                    "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                    "content_width":  true
+                                                                                                }
+                                                                               },
+                                                          "trust-approved-2":  {
+                                                                                   "type":  "trust_item",
+                                                                                   "settings":  {
+                                                                                                    "default_icon":  "packaging",
+                                                                                                    "heading":  "Processed in 1 to 3 business days",
+                                                                                                    "description":  "",
+                                                                                                    "content_width":  true
+                                                                                                }
+                                                                               },
+                                                          "trust-approved-3":  {
+                                                                                   "type":  "trust_item",
+                                                                                   "settings":  {
+                                                                                                    "default_icon":  "shipping",
+                                                                                                    "heading":  "Tracking within 24 to 48 hours",
+                                                                                                    "description":  "",
+                                                                                                    "content_width":  true
+                                                                                                }
+                                                                               },
+                                                          "trust-approved-4":  {
+                                                                                   "type":  "trust_item",
+                                                                                   "settings":  {
+                                                                                                    "default_icon":  "consult",
+                                                                                                    "heading":  "All sales final, ask us first",
+                                                                                                    "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                    "content_width":  true
+                                                                                                }
+                                                                               }
+                                                      },
+                                           "block_order":  [
+                                                               "trust-approved-1",
+                                                               "trust-approved-2",
+                                                               "trust-approved-3",
+                                                               "trust-approved-4"
+                                                           ],
+                                           "settings":  {
+                                                            "background_color":  "#ffffff",
+                                                            "custom_class":  "wp-trust-strip--figma-compact"
+                                                        }
+                                       }
+                 },
+    "order":  [
+                  "contact-hero",
+                  "contact-body",
+                  "contact-trust"
+              ]
 }

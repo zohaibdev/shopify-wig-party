@@ -1,0 +1,281 @@
+{%- comment -%}
+  Wig Party — Learn page, hero. Figma internal file, node 7605:7661 (1440 x 442).
+  A hair photo under a grey wash, with a frosted, white-ringed panel holding breadcrumbs,
+  the title, an intro, one button and a stats card of `stat` blocks.
+  Same build as the Find Your Colour hero (sections/colour-hero.liquid), at the Learn sizes.
+  Styles in assets/section-aria-learn-hero.css.
+{%- endcomment -%}
+
+{{ 'section-aria-learn-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_label = section.settings.current_label | default: page.title
+  assign stat_blocks = section.blocks | where: 'type', 'stat'
+  assign start_id = 'learn-start-' | append: section.id
+  assign button_url = section.settings.button_url | default: ''
+  if button_url == blank
+    assign button_url = '#' | append: start_id
+  endif
+-%}
+
+<div class="aria-learn-hero">
+  <div class="aria-learn-hero__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1100,1440,2160,2880', sizes: '100vw', alt: '', loading: 'eager'
+      }}
+    {%- else -%}
+      <img
+        class="aria-learn-hero__bg-fallback"
+        src="{{ 'wp-colour-hero.jpg' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="aria-learn-hero__panel">
+    <nav class="aria-learn-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="aria-learn-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank and section.settings.parent_url != blank -%}
+          <li><a href="{{ section.settings.parent_url }}">{{ section.settings.parent_label }}</a></li>
+        {%- endif -%}
+        <li aria-current="page">{{ current_label }}</li>
+      </ol>
+    </nav>
+
+    <div class="aria-learn-hero__body">
+      <div class="aria-learn-hero__copy">
+        <div class="aria-learn-hero__text-group">
+          {%- if section.settings.heading != blank -%}
+            <h1 class="aria-learn-hero__title">{{ section.settings.heading }}</h1>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <p class="aria-learn-hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.button_label != blank -%}
+          <a class="aria-learn-hero__btn" href="{{ button_url }}">
+            {{- section.settings.button_label -}}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if stat_blocks.size > 0 -%}
+        <div class="aria-learn-hero__stats">
+          <ul class="aria-learn-hero__stats-row" role="list">
+            {%- for block in stat_blocks -%}
+              {%- liquid
+                assign icon_keys = block.settings.icon | append: ',' | append: block.settings.icon_mobile
+                assign icon_keys = icon_keys | split: ','
+                assign icon_files = ''
+                for key in icon_keys
+                  case key
+                    when 'styles'
+                      assign f = 'icon-colour-styles.svg|23.6796|24.6624'
+                    when 'colours'
+                      assign f = 'new-in-stat-icon-colours.svg|24|24'
+                    when 'clock'
+                      assign f = 'icon-colour-clock.svg|24.0009|22.5014'
+                    when 'swap'
+                      assign f = 'icon-colour-swap.svg|24.0003|27.2884'
+                    else
+                      assign f = ''
+                  endcase
+                  assign icon_files = icon_files | append: f | append: ';'
+                endfor
+                assign icon_files = icon_files | split: ';'
+                assign icon_desktop = icon_files[0] | split: '|'
+                assign icon_mobile = icon_files[1] | default: '' | split: '|'
+              -%}
+              <li
+                class="aria-learn-hero__stat"
+                style="--stat-width: {{ block.settings.width }}px;"
+                {{ block.shopify_attributes }}
+              >
+                <span class="aria-learn-hero__stat-icon">
+                  {%- if block.settings.icon_image != blank -%}
+                    {{
+                      block.settings.icon_image
+                      | image_url: width: 96
+                      | image_tag: width: 32, height: 32, alt: '', loading: 'lazy'
+                    }}
+                  {%- else -%}
+                    <img
+                      class="aria-learn-hero__stat-glyph{% if icon_mobile.size > 0 %} aria-learn-hero__stat-glyph--desktop{% endif %}"
+                      src="{{ icon_desktop[0] | asset_url }}"
+                      alt=""
+                      width="{{ icon_desktop[1] }}"
+                      height="{{ icon_desktop[2] }}"
+                      loading="lazy"
+                    >
+                    {%- comment -%} The mobile frame (7605:8071) can draw a different glyph. {%- endcomment -%}
+                    {%- if icon_mobile.size > 0 -%}
+                      <img
+                        class="aria-learn-hero__stat-glyph aria-learn-hero__stat-glyph--mobile"
+                        src="{{ icon_mobile[0] | asset_url }}"
+                        alt=""
+                        width="{{ icon_mobile[1] }}"
+                        height="{{ icon_mobile[2] }}"
+                        loading="lazy"
+                      >
+                    {%- endif -%}
+                  {%- endif -%}
+                </span>
+                <span class="aria-learn-hero__stat-text">
+                  {%- if block.settings.value != blank -%}
+                    <span class="aria-learn-hero__stat-value">{{ block.settings.value }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.label != blank -%}
+                    <span class="aria-learn-hero__stat-label">{{ block.settings.label }}</span>
+                  {%- endif -%}
+                </span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+{%- comment -%} Target of the button when it has no link set: the start of the next section. {%- endcomment -%}
+<span class="aria-learn-hero__start" id="{{ start_id }}"></span>
+
+{% schema %}
+{
+  "name": "t:sections.aria-learn-hero.name",
+  "tag": "section",
+  "class": "aria-learn-hero-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-learn-hero.settings.background.label",
+      "info": "t:sections.aria-learn-hero.settings.background.info"
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "t:sections.aria-learn-hero.settings.home_label.label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "label": "t:sections.aria-learn-hero.settings.parent_label.label",
+      "info": "t:sections.aria-learn-hero.settings.parent_label.info"
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "t:sections.aria-learn-hero.settings.parent_url.label"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "Learn",
+      "label": "t:sections.aria-learn-hero.settings.current_label.label",
+      "info": "t:sections.aria-learn-hero.settings.current_label.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Everything we know, written down",
+      "label": "t:sections.aria-learn-hero.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Kristi's framing: we are not building pages for Google, we are building",
+      "label": "t:sections.aria-learn-hero.settings.text.label",
+      "info": "t:sections.aria-learn-hero.settings.text.info"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "START AT THE BEGINNING",
+      "label": "t:sections.aria-learn-hero.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-learn-hero.settings.button_url.label",
+      "info": "t:sections.aria-learn-hero.settings.button_url.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "t:sections.aria-learn-hero.blocks.stat.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "default": "swap",
+          "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.label",
+          "options": [
+            { "value": "swap", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__1.label" },
+            { "value": "styles", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__2.label" },
+            { "value": "colours", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__3.label" },
+            { "value": "clock", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__4.label" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "icon_mobile",
+          "default": "same",
+          "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon_mobile.label",
+          "options": [
+            { "value": "same", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon_mobile.options__0.label" },
+            { "value": "swap", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__1.label" },
+            { "value": "styles", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__2.label" },
+            { "value": "colours", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__3.label" },
+            { "value": "clock", "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon.options__4.label" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "t:sections.aria-learn-hero.blocks.stat.settings.icon_image.label",
+          "info": "t:sections.aria-learn-hero.blocks.stat.settings.icon_image.info"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "default": "6",
+          "label": "t:sections.aria-learn-hero.blocks.stat.settings.value.label"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "sections",
+          "label": "t:sections.aria-learn-hero.blocks.stat.settings.label.label"
+        },
+        {
+          "type": "range",
+          "id": "width",
+          "min": 40,
+          "max": 140,
+          "step": 1,
+          "unit": "px",
+          "default": 85,
+          "label": "t:sections.aria-learn-hero.blocks.stat.settings.width.label",
+          "info": "t:sections.aria-learn-hero.blocks.stat.settings.width.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-learn-hero.presets.name",
+      "blocks": [{ "type": "stat" }, { "type": "stat" }, { "type": "stat" }]
+    }
+  ]
+}
+{% endschema %}

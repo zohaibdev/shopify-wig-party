@@ -1,0 +1,80 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "compare-hero": {
+      "type": "compare-hero",
+      "settings": {
+        "home_label": "Home",
+        "parent_label": "Learn",
+        "parent_url": "/pages/learn",
+        "current_label": "Compare shades",
+        "heading": "Two shades, one screen",
+        "text": "Choose a wig, then hold two of its shades next to each other. Every shade here is a real colour of that wig, with its own photo, price and availability."
+      }
+    },
+    "compare-shades": {
+      "type": "compare-shades",
+      "settings": {
+        "collection": "all-in-stock-wigs",
+        "product": "lux-se-ht-ami-belle-tress-wig-in-stock",
+        "picker_label": "Choose a wig",
+        "label_a": "SHADE A",
+        "label_b": "SHADE B",
+        "label_c": "SHADE C",
+        "shop_label": "SHOP THIS SHADE",
+        "empty_text": "[product] has only one shade, so there is nothing to compare.",
+        "empty_link_label": "BACK TO THE WIG"
+      }
+    },
+    "compare-slider": {
+      "type": "compare-slider",
+      "settings": {
+        "start_position": 48.7,
+        "label_a": "Shade A",
+        "label_b": "Shade B",
+        "handle_label": "Drag to compare the two shades",
+        "swap_label": "SWAP A AND B",
+        "third_label": "ADD A THIRD",
+        "live_label": "SEE BOTH ON A LIVE",
+        "live_url": "/pages/live",
+        "start_position_mobile": 50.2
+      }
+    },
+    "compare-table": {
+      "type": "compare-table",
+      "blocks": {
+        "row-1": { "type": "row", "settings": { "label": "Wig", "value_1": "", "value_2": "" } },
+        "row-2": { "type": "row", "settings": { "label": "Collection", "value_1": "", "value_2": "" } },
+        "row-3": { "type": "row", "settings": { "label": "Cap construction", "value_1": "", "value_2": "" } },
+        "row-4": { "type": "row", "settings": { "label": "Price", "value_1": "", "value_2": "" } },
+        "row-5": { "type": "row", "settings": { "label": "Availability", "value_1": "", "value_2": "" } }
+      },
+      "block_order": ["row-1", "row-2", "row-3", "row-4", "row-5"],
+      "settings": {
+        "eyebrow": "THE DETAILS",
+        "heading": "Side by side",
+        "column_1": "Shade A",
+        "column_2": "Shade B"
+      }
+    },
+    "consult-banner": {
+      "type": "consult-banner",
+      "settings": {
+        "eyebrow": "STILL NOT SURE?",
+        "heading": "Message Kristi's team",
+        "text": "Tell us which wig and which shades you are deciding between, and Kristi's team will help you choose.",
+        "button_label": "MESSAGE KRISTI'S TEAM",
+        "button_url": "/pages/contact"
+      }
+    }
+  },
+  "order": ["compare-hero", "compare-shades", "compare-slider", "compare-table", "consult-banner"]
+}

@@ -1,0 +1,93 @@
+{%- comment -%}
+  One Kristi's Picks row (sections/kristis-picks-list.liquid).
+  Accepts:
+  - product: the product to show (may be blank for a block without one)
+  - block: the `pick` block with Kristi's notes for it (optional)
+  - settings: the section's settings (labels)
+  Anything the block leaves empty comes from the product: name from the first segment of the title
+  (split on the pipe, as main-cart does, then on " - "), subline from the title's second segment and
+  the product type. The quote is Kristi's own words, so it shows only when the block has one.
+{%- endcomment -%}
+
+{%- liquid
+  assign title_parts = product.title | split: '|'
+  assign pick_name = block.settings.name
+  if pick_name == blank and product != blank
+    assign pick_name = title_parts.first | split: ' - ' | first | strip
+  endif
+
+  assign subline = block.settings.subline
+  if subline == blank and product != blank
+    assign subline_range = title_parts[1] | strip
+    if product.type != blank
+      if subline_range != blank
+        assign subline_range = subline_range | append: ' · '
+      endif
+      assign subline_range = subline_range | append: product.type
+    endif
+    assign subline = subline_range
+  endif
+
+  assign variant = product.selected_or_first_available_variant
+  assign image_index = block.settings.image_number | default: 1 | minus: 1
+  assign pick_image = product.images[image_index] | default: product.featured_image | default: block.settings.fallback_image
+-%}
+
+<article class="kp-row" {{ block.shopify_attributes }}>
+  <div
+    class="kp-row__media"
+    role="img"
+    aria-label="{{ product.title | default: pick_name | escape }}"
+    {% if pick_image != blank %}style="--kp-image: url('{{ pick_image | image_url: width: 600 }}');"{% endif %}
+  ></div>
+
+  <div class="kp-row__body">
+    <div class="kp-row__main">
+      <div class="kp-row__head">
+        <div class="kp-row__title-line">
+          <h3 class="kp-row__name">{{ pick_name }}</h3>
+          {%- if block.settings.chip != blank -%}
+            <span class="kp-row__chip">{{ block.settings.chip }}</span>
+          {%- endif -%}
+        </div>
+        {%- if subline != blank -%}
+          <p class="kp-row__sub">{{ subline }}</p>
+        {%- endif -%}
+      </div>
+      {%- if block.settings.quote != blank -%}
+        <blockquote class="kp-row__quote">{{ block.settings.quote | escape | newline_to_br }}</blockquote>
+      {%- endif -%}
+    </div>
+
+    <div class="kp-row__side">
+      {%- if product != blank -%}
+        <p class="kp-row__price">{{ product.price | money }}</p>
+      {%- elsif block.settings.price_text != blank -%}
+        <p class="kp-row__price">{{ block.settings.price_text }}</p>
+      {%- else -%}
+        <span></span>
+      {%- endif -%}
+      {%- if product != blank -%}
+        <div class="kp-row__buttons">
+          <button
+            type="button"
+            class="kp-row__btn kp-row__btn--primary"
+            data-kp-add
+            data-variant-id="{{ variant.id }}"
+            data-added-label="{{ settings.added_label | escape }}"
+            {% if variant.available == false %}disabled{% endif %}
+          >
+            <span data-kp-add-label>
+              {%- if variant.available == false -%}
+                {{ settings.sold_out_label }}
+              {%- else -%}
+                {{ settings.button_prefix }} {{ pick_name | upcase }}
+              {%- endif -%}
+            </span>
+          </button>
+          <a class="kp-row__btn kp-row__btn--secondary" href="{{ product.url }}">{{ settings.link_label }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</article>

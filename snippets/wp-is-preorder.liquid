@@ -1,0 +1,31 @@
+{%- comment -%}
+  Prints "true" when a product is a pre-order, using the same rule as the PDP stock pill
+  (sections/pdp-buy-box.liquid): a PREORDER / pre-order tag, "Preorder" / "Pre-order" in
+  the title, or membership of a pre-order collection. Use with capture.
+  Params: product (required)
+{%- endcomment -%}
+{%- liquid
+  assign wp_po = false
+  assign wp_po_title = product.title | downcase
+  if wp_po_title contains 'preorder' or wp_po_title contains 'pre-order' or wp_po_title contains 'pre order'
+    assign wp_po = true
+  endif
+  unless wp_po
+    for wp_po_tag in product.tags
+      assign wp_po_tag_down = wp_po_tag | downcase
+      if wp_po_tag_down contains 'preorder' or wp_po_tag_down contains 'pre-order' or wp_po_tag_down contains 'pre order'
+        assign wp_po = true
+        break
+      endif
+    endfor
+  endunless
+  unless wp_po
+    for wp_po_c in product.collections
+      if wp_po_c.handle contains 'pre-order' or wp_po_c.handle contains 'preorder'
+        assign wp_po = true
+        break
+      endif
+    endfor
+  endunless
+  echo wp_po
+-%}

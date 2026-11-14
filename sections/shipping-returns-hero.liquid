@@ -1,0 +1,87 @@
+{%- comment -%}
+  Wig Party — Shipping & Returns page, hero. Figma hf0beCVyuHCECkNQfaOm2q, node 7899:441
+  (1440 x 332): breadcrumb, eyebrow, H1 title, intro paragraph on a white-to-cream gradient.
+  Desktop only. Styles in assets/section-shipping-returns-hero.css.
+{%- endcomment -%}
+
+{{ 'section-shipping-returns-hero.css' | asset_url | stylesheet_tag }}
+
+<div class="wp-sr-hero">
+  <nav class="wp-sr-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+    <ol class="wp-sr-hero__crumbs-list" role="list">
+      <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+      {%- if section.settings.parent_label != blank and section.settings.parent_url != blank -%}
+        <li><a href="{{ section.settings.parent_url }}">{{ section.settings.parent_label }}</a></li>
+      {%- endif -%}
+      <li aria-current="page">{{ section.settings.current_label | default: page.title }}</li>
+    </ol>
+  </nav>
+
+  <div class="wp-sr-hero__body">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="wp-sr-hero__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h1 class="wp-sr-hero__title">{{ section.settings.heading }}</h1>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <p class="wp-sr-hero__text">{{ section.settings.text }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Shipping & Returns hero",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "Breadcrumb: home label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "Help",
+      "label": "Breadcrumb: parent label"
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "Breadcrumb: parent URL"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "Shipping & returns",
+      "label": "Breadcrumb: current page label"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "POLICY",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Shipping & returns",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Plain English first, the legal version below. Where the two disagree, tell us — that is a drafting error on our side, not a trap, and we will honour the plain version while we fix it.",
+      "label": "Intro text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shipping & Returns hero"
+    }
+  ]
+}
+{% endschema %}

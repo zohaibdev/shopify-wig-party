@@ -1,0 +1,314 @@
+{%- comment -%}
+  Wig Party — PDP shade carousel. Figma node 6356:1787 ("Frame 2147240328"), 1440x820.
+
+  Renders the product's colour option as a carousel of swatch photos. Slide content comes
+  from the product, so the heading count and the shades stay correct without the merchant
+  re-entering anything per product.
+
+  Behaviour is the theme's shared Swiper driver (assets/aria-product-carousel.js) via its
+  `data-aria-carousel-*` contract — no bespoke carousel code.
+{%- endcomment -%}
+
+{{ 'section-aria-pdp-shade-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # -- Same option-detection as the buy box so both sections agree on what "colour" is.
+  assign colour_option = null
+  for option in product.options_with_values
+    assign option_key = option.name | downcase
+    if option_key == 'color' or option_key == 'colour'
+      assign colour_option = option
+    endif
+  endfor
+
+  # ==========================================================================
+  # SHADE SOURCE
+  #
+  # Preferred: `shade` metaobjects. Wig colours are shared across the whole range,
+  # so each shade is defined once (clean name, clean swatch photo) and referenced by
+  # every wig that offers it. Each variant names its shade in its own
+  # custom.shade_for_comparison metafield -- the same ones that scope the Color
+  # Comparison page to this wig (the buy box's "Compare all" link); they are shown in
+  # variant order, each once. Without any, the older product-level wigparty.shades
+  # list is still read for products set up before it.
+  #
+  # Fallback: the product's own colour option values, minus anything matching the
+  # section's exclusion list. That exists because the raw option data carries
+  # entries that are not shades at all -- placeholder prompts such as "Choose
+  # Color From Drop Down" and merchandising notes such as "( last 2 - retired)"
+  # -- which otherwise render as real swatches and inflate the heading count.
+  # ==========================================================================
+  assign variant_shade_count = 0
+  assign variant_shades_seen = ','
+  for variant in product.variants
+    assign variant_shade = variant.metafields.custom.shade_for_comparison.value
+    if variant_shade == blank
+      continue
+    endif
+    assign variant_shade_key = ',' | append: variant_shade.system.handle | append: ','
+    if variant_shades_seen contains variant_shade_key
+      continue
+    endif
+    assign variant_shades_seen = variant_shades_seen | append: variant_shade.system.handle | append: ','
+    assign variant_shade_count = variant_shade_count | plus: 1
+  endfor
+
+  assign shade_entries = product.metafields.wigparty.shades.value
+
+  if colour_option
+    assign colour_index = colour_option.position | minus: 1
+  endif
+
+  if variant_shade_count > 0
+    assign shade_count = variant_shade_count
+  elsif shade_entries.size > 0
+    assign shade_count = shade_entries.size
+  elsif colour_option
+    assign excluded = section.settings.exclude_values | split: ','
+    assign keep_list = ''
+    for value in colour_option.values
+      assign needle = value | downcase
+      assign skip = false
+      for ex in excluded
+        assign e = ex | strip | downcase
+        if e != blank and needle contains e
+          assign skip = true
+          break
+        endif
+      endfor
+      unless skip
+        assign keep_list = keep_list | append: value | append: '||'
+      endunless
+    endfor
+    assign kept_values = keep_list | split: '||'
+    assign shade_count = kept_values.size
+  else
+    assign shade_count = 0
+  endif
+
+  # -- Figma spells the count as a word ("in all ten shades"). Numerals are used beyond
+  # -- the list, which is deliberate: no product carries that many colourways.
+  assign number_words = 'zero,one,two,three,four,five,six,seven,eight,nine,ten,eleven,twelve,thirteen,fourteen,fifteen,sixteen,seventeen,eighteen,nineteen,twenty' | split: ','
+  if shade_count <= 20
+    assign shade_word = number_words[shade_count]
+  else
+    assign shade_word = shade_count
+  endif
+
+  # -- This store's titles are pipe-delimited ("Amsterdam | Belle Tress | City Collection
+  # -- | In Stock"), while the design's heading uses just the style name. [product_short]
+  # -- is snippets/aria-product-short-name.liquid, which also strips the "Hand-Tied Wig" /
+  # -- "Wig" suffix some products append directly to the style name (see that snippet).
+  capture product_short
+    render 'aria-product-short-name', product: product
+  endcapture
+  assign product_short = product_short | strip
+
+  assign heading = section.settings.heading | replace: '[product_short]', product_short | replace: '[product]', product.title | replace: '[count]', shade_word
+-%}
+
+{%- if shade_count > 0 -%}
+  <section
+    id="pdp-shades"
+    class="aria-shades"
+    style="--aria-shades-bg: {{ section.settings.background_color }};"
+  >
+    <div class="aria-shades__inner">
+      {%- if heading != blank -%}
+        <h2 class="aria-shades__heading">{{ heading }}</h2>
+      {%- endif -%}
+
+      {%- comment -%}
+        Attributes must stay on their own lines: a whitespace-trimming Liquid comment
+        between them welds neighbouring attribute names together and silently stops
+        Swiper initialising (the bug documented in best-sellers.liquid).
+
+        `data-slides-mobile` is derived, not guessed: the true mobile frame (Figma
+        internal file hf0beCVyuHCECkNQfaOm2q, node 6441:3713) draws a 250px tile in the
+        343px column at an 8px gap (`data-space-between-mobile` below). Solving
+        n*250 + (n-1)*8 = 343 gives 1.36, not the previous 1.2 (which produced a
+        ~284.5px tile — visibly larger than the frame, and wide enough that the first
+        label's manual "V Chocolate " / "Buttercream R" line break no longer landed the
+        way it does at the frame's actual 250px width).
+      {%- endcomment -%}
+      <div
+        class="aria-shades__carousel"
+        data-aria-product-carousel
+        data-slides-mobile="1.36"
+        data-slides-sm="2.2"
+        data-slides-md="3.2"
+        data-slides-lg="4"
+        data-slides-desktop="5"
+        data-space-between="16"
+        data-space-between-mobile="8"
+      >
+        <div class="swiper aria-shades__swiper" data-aria-carousel-swiper>
+          <div class="swiper-wrapper">
+            {%- if variant_shade_count > 0 or shade_entries.size > 0 -%}
+              {%- comment -%}
+                Curated path. Label and swatch come off the shade record, so a photo
+                uploaded once is correct on every wig that offers that colour. The
+                variants' shades come first (each once); else the wigparty.shades list.
+              {%- endcomment -%}
+              {%- liquid
+                assign slide_entries = shade_entries
+                if variant_shade_count > 0
+                  assign slide_entries = product.variants
+                endif
+                assign slides_seen = ','
+              -%}
+              {%- for slide_item in slide_entries -%}
+                {%- liquid
+                  if variant_shade_count > 0
+                    assign entry = slide_item.metafields.custom.shade_for_comparison.value
+                    if entry == blank
+                      continue
+                    endif
+                    assign slide_key = ',' | append: entry.system.handle | append: ','
+                    if slides_seen contains slide_key
+                      continue
+                    endif
+                    assign slides_seen = slides_seen | append: entry.system.handle | append: ','
+                  else
+                    assign entry = slide_item
+                  endif
+                -%}
+                {%- liquid
+                  assign shade_label = entry.display_name.value | default: entry.name.value
+                  assign shade_image = entry.swatch.value | default: entry.hero_photo.value
+                -%}
+                <div class="swiper-slide aria-shades__slide">
+                  <div class="aria-shades__media">
+                    {%- if shade_image != blank -%}
+                      {{
+                        shade_image
+                        | image_url: width: 500
+                        | image_tag:
+                          loading: 'lazy',
+                          sizes: '(min-width: 1440px) 250px, (min-width: 990px) 25vw, 80vw',
+                          widths: '250,375,500',
+                          class: 'aria-shades__image',
+                          alt: shade_label | escape
+                      }}
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: 'aria-shades__image' }}
+                    {%- endif -%}
+                  </div>
+                  <p class="aria-shades__label">{{ shade_label }}</p>
+                </div>
+              {%- endfor -%}
+            {%- else -%}
+              {%- comment -%}
+                Fallback path: the product's own option values, already filtered. The
+                swatch is the first variant carrying that colour; note this falls back to
+                the product's featured image, which is a styled model shot rather than a
+                swatch — the reason the curated path above exists.
+              {%- endcomment -%}
+              {%- for value in kept_values -%}
+                {%- liquid
+                  assign shade_variant = null
+                  for variant in product.variants
+                    if variant.options[colour_index] == value
+                      assign shade_variant = variant
+                      break
+                    endif
+                  endfor
+                  assign shade_image = shade_variant.image | default: product.featured_image
+                -%}
+                <div class="swiper-slide aria-shades__slide">
+                  <div class="aria-shades__media">
+                    {%- if shade_image != blank -%}
+                      {{
+                        shade_image
+                        | image_url: width: 500
+                        | image_tag:
+                          loading: 'lazy',
+                          sizes: '(min-width: 1440px) 250px, (min-width: 990px) 25vw, 80vw',
+                          widths: '250,375,500',
+                          class: 'aria-shades__image',
+                          alt: value | escape
+                      }}
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: 'aria-shades__image' }}
+                    {%- endif -%}
+                  </div>
+                  <p class="aria-shades__label">{{ value }}</p>
+                </div>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="aria-shades__controls" data-aria-carousel-controls>
+          {%- comment -%}
+            Dawn's base.css hides empty elements via `:empty { display: none }`, so each
+            decorative bar carries an aria-hidden span to stay rendered.
+          {%- endcomment -%}
+          <div class="aria-shades__progress">
+            <div class="aria-shades__progress-track"><span aria-hidden="true"></span></div>
+            <div class="aria-shades__progress-fill" data-aria-carousel-progress>
+              <span aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="aria-shades__nav">
+            <button
+              type="button"
+              class="aria-shades__prev"
+              data-aria-carousel-prev
+              aria-label="{{ 'aria_theme.carousel.previous' | t }}"
+            >
+              <span class="aria-shades__icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+            <button
+              type="button"
+              class="aria-shades__next"
+              data-aria-carousel-next
+              aria-label="{{ 'aria_theme.carousel.next' | t }}"
+            >
+              <span class="aria-shades__icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.aria-pdp-shade-carousel.name",
+  "tag": "section",
+  "class": "aria-shades-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "[product_short], in all [count] shades",
+      "label": "t:sections.aria-pdp-shade-carousel.settings.heading.label",
+      "info": "t:sections.aria-pdp-shade-carousel.settings.heading.info"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#f5ebe2",
+      "label": "t:sections.aria-pdp-shade-carousel.settings.background_color.label"
+    },
+    {
+      "type": "textarea",
+      "id": "exclude_values",
+      "default": "Choose Color,Drop Down,retired,discontinued",
+      "label": "t:sections.aria-pdp-shade-carousel.settings.exclude_values.label",
+      "info": "t:sections.aria-pdp-shade-carousel.settings.exclude_values.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-pdp-shade-carousel.presets.name"
+    }
+  ]
+}
+{% endschema %}

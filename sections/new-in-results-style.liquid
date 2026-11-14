@@ -1,0 +1,22 @@
+{%- comment -%}
+  Wig Party — NEW IN listing skin (Figma 7454:24710). Renders nothing: it only loads
+  assets/section-new-in-results.css, which restyles the `new-in-results` collection-results
+  section on this template (id `shopify-section-new-in-results`) without touching the shared
+  collection-results files.
+{%- endcomment -%}
+
+{{ 'section-new-in-results.css' | asset_url | stylesheet_tag }}
+
+{% schema %}
+{
+  "name": "New in listing styles",
+  "tag": "div",
+  "class": "new-in-results-style",
+  "settings": [],
+  "presets": [
+    {
+      "name": "New in listing styles"
+    }
+  ]
+}
+{% endschema %}

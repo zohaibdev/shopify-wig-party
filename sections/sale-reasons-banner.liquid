@@ -1,0 +1,96 @@
+{%- comment -%}
+  Wig Party — Sale reasons banner (Figma 7547:4702, desktop 1360 x 416).
+  Copy is Figma text and needs approval (pricing / returns claims). Photo and signature: image_picker,
+  falling back to the Figma exports in assets. Uppercase comes from CSS.
+{%- endcomment -%}
+
+{%- render 'sale-reasons-banner',
+  section_id: section.id,
+  background_image: section.settings.background_image,
+  signature: section.settings.signature,
+  blocks: section.blocks
+-%}
+
+{% schema %}
+{
+  "name": "Sale reasons banner",
+  "tag": "div",
+  "class": "sale-reasons-banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image",
+      "info": "Leave empty for the default photo of Kristi."
+    },
+    {
+      "type": "image_picker",
+      "id": "signature",
+      "label": "Signature",
+      "info": "Shown at 239 x 92, top left. Leave empty for the default."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag label"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "info": "Shown in uppercase."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "Sale reasons banner",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Sample sale",
+            "heading": "Tried on, photographed, or an ex-display",
+            "text": "Handled but not worn out. We say exactly what is up with each one on its own page, and they are still returnable."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Dailey Deals",
+            "heading": "One style, one day, a better price",
+            "text": "Kristi picks it. It changes daily and it is the reason a lot of people check in every morning."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Clearance",
+            "heading": "Retired styles and discontinued colours",
+            "text": "Belle Tress stops making things. When they do, what is left goes here and it does not come back."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

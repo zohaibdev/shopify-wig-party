@@ -1,4 +1,10 @@
-/* Wig Party — Join the Party (sections/join-the-party.liquid), V4 node 1:917 */
+/* Wig Party — Join the Party (sections/aria-join-the-party.liquid)
+ * Figma: node 6356:1446 (desktop band, 1440x738)
+ *   section  py-60, bg white, photo full-bleed behind, no wash over it
+ *   panel    6356:1448  1146x618  p-40  gap-64  blur(50) + rgba(255,255,255,.13) + 1px #fff
+ *   copy     6356:1449  471 wide  gap-48  vertically centred
+ *   collage  6356:1458  529x536   four absolutely-placed photos
+ */
 
 .aria-join {
   position: relative;
@@ -11,6 +17,11 @@
 
 /* ---------- Background ---------- */
 
+/*
+ * Figma has no gradient layer over the photo — the frosted panel does all the lifting.
+ * A wash here (the old V4 scrim) survives the panel's blur unchanged, so it tinted the
+ * whole panel charcoal on the left instead of reading as the flat warm blur in the design.
+ */
 .aria-join__bg {
   position: absolute;
   inset: 0;
@@ -24,17 +35,6 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-}
-
-/* V4 scrim: a diagonal wash that keeps the frosted panel readable over any photo. */
-.aria-join__scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    118.89deg,
-    rgba(47, 47, 47, 0.46) 12.738%,
-    rgba(222, 222, 222, 0.46) 78.602%
-  );
 }
 
 .aria-join__inner {
@@ -60,9 +60,11 @@
   border: 1px solid var(--white, #fff);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
+  /* Figma: overflow-clip. Keeps the collage inside the frame at every width. */
+  overflow: hidden;
 }
 
-/* V4: 48px between the text block and the form. */
+/* Figma: 48px between the text block and the form. */
 .aria-join__copy {
   display: flex;
   flex-direction: column;
@@ -70,14 +72,16 @@
   min-width: 0;
 }
 
-/* V4: 12px heading -> subheading. */
+/* Figma: 12px heading -> subheading. */
 .aria-join__text {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Figma: [word-break:break-word] on 6356:1450. */
+  overflow-wrap: break-word;
 }
 
-/* V4: Montserrat Bold 48/56. */
+/* Figma: Montserrat Bold 48/56 (Heading/H2). */
 .aria-join__heading {
   margin: 0;
   font-size: 32px;
@@ -86,7 +90,13 @@
   color: var(--sy, #000);
 }
 
-/* V4: 20/28 in a 351px measure. */
+/*
+ * Figma's text node is 351px wide and breaks after "exclusive". Copying 351px verbatim
+ * pushes this to three lines in the browser: the comp sets this line in Helvetica Neue,
+ * the theme renders it in its own (wider) body face, so the same string needs ~400px to
+ * break in the same place. The measure is chosen to reproduce Figma's line break, which
+ * is the thing you can actually see.
+ */
 .aria-join__subheading {
   margin: 0;
   max-width: 400px;
@@ -97,7 +107,7 @@
 
 /* ---------- Form ---------- */
 
-/* V4: 8px between the field and the button, both full width of the copy column. */
+/* Figma: 8px between the field and the button, both full width of the copy column. */
 .aria-join__form {
   display: flex;
   flex-direction: column;
@@ -109,7 +119,12 @@
   display: block;
 }
 
-/* V4: h-56, translucent fill, #ddd border, radius 2, 20/28 placeholder. */
+/*
+ * Figma: h-56, translucent fill, #ddd border, radius 2, 20/28 placeholder.
+ * The field's contents are centred (6356:1454 is items-center justify-center; its text
+ * node sits at x=111 in a 471px box, i.e. 111 either side), so the placeholder and the
+ * address the visitor types both centre — matching the button directly under it.
+ */
 .aria-join__input {
   box-sizing: border-box;
   display: block;
@@ -122,6 +137,7 @@
   color: var(--sy, #000);
   font-size: 16px;
   line-height: 28px;
+  text-align: center;
 }
 
 .aria-join__input::placeholder {
@@ -176,23 +192,68 @@
 /* ---------- Collage ---------- */
 
 /*
- * V4 overlaps four photos inside a 529x536 box. Each item's box is expressed as a
- * percentage of that container so the whole arrangement scales as one unit:
- *   1  244x365 at (285, 73.49)
- *   2  199x297 at (94, 17.27)
- *   3  188x235 at (0, 234.49)
- *   4  189x284 at (161, 236.07)
+ * Figma overlaps four photos inside a 529x536 box (6356:1458). Each item's box is
+ * expressed as a percentage of that container so the whole arrangement scales as one unit:
+ *   1  236x365 at (293, 73.49)     6356:1461  (the 244-wide parent 6356:1459 carries an
+ *                                              8px empty gutter on its left; photo 2 sits
+ *                                              over it, so the box is the photo itself)
+ *   2  199x297 at (94, 17.27)      6356:1462
+ *   3  188x235 at (0, 234.49)      6356:1465
+ *   4  189x284 at (161, 236.07)    6356:1468
+ * Paint order is 1 -> 4, so DOM order gives the stacking with no z-index needed.
  * Hidden below desktop — at narrow widths the overlap collapses into visual noise.
  */
 .aria-join__collage {
   display: none;
 }
 
+/*
+ * The photo inside each clip box. Defaults to a plain centred cover; the --crop-*
+ * properties below reproduce the zoom and offset Figma applies to the bundled photos.
+ */
 .aria-join__collage-img {
+  position: absolute;
+  left: var(--crop-x, 0%);
+  top: var(--crop-y, 0%);
   display: block;
-  width: 100%;
-  height: 100%;
+  width: var(--crop-w, 100%);
+  height: var(--crop-h, 100%);
+  max-width: none;
   object-fit: cover;
+}
+
+/*
+ * Figma's per-photo transforms, applied only while a slot is showing its bundled theme
+ * file (`--default`). These are what crop the burnt-in gold style bands out of shot:
+ * photo 1 keeps the middle 12%-82% across and the top 2%-78% down of wp-ugc-featured,
+ * which drops the VIVIENNE band; photo 3 loses its bottom ~10%, which drops KARINA.
+ * Percentages are of each item's own clip box, composed from the nested Figma frames:
+ *   1  6356:1461         w 141.95%  h 131.9%   x -17.07%  y -2.75%
+ *   3  6356:1465/1467    w  99.04%  h 111.23%  x  -1.22%  y -0.31%
+ *   4  6356:1468/1470    w 128.50%  h 103.40%  x  -9.31%  y -2.49%
+ * Photo 2 is a plain cover in Figma too, so it takes the defaults.
+ * Swap a slot's image in the theme editor and it reverts to a centred cover — these
+ * numbers only mean anything against those specific files.
+ */
+.aria-join__collage-item--1.aria-join__collage-item--default {
+  --crop-w: 141.95%;
+  --crop-h: 131.9%;
+  --crop-x: -17.07%;
+  --crop-y: -2.75%;
+}
+
+.aria-join__collage-item--3.aria-join__collage-item--default {
+  --crop-w: 99.04%;
+  --crop-h: 111.23%;
+  --crop-x: -1.22%;
+  --crop-y: -0.31%;
+}
+
+.aria-join__collage-item--4.aria-join__collage-item--default {
+  --crop-w: 128.5%;
+  --crop-h: 103.4%;
+  --crop-x: -9.31%;
+  --crop-y: -2.49%;
 }
 
 /* ---------- Tablet ---------- */
@@ -221,10 +282,91 @@
   }
 }
 
+/* Compact two-column band. Not taken from a Figma frame — see note in handoff. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .aria-join {
+    padding-block: 40px;
+  }
+
+  .aria-join__panel {
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+    width: min(594px, 100%);
+    max-width: 594px;
+    padding: 20px;
+  }
+
+  .aria-join__copy {
+    flex: 0 1 245px;
+    width: 245px;
+    gap: 24px;
+  }
+
+  .aria-join__heading {
+    font-size: 28px;
+    line-height: 32px;
+  }
+
+  .aria-join__subheading {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .aria-join__input,
+  .aria-join__submit {
+    font-size: 14px;
+  }
+
+  .aria-join__collage {
+    display: block;
+    position: relative;
+    flex: 0 1 277px;
+    width: 277px;
+    min-width: 0;
+    aspect-ratio: 529 / 536;
+  }
+
+  .aria-join__collage-item {
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .aria-join__collage-item--1 {
+    left: 55.39%;
+    top: 13.71%;
+    width: 44.61%;
+    height: 68.1%;
+  }
+
+  .aria-join__collage-item--2 {
+    left: 17.77%;
+    top: 3.22%;
+    width: 37.62%;
+    height: 55.41%;
+  }
+
+  .aria-join__collage-item--3 {
+    left: 0;
+    top: 43.75%;
+    width: 35.54%;
+    height: 43.84%;
+  }
+
+  .aria-join__collage-item--4 {
+    left: 30.43%;
+    top: 44.04%;
+    width: 35.73%;
+    height: 52.99%;
+  }
+}
+
 /* ---------- Desktop ---------- */
 
-/* V4: py-60 on the section; panel p-40 with a 64px gutter between the 471px copy
-   column and the 529px collage. */
+/* Figma: py-60 on the section; panel p-40 with a 64px gutter between the 471px copy
+   column and the 529px collage. 40 + 471 + 64 + 529 + 40 + 2px border = 1146. */
 @media screen and (min-width: 990px) {
   .aria-join {
     padding-block: 60px;
@@ -236,12 +378,12 @@
   }
 
   /*
-   * V4's panel is 40 + 471 + 64 + 529 + 40 = 1144px. With the columns pinned at
-   * `flex: 0 0` that could not shrink, so between 990px and ~1240px the panel was
-   * 1146px inside an ~895px container — clipped on both sides by the section's
-   * `overflow: hidden` rather than overflowing the page, so it read as cut off.
-   * `0 1` keeps V4's exact 471/529 wherever there is surplus (1440 has 1216px of room
-   * for 1000px of columns) and lets them give way below that instead.
+   * With the columns pinned at `flex: 0 0` they could not shrink, so between 990px and
+   * ~1240px the 1146px panel sat inside an ~895px container — clipped on both sides by
+   * the section's `overflow: hidden` rather than overflowing the page, so it read as cut
+   * off. `0 1` keeps Figma's exact 471/529 wherever there is surplus (at 1440 the row has
+   * 1216px of room for 1064px of columns, and the panel lands at x=147 exactly as in the
+   * frame) and lets them give way below that instead.
    */
   .aria-join__panel {
     flex-direction: row;
@@ -262,7 +404,7 @@
   }
 
   .aria-join__heading {
-    /* V4 Heading/H2 at Bold: 48 / 56. */
+    /* Figma Heading/H2 at Bold: 48 / 56. */
     font-size: 48px;
     line-height: 56px;
   }
@@ -294,9 +436,9 @@
   }
 
   .aria-join__collage-item--1 {
-    left: 53.88%;
+    left: 55.39%;
     top: 13.71%;
-    width: 46.12%;
+    width: 44.61%;
     height: 68.10%;
   }
 
@@ -340,5 +482,120 @@
 @media screen and (min-width: 990px) and (max-width: 1279px) {
   .aria-join__panel {
     gap: 32px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:4352 — its own 375px frame).
+ *
+ * This frame shows the collage below the copy, not hidden — the base
+ * rule's `.aria-join__collage { display: none }` above was written when
+ * no mobile frame existed yet ("at narrow widths the overlap collapses
+ * into visual noise"). It does not: this node's own collage box is the
+ * same 529/536 aspect ratio as desktop (307.486 / 311.555 = 0.98694,
+ * versus 529 / 536 = 0.98694), just laid out full-width below the form
+ * instead of beside it, so it is shown here with its own measured
+ * per-item positions rather than left disabled.
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* This frame's own padding (~40px vertical / ~16px horizontal, not the
+     base rule's uniform 24px) and copy<->collage gap (16px, not the base
+     rule's 32px). */
+  .aria-join__panel {
+    gap: 16px;
+    padding: 40px 16px;
+  }
+
+  /* Text-block -> form gap on this frame (was inheriting the base rule's
+     32px). */
+  .aria-join__copy {
+    gap: 48px;
+  }
+
+  /* Mobile/Heading/H1-shaped token at 36/46 (weight already correct — the
+     base rule states Bold/700, matching this frame) — not the base rule's
+     32px / unitless 1.15. */
+  .aria-join__heading {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  /* Mobile/Mobile/Large/Regular token: 20/28 — not the base rule's 16/26. */
+  .aria-join__subheading {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  /* Same 20/28 size as desktop for the field and button text on this frame,
+     not the base rule's 16px. */
+  .aria-join__input,
+  .aria-join__submit {
+    font-size: 20px;
+  }
+
+  .aria-join__collage {
+    display: block;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 529 / 536;
+  }
+
+  .aria-join__collage-item {
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  /* Positions below are this node's own measured percentages (of its
+     307.486 x 311.555 collage box), not copied from the desktop rule —
+     items 2 and 3 land within rounding of the desktop values, but item 1
+     is genuinely positioned and sized differently here (53.88/46.12 vs
+     desktop's 55.39/44.61), so each is stated from this frame directly. */
+  .aria-join__collage-item--1 {
+    left: 53.88%;
+    top: 13.71%;
+    width: 46.12%;
+    height: 68.1%;
+  }
+
+  .aria-join__collage-item--2 {
+    left: 17.77%;
+    top: 3.22%;
+    width: 37.62%;
+    height: 55.41%;
+  }
+
+  .aria-join__collage-item--3 {
+    left: 0;
+    top: 43.75%;
+    width: 35.54%;
+    height: 43.84%;
+  }
+
+  .aria-join__collage-item--4 {
+    left: 30.44%;
+    top: 44.04%;
+    width: 35.73%;
+    height: 52.99%;
+  }
+
+  /* Item 1's crop matches the existing `--default` rule above exactly (both
+     read 141.95% / 131.9% / -17.07% / -2.75% off their respective nodes), so
+     it needs no override. Items 3 and 4 measure slightly differently on
+     this frame than on desktop — restated here rather than inherited. */
+  .aria-join__collage-item--3.aria-join__collage-item--default {
+    --crop-w: 102.89%;
+    --crop-h: 110.77%;
+    --crop-x: -1.27%;
+    --crop-y: 0%;
+  }
+
+  .aria-join__collage-item--4.aria-join__collage-item--default {
+    --crop-w: 128.54%;
+    --crop-h: 103.07%;
+    --crop-x: -9.32%;
+    --crop-y: -2.21%;
   }
 }

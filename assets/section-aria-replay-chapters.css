@@ -1,0 +1,563 @@
+/* Wig Party — Replay chapters (sections/replay-chapters.liquid), Figma 6849:8610.
+ *
+ * Desktop geometry (px, Figma, 1440 x 900): #F5EBE2 -> white at 55.171%, py-80, a 1360 row
+ * of 739 | 586 (35 between), top-aligned.
+ *   left   badge (#F79510, px-12 py-6, r-16, Poppins 12/14 uppercase), 12, title (Montserrat
+ *          Medium 48/56 black) and intro (Helvetica Neue 16/24 #4A4A4A) 8 apart; the 739 x 535
+ *          player card 23 below (the column is 740 tall with the card at its foot): 1px
+ *          #BC696B ring, r-4, the 711 x 503 r-8 video 14 in, a 20% wash and the 70px disc
+ *          0.5 right of and 0.5 above the middle
+ *   right  black header, p-16, Montserrat Medium 20/28 white; 17 down, chapters 12 apart,
+ *          then 27 to the 52 SHOP EVERYTHING button (#A64A4C, r-2, Poppins 18/28 white).
+ *          A chapter: #EADDD4, r-4, pl-12 pr-16 py-12; a 202 left group (48 thumb with a
+ *          0.472 #EADDD4 ring, 12, name Montserrat Medium 16/20 and note Poppins 12/14
+ *          uppercase, 8 apart) and a white r-40 time pill, px-16 py-8, Poppins Medium
+ *          14/19.5 with a 20px clock 8 after it.
+ * Figma lets one chapter's note wrap (row 3, 80 tall); every row here keeps it on one line
+ * like the other six, so rows are all 72.
+ */
+
+.aria-replay-ch,
+.aria-replay-ch *,
+.aria-replay-ch *::before,
+.aria-replay-ch *::after {
+  box-sizing: border-box;
+}
+
+.aria-replay-ch {
+  padding: 80px 40px;
+  background: linear-gradient(180deg, var(--aria-replay-ch-bg, #f5ebe2) 0%, #ffffff 55.171%);
+}
+
+.aria-replay-ch__inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 35px;
+  max-width: var(--container, 1360px);
+  margin: 0 auto;
+}
+
+/* ---------- Left (6849:8612) ---------- */
+
+.aria-replay-ch__main {
+  display: flex;
+  flex: 0 1 739px;
+  flex-direction: column;
+  gap: 23px;
+  min-width: 0;
+}
+
+.aria-replay-ch__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.aria-replay-ch__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #f79510;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--black, #000);
+}
+
+.aria-replay-ch__copy-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.aria-replay-ch__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-replay-ch__text {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #4a4a4a;
+}
+
+/* Player card: as on Watch Live (1px ring, 13/13/17 to the inset video). */
+.aria-replay-ch__card {
+  padding: 13px 13px 17px;
+  border: 1px solid var(--qi, #bc696b);
+  border-radius: 4px;
+  background: var(--white, #fff);
+}
+
+.aria-replay-ch__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 711 / 503;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+
+.aria-replay-ch__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.aria-replay-ch__poster:disabled {
+  cursor: default;
+}
+
+.aria-replay-ch__poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-replay-ch__poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.aria-replay-ch__play {
+  position: absolute;
+  z-index: 1;
+  top: calc(50% - 0.5px);
+  left: calc(50% + 0.5px);
+  display: block;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(192, 192, 192, 0.5);
+  backdrop-filter: blur(16.7px);
+  -webkit-backdrop-filter: blur(16.7px);
+  color: var(--white, #fff);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.2s ease;
+}
+
+.aria-replay-ch__play svg {
+  display: block;
+  width: 70px;
+  height: 70px;
+}
+
+.aria-replay-ch__poster:hover .aria-replay-ch__play,
+.aria-replay-ch__poster:focus-visible .aria-replay-ch__play {
+  background: rgba(192, 192, 192, 0.7);
+}
+
+.aria-replay-ch__media[loaded] .aria-replay-ch__poster {
+  display: none;
+}
+
+.aria-replay-ch__media > div,
+.aria-replay-ch__media iframe,
+.aria-replay-ch__media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------- Right (6849:8627) ---------- */
+
+.aria-replay-ch__side {
+  display: flex;
+  flex: 0 1 586px;
+  flex-direction: column;
+  gap: 17px;
+  min-width: 0;
+}
+
+.aria-replay-ch__header {
+  margin: 0;
+  padding: 16px;
+  background: var(--black, #000);
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  /* LiveMeUp titles have no length limit: wrap them (QA: nowrap here widened the page). */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: var(--white, #fff);
+}
+
+.aria-replay-ch__side-body {
+  display: flex;
+  flex-direction: column;
+  gap: 27px;
+}
+
+.aria-replay-ch__chapters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-replay-ch__chapter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 12px 16px 12px 12px;
+  border: 0;
+  border-radius: 4px;
+  background: #eaddd4;
+  text-align: left;
+  color: var(--black, #000);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-replay-ch__chapter-btn:hover,
+.aria-replay-ch__chapter-btn:focus-visible {
+  background: #e2d1c5;
+}
+
+.aria-replay-ch__chapter-btn.is-current {
+  background: #dcc6b8;
+}
+
+.aria-replay-ch__chapter-main {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  width: 202px;
+}
+
+.aria-replay-ch__thumb {
+  display: block;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border: 0.472px solid #eaddd4;
+}
+
+.aria-replay-ch__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-replay-ch__chapter-text {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.aria-replay-ch__chapter-name {
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-replay-ch__chapter-note {
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-replay-ch__time {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 40px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 19.5px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-replay-ch__time-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.aria-replay-ch__time-icon svg {
+  display: block;
+  width: 18.1667px;
+  height: 18.1667px;
+}
+
+.aria-replay-ch__shop-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-replay-ch__shop-all:hover,
+.aria-replay-ch__shop-all:focus-visible {
+  background: #8d3b3d;
+}
+
+.aria-replay-ch__shop-all:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.aria-replay-ch__shop-all[aria-busy='true'] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ---------- Below desktop (no Figma frame yet): stack ---------- */
+
+@media screen and (max-width: 989px) {
+  .aria-replay-ch {
+    padding: 48px 24px;
+  }
+
+  .aria-replay-ch__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aria-replay-ch__main,
+  .aria-replay-ch__side {
+    flex: none;
+  }
+
+  .aria-replay-ch__title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+}
+
+/* ---------- Mobile (Figma 6849:9030) ----------
+ * 375 artboard: the same fade, pt-48 px-16 (no bottom padding). Copy: badge, 12, title
+ * (Montserrat Medium 24/32) and intro (Poppins 16/24 #4A4A4A) 8 apart; 32 down, a 343 x 278
+ * card, r-16, the 327 x 262 r-12 video 8 in (the 70px disc 8.5 left of and 43 below the
+ * middle). 20 down, the black header (Montserrat Medium 16/28), 17, chapters 12 apart (px-8
+ * py-12, square corners; 48 thumb 8 from the name, Poppins 14/22, and note 8 apart; the
+ * time #1A1A1A with a #141B34 clock), 24, the 52 button.
+ */
+@media screen and (max-width: 749px) {
+  .aria-replay-ch {
+    padding: 48px 16px 0;
+  }
+
+  .aria-replay-ch__inner {
+    gap: 20px;
+  }
+
+  .aria-replay-ch__main {
+    gap: 32px;
+  }
+
+  .aria-replay-ch__title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .aria-replay-ch__text {
+    font-family: var(--font-body-family);
+  }
+
+  .aria-replay-ch__card {
+    padding: 7px;
+    border-radius: 16px;
+  }
+
+  .aria-replay-ch__media {
+    aspect-ratio: 327 / 262;
+    border-radius: 12px;
+  }
+
+  .aria-replay-ch__play {
+    top: calc(50% + 43px);
+    left: calc(50% - 8.5px);
+  }
+
+  .aria-replay-ch__header {
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  .aria-replay-ch__side-body {
+    gap: 24px;
+  }
+
+  .aria-replay-ch__chapter-btn {
+    padding: 12px 8px;
+    border-radius: 0;
+  }
+
+  /* Figma's 212 group fits "Silver Sunset"; the store's longer shade names would run under
+     the time pill, so the group takes the room up to 8 short of the pill and ends a long
+     name with an ellipsis (the fixed-length note may run on, as Figma lets it). Short names
+     sit exactly where Figma has them. */
+  .aria-replay-ch__chapter-main {
+    flex: 1 1 auto;
+    gap: 8px;
+    width: auto;
+    min-width: 0;
+    margin-right: 8px;
+  }
+
+  .aria-replay-ch__chapter-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .aria-replay-ch__chapter-name {
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  .aria-replay-ch__time {
+    color: #1a1a1a;
+  }
+
+  .aria-replay-ch__time-icon {
+    color: #141b34;
+  }
+}
+
+/* ---------- LiveMeUp feed (assets/aria-livemeup.js) ---------- */
+
+/* Rows are links to other replays now (they were seek buttons). */
+.aria-replay-ch__chapter-btn {
+  color: inherit;
+  text-decoration: none;
+}
+
+.aria-replay-ch__thumb {
+  position: relative;
+}
+
+/* Replay titles run longer than the chapter names did. */
+.aria-replay-ch__chapter-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aria-replay-ch__chapter-note {
+  text-transform: none;
+}
+
+.aria-replay-ch__shop-all[hidden] {
+  display: none;
+}
+
+/* ---------- Long LiveMeUp titles must wrap or truncate, never widen the page ---------- */
+.aria-replay-ch__inner,
+.aria-replay-ch__main,
+.aria-replay-ch__side,
+.aria-replay-ch__side-body,
+.aria-replay-ch__chapters,
+.aria-replay-ch__chapter,
+.aria-replay-ch__chapter-btn,
+.aria-replay-ch__chapter-main,
+.aria-replay-ch__chapter-text {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.aria-replay-ch__header {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.aria-replay-ch__chapter-name,
+.aria-replay-ch__chapter-note {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.aria-replay-ch__title,
+.aria-replay-ch__text {
+  overflow-wrap: anywhere;
+}
+/* ---------- Nov 6 QA: cap the row on wide screens ----------
+ * The overflow guard above sets the row to max-width 100%, which dropped the 1360 cap: past
+ * 1440 the two columns (739 | 586, space-between) drifted apart and the gap between them
+ * grew with the viewport. Capped again at the design's 1360 row (35 between the columns),
+ * still never wider than the screen. */
+.aria-replay-ch .aria-replay-ch__inner {
+  max-width: min(100%, var(--container, 1360px));
+  margin-inline: auto;
+}

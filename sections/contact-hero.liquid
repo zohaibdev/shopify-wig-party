@@ -1,0 +1,103 @@
+{%- comment -%}
+  Wig Party — Contact page, hero. Figma hf0beCVyuHCECkNQfaOm2q, node 7926:26010
+  (1440 x 294): breadcrumb, H1 title, intro paragraph on a white-to-cream gradient,
+  decorative photo bleeding to the right edge. Desktop only.
+  Styles in assets/section-contact-hero.css.
+{%- endcomment -%}
+
+{{ 'section-contact-hero.css' | asset_url | stylesheet_tag }}
+
+<div class="wp-contact-hero">
+  <div class="wp-contact-hero__body">
+    <nav class="wp-contact-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="wp-contact-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank and section.settings.parent_url != blank -%}
+          <li><a href="{{ section.settings.parent_url }}">{{ section.settings.parent_label }}</a></li>
+        {%- endif -%}
+        <li aria-current="page">{{ section.settings.current_label | default: page.title }}</li>
+      </ol>
+    </nav>
+    {%- if section.settings.heading != blank -%}
+      <h1 class="wp-contact-hero__title">{{ section.settings.heading }}</h1>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <p class="wp-contact-hero__text">{{ section.settings.text }}</p>
+    {%- endif -%}
+  </div>
+
+  <div class="wp-contact-hero__photo">
+    {%- if section.settings.photo != blank -%}
+      <img
+        src="{{ section.settings.photo | image_url: width: 656 }}"
+        alt="{{ section.settings.photo.alt | default: '' }}"
+        width="328"
+        height="309"
+        loading="lazy"
+      >
+    {%- else -%}
+      <img
+        src="{{ 'contact-hero-kristi-photo.png' | asset_url }}"
+        alt=""
+        width="328"
+        height="309"
+        loading="lazy"
+      >
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact hero",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "Breadcrumb: home label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "Help",
+      "label": "Breadcrumb: parent label"
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "Breadcrumb: parent URL"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "Contact",
+      "label": "Breadcrumb: current page label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Talk to us",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Most things are answered faster in the help centre and we would rather say so than make you wait. If yours is not there, this reaches a real person — often Kristi.",
+      "label": "Intro text"
+    },
+    {
+      "type": "image_picker",
+      "id": "photo",
+      "label": "Decorative photo"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact hero"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,200 @@
+{%- comment -%}
+  Wig Party — Measure & cap guide page hero. Figma node 7368:83 (1440 x 482, desktop).
+  Left: breadcrumb, heading, description, up to 3 stat blocks, button (hidden when url or label is empty).
+  Right: 550 x 386 media (image_picker); empty falls back to assets/cap-guide-hero-media.jpg.
+  Breadcrumb: Home / middle (plain text when its url is empty) / page.title, styled like the cart breadcrumb.
+  Styles in assets/section-guide-hero.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-guide-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign show_button = false
+  if section.settings.button_label != blank and section.settings.button_url != blank
+    assign show_button = true
+  endif
+-%}
+
+<div class="guide-hero">
+  <div class="guide-hero__content">
+    <nav class="guide-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="guide-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank -%}
+          <li>
+            {%- if section.settings.parent_url != blank -%}
+              <a href="{{ section.settings.parent_url }}">{{ section.settings.parent_label }}</a>
+            {%- else -%}
+              {{ section.settings.parent_label }}
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+        <li aria-current="page">{{ page.title }}</li>
+      </ol>
+    </nav>
+
+    <div class="guide-hero__body">
+      <div class="guide-hero__intro">
+        <div class="guide-hero__text-group">
+          {%- if section.settings.heading != blank -%}
+            <h1 class="guide-hero__title">{{ section.settings.heading }}</h1>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <p class="guide-hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- if section.blocks.size > 0 -%}
+          <ul class="guide-hero__stats" role="list">
+            {%- for block in section.blocks -%}
+              <li class="guide-hero__stat" {{ block.shopify_attributes }}>
+                <span class="guide-hero__stat-number">{{ block.settings.number }}</span>
+                <span class="guide-hero__stat-label">{{ block.settings.label }}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+
+      {%- if show_button -%}
+        <a class="guide-hero__btn" href="{{ section.settings.button_url }}">{{ section.settings.button_label }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="guide-hero__media">
+    {%- if section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 1100
+        | image_tag: widths: '550,1100', sizes: '550px', alt: section.settings.image_alt, loading: 'eager', class: 'guide-hero__img'
+      }}
+    {%- else -%}
+      <img
+        class="guide-hero__img"
+        src="{{ 'cap-guide-hero-media.jpg' | asset_url }}"
+        alt="{{ section.settings.image_alt | escape }}"
+        width="926"
+        height="650"
+        loading="eager"
+      >
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Guide hero",
+  "tag": "section",
+  "class": "guide-hero-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Breadcrumb"
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "Home label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "Start Here",
+      "label": "Middle label",
+      "info": "Optional. Last item is always the page title."
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "Middle link",
+      "info": "Empty shows the middle label as plain text."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "One tape measure, thirty seconds",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Cap size is the second thing people get wrong and the easiest to get right. Then the four cap constructions, explained without jargon, because every product title on this site uses the jargon.",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "SHOW ME HOW TO MEASURE",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link",
+      "info": "Button is hidden when this is empty."
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Right side image",
+      "info": "550 x 386 on desktop. Empty uses the theme default photo."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Right side image alt text"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "default": "340+",
+          "label": "Number"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "replays",
+          "label": "Label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Guide hero",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": { "number": "340+", "label": "replays" }
+        },
+        {
+          "type": "stat",
+          "settings": { "number": "1,100+", "label": "styles shown" }
+        },
+        {
+          "type": "stat",
+          "settings": { "number": "Never", "label": "expires" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

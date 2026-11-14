@@ -9,6 +9,12 @@
     /* V4's active nav pill (node 6316:3420). */
     --pink-tint: #EBD8D9;
     --cream-rgb: 234, 221, 212;
+    /* Primary/Gray, Primary/Charcoal and Primary/Silver from the V4 design system.
+       Introduced for the PDP buy box (Figma 6358:1262): body copy and struck-through
+       compare-at prices, the quantity stepper outline, and the accordion hairlines. */
+    --gray: #3F3E3E;
+    --charcoal: #36393C;
+    --silver: #B2B6B6;
     /* V4's copy colour inside the mega-menu feature cards (Figma node 6316:3455). */
     --ink: #1F1C1C;
     --py-rgb: 166, 74, 76;

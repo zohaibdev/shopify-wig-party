@@ -1,0 +1,238 @@
+{%- comment -%}
+  Wig Party — Compare Shades page, the before/after slider. Figma internal file,
+  node 7289:6403 (1440 x 984).
+  A cream frame holding one photo split by a draggable white line: Shade A on the left, Shade B
+  on the right, with three buttons over the bottom (swap, add a third, see both on a live).
+
+  The two sides follow the shades picked in sections/compare-shades.liquid (its element
+  announces them, "aria-compare:change"); a shade with its own photo replaces this section's
+  photo on its side. Until then (or with no compare section on the page) both sides show the
+  built-in photo, and Figma's 20% dark wash marks the B side as a stand-in for a second shade.
+  The wash never sits over a real shade photo. Swap asks the compare section to swap its
+  columns ("aria-compare:swap"), or swaps the two sides here when there is none.
+  ADD A THIRD asks the compare section for a third column ("aria-compare:third"); once it
+  announces a Shade C the photo splits three ways (A | B | C) with a second line and handle,
+  and the button becomes REMOVE THE THIRD. The button is hidden on a page with no compare
+  section, since there is nothing to pick a third shade from.
+  Behaviour in assets/aria-compare-slider.js, styles in assets/section-aria-compare-slider.css.
+{%- endcomment -%}
+
+{{ 'section-aria-compare-slider.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-compare-slider.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  # -- theme.liquid only font_faces the body regular/bold; the buttons are Poppins 500.
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+
+  if section.settings.photo != blank
+    assign base_photo = section.settings.photo | image_url: width: 2622
+    assign base_class = ''
+  else
+    assign base_photo = 'wp-compare-slider.jpg' | asset_url
+    assign base_class = ' is-fallback'
+  endif
+-%}
+{% style %}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-compare-slider">
+  <aria-compare-slider
+    class="aria-compare-slider__frame"
+    data-base="{{ base_photo }}"
+    data-base-fallback="{% if base_class != blank %}true{% else %}false{% endif %}"
+    {%- liquid
+      assign start = section.settings.start_position | default: 48.7 | at_least: 0 | at_most: 100
+      assign start_mobile = section.settings.start_position_mobile | default: 50.2 | at_least: 0 | at_most: 100
+    -%}
+    style="--pos-start: {{ start }}%; --pos-start-mobile: {{ start_mobile }}%;"
+  >
+    <div class="aria-compare-slider__stage" data-stage>
+      <img
+        class="aria-compare-slider__img aria-compare-slider__img--a{{ base_class }}"
+        src="{{ base_photo }}"
+        alt="{{ section.settings.label_a | escape }}"
+        width="1035"
+        height="888"
+        loading="lazy"
+        data-side="a"
+      >
+      <div class="aria-compare-slider__b is-demo" data-b>
+        <img
+          class="aria-compare-slider__img aria-compare-slider__img--b{{ base_class }}"
+          src="{{ base_photo }}"
+          alt="{{ section.settings.label_b | escape }}"
+          width="1035"
+          height="888"
+          loading="lazy"
+          data-side="b"
+        >
+      </div>
+      <div class="aria-compare-slider__c" data-c hidden>
+        <img
+          class="aria-compare-slider__img aria-compare-slider__img--c"
+          src="{{ base_photo }}"
+          alt="{{ section.settings.label_c | escape }}"
+          width="1035"
+          height="888"
+          loading="lazy"
+          data-side="c"
+        >
+      </div>
+      <span class="aria-compare-slider__line" aria-hidden="true"></span>
+      <span class="aria-compare-slider__line aria-compare-slider__line--c" aria-hidden="true" data-line-c hidden></span>
+      <button
+        type="button"
+        class="aria-compare-slider__handle"
+        role="slider"
+        aria-label="{{ section.settings.handle_label | escape }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="{{ start | round }}"
+        data-handle
+      >
+        {{- 'icon-compare-handle.svg' | inline_asset_content -}}
+      </button>
+      <button
+        type="button"
+        class="aria-compare-slider__handle aria-compare-slider__handle--c"
+        role="slider"
+        aria-label="{{ section.settings.handle_c_label | escape }}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="67"
+        data-handle-c
+        hidden
+      >
+        {{- 'icon-compare-handle.svg' | inline_asset_content -}}
+      </button>
+
+      {%- liquid
+        assign has_buttons = false
+        if section.settings.swap_label != blank or section.settings.third_label != blank or section.settings.live_label != blank
+          assign has_buttons = true
+        endif
+      -%}
+      {%- if has_buttons -%}
+        <div class="aria-compare-slider__actions">
+          {%- if section.settings.swap_label != blank -%}
+            <button type="button" class="aria-compare-slider__btn" data-swap>{{ section.settings.swap_label }}</button>
+          {%- endif -%}
+          {%- if section.settings.third_label != blank -%}
+            <button
+              type="button"
+              class="aria-compare-slider__btn"
+              data-third
+              data-label-add="{{ section.settings.third_label | escape }}"
+              data-label-remove="{{ section.settings.third_remove_label | default: section.settings.third_label | escape }}"
+              aria-pressed="false"
+            >
+              {{- section.settings.third_label -}}
+            </button>
+          {%- endif -%}
+          {%- if section.settings.live_label != blank -%}
+            <a class="aria-compare-slider__btn aria-compare-slider__btn--narrow" href="{{ section.settings.live_url | default: '/pages/live' }}">
+              {{- section.settings.live_label -}}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+  </aria-compare-slider>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-compare-slider.name",
+  "tag": "section",
+  "class": "aria-compare-slider-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "photo",
+      "label": "t:sections.aria-compare-slider.settings.photo.label",
+      "info": "t:sections.aria-compare-slider.settings.photo.info"
+    },
+    {
+      "type": "number",
+      "id": "start_position",
+      "default": 48.7,
+      "label": "t:sections.aria-compare-slider.settings.start_position.label",
+      "info": "t:sections.aria-compare-slider.settings.start_position.info"
+    },
+    {
+      "type": "number",
+      "id": "start_position_mobile",
+      "default": 50.2,
+      "label": "t:sections.aria-compare-slider.settings.start_position_mobile.label",
+      "info": "t:sections.aria-compare-slider.settings.start_position_mobile.info"
+    },
+    {
+      "type": "text",
+      "id": "label_a",
+      "default": "Shade A",
+      "label": "t:sections.aria-compare-slider.settings.label_a.label"
+    },
+    {
+      "type": "text",
+      "id": "label_b",
+      "default": "Shade B",
+      "label": "t:sections.aria-compare-slider.settings.label_b.label"
+    },
+    {
+      "type": "text",
+      "id": "handle_label",
+      "default": "Drag to compare the two shades",
+      "label": "t:sections.aria-compare-slider.settings.handle_label.label"
+    },
+    {
+      "type": "text",
+      "id": "swap_label",
+      "default": "SWAP A AND B",
+      "label": "t:sections.aria-compare-slider.settings.swap_label.label"
+    },
+    {
+      "type": "text",
+      "id": "third_label",
+      "default": "ADD A THIRD",
+      "label": "t:sections.aria-compare-slider.settings.third_label.label"
+    },
+    {
+      "type": "text",
+      "id": "third_remove_label",
+      "default": "REMOVE THE THIRD",
+      "label": "t:sections.aria-compare-slider.settings.third_remove_label.label"
+    },
+    {
+      "type": "text",
+      "id": "label_c",
+      "default": "Shade C",
+      "label": "t:sections.aria-compare-slider.settings.label_c.label"
+    },
+    {
+      "type": "text",
+      "id": "handle_c_label",
+      "default": "Drag to compare the second and third shades",
+      "label": "t:sections.aria-compare-slider.settings.handle_c_label.label"
+    },
+    {
+      "type": "text",
+      "id": "live_label",
+      "default": "SEE BOTH ON A LIVE",
+      "label": "t:sections.aria-compare-slider.settings.live_label.label"
+    },
+    {
+      "type": "url",
+      "id": "live_url",
+      "label": "t:sections.aria-compare-slider.settings.live_url.label",
+      "info": "t:sections.aria-compare-slider.settings.live_url.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-compare-slider.presets.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,761 @@
+/* Wig Party — Community page intro (sections/community-intro.liquid).
+ *
+ * The base rules below are the original desktop build and the ground the mobile block
+ * stands on; the current desktop intro (Figma 6989:910) is the `min-width: 750px` block
+ * further down, so it never reaches mobile.
+ *
+ * Cards geometry (px, Figma 6849:22661, 1440 x 834): #F5EBE2, pt-80 px-40, a 1360 column.
+ * Its type (56/64 centred heading, Montserrat card titles, Poppins text) is set in the
+ * desktop block; the base values below are the original build that mobile overrides.
+ *   cards   heading (Montserrat Medium 48/56), 56, three 438 cards 22 apart (1358 of the
+ *           1360); each r-12, a 382 photo over a white body pt-32 pb-16 px-12: title
+ *           (Poppins Bold 24/22.5 #1A1A1A) and text (Helvetica Neue 16/24 #626262, capitalised)
+ *           15 apart, 32, a 47-tall outline link (1px black, r-2, Helvetica 16/26 uppercase)
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-community,
+.aria-community *,
+.aria-community *::before,
+.aria-community *::after {
+  box-sizing: border-box;
+}
+
+.aria-community {
+  padding: 100px 40px 0;
+  background: var(--aria-community-bg, #f5ebe2);
+}
+
+.aria-community__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  max-width: var(--container, 1360px);
+  margin: 0 auto;
+}
+
+/* ---------- Intro ---------- */
+
+.aria-community__eyebrow {
+  display: none;
+}
+
+.aria-community__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.aria-community__title {
+  flex: 0 0 674px;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 72px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-community__text {
+  flex: 0 1 657px;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-community__actions {
+  display: flex;
+  gap: 16px;
+}
+
+.aria-community__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 224px;
+  height: 54px;
+  padding: 12px 24px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-community__btn--solid {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+.aria-community__btn--solid:hover,
+.aria-community__btn--solid:focus-visible {
+  background: #2b2b2b;
+}
+
+.aria-community__btn--outline {
+  background: transparent;
+  color: var(--black, #000);
+}
+
+.aria-community__btn--outline:hover,
+.aria-community__btn--outline:focus-visible {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+.aria-community__stats {
+  display: flex;
+  flex: 0 1 670px;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 93px;
+  margin: 0;
+  padding: 15px 48px 16px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--qi, #bc696b) 0%, #ffbabc 100%);
+  list-style: none;
+}
+
+.aria-community__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--white, #fff);
+}
+
+.aria-community__stat-value {
+  font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 36px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.aria-community__stat-label {
+  font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* ---------- Cards (6849:22691) ---------- */
+
+.aria-community__spaces {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.aria-community__cards-title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+/* Three 438 columns 22 apart take 1358 of the 1360, so the grid stops 2 short as drawn. */
+.aria-community__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  width: calc(100% - 2px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-community__card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--white, #fff);
+}
+
+.aria-community__media {
+  display: block;
+  height: 382px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-community__media picture {
+  display: block;
+  height: 100%;
+}
+
+.aria-community__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.aria-community__card:hover .aria-community__media img {
+  transform: scale(1.03);
+}
+
+.aria-community__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px 12px 16px;
+}
+
+.aria-community__card-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Poppins Bold 24/22.5; Figma's text box rounds the line to 23. */
+.aria-community__card-title {
+  min-height: 23px;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 22.5px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+}
+
+.aria-community__card-text {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  color: #626262;
+}
+
+.aria-community__card-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 47px;
+  padding: 15px 24px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  background: var(--white, #fff);
+  font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-community__card-link:hover,
+.aria-community__card-link:focus-visible {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+/* ---------- Below desktop (no Figma frame yet): stack ---------- */
+
+@media screen and (max-width: 1199px) {
+  .aria-community__title,
+  .aria-community__text,
+  .aria-community__stats {
+    flex: none;
+  }
+
+  .aria-community__cards {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-community {
+    padding: 64px 24px 0;
+  }
+
+  .aria-community__title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .aria-community__cards-title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .aria-community__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Desktop intro: Figma 6989:910 (1440 x 436) ----------
+ *
+ *   band    full bleed, white -> #EADDD4 (top to bottom), py-48 px-80, children centred
+ *           vertically; the 484 lead and the 516 card sit 280 apart (space-between in a
+ *           1280 column, so wider screens keep the content centred)
+ *   lead    eyebrow Poppins Bold 12/14 uppercase #3F3E3E; 16; title Montserrat Medium
+ *           48/56 black, 484 wide; 48; two 224 x 54 buttons 16 apart (black / 1px outline,
+ *           Poppins 18/28, r-2)
+ *   card    516 x 340, white, r-2. Text Poppins 18/28 #3F3E3E at (20.5, 30), 451.19 wide.
+ *           Stats at (19.5, 220), top-aligned, in hug columns 91 / 110 / 147, 65 apart:
+ *           Montserrat Medium Italic 28/46, 8, Poppins 16/26, black. Figma sets the middle
+ *           label alone in Helvetica 16/18, reproduced as drawn. pb-40.
+ * Cards follow directly, in their 6849:22661 frame (pt-80 px-40, 1360 column).
+ */
+@media screen and (min-width: 750px) {
+  .aria-community {
+    padding: 0;
+  }
+
+  .aria-community__inner {
+    gap: 0;
+    max-width: none;
+  }
+
+  .aria-community__intro {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 48px max(80px, calc((100% - 1280px) / 2));
+    background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+  }
+
+  .aria-community__lead {
+    display: flex;
+    flex: 0 1 484px;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .aria-community__eyebrow {
+    display: block;
+    margin: 0;
+    font-family: var(--font-body-family);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--gray, #3f3e3e);
+  }
+
+  .aria-community__title {
+    flex: none;
+    margin: 16px 0 0;
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 56px;
+  }
+
+  .aria-community__lead > :first-child {
+    margin-top: 0;
+  }
+
+  .aria-community__actions {
+    margin-top: 48px;
+  }
+
+  .aria-community__panel {
+    flex: 0 1 516px;
+    min-width: 0;
+    padding: 30px 20px 40px 19.5px;
+    border-radius: 2px;
+    background: var(--white, #fff);
+  }
+
+  .aria-community__text {
+    flex: none;
+    max-width: 452px;
+    margin: 0 0 0 1px;
+  }
+
+  .aria-community__stats {
+    flex: none;
+    justify-content: flex-start;
+    gap: 65px;
+    min-height: 0;
+    margin: 50px 0 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .aria-community__text:only-child,
+  .aria-community__stats:first-child {
+    margin-top: 0;
+  }
+
+  .aria-community__stat {
+    flex: none;
+    gap: 8px;
+    color: var(--black, #000);
+  }
+
+  .aria-community__stat:nth-child(1) {
+    width: 91px;
+  }
+
+  .aria-community__stat:nth-child(2) {
+    width: 110px;
+  }
+
+  .aria-community__stat:nth-child(3) {
+    width: 147px;
+  }
+
+  .aria-community__stat-value {
+    font-family: var(--font-heading-family);
+    font-size: 28px;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 46px;
+  }
+
+  .aria-community__stat-label {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .aria-community__stat:nth-child(2) .aria-community__stat-label {
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 18px;
+  }
+
+  .aria-community__spaces {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 80px 40px 0;
+  }
+
+  /* Cards, Figma 6849:22661: heading Montserrat Medium 56/64 centred; card title
+     Montserrat Medium 24/32 black, 15, text Poppins 16/26 #3F3E3E. Everything else
+     (438 cards 22 apart, 382 photo, pt-32 px-12 pb-16 body, 32, 47-tall link) is the base. */
+  .aria-community__cards-title {
+    font-size: 56px;
+    line-height: 64px;
+    text-align: center;
+  }
+
+  .aria-community__card-title {
+    min-height: 0;
+    font-family: var(--font-heading-family);
+    font-weight: 500;
+    line-height: 32px;
+    color: var(--black, #000);
+  }
+
+  .aria-community__card-text {
+    font-family: var(--font-body-family);
+    line-height: 26px;
+    text-transform: none;
+    color: var(--gray, #3f3e3e);
+  }
+}
+
+/* Tablet (no Figma frame): the card narrows, so the stats wrap instead of overflowing,
+   and below 990 the lead and the card stack. */
+@media screen and (min-width: 750px) and (max-width: 1199px) {
+  .aria-community__stats {
+    flex-wrap: wrap;
+    gap: 16px 32px;
+  }
+
+  .aria-community__stat:nth-child(n) {
+    width: auto;
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .aria-community__intro {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 48px 24px;
+  }
+
+  .aria-community__lead,
+  .aria-community__panel {
+    flex: none;
+  }
+
+  .aria-community__spaces {
+    padding: 64px 24px 0;
+  }
+
+  .aria-community__cards-title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+}
+
+/* ---------- Mobile: Figma 7000:4783 (375 x 652) ----------
+ *
+ * The intro re-flows: eyebrow, title, the two buttons stacked full width, then the intro
+ * text and the stats together in a white card. Desktop's DOM keeps the text beside the
+ * title and the stats beside the buttons, so `display: contents` lifts all five pieces into
+ * one grid and the card is a ::before spanning the text and stats rows.
+ *   frame   white -> #EADDD4 gradient (top to bottom), pt-40 px-16, pb-0, a 343 column
+ *   eyebrow Poppins Bold 12/14 uppercase #3F3E3E, 12 to the title
+ *   title   Montserrat Medium 36/46, black; 32 to the buttons
+ *   buttons full width, 12 apart: black 52 tall (no border), 1px outline 54; Poppins 18/28
+ *   card    32 below, 342 wide (1 short of the column, as drawn), white, p-16, 312 tall:
+ *           text Poppins 16/26 #3F3E3E, 302 of the 310; 12; stats edge to edge in fixed
+ *           79 / 79 / 93 columns: Montserrat Medium Italic 20/28, 8, Poppins 14/22, black.
+ *           The inner frame is a fixed 280, 6 taller than its content, hence pb-22.
+ */
+@media screen and (max-width: 749px) {
+  .aria-community {
+    padding: 0 16px;
+  }
+
+  .aria-community__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    margin: 0 -16px;
+    padding: 40px 16px 0;
+    background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+  }
+
+  .aria-community__lead,
+  .aria-community__panel {
+    display: contents;
+  }
+
+  .aria-community__intro::before {
+    content: '';
+    grid-row: 4 / 6;
+    grid-column: 1;
+    width: calc(100% - 1px);
+    margin-top: 32px;
+    background: var(--white, #fff);
+  }
+
+  .aria-community__eyebrow {
+    display: block;
+    grid-row: 1;
+    margin: 0;
+    font-family: var(--font-body-family);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--gray, #3f3e3e);
+  }
+
+  .aria-community__title {
+    grid-row: 2;
+    margin: 12px 0 0;
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 46px;
+  }
+
+  .aria-community__actions {
+    grid-row: 3;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .aria-community__btn {
+    width: 100%;
+  }
+
+  .aria-community__btn--solid {
+    height: 52px;
+    border: 0;
+  }
+
+  .aria-community__text {
+    grid-row: 4;
+    grid-column: 1;
+    position: relative;
+    /* Figma's box is 302, but Chrome sets "...things. You do" at 302.06, so 1px of
+       slack keeps Figma's line breaks. */
+    margin: 48px 24px 0 16px;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .aria-community__stats {
+    grid-row: 5;
+    grid-column: 1;
+    position: relative;
+    min-height: 0;
+    width: calc(100% - 33px);
+    margin: 12px 0 0 16px;
+    padding: 0 0 22px;
+    border-radius: 0;
+    background: none;
+  }
+
+  .aria-community__stat {
+    gap: 8px;
+    color: var(--black, #000);
+  }
+
+  .aria-community__stat:nth-child(1),
+  .aria-community__stat:nth-child(2) {
+    width: 79px;
+  }
+
+  .aria-community__stat:nth-child(3) {
+    width: 93px;
+  }
+
+  .aria-community__stat-value {
+    font-family: var(--font-heading-family);
+    font-size: 20px;
+    font-style: italic;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  .aria-community__stat-label {
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    line-height: 22px;
+    white-space: normal;
+  }
+}
+
+/* ---------- Mobile cards: Figma 6989:1051 (375 x 2099) ----------
+ *
+ *   frame   #EADDD4, pt-48 px-16 pb-0; heading and cards in one column, 24 apart
+ *   heading Montserrat Medium 36/46, black, centred
+ *   card    343 x 629, white, r 12 12 8 8; a 360 photo well (#EADDD4, r 12 12 2 2),
+ *           13, then a px-16 pb-16 body: title Montserrat Medium 28/46 black, 12, text
+ *           Poppins 16/26 #3F3E3E, 24, a 54-tall outline button (1px black, r-2,
+ *           Poppins 18/28, sentence case)
+ * The fallback portrait is placed per card exactly as Figma crops it (7000:4878 /
+ * 7000:4883 / 7000:4893), in % of the 343 width so it still covers on wider phones.
+ */
+@media screen and (max-width: 749px) {
+  .aria-community {
+    background: var(--cream, #eaddd4);
+  }
+
+  .aria-community__inner {
+    gap: 0;
+  }
+
+  .aria-community__spaces {
+    gap: 24px;
+    padding-top: 48px;
+  }
+
+  .aria-community__cards-title {
+    font-size: 36px;
+    line-height: 46px;
+    text-align: center;
+  }
+
+  .aria-community__cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .aria-community__card {
+    overflow: visible;
+    border-radius: 12px 12px 8px 8px;
+  }
+
+  .aria-community__media {
+    position: relative;
+    height: 360px;
+    border-radius: 12px 12px 2px 2px;
+    background: var(--cream, #eaddd4);
+  }
+
+  .aria-community__media .aria-community__fallback {
+    position: absolute;
+    width: 104.7582%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 1021 / 1360;
+  }
+
+  .aria-community__card:nth-child(3n + 1) .aria-community__fallback {
+    top: -57.1736px;
+    left: -2.2901%;
+    width: 109.1282%;
+  }
+
+  .aria-community__card:nth-child(3n + 2) .aria-community__fallback {
+    top: -29.0502px;
+    left: 0;
+  }
+
+  .aria-community__card:nth-child(3n) .aria-community__fallback {
+    top: -27.8408px;
+    left: -4.7582%;
+  }
+
+  .aria-community__body {
+    gap: 24px;
+    margin-top: 13px;
+    padding: 0 16px 16px;
+  }
+
+  .aria-community__card-copy {
+    gap: 12px;
+  }
+
+  .aria-community__card-title {
+    min-height: 0;
+    font-family: var(--font-heading-family);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 46px;
+    color: var(--black, #000);
+  }
+
+  .aria-community__card-text {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    text-transform: none;
+    color: var(--gray, #3f3e3e);
+  }
+
+  .aria-community__card-link {
+    height: 54px;
+    padding: 12px 24px;
+    font-family: var(--font-body-family);
+    font-size: 18px;
+    line-height: 28px;
+    text-transform: none;
+  }
+}

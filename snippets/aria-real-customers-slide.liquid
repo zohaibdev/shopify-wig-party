@@ -1,0 +1,234 @@
+{%- comment -%}
+  Wig Party — one "Real Customers" carousel slide. Shared by the real slide loop and the
+  two boundary clones in sections/real-customers.liquid, so the video/external-video/
+  image branching exists in exactly one place.
+
+  Params:
+    block                    - the story item (a `customer_story` metaobject entry, or a
+                                section block, per `stories_from_metaobject`)
+    stories_from_metaobject  - which shape `block` is
+    section                  - the section object (for `fallback_video` / `heading`)
+    is_clone                 - true for the two boundary padding copies (see below)
+
+  `is_clone` renders ONLY the poster image and caption — no <video>, no external iframe,
+  no play/mute controls. A clone exists purely so the coverflow always has a real-looking
+  neighbour to peek at right at the two ends of the list (see the JS file for why rewind
+  alone leaves empty space there, and why native `loop` cannot safely fill it instead).
+  It is never the active, watched slide — `aria-real-customers.js` treats landing on one
+  as "keep going", the same direction, one more slide, which always lands back on the
+  real item the clone is a copy of — so it never needs to actually play anything. This
+  also sidesteps two real risks a full duplicate would carry: two autoplaying `<video>`
+  elements for the same story confusing the shared single-audio manager in
+  aria-video-controls.js, and the external-video branch's `id="Deferred-Poster-{{ block.id }}"`
+  colliding with its original.
+{%- endcomment -%}
+{%- liquid
+  if stories_from_metaobject
+    assign s_image = block.image.value
+    assign s_video = block.video.value
+    assign s_video_url = block.video_url.value
+    assign s_caption = block.caption.value
+    assign s_show_play = block.show_play_icon.value
+  else
+    assign s_image = block.settings.image
+    assign s_video = block.settings.video
+    assign s_video_url = block.settings.video_url
+    assign s_caption = block.settings.caption
+    assign s_show_play = block.settings.show_play_icon
+  endif
+-%}
+<div
+  class="swiper-slide aria-real-customers__slide{% if is_clone %} aria-real-customers__slide--clone{% endif %}"
+  {% if is_clone %}
+    aria-hidden="true"
+    data-aria-rc-clone
+  {% else %}
+    {% unless stories_from_metaobject %}{{ block.shopify_attributes }}{% endunless %}
+  {% endif %}
+>
+  <div class="aria-real-customers__frame">
+    {%- liquid
+      assign rc_video = s_video
+      if rc_video == blank
+        assign rc_video = section.settings.fallback_video
+      endif
+
+      assign has_video = false
+      if rc_video != blank
+        assign has_video = true
+      endif
+
+      assign has_external_video = false
+      if has_video == false and s_video_url != blank
+        assign has_external_video = true
+      endif
+
+      assign rc_title = s_caption | default: section.settings.heading
+
+      # -- A clone never plays anything, so it never needs a video source at all — only
+      # -- ever the poster, whichever branch would have supplied one.
+      if is_clone
+        assign has_video = false
+        assign has_external_video = false
+      endif
+    -%}
+
+    {%- capture story_poster -%}
+      {%- if s_image != blank -%}
+        {{
+          s_image
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 990px) 343px, 70vw',
+            widths: '320,480,686,800',
+            class: 'aria-real-customers__image',
+            alt: s_image.alt | default: s_caption
+        }}
+      {%- elsif rc_video != blank and rc_video.preview_image != blank -%}
+        {{
+          rc_video.preview_image
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 990px) 343px, 70vw',
+            widths: '320,480,686,800',
+            class: 'aria-real-customers__image',
+            alt: s_caption
+        }}
+      {%- else -%}
+        <span class="aria-real-customers__placeholder">
+          {{ 'collection-1' | placeholder_svg_tag: 'aria-real-customers__image' }}
+        </span>
+      {%- endif -%}
+    {%- endcapture -%}
+
+    {%- capture story_play -%}
+      <span class="aria-real-customers__play" aria-hidden="true">
+        <img
+          src="{{ 'wp-play-button.svg' | asset_url }}"
+          alt=""
+          width="70"
+          height="70"
+          loading="lazy"
+        >
+      </span>
+    {%- endcapture -%}
+
+    {%- if has_video -%}
+      {%- liquid
+        assign poster_url = ''
+        if s_image != blank
+          assign poster_url = s_image | image_url: width: 800
+        elsif rc_video.preview_image != blank
+          assign poster_url = rc_video.preview_image | image_url: width: 800
+        endif
+      -%}
+      {%- comment -%}
+        The metaobject's own `image` field is the static thumbnail (the poster button,
+        filling the frame) and the <video> waits inside a <template> until it is needed, so
+        a card that never reaches the centre costs nothing but that one image.
+
+        It is aria-real-customers.js, NOT a click, that brings the <video> in: the card in
+        the centre of the carousel plays automatically, and only that card. The markup is
+        still <deferred-media> because the surrounding parts of it are exactly right —
+        `loaded` drives the poster-hiding CSS, and the poster button remains the fallback
+        that loads the video if the script never runs. Only the "on click" trigger is
+        bypassed, by cloning the template directly (see ensureVideoLoaded there for why
+        Dawn's own loadContent() is not reused).
+
+        `controls` (the browser's own bar: scrubber, elapsed/duration, mute, fullscreen) is
+        what supplies the seek behaviour, and it appears exactly when it should, because the
+        <video> only enters the DOM on that click. It replaces the theme's two custom
+        play/sound discs on THIS card -- showing both would put two play buttons and two
+        mute buttons on one video. The discs are untouched everywhere else they are used
+        (why-wig-party.liquid), and the shared manager in aria-video-controls.js still owns
+        this video: its button sync no-ops when a card has no discs, while the global
+        single-audio rule and the carousel's own autoplay gate both work off `volumechange`,
+        which the native bar fires just the same.
+
+        NO `loop`: the carousel waits for `ended` before advancing (aria-real-customers.js),
+        and a looping video never fires it.
+      {%- endcomment -%}
+      <deferred-media
+        class="aria-real-customers__media aria-real-customers__media--video aria-real-customers__media--deferred"
+        data-aria-video-media
+      >
+        <button
+          id="Deferred-Poster-{{ block.id }}"
+          class="aria-real-customers__poster"
+          type="button"
+          aria-label="{{ 'aria_theme.real_customers.play_story' | t: name: rc_title }}"
+        >
+          {{ story_poster }}
+          {%- if s_show_play and is_clone == false -%}
+            {{ story_play }}
+          {%- endif -%}
+        </button>
+
+        <template>
+          <video
+            class="aria-real-customers__video"
+            data-aria-video
+            autoplay
+            muted
+            controls
+            playsinline
+            preload="none"
+            {% if poster_url != blank %}
+              poster="{{ poster_url }}"
+            {% endif %}
+          >
+            {%- for source in rc_video.sources -%}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- endfor -%}
+          </video>
+        </template>
+      </deferred-media>
+    {%- elsif has_external_video -%}
+      {%- assign rc_video_id = block.settings.video_url.id -%}
+      <deferred-media class="aria-real-customers__media aria-real-customers__media--deferred">
+        <button
+          id="Deferred-Poster-{{ block.id }}"
+          class="aria-real-customers__poster"
+          type="button"
+          aria-label="{{ 'aria_theme.real_customers.play_story' | t: name: rc_title }}"
+        >
+          {{ story_poster }}
+          {{ story_play }}
+        </button>
+
+        <template>
+          {%- if block.settings.video_url.type == 'youtube' -%}
+            <iframe
+              class="aria-real-customers__video"
+              src="https://www.youtube.com/embed/{{ rc_video_id }}?enablejsapi=1&playsinline=1&loop=1&playlist={{ rc_video_id }}&autoplay=1"
+              title="{{ rc_title | escape }}"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          {%- else -%}
+            <iframe
+              class="aria-real-customers__video"
+              src="https://player.vimeo.com/video/{{ rc_video_id }}?loop=1&playsinline=1&autoplay=1"
+              title="{{ rc_title | escape }}"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          {%- endif -%}
+        </template>
+      </deferred-media>
+    {%- else -%}
+      <div class="aria-real-customers__media">
+        {{ story_poster }}
+        {%- if s_show_play and is_clone == false -%}
+          {{ story_play }}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if block.settings.caption != blank -%}
+      <p class="aria-real-customers__caption">{{ block.settings.caption }}</p>
+    {%- endif -%}
+  </div>
+</div>

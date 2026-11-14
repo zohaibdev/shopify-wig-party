@@ -1,0 +1,306 @@
+{%- comment -%}
+  Wig Party — Measure & cap guide: "What Your Number Means" size cards. Figma node 7370:187 (1440 x 760, desktop).
+  Left: heading, body, tip box. Right: up to 3 card blocks (icon, size title, sublabel, styles count,
+  3 avatars, advice). Background arc and photo fade are pure CSS; model photo on the right edge.
+  Empty image pickers use the Figma exports in assets/ (guide-size-*), chosen by the card's "Default artwork" set.
+  Nothing is clickable. Styles in assets/section-guide-size-cards.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-guide-size-cards.css' | asset_url | stylesheet_tag }}
+
+<div class="gsc">
+  <div class="gsc__stage">
+    <div class="gsc__photo">
+      {%- if section.settings.model_image != blank -%}
+        {{
+          section.settings.model_image
+          | image_url: width: 580
+          | image_tag: widths: '290,580', sizes: '290px', alt: section.settings.model_alt, loading: 'lazy', class: 'gsc__photo-img'
+        }}
+      {%- else -%}
+        <img
+          src="{{ 'guide-size-model.jpg' | asset_url }}"
+          width="290"
+          height="760"
+          alt="{{ section.settings.model_alt | escape }}"
+          loading="lazy"
+          class="gsc__photo-img"
+        >
+      {%- endif -%}
+    </div>
+    <div class="gsc__fade" aria-hidden="true"></div>
+
+    <div class="gsc__content">
+      <div class="gsc__intro">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="gsc__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.body != blank -%}
+          <p class="gsc__body">{{ section.settings.body | escape | newline_to_br }}</p>
+        {%- endif -%}
+        {%- if section.settings.tip_title != blank or section.settings.tip_text != blank -%}
+          <div class="gsc__tip">
+            <img
+              src="{{ 'guide-size-tip-icon.svg' | asset_url }}"
+              width="36"
+              height="36"
+              alt=""
+              class="gsc__tip-icon"
+            >
+            <span class="gsc__tip-divider" aria-hidden="true"></span>
+            <div class="gsc__tip-text">
+              {%- if section.settings.tip_title != blank -%}
+                <p class="gsc__tip-title">{{ section.settings.tip_title | escape }}</p>
+              {%- endif -%}
+              {%- if section.settings.tip_text != blank -%}
+                <p class="gsc__tip-body">{{ section.settings.tip_text | escape | newline_to_br }}</p>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="gsc__cards" role="list">
+          {%- for block in section.blocks -%}
+            {%- assign art = block.settings.default_art -%}
+            <li class="gsc__card" {{ block.shopify_attributes }}>
+              <div class="gsc__icon-circle">
+                {%- if block.settings.icon != blank -%}
+                  {{
+                    block.settings.icon
+                    | image_url: width: 104
+                    | image_tag: width: 52, height: 52, alt: '', loading: 'lazy', class: 'gsc__icon'
+                  }}
+                {%- else -%}
+                  {%- assign icon_src = 'guide-size-icon-' | append: art | append: '.svg' -%}
+                  <img
+                    src="{{ icon_src | asset_url }}"
+                    width="52"
+                    height="52"
+                    alt=""
+                    loading="lazy"
+                    class="gsc__icon"
+                  >
+                {%- endif -%}
+              </div>
+
+              {%- if block.settings.size_title != blank -%}
+                <h3 class="gsc__title">{{ block.settings.size_title | escape }}</h3>
+              {%- endif -%}
+              {%- if block.settings.sublabel != blank -%}
+                <p class="gsc__sublabel">{{ block.settings.sublabel | escape }}</p>
+              {%- endif -%}
+
+              <span class="gsc__divider" aria-hidden="true"></span>
+
+              {%- if block.settings.styles_count != blank or block.settings.styles_label != blank -%}
+                <p class="gsc__count">
+                  {%- if block.settings.styles_count != blank -%}
+                    <span class="gsc__count-number">{{ block.settings.styles_count | escape }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.styles_label != blank -%}
+                    <span class="gsc__count-label">{{ block.settings.styles_label | escape }}</span>
+                  {%- endif -%}
+                </p>
+              {%- endif -%}
+
+              <div class="gsc__avatars" aria-hidden="true">
+                {%- for i in (1..3) -%}
+                  {%- assign avatar_key = 'avatar_' | append: i -%}
+                  {%- assign avatar = block.settings[avatar_key] -%}
+                  <span class="gsc__avatar">
+                    {%- if avatar != blank -%}
+                      {{
+                        avatar
+                        | image_url: width: 128, height: 128, crop: 'center'
+                        | image_tag: width: 64, height: 64, alt: '', loading: 'lazy', class: 'gsc__avatar-img'
+                      }}
+                    {%- else -%}
+                      {%- assign avatar_src = 'guide-size-avatar-' | append: art | append: '-' | append: i | append: '.jpg' -%}
+                      <img
+                        src="{{ avatar_src | asset_url }}"
+                        width="64"
+                        height="64"
+                        alt=""
+                        loading="lazy"
+                        class="gsc__avatar-img"
+                      >
+                    {%- endif -%}
+                  </span>
+                {%- endfor -%}
+              </div>
+
+              {%- if block.settings.advice != blank -%}
+                <p class="gsc__advice">{{ block.settings.advice | escape | newline_to_br }}</p>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Guide size cards",
+  "tag": "section",
+  "class": "guide-size-cards-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Your Number Means"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Your head circumference helps us recommend the right cap size and show you how many styles will fit."
+    },
+    {
+      "type": "header",
+      "content": "Tip box"
+    },
+    {
+      "type": "text",
+      "id": "tip_title",
+      "label": "Tip title",
+      "default": "Not sure about your measurement?"
+    },
+    {
+      "type": "textarea",
+      "id": "tip_text",
+      "label": "Tip text",
+      "default": "Use a soft measuring tape around your head, just above your ears."
+    },
+    {
+      "type": "header",
+      "content": "Model photo"
+    },
+    {
+      "type": "image_picker",
+      "id": "model_image",
+      "label": "Model photo",
+      "info": "Empty uses the Figma photo. Shown 290 x 760."
+    },
+    {
+      "type": "text",
+      "id": "model_alt",
+      "label": "Model photo alt text",
+      "info": "Leave empty if the photo is decorative."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Size card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "default_art",
+          "label": "Default artwork",
+          "info": "Icon and avatars used when the pickers are empty.",
+          "options": [
+            { "value": "petite", "label": "Petite" },
+            { "value": "average", "label": "Average" },
+            { "value": "large", "label": "Large" }
+          ],
+          "default": "petite"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon",
+          "info": "Shown 52 x 52 in the pink circle."
+        },
+        {
+          "type": "text",
+          "id": "size_title",
+          "label": "Size title",
+          "default": "Up to 21”"
+        },
+        {
+          "type": "text",
+          "id": "sublabel",
+          "label": "Sublabel",
+          "default": "Petite"
+        },
+        {
+          "type": "text",
+          "id": "styles_count",
+          "label": "Styles count"
+        },
+        {
+          "type": "text",
+          "id": "styles_label",
+          "label": "Styles label",
+          "default": "styles"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar_1",
+          "label": "Avatar 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar_2",
+          "label": "Avatar 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar_3",
+          "label": "Avatar 3"
+        },
+        {
+          "type": "textarea",
+          "id": "advice",
+          "label": "Advice text",
+          "default": "Go petite — the adjustable straps let you pull further than they take in."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Guide size cards",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "default_art": "petite",
+            "size_title": "Up to 21”",
+            "sublabel": "Petite",
+            "styles_count": "",
+            "advice": "Go petite — the adjustable straps let you pull further than they take in."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "default_art": "average",
+            "size_title": "21” – 22”",
+            "sublabel": "Average",
+            "styles_count": "",
+            "advice": "This is most people."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "default_art": "large",
+            "size_title": "22” and over",
+            "sublabel": "Large",
+            "styles_count": "",
+            "advice": "Go large — a tight cap is the number one comfort complaint."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

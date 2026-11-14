@@ -1,0 +1,402 @@
+/* Wig Party — Compare Shades, side by side (sections/compare-shades.liquid), Figma 7289:6360.
+ *
+ * Desktop geometry (px, Figma, 1440 x 1228): pt-80 px-40, no bottom padding; two 670-wide
+ * columns, 20 apart.
+ *   column    black, r-8, p-32: label (Montserrat Medium 24/32 white), 32, then 24 to the
+ *             dropdown and 20 between the photo, the swatches and the description (Shade A;
+ *             Figma's Shade B is 24 throughout, so both columns follow A to line up)
+ *   dropdown  606 x 58 white, p-16: Poppins 16/26 black, a 24 chevron box at the right (the
+ *             13.5 x 7.29 stroke sits 5.25 / 8.25 inside it, #141B34)
+ *   photo     606 x 640, cropped from the top
+ *   swatches  white, r-8, 182 tall, p-16, 21 apart: three 177.33-wide columns, a 116-tall
+ *             photo (1px white ring, r-4, cover) and 12 below it the label (Poppins 14/22
+ *             black, centred)
+ *   desc      white, r-8, p-16: Poppins 14/22, the lead black and the rest #3F3E3E, with the
+ *             editor's line breaks
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-compare-shades,
+.aria-compare-shades *,
+.aria-compare-shades *::before,
+.aria-compare-shades *::after {
+  box-sizing: border-box;
+}
+
+.aria-compare-shades {
+  display: block;
+  padding: 80px 40px 0;
+}
+
+.aria-compare-shades__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+/* ---------- Column (7289:6361) ---------- */
+
+.aria-compare-shades__column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  min-width: 0;
+  padding: 32px;
+  border-radius: 8px;
+  background: var(--black, #000);
+}
+
+.aria-compare-shades__label {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Montserrat 24/32 lands 1px higher in the browser than in Figma. */
+  position: relative;
+  top: 1px;
+}
+
+.aria-compare-shades__label label {
+  cursor: pointer;
+}
+
+.aria-compare-shades__body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* ---------- Dropdown (7289:6364) ---------- */
+
+.aria-compare-shades__select {
+  position: relative;
+  width: 100%;
+  background: var(--white, #fff);
+}
+
+.aria-compare-shades__select select {
+  display: block;
+  width: 100%;
+  height: 58px;
+  margin: 0;
+  /* 17 / 15 rather than 16 / 16: Poppins 16/26 lands 1px higher in the browser than in
+     Figma, so the text drops 1px inside the same 58-tall box. */
+  padding: 17px 56px 15px 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.aria-compare-shades__select select:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+.aria-compare-shades__chevron {
+  position: absolute;
+  top: 17px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  color: #141b34;
+  pointer-events: none;
+}
+
+.aria-compare-shades__chevron svg {
+  position: absolute;
+  top: 8.25px;
+  left: 5.25px;
+  display: block;
+}
+
+/* ---------- Detail (7289:6369) ---------- */
+
+.aria-compare-shades__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.aria-compare-shades__photo {
+  height: 640px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+/* Shade photos are portrait (about 0.7 wide to 1 tall), so covering the 606 x 640 box
+   blew each one up to the full width and cut off the top of the head and the chin. They
+   are shown whole instead, centred on the box's dark ground. */
+.aria-compare-shades__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* The built-in photo is Figma's crop (the top 0.806 of the image, full width), which Figma
+   stretches into whatever box it fills: 606 x 640 on desktop, 311 x 297 on mobile. */
+.aria-compare-shades__photo img.is-fallback {
+  object-fit: fill;
+}
+
+/* ---------- Swatches (7289:6371) ---------- */
+
+.aria-compare-shades__lights {
+  display: flex;
+  align-items: center;
+  gap: 21px;
+  height: 182px;
+  margin: 0;
+  padding: 16px;
+  list-style: none;
+  border-radius: 8px;
+  background: var(--white, #fff);
+}
+
+.aria-compare-shades__light {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  height: 100%;
+}
+
+.aria-compare-shades__swatch {
+  position: relative;
+  display: block;
+  flex: 1 0 0;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.aria-compare-shades__swatch img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's 1px white ring sits inside the photo, over it. */
+.aria-compare-shades__swatch::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--white, #fff);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.aria-compare-shades__light-label {
+  width: 100%;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--black, #000);
+}
+
+/* ---------- Description (7289:6381) ---------- */
+
+.aria-compare-shades__desc {
+  margin: 0;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: pre-line;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-compare-shades__lead {
+  color: var(--black, #000);
+}
+
+/* The space after the lead ("Rooted. Dark brown…"); only when both parts are there. */
+.aria-compare-shades__lead:not(:empty) + .aria-compare-shades__text:not(:empty)::before {
+  content: ' ';
+}
+
+.aria-compare-shades__lead:empty,
+.aria-compare-shades__text:empty {
+  display: none;
+}
+
+/* ---------- Mobile (Figma 7289:6012, 375 wide) ----------
+ * py-48 px-16, white; the columns stack 20 apart. Column: black, r-8, p-16, label Montserrat
+ * Medium 20/28, 24 to a group 16 apart: dropdown 48 tall (px-16 py-12, Poppins 14/22, the 24
+ * chevron box 16 from the right, centred), photo 311 x 297, swatches 155 tall (py-16 px-12, 8
+ * apart, 89-tall photos), description p-8 with Poppins 14/22 #2D2D2D and the lead Bold.
+ */
+@media screen and (max-width: 749px) {
+  .aria-compare-shades {
+    padding: 48px 16px;
+    background: var(--white, #fff);
+  }
+
+  .aria-compare-shades__columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .aria-compare-shades__column {
+    gap: 24px;
+    padding: 16px;
+  }
+
+  /* Montserrat 20/28 lands where Figma puts it, so the desktop 1px nudge is dropped. */
+  .aria-compare-shades__label {
+    top: 0;
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-compare-shades__body,
+  .aria-compare-shades__detail {
+    gap: 16px;
+  }
+
+  .aria-compare-shades__select select {
+    height: 48px;
+    padding: 13px 56px 13px 16px;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .aria-compare-shades__chevron {
+    top: 12px;
+  }
+
+  .aria-compare-shades__photo {
+    height: 297px;
+  }
+
+  .aria-compare-shades__lights {
+    gap: 8px;
+    height: 155px;
+    padding: 16px 12px;
+  }
+
+  .aria-compare-shades__desc {
+    padding: 8px;
+    color: #2d2d2d;
+  }
+
+  .aria-compare-shades__lead {
+    font-weight: 700;
+    color: inherit;
+  }
+}
+
+/* ---------- Third shade (ADD A THIRD, assets/aria-compare-shades.js) ---------- */
+
+/* Three columns side by side on desktop; mobile keeps stacking them one under another. */
+@media screen and (min-width: 750px) {
+  .aria-compare-shades__columns.has-third {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aria-compare-shades__columns.has-third .aria-compare-shades__column {
+    padding: 24px;
+  }
+}
+
+/* ---------- No shades for this wig (assets/aria-compare-shades.js, showEmpty) ----------
+ * Opened from a wig whose shade_for_comparison metafield lists no comparable shade: a message
+ * and a link back to the wig take the columns' place, and the slider and table go too.
+ */
+.aria-compare-shades__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  border-radius: 8px;
+  background: var(--black, #000);
+  text-align: center;
+}
+
+.aria-compare-shades__empty[hidden] {
+  display: none;
+}
+
+.aria-compare-shades__empty-text {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  color: var(--white, #fff);
+}
+
+.aria-compare-shades__empty-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 40px;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 26px;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  text-decoration: none;
+}
+
+.aria-compare-shades__empty-link:hover,
+.aria-compare-shades__empty-link:focus-visible {
+  background: #8e3d3f;
+}
+
+.aria-compare-shades.is-empty .aria-compare-shades__columns,
+.aria-compare-empty .aria-compare-slider-section,
+.aria-compare-empty .aria-compare-table-section {
+  display: none;
+}
+
+@media screen and (max-width: 749px) {
+  .aria-compare-shades__empty {
+    padding: 32px 16px;
+  }
+
+  .aria-compare-shades__empty-text {
+    font-size: 20px;
+    line-height: 28px;
+  }
+}

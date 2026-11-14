@@ -1,4 +1,4 @@
-{%- comment -%}
+ {%- comment -%}
   Wig Party — ONE column of a mega-menu panel.
 
   Extracted so the six dedicated panel types (shop / best_sellers / start_here / live /
@@ -15,6 +15,11 @@
     feature_card  glass card on a photo OR gradient shell    (Best Sellers / Community / Deals)
     media_card    large image + signature + play affordance  (Live)
     photo_row     cream-matted photos + outlined CTA         (Community)
+    items_photos  48px round thumb + one-line label, menu-fed (Shop: By Cap Construction)
+    items_divided 26px text rows with 1px rules, menu-fed    (Shop: Collection / Color / Size & Length)
+    lmu_schedule  menu_padded rows of the upcoming shows from LiveMeUp (Live); col_count rows,
+                  each opening the reminder (or the player once on air); col_btn_url is the
+                  Live page the rows link to
 
   Params (all optional except col_type):
     col_type, col_heading, col_icon, col_menu_handle, col_width, col_push,
@@ -29,13 +34,21 @@
                                                 column only — Best Sellers has none.
     col_icon_tone                            -- 'qi' for the #BC696B gold-sell glyph
     col_title_tone                           -- 'accent' for a Primary/Dark Pink label
+    col_lmu                                  -- bool, media_card / heading: fed from LiveMeUp
+                                                (assets/aria-livemeup.js) — the live, next or
+                                                latest show's label, time and cover; the typed
+                                                heading and image stay until the feed answers,
+                                                and stay for good if it has no shows
     col_placeholders, col_placeholder_subs   -- '|'-joined Figma row labels, used only
                                                 while the column's menu is missing
     placeholders                             -- the section's placeholder switch
 
-  `col_heading` is only a FALLBACK: when the column is fed by a Shopify menu, that menu's
-  own title wins, because every handle is named after the heading it feeds
-  (header-shop-shop-by-collection -> "Shop by Collection").
+  `col_heading` is usually only a FALLBACK: when the column is fed by a Shopify menu, that
+  menu's own title wins, because every handle is named after the heading it feeds
+  (header-shop-shop-by-collection -> "Shop by Collection"). The one exception is
+  `items_photos`/`items_divided`: there `col_heading` is itself a merchant-set block setting,
+  so it always wins over the linked menu's own admin title (see the comment above
+  `col_heading` below).
 {%- endcomment -%}
 
 {%- liquid
@@ -54,15 +67,31 @@
   endif
 
   comment
-    Nil-safe emptiness test. `col_menu.links.size == 0` is NOT safe here: for a nil menu the
-    size is nil, and `nil == 0` is false in Liquid, so an empty column silently skipped its
-    placeholders. Asking `> 0` and inverting handles nil and 0 alike.
+    A link counts only when it goes somewhere: menu items saved as `#` or blank (rows whose
+    page does not exist yet) are skipped, here and in every loop below. A link column with
+    nothing real left is not rendered at all (see `skip_col`), so the menu never shows a
+    dead row or an empty heading, and the row appears by itself once the page is linked.
   endcomment
   assign menu_has_links = false
-  if col_menu.links.size > 0
-    assign menu_has_links = true
+  for link in col_menu.links
+    if link.url != blank and link.url != '#'
+      assign menu_has_links = true
+      break
+    endif
+  endfor
+  assign skip_col = false
+  if menu_has_links == false
+    if col_type == 'menu_divided' or col_type == 'menu_padded' or col_type == 'style_cards' or col_type == 'items_photos' or col_type == 'items_divided'
+      assign skip_col = true
+    endif
   endif
-  if col_menu.title != blank
+  comment
+    An explicit col_heading (a merchant-set block setting, for items_photos/items_divided)
+    always wins. Only fall back to the linked menu's own admin title when no heading was
+    supplied at all, which is the case for every OTHER menu-fed column here (their preset
+    literal heading already matches the handle's title by naming convention).
+  endcomment
+  if col_heading == blank and col_menu.title != blank
     assign col_heading = col_menu.title
   endif
 
@@ -75,24 +104,14 @@
     FALLBACKS, so no column ever renders as a headed but empty box while the real content
     is still being produced. Three layers, most-preferred first:
 
-    1. `col_placeholders` - the row labels straight from the Figma frame, used ONLY when the
-       column's Shopify menu is missing or empty and the section's placeholder switch is on.
-       Real menu items take over the moment the menu exists; nothing here needs rebuilding.
+    1. (Placeholder rows were removed on 2026-10-15 at the client's request: they linked to
+       the catalogue, not a real page. A link column without real links is now hidden.)
     2. images - the block's own image, else a real product shot from the column's collection
        (or the catalogue), and only then Shopify's line-art placeholder. A real photo reads
        far closer to the design than a wireframe.
     3. links - a genuine destination instead of '#': the column's collection where it has
        one, otherwise the all-products route.
   endcomment
-  assign ph_rows = ''
-  if col_placeholders != blank and menu_has_links == false and placeholders
-    assign ph_rows = col_placeholders | split: '|'
-  endif
-  assign ph_subs = ''
-  if col_placeholder_subs != blank
-    assign ph_subs = col_placeholder_subs | split: '|'
-  endif
-
   assign fallback_url = routes.all_products_collection_url
   if col_collection != blank and col_collection.url != blank
     assign fallback_url = col_collection.url
@@ -136,7 +155,12 @@
   in CSS, which is why only the `products` call sites pass `col_context`. The desktop
   panels never pass it, so their product data and rendering are completely untouched.
 {%- endcomment -%}
-{%- unless col_context == 'mobile' and col_type == 'products' -%}
+{%- liquid
+  if col_context == 'mobile' and col_type == 'products'
+    assign skip_col = true
+  endif
+-%}
+{%- unless skip_col -%}
 
 {%- comment -%}
   `col_shell` is the white->cream gradient SHELL the design wraps around two column types:
@@ -157,7 +181,33 @@
 >
   {%- if col_heading != blank -%}
     <div class="aria-mega__col-head">
-      {%- if col_icon != blank and col_icon != 'none' -%}
+      {%- comment -%}
+        ADDED 2026-10-26 — `col_icon_image` lets a column use a merchant-uploaded image
+        instead of the built-in `aria-icon` sprite (used by the 3 new Shop filter columns,
+        each of which has its own image_picker setting). Existing calls never pass this, so
+        every column keeps using the sprite via the unchanged `elsif` below.
+
+        `col_icon_fallback` is a theme asset filename shown while that image_picker is still
+        empty (its Figma-downloaded default) — a plain `asset_url`, not `image_url`, because
+        Shopify's image_picker can only default to an already-uploaded Shopify Files image,
+        never to a theme asset file.
+      {%- endcomment -%}
+      {%- if col_icon_image != blank -%}
+        {{
+          col_icon_image
+          | image_url: width: 48
+          | image_tag: loading: 'lazy', widths: '24,48', width: 24, height: 24, class: 'aria-mega__col-icon', alt: ''
+        }}
+      {%- elsif col_icon_fallback != blank -%}
+        <img
+          src="{{ col_icon_fallback | asset_url }}"
+          width="24"
+          height="24"
+          alt=""
+          loading="lazy"
+          class="aria-mega__col-icon"
+        >
+      {%- elsif col_icon != blank and col_icon != 'none' -%}
         {%- liquid
           assign icon_class = 'aria-mega__col-icon'
           if col_icon_tone != blank
@@ -166,21 +216,26 @@
         -%}
         {%- render 'aria-icon', name: col_icon, class: icon_class -%}
       {%- endif -%}
-      <span class="aria-mega__col-title{% if col_title_tone != blank %} aria-mega__col-title--{{ col_title_tone }}{% endif %}">{{ col_heading }}</span>
+      <span
+        class="aria-mega__col-title{% if col_title_tone != blank %} aria-mega__col-title--{{ col_title_tone }}{% endif %}"
+        {% if col_type == 'items_photos' or col_type == 'items_divided' %}title="{{ col_heading }}"{% endif %}
+      >
+        {%- if col_lmu -%}
+          <span data-lmu-fallback>{{ col_heading }}</span>
+          <span data-lmu-featured="live-first" hidden>
+            <span data-lmu-if="live">{{ 'aria_theme.live.lmu.menu_live' | t }}</span>
+            <span data-lmu-if="upcoming">{{ 'aria_theme.live.lmu.menu_next' | t }} · <span data-lmu-date="short"></span></span>
+            <span data-lmu-if="replay">{{ 'aria_theme.live.lmu.menu_replay' | t }} · <span data-lmu-date="day"></span></span>
+          </span>
+        {%- else -%}
+          {{- col_heading -}}
+        {%- endif -%}
+      </span>
     </div>
   {%- endif -%}
 
   {%- case col_type -%}
     {%- when 'menu_divided' -%}
-      {%- if menu_has_links == false and ph_rows != '' -%}
-        <ul class="aria-mega__links aria-mega__links--divided" role="list">
-          {%- for row in ph_rows -%}
-            <li class="aria-mega__links-item">
-              <a href="{{ fallback_url }}" class="aria-mega__link">{{ row }}</a>
-            </li>
-          {%- endfor -%}
-        </ul>
-      {%- endif -%}
       {%- comment -%}
         V4 Shop cols 2-3: 26px rows, 12px apart, a 1px #d9d9d9 rule BETWEEN rows and
         not after the last. The rule is drawn with a border on every row except the
@@ -190,9 +245,10 @@
       {%- if menu_has_links -%}
         <ul class="aria-mega__links aria-mega__links--divided" role="list">
           {%- for link in col_menu.links -%}
+            {%- if link.url == blank or link.url == '#' -%}{%- continue -%}{%- endif -%}
             <li class="aria-mega__links-item">
               <a
-                href="{{ link.url }}"
+                href="{% render 'aria-link-url', url: link.url %}"
                 class="aria-mega__link"
                 {% if link.current %}aria-current="page"{% endif %}
               >{{ link.title }}</a>
@@ -206,23 +262,6 @@
 
     {%- when 'menu_padded' -%}
 
-      {%- if menu_has_links == false and ph_rows != '' -%}
-
-        <ul class="aria-mega__links aria-mega__links--padded" role="list">
-
-          {%- for row in ph_rows -%}
-
-            <li class="aria-mega__links-item">
-
-              <a href="{{ fallback_url }}" class="aria-mega__link">{{ row }}</a>
-
-            </li>
-
-          {%- endfor -%}
-
-        </ul>
-
-      {%- endif -%}
       {%- comment -%}
         V4 Start Here / Live / Community / Deals: 58px rows on a 70px pitch (so a
         12px gap), label inset 12px from the left. The row is the hit area, which is
@@ -231,9 +270,10 @@
       {%- if menu_has_links -%}
         <ul class="aria-mega__links aria-mega__links--padded" role="list">
           {%- for link in col_menu.links -%}
+            {%- if link.url == blank or link.url == '#' -%}{%- continue -%}{%- endif -%}
             <li class="aria-mega__links-item">
               <a
-                href="{{ link.url }}"
+                href="{% render 'aria-link-url', url: link.url %}"
                 class="aria-mega__link"
                 {% if link.current %}aria-current="page"{% endif %}
               >{{ link.title }}</a>
@@ -245,47 +285,40 @@
         </ul>
       {%- endif -%}
 
+    {%- when 'lmu_schedule' -%}
+      {%- comment -%}
+        Live "This Week's Schedule": the upcoming shows scheduled in the LiveMeUp app, drawn
+        as the same outlined rows as menu_padded ("Tue 7:00 PM · New Arrivals"). A row sets a
+        reminder (or plays the show once it is on air); with no show booked, one row points
+        at the Live page instead. Filled by assets/aria-livemeup.js when the menu first opens.
+      {%- endcomment -%}
+      <div data-lmu-list data-lmu-source="upcoming" data-lmu-limit="{{ col_count | default: 4 }}">
+        <template data-lmu-template>
+          <li class="aria-mega__links-item">
+            <a href="{{ col_btn_url }}" class="aria-mega__link aria-mega__link--lmu" data-lmu-href="{{ col_btn_url }}" data-lmu-action>
+              <span class="aria-mega__lmu-when" data-lmu-if="upcoming" data-lmu-date="short"></span>
+              <span class="aria-mega__lmu-when" data-lmu-if="live">{{ 'aria_theme.live.lmu.menu_live' | t }}</span>
+              <span aria-hidden="true">·</span>
+              <span class="aria-mega__lmu-title" data-lmu-title></span>
+            </a>
+          </li>
+        </template>
+        <ul class="aria-mega__links aria-mega__links--padded" role="list" data-lmu-items>
+          {%- for i in (1..3) -%}
+            <li class="aria-mega__links-item" data-lmu-loading aria-hidden="true">
+              <span class="aria-mega__link aria-lmu-skeleton">&nbsp;</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+        <ul class="aria-mega__links aria-mega__links--padded" role="list" data-lmu-list-empty hidden>
+          <li class="aria-mega__links-item">
+            <a href="{{ col_btn_url }}" class="aria-mega__link">{{ 'aria_theme.live.lmu.menu_none' | t }}</a>
+          </li>
+        </ul>
+      </div>
+
     {%- when 'style_cards' -%}
 
-      {%- if menu_has_links == false and ph_rows != '' -%}
-
-        <ul class="aria-mega__styles" role="list">
-
-          {%- for row in ph_rows -%}
-
-            <li class="aria-mega__styles-item">
-
-              <a href="{{ fallback_url }}" class="aria-mega__style">
-
-                <span class="aria-mega__style-thumb">
-
-                  <span class="aria-mega__style-img-fallback"><span></span></span>
-
-                </span>
-
-                <span class="aria-mega__style-text">
-
-                  <span class="aria-mega__style-title">{{ row }}</span>
-
-                  {%- assign sub_label = ph_subs[forloop.index0] -%}
-
-                  {%- if sub_label != blank -%}
-
-                    <span class="aria-mega__style-sub">{{ sub_label }}</span>
-
-                  {%- endif -%}
-
-                </span>
-
-              </a>
-
-            </li>
-
-          {%- endfor -%}
-
-        </ul>
-
-      {%- endif -%}
       {%- comment -%}
         V4 Shop col 1: 48x48 thumbnail + title + subtitle. A Shopify menu only
         carries a title and a URL, so the thumbnail and subtitle are pulled from the
@@ -297,6 +330,7 @@
       {%- if menu_has_links -%}
         <ul class="aria-mega__styles" role="list">
           {%- for link in col_menu.links -%}
+            {%- if link.url == blank or link.url == '#' -%}{%- continue -%}{%- endif -%}
             {%- liquid
               assign target = link.object
               assign thumb = nil
@@ -315,7 +349,7 @@
               endif
             -%}
             <li class="aria-mega__styles-item">
-              <a href="{{ link.url }}" class="aria-mega__style">
+              <a href="{% render 'aria-link-url', url: link.url %}" class="aria-mega__style">
                 <span class="aria-mega__style-thumb">
                   {%- if thumb != blank -%}
                     {{
@@ -416,6 +450,15 @@
             {%- liquid
               assign shown = shown | plus: 1
               assign card_sub = product.type | default: product.vendor
+              capture card_sub
+                render 'aria-strip-supplier', text: card_sub
+              endcapture
+              capture card_title
+                render 'aria-strip-supplier', text: product.title
+              endcapture
+              capture card_image_alt
+                render 'aria-strip-supplier', text: product.featured_image.alt
+              endcapture
             -%}
             <div class="aria-mega__product">
               <a href="{{ product.url }}" class="aria-mega__product-media">
@@ -427,7 +470,7 @@
                       loading: 'lazy',
                       widths: '250,500,640',
                       class: 'aria-mega__product-img',
-                      alt: product.featured_image.alt | default: product.title
+                      alt: card_image_alt
                   }}
                 {%- else -%}
                   {{ 'product-1' | placeholder_svg_tag: 'aria-mega__product-img' }}
@@ -460,7 +503,7 @@
                   endif
                 -%}
                 <span class="aria-mega__chip aria-mega__chip--{{ badge_style | default: 'white' }}">{{ badge_text }}</span>
-                <span class="aria-mega__product-title">{{ product.title }}</span>
+                <span class="aria-mega__product-title">{{ card_title }}</span>
               </a>
               {%- comment -%}
                 The cart tile carries a photo (node 6337:3225). The image is handed to
@@ -476,7 +519,8 @@
                   product: product,
                   section_id: panel_id,
                   is_sold_out: false,
-                  icon: 'mega-cart-02'
+                  icon: 'mega-cart-02',
+                  product_name: card_title
                 -%}
                 <div class="aria-mega__product-meta">
                   {%- if card_sub != blank -%}
@@ -552,7 +596,17 @@
         Rendered as a link rather than a video element so the panel stays lightweight —
         the destination is the live stream.
       {%- endcomment -%}
-      <a href="{{ resolved_url }}" class="aria-mega__media">
+      <a
+        href="{{ resolved_url }}"
+        class="aria-mega__media"
+        {% if col_lmu %}
+          data-lmu-featured="live-first"
+          data-lmu-keep
+          data-lmu-action
+          data-lmu-upcoming-link
+          data-lmu-href="{{ resolved_url }}"
+        {% endif %}
+      >
         {%- if col_image != blank -%}
           {{
             col_image
@@ -570,6 +624,10 @@
           {%- else -%}
             {{ 'lifestyle-2' | placeholder_svg_tag: 'aria-mega__media-img' }}
           {%- endif -%}
+        {%- endif -%}
+        {%- if col_lmu -%}
+          {%- comment -%} The show's own cover from LiveMeUp, laid over the typed photo once it loads. {%- endcomment -%}
+          <span data-lmu-cover="493"></span>
         {%- endif -%}
         {%- render 'aria-mega-signature', width: 120, height: 46.384, class: 'aria-mega__signature--media' -%}
         {%- comment -%}
@@ -608,6 +666,7 @@
           {%- for product in photo_source.products limit: 3 -%}
             <span class="aria-mega__photo">
               {%- if product.featured_image != blank -%}
+                {%- capture photo_alt -%}{%- render 'aria-strip-supplier', text: product.featured_image.alt -%}{%- endcapture -%}
                 {{
                   product.featured_image
                   | image_url: width: 400
@@ -616,7 +675,7 @@
                     widths: '176,352,400',
                     sizes: '(max-width: 1279px) 30vw, 176px',
                     class: 'aria-mega__photo-img',
-                    alt: product.featured_image.alt | default: product.title
+                    alt: photo_alt
                 }}
               {%- else -%}
                 {{ 'product-1' | placeholder_svg_tag: 'aria-mega__photo-img' }}
@@ -644,6 +703,90 @@
         {%- endcomment -%}
         <a href="{{ resolved_url }}" class="aria-mega__btn aria-mega__btn--outline">{{ col_btn_label }}</a>
       {%- endif -%}
+
+    {%- when 'items_photos' -%}
+      {%- comment -%}
+        UPDATED 2026-10-26 — Shop > By Cap Construction (Figma 7169:2960/2966) now reads its
+        items from the column's own Shopify menu (`col_menu`, set via the `cap_menu` link_list
+        setting): top-level links only (a menu's nested children are not shown here), first
+        10, label = link.title, url = link.url. Reuses `.aria-mega__styles`' list spacing
+        (48px row pitch 60, no divider) and `.aria-mega__link`'s hover/focus colour.
+
+        The thumbnail is POSITIONAL, not from the menu (a menu item carries no image): the
+        Nth visible link shows `col_item_prefix` + N + `_image` (slots 1-6). `col_default_images`
+        is a '|'-joined fallback shown via `asset_url` for a slot whose picker is still empty
+        (slots 1-4 default to the 4 downloaded Figma thumbnails; slot 5, 6, and any slot the
+        client clears, show the plain tinted circle instead, since Shopify's image_picker can
+        only default to an already-uploaded Shopify Files image, never a theme asset file).
+      {%- endcomment -%}
+      {%- liquid
+        assign item_default_images = col_default_images | split: '|'
+        assign item_shown = 0
+      -%}
+      <ul class="aria-mega__styles" role="list">
+        {%- for link in col_menu.links -%}
+          {%- if link.url == blank or link.url == '#' -%}{%- continue -%}{%- endif -%}
+          {%- if item_shown >= 10 -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            assign item_shown = item_shown | plus: 1
+            assign item_index = item_shown | minus: 1
+            assign item_key_image = col_item_prefix | append: item_shown | append: '_image'
+            assign item_image = block.settings[item_key_image]
+            assign item_image_fallback = item_default_images[item_index]
+          -%}
+          <li class="aria-mega__links-item">
+            <a href="{% render 'aria-link-url', url: link.url %}" class="aria-mega__link aria-mega__link--photo" title="{{ link.title }}">
+              <span class="aria-mega__link-thumb">
+                {%- if item_image != blank -%}
+                  {{
+                    item_image
+                    | image_url: width: 96
+                    | image_tag: loading: 'lazy', widths: '48,96', class: 'aria-mega__link-thumb-img', alt: ''
+                  }}
+                {%- elsif item_image_fallback != blank -%}
+                  <img
+                    src="{{ item_image_fallback | asset_url }}"
+                    width="48"
+                    height="48"
+                    alt=""
+                    loading="lazy"
+                    class="aria-mega__link-thumb-img"
+                  >
+                {%- else -%}
+                  <span class="aria-mega__link-thumb-empty"></span>
+                {%- endif -%}
+              </span>
+              <span class="aria-mega__link-label">{{ link.title }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+    {%- when 'items_divided' -%}
+      {%- comment -%}
+        UPDATED 2026-10-26 — Shop > Shop by Collection / Shop by Color / By Size & Length
+        (Figma 7169:2996, 7169:3033, 7169:3062) now read their items straight off the
+        column's own Shopify menu (`col_menu`, set via each block's `*_menu` link_list
+        setting): top-level links only (a menu's nested children are not shown here), first
+        10, label = link.title, url = link.url. Reuses the existing 26px-row / 12px-gap /
+        1px-rule styling already built for Shop by Collection (`.aria-mega__links--divided`).
+      {%- endcomment -%}
+      <ul class="aria-mega__links aria-mega__links--divided" role="list">
+        {%- assign item_shown = 0 -%}
+        {%- for link in col_menu.links -%}
+          {%- if link.url == blank or link.url == '#' -%}{%- continue -%}{%- endif -%}
+          {%- if item_shown >= 10 -%}{%- break -%}{%- endif -%}
+          {%- assign item_shown = item_shown | plus: 1 -%}
+          <li class="aria-mega__links-item">
+            <a
+              href="{% render 'aria-link-url', url: link.url %}"
+              class="aria-mega__link"
+              title="{{ link.title }}"
+              {% if link.current %}aria-current="page"{% endif %}
+            ><span class="aria-mega__link-label">{{ link.title }}</span></a>
+          </li>
+        {%- endfor -%}
+      </ul>
   {%- endcase -%}
 </div>
 

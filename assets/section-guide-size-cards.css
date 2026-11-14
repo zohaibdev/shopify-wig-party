@@ -1,0 +1,451 @@
+/*
+ * Guide size cards, "What Your Number Means" (Figma 7370:187, 1440 x 760, desktop).
+ * Values from the Figma design context; tokens in design-tokens.css (--wp-gsc-*).
+ * Nothing in this section is clickable or has hover states.
+ */
+
+.gsc {
+  position: relative;
+  overflow: hidden;
+  background: var(--wp-gsc-bg);
+  letter-spacing: 0;
+  container-type: inline-size;
+}
+
+.gsc__stage {
+  /* Extra width beside the centred 1440 stage, so photo + fade reach the section's right edge */
+  --gsc-edge: max(0px, (100cqw - var(--wp-gsc-width)) / 2);
+  position: relative;
+  max-width: var(--wp-gsc-width);
+  min-height: var(--wp-gsc-height);
+  margin: 0 auto;
+  padding: var(--wp-gsc-padding);
+  box-sizing: border-box;
+}
+
+/* Arc: flat circle #f0e4da, 1300 at x 430 / y -270, clipped by the section */
+.gsc__stage::before {
+  content: "";
+  position: absolute;
+  left: var(--wp-gsc-arc-left);
+  top: var(--wp-gsc-arc-top);
+  width: var(--wp-gsc-arc-size);
+  height: var(--wp-gsc-arc-size);
+  border-radius: 50%;
+  background: var(--wp-gsc-arc-color);
+  pointer-events: none;
+}
+
+/* Model photo 7370:189 (290 x 760, right edge) < Photo fade 7370:190 (177.4 x 760 at x 1142) < cards */
+.gsc__photo {
+  position: absolute;
+  top: 0;
+  right: calc(-1 * var(--gsc-edge));
+  width: var(--wp-gsc-photo-width);
+  height: 100%;
+  margin: 0;
+}
+
+.gsc__photo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* `.gsc` prefix: base.css:486 `div:empty { display: none }` (0,1,1) beat a lone class and hid
+   this empty div. Behind x 1142 is the arc (centre 1080/380, r 650 covers y 0-760), so #f0e4da. */
+.gsc .gsc__fade {
+  display: block;
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: calc(var(--wp-gsc-fade-right) - var(--gsc-edge));
+  width: var(--wp-gsc-fade-width);
+  height: 100%;
+  background: var(--wp-gsc-fade);
+  pointer-events: none;
+}
+
+.gsc__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--wp-gsc-content-gap);
+}
+
+/* Intro */
+.gsc__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 0 0 var(--wp-gsc-intro-width);
+  width: var(--wp-gsc-intro-width);
+  height: var(--wp-gsc-content-height);
+  padding-top: var(--wp-gsc-intro-top);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.gsc .gsc__heading {
+  width: 100%;
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-gsc-heading-size);
+  font-weight: 500;
+  font-style: normal;
+  line-height: var(--wp-gsc-heading-line-height);
+  letter-spacing: 0;
+  color: var(--wp-gsc-heading-color);
+  overflow-wrap: break-word;
+}
+
+.gsc__body {
+  width: 100%;
+  margin: var(--wp-gsc-heading-to-body) 0 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-gsc-body-size);
+  font-weight: 400;
+  line-height: var(--wp-gsc-body-line-height);
+  letter-spacing: 0;
+  color: var(--wp-color-black);
+}
+
+.gsc__tip {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-gsc-tip-gap);
+  width: 100%;
+  margin-top: var(--wp-gsc-body-to-tip);
+  padding: var(--wp-gsc-tip-padding);
+  box-sizing: border-box;
+  border-radius: var(--wp-gsc-tip-radius);
+  background: var(--wp-gsc-tip-bg);
+  overflow: hidden;
+}
+
+.gsc__tip-icon {
+  display: block;
+  flex: 0 0 var(--wp-gsc-tip-icon);
+  width: var(--wp-gsc-tip-icon);
+  height: var(--wp-gsc-tip-icon);
+}
+
+.gsc__tip-divider {
+  flex: 0 0 1px;
+  width: 1px;
+  height: var(--wp-gsc-tip-divider-height);
+  background: var(--wp-gsc-tip-divider);
+}
+
+.gsc__tip-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--wp-gsc-tip-text-gap);
+  flex: 1 0 0;
+  min-width: 1px;
+  overflow: hidden;
+}
+
+.gsc__tip-title,
+.gsc__tip-body {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  letter-spacing: 0;
+}
+
+.gsc__tip-title {
+  font-size: var(--wp-gsc-tip-title-size);
+  font-weight: 500;
+  line-height: var(--wp-gsc-tip-title-line-height);
+  color: var(--wp-gsc-text-dark);
+  white-space: nowrap;
+}
+
+.gsc__tip-body {
+  width: 100%;
+  font-size: var(--wp-gsc-tip-body-size);
+  font-weight: 400;
+  line-height: var(--wp-gsc-tip-body-line-height);
+  color: var(--wp-gsc-text-muted);
+}
+
+/* Cards */
+.gsc__cards {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--wp-gsc-card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+
+.gsc__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 var(--wp-gsc-card-width);
+  width: var(--wp-gsc-card-width);
+  height: var(--wp-gsc-content-height);
+  margin: 0;
+  padding: var(--wp-gsc-card-padding);
+  box-sizing: border-box;
+  border: 1px solid var(--wp-gsc-card-border);
+  border-radius: var(--wp-gsc-card-radius);
+  background: var(--wp-gsc-card-bg);
+  box-shadow: var(--wp-gsc-card-shadow);
+  text-align: center;
+}
+
+.gsc__icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--wp-gsc-icon-circle);
+  height: var(--wp-gsc-icon-circle);
+  border-radius: calc(var(--wp-gsc-icon-circle) / 2);
+  background: var(--wp-gsc-icon-bg);
+  overflow: hidden;
+}
+
+.gsc__icon {
+  display: block;
+  width: var(--wp-gsc-icon-size);
+  height: var(--wp-gsc-icon-size);
+  object-fit: contain;
+}
+
+.gsc .gsc__title {
+  margin: var(--wp-gsc-space-icon-title) 0 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-gsc-title-size);
+  font-weight: 500;
+  line-height: var(--wp-gsc-title-line-height);
+  letter-spacing: 0;
+  color: var(--wp-color-black);
+  white-space: nowrap;
+}
+
+.gsc__sublabel {
+  margin: var(--wp-gsc-space-title-sub) 0 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-gsc-sublabel-size);
+  font-weight: 400;
+  line-height: var(--wp-gsc-sublabel-line-height);
+  letter-spacing: 0;
+  color: var(--wp-gsc-text-muted);
+  white-space: nowrap;
+}
+
+.gsc__divider {
+  flex: 0 0 1px;
+  width: 100%;
+  height: 1px;
+  margin-top: var(--wp-gsc-space-divider);
+  background: var(--wp-gsc-card-border);
+}
+
+.gsc__count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--wp-gsc-count-gap);
+  margin: var(--wp-gsc-space-divider) 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  letter-spacing: 0;
+}
+
+.gsc__count-number {
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-gsc-count-size);
+  font-weight: 500;
+  line-height: var(--wp-gsc-count-line-height);
+  color: var(--wp-color-dark-pink);
+}
+
+.gsc__count-label {
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-gsc-styles-size);
+  font-weight: 400;
+  line-height: var(--wp-gsc-styles-line-height);
+  color: var(--wp-gsc-text-dark);
+}
+
+.gsc__avatars {
+  display: flex;
+  flex: 0 0 auto;
+  width: var(--wp-gsc-avatars-width);
+  height: var(--wp-gsc-avatar-size);
+  margin-top: var(--wp-gsc-space-count-avatars);
+  overflow: hidden;
+}
+
+.gsc__avatar {
+  position: relative;
+  display: block;
+  flex: 0 0 var(--wp-gsc-avatar-size);
+  width: var(--wp-gsc-avatar-size);
+  height: var(--wp-gsc-avatar-size);
+  border-radius: 50%;
+  background: var(--wp-gsc-icon-bg);
+  box-shadow: 0 0 0 var(--wp-gsc-avatar-ring) var(--wp-gsc-card-bg);
+}
+
+.gsc__avatar + .gsc__avatar {
+  margin-left: var(--wp-gsc-avatar-overlap);
+}
+
+.gsc__avatar-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.gsc__advice {
+  width: 100%;
+  margin: var(--wp-gsc-space-avatars-advice) 0 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-gsc-advice-size);
+  font-weight: 400;
+  line-height: var(--wp-gsc-advice-line-height);
+  letter-spacing: 0;
+  color: var(--wp-gsc-text-dark);
+  overflow-wrap: break-word;
+}
+
+/*
+ * Mobile (Figma 7732:12703, 375 x 1206; card 7732:12718). Tokens: --wp-m-gsc-* in design-tokens.css.
+ * No arc on mobile (flat #f7f1eb). Cards are a horizontal swipe row; the model photo sits behind
+ * the bottom of the cards and is clipped by .gsc (overflow hidden).
+ */
+@media (max-width: 749px) {
+  .gsc__stage {
+    min-height: 0;
+    padding: var(--wp-m-gsc-padding);
+  }
+
+  .gsc__stage::before {
+    display: none;
+  }
+
+  .gsc__photo {
+    top: auto;
+    right: auto;
+    bottom: var(--wp-m-gsc-photo-bottom);
+    left: var(--wp-m-gsc-photo-left);
+    width: var(--wp-m-gsc-photo-width);
+    height: var(--wp-m-gsc-photo-height);
+    border-radius: var(--wp-m-gsc-photo-radius);
+    overflow: hidden;
+  }
+
+  /* Default asset only: Figma uses the wider photo (guide-size-model-mobile.jpg); uploaded images keep the img. */
+  .gsc__photo:has(.gsc__photo-img[src*='guide-size-model.jpg']) {
+    background: url('guide-size-model-mobile.jpg') center / cover no-repeat;
+  }
+
+  .gsc__photo-img[src*='guide-size-model.jpg'] {
+    display: none;
+  }
+
+  .gsc .gsc__fade {
+    top: auto;
+    right: 0;
+    bottom: var(--wp-m-gsc-fade-bottom);
+    left: 0;
+    width: auto;
+    height: var(--wp-m-gsc-fade-height);
+    background: var(--wp-m-gsc-fade);
+  }
+
+  .gsc__content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--wp-m-gsc-gap);
+  }
+
+  /* Intro */
+  .gsc__intro {
+    flex: none;
+    width: auto;
+    height: auto;
+    padding-top: 0;
+    overflow: visible;
+  }
+
+  .gsc .gsc__heading {
+    font-size: var(--wp-m-gsc-heading-size);
+    line-height: var(--wp-m-gsc-heading-line-height);
+  }
+
+  .gsc__body {
+    margin-top: var(--wp-m-gsc-gap);
+  }
+
+  .gsc__tip {
+    gap: var(--wp-m-gsc-tip-gap);
+    margin-top: var(--wp-m-gsc-gap);
+    padding: var(--wp-m-gsc-tip-padding);
+  }
+
+  .gsc__tip-divider {
+    align-self: stretch;
+    height: auto;
+  }
+
+  .gsc__tip-title {
+    font-size: var(--wp-m-gsc-tip-title-size);
+    line-height: var(--wp-m-gsc-tip-title-line-height);
+    white-space: normal;
+  }
+
+  .gsc__tip-body {
+    font-size: var(--wp-m-gsc-small-size);
+    line-height: var(--wp-m-gsc-small-line-height);
+  }
+
+  /* Cards: swipe row from x 16 to the screen edge */
+  .gsc__cards {
+    gap: var(--wp-m-gsc-card-gap);
+    margin-right: calc(-1 * var(--wp-m-gutter));
+    padding-right: var(--wp-m-gutter);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .gsc__cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gsc__card {
+    scroll-snap-align: start;
+  }
+
+  .gsc__sublabel {
+    font-size: var(--wp-m-gsc-small-size);
+    line-height: var(--wp-m-gsc-small-line-height);
+  }
+
+  .gsc__count-label {
+    font-size: var(--wp-m-gsc-styles-size);
+    line-height: var(--wp-m-gsc-styles-line-height);
+  }
+
+  .gsc__advice {
+    font-size: var(--wp-m-gsc-small-size);
+    line-height: var(--wp-m-gsc-small-line-height);
+  }
+}

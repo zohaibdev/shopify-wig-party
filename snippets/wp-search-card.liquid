@@ -1,0 +1,349 @@
+{%- comment -%}
+  Search results product card (Figma 7453:19161, desktop).
+
+  Own snippet, not aria-product-card: Figma has one "Add to Cart" button and a static "+N"
+  swatch count, while aria-product-card has a View Product + icon pair and a reveal button.
+  Reuses the shared wishlist (data-wishlist-toggle, assets/aria-wishlist.js) and the
+  <product-form> quick add (assets/product-form.js).
+
+  Params: product (required), section_id (required)
+{%- endcomment -%}
+{%- liquid
+  capture short_name
+    render 'aria-product-short-name', product: product
+  endcapture
+  assign card_title = short_name | strip
+
+  assign card_variant = product.selected_or_first_available_variant
+  assign is_sold_out = true
+  if product.available
+    assign is_sold_out = false
+  endif
+
+  capture is_preorder_text
+    render 'wp-is-preorder', product: product
+  endcapture
+  assign is_preorder = false
+  if is_preorder_text contains 'true'
+    assign is_preorder = true
+  endif
+
+  assign is_new = false
+  for tag in product.tags
+    assign tag_down = tag | downcase
+    if tag_down == 'new arrival'
+      assign is_new = true
+    endif
+  endfor
+
+  assign review_rating = product.metafields.reviews.rating.value
+  assign review_count = product.metafields.reviews.rating_count.value | default: 0
+  assign rating_rounded = 0
+  if review_rating
+    assign rating_rounded = review_rating.rating | round
+  endif
+
+  assign swatch_option = null
+  for option in product.options_with_values
+    assign option_has_swatch = false
+    for value in option.values
+      if value.swatch != blank
+        assign option_has_swatch = true
+      endif
+    endfor
+    if option_has_swatch and swatch_option == null
+      assign swatch_option = option
+    endif
+  endfor
+  if swatch_option == null
+    for option in product.options_with_values
+      assign option_name_lower = option.name | downcase
+      if option_name_lower == 'color' or option_name_lower == 'colour'
+        assign swatch_option = option
+      endif
+    endfor
+  endif
+
+  assign swatch_visible_limit = 5
+  assign swatch_colour_count = 0
+  assign swatch_rendered_count = 0
+  assign swatch_prompt_fragments = 'choose,dropdown,drop down' | split: ','
+
+  # Same default variant as aria-product-card: the first real colour (purchasable variant
+  # preferred), so the ringed swatch, the price and the quick-add id always agree.
+  assign first_colour_value = null
+  if swatch_option
+    for value in swatch_option.values
+      assign value_candidate = value.name | default: value | strip
+      assign candidate_lower = value_candidate | downcase
+      assign candidate_is_prompt = false
+      for fragment in swatch_prompt_fragments
+        if candidate_lower contains fragment
+          assign candidate_is_prompt = true
+        endif
+      endfor
+      unless candidate_is_prompt
+        assign swatch_colour_count = swatch_colour_count | plus: 1
+        if first_colour_value == null
+          assign first_colour_value = value_candidate
+        endif
+      endunless
+    endfor
+  endif
+
+  if first_colour_value
+    assign first_colour_variant = null
+    assign first_colour_fallback = null
+    for variant in product.variants
+      assign variant_value = variant.option1
+      if swatch_option.position == 2
+        assign variant_value = variant.option2
+      elsif swatch_option.position == 3
+        assign variant_value = variant.option3
+      endif
+      if variant_value == first_colour_value
+        if first_colour_fallback == null
+          assign first_colour_fallback = variant
+        endif
+        if variant.available and first_colour_variant == null
+          assign first_colour_variant = variant
+        endif
+      endif
+    endfor
+    if first_colour_variant == null
+      assign first_colour_variant = first_colour_fallback
+    endif
+    if first_colour_variant
+      assign card_variant = first_colour_variant
+    endif
+  endif
+
+  assign price = card_variant.price | default: product.price
+  assign compare_at_price = card_variant.compare_at_price | default: 0
+
+  assign selected_swatch_value = null
+  if swatch_option
+    case swatch_option.position
+      when 1
+        assign selected_swatch_value = card_variant.option1
+      when 2
+        assign selected_swatch_value = card_variant.option2
+      when 3
+        assign selected_swatch_value = card_variant.option3
+    endcase
+  endif
+
+  assign swatch_overflow_count = 0
+  if swatch_colour_count > swatch_visible_limit
+    assign swatch_overflow_count = swatch_colour_count | minus: swatch_visible_limit
+  endif
+-%}
+
+{%- comment -%}
+  Swatch click (image, ?variant= link, quick-add id, price): assets/wp-card-swatches.js,
+  keyed on the data-wp-* attributes below. Loaded by assets/wp-search-results.js.
+{%- endcomment -%}
+<article class="wp-search-card" data-wp-card data-product-url="{{ product.url }}"{% if is_sold_out %} data-sold-out="true"{% endif %}>
+  <div class="wp-search-card__top">
+    <div class="wp-search-card__media">
+      <a href="{{ product.url }}" class="wp-search-card__media-link" tabindex="-1" aria-hidden="true" data-wp-card-link data-wp-card-media>
+        {%- if product.featured_image != blank -%}
+          {{
+            product.featured_image
+            | image_url: width: 456
+            | image_tag:
+              loading: 'lazy',
+              sizes: '228px',
+              widths: '228,320,456',
+              class: 'wp-search-card__image',
+              alt: product.featured_image.alt | default: card_title
+          }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'wp-search-card__image' }}
+        {%- endif -%}
+      </a>
+
+      <button
+        type="button"
+        class="wp-search-card__wishlist"
+        data-wishlist-toggle
+        data-product-id="{{ product.id }}"
+        data-variant-id="{{ card_variant.id }}"
+        data-product-handle="{{ product.handle }}"
+        data-product-title="{{ card_title | escape }}"
+        data-product-url="{{ product.url }}"
+        data-product-vendor="{{ product.vendor | escape }}"
+        {% if product.featured_image != blank %}
+          data-product-image="{{ product.featured_image | image_url: width: 200 }}"
+        {% endif %}
+        data-product-price="{{ price | money }}"
+        {% if compare_at_price > price %}
+          data-product-compare-price="{{ compare_at_price | money }}"
+        {% endif %}
+        data-product-available="{% if card_variant.available %}true{% else %}false{% endif %}"
+        aria-pressed="false"
+        aria-label="{{ 'aria_theme.product_card.wishlist_named' | t: product_name: card_title }}"
+      >
+        {{- 'search-card-wishlist-heart.svg' | inline_asset_content -}}
+      </button>
+
+      {%- comment -%} Same stock rule as the PDP: sold out, then pre-order, then New Arrival. {%- endcomment -%}
+      {%- if is_sold_out -%}
+        <span class="wp-search-card__chip wp-search-card__chip--sold-out">Sold out</span>
+      {%- elsif is_preorder -%}
+        <span class="wp-search-card__chip wp-search-card__chip--preorder">Pre-order</span>
+      {%- elsif is_new -%}
+        <span class="wp-search-card__chip">New Arrival</span>
+      {%- endif -%}
+    </div>
+
+    <div class="wp-search-card__info">
+      <div class="wp-search-card__meta">
+        <div class="wp-search-card__heading">
+          {%- if review_rating -%}
+            <div class="wp-search-card__rating">
+              <span class="wp-search-card__stars" aria-hidden="true">
+                {%- for i in (1..5) -%}
+                  <span class="wp-search-card__star{% if i > rating_rounded %} wp-search-card__star--empty{% endif %}">
+                    {{- 'search-card-star-icon.svg' | inline_asset_content -}}
+                  </span>
+                {%- endfor -%}
+              </span>
+              <span class="wp-search-card__rating-value">
+                <span class="visually-hidden">{{ 'accessibility.star_reviews_info' | t: rating_value: review_rating.rating, rating_max: review_rating.scale_max }}</span>
+                <span aria-hidden="true">{{ review_rating.rating }} ({{ review_count }})</span>
+              </span>
+            </div>
+          {%- endif -%}
+          <h3 class="wp-search-card__title"><a href="{{ product.url }}" data-wp-card-link>{{ card_title }}</a></h3>
+        </div>
+
+        {%- if swatch_option -%}
+          <div class="wp-search-card__swatches" role="group" aria-label="{{ swatch_option.name | escape }}" data-wp-card-swatches>
+            {%- for value in swatch_option.values -%}
+              {%- liquid
+                assign value_string = value.name | default: value | strip
+                assign value_lower = value_string | downcase
+                assign is_prompt_value = false
+                for fragment in swatch_prompt_fragments
+                  if value_lower contains fragment
+                    assign is_prompt_value = true
+                  endif
+                endfor
+                if is_prompt_value
+                  continue
+                endif
+                assign swatch_rendered_count = swatch_rendered_count | plus: 1
+
+                assign matched_variant = null
+                assign fallback_variant = null
+                for variant in product.variants
+                  assign variant_value = variant.option1
+                  if swatch_option.position == 2
+                    assign variant_value = variant.option2
+                  elsif swatch_option.position == 3
+                    assign variant_value = variant.option3
+                  endif
+                  if variant_value == value_string
+                    if fallback_variant == null
+                      assign fallback_variant = variant
+                    endif
+                    if variant.available and matched_variant == null
+                      assign matched_variant = variant
+                    endif
+                  endif
+                endfor
+                if matched_variant == null
+                  assign matched_variant = fallback_variant
+                endif
+                assign variant_image = matched_variant.featured_image
+
+                assign swatch_background = null
+                if value.swatch.color
+                  assign swatch_background = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                elsif value.swatch.image
+                  assign swatch_thumb = value.swatch.image | image_url: width: 30
+                  assign swatch_background = 'url(' | append: swatch_thumb | append: ')'
+                elsif variant_image
+                  assign swatch_thumb = variant_image | image_url: width: 30
+                  assign swatch_background = 'url(' | append: swatch_thumb | append: ')'
+                endif
+
+                assign variant_compare_at = null
+                if matched_variant.compare_at_price > matched_variant.price
+                  assign variant_compare_at = matched_variant.compare_at_price
+                endif
+
+                assign is_selected_swatch = false
+                if value_string == selected_swatch_value
+                  assign is_selected_swatch = true
+                endif
+              -%}
+              <button
+                type="button"
+                class="wp-search-card__swatch{% if is_selected_swatch %} is-selected{% endif %}"
+                {% if swatch_background %}style="--wp-search-swatch: {{ swatch_background }};"{% endif %}
+                aria-label="{{ swatch_option.name | escape }}: {{ value_string | escape }}"
+                aria-pressed="{% if is_selected_swatch %}true{% else %}false{% endif %}"
+                {% if swatch_rendered_count > swatch_visible_limit %}hidden{% endif %}
+                data-wp-swatch
+                data-swatch-value="{{ value_string | escape }}"
+                {% if matched_variant %}
+                  data-variant-id="{{ matched_variant.id }}"
+                  data-variant-available="{% if matched_variant.available %}true{% else %}false{% endif %}"
+                  data-variant-price="{{ matched_variant.price | money_without_trailing_zeros }}"
+                  data-variant-price-value="{{ matched_variant.price }}"
+                  data-variant-compare-value="{{ variant_compare_at | default: 0 }}"
+                  {% if variant_compare_at %}
+                    data-variant-compare-price="{{ variant_compare_at | money_without_trailing_zeros }}"
+                  {% endif %}
+                {% endif %}
+                {% if variant_image %}
+                  data-image-url="{{ variant_image | image_url: width: 456 }}"
+                  data-image-srcset="{{ variant_image | image_url: width: 228 }} 228w, {{ variant_image | image_url: width: 320 }} 320w, {{ variant_image | image_url: width: 456 }} 456w"
+                  data-image-alt="{{ variant_image.alt | default: card_title | escape }}"
+                  data-image-thumb="{{ variant_image | image_url: width: 200 }}"
+                {% endif %}
+              ></button>
+            {%- endfor -%}
+            {%- if swatch_overflow_count > 0 -%}
+              <button type="button" class="wp-search-card__swatch-more" data-wp-swatch-more aria-expanded="false" aria-label="{{ swatch_overflow_count }} more {{ swatch_option.name | downcase | escape }}s">+{{ swatch_overflow_count }}</button>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="wp-search-card__price" data-aria-price data-variant-id="{{ card_variant.id }}" data-price-value="{{ price }}" data-compare-value="{% if compare_at_price > price %}{{ compare_at_price }}{% else %}0{% endif %}" data-compare-class="wp-search-card__price-compare">
+        <span class="wp-search-card__price-current" data-aria-price-current>{{ price | money_without_trailing_zeros }}</span>
+        {%- if compare_at_price > price -%}
+          <span class="wp-search-card__price-compare" data-aria-price-compare>{{ compare_at_price | money_without_trailing_zeros }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <product-form class="wp-search-card__quick-add">
+    <form
+      method="post"
+      action="{{ routes.cart_add_url }}"
+      id="WpSearchAdd-{{ section_id }}-{{ product.id }}"
+      accept-charset="UTF-8"
+      data-hide-errors="true"
+    >
+      <input type="hidden" name="id" value="{{ card_variant.id }}">
+      <input type="hidden" name="quantity" value="1">
+      <button
+        type="submit"
+        name="add"
+        class="wp-search-card__cart-btn"
+        aria-haspopup="dialog"
+        {% if is_sold_out or card_variant.available == false %}aria-disabled="true"{% endif %}
+        aria-label="{{ 'aria_theme.product_card.add_to_cart_named' | t: product_name: card_title }}"
+      >
+        <span class="wp-search-card__cart-label">{{ 'aria_theme.product_card.add_to_cart' | t }}</span>
+        {{- 'cart-page-add-to-cart-icon.svg' | inline_asset_content -}}
+        <span class="loading__spinner hidden" aria-hidden="true"></span>
+      </button>
+    </form>
+  </product-form>
+</article>

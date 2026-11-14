@@ -1,0 +1,486 @@
+/* Wig Party — Find Your Colour, "Every shade, three lights" (sections/colour-shades.liquid),
+ * Figma 7009:5329.
+ *
+ * Desktop geometry (px, Figma, 1440 x 1850): #F5ECE4, py-80 px-40; 40 from the results to the
+ * button; 32 from the intro to the bar and from the bar to the grid.
+ *   intro  16 apart: an #F79510 pill (r-16, px-12 py-6, Poppins 12/14 uppercase black), the
+ *          title (Montserrat Regular 56/64 black), the text (Poppins 20/28 #3F3E3E, Figma's
+ *          line break kept)
+ *   bar    1360 x 74: white -> #EADDD4 (top to bottom), 1px #EADDD4 ring, r-8, p-20, the chips
+ *          and the search box spread apart. "QUICK" Poppins 16/26 #8C8C8C with 8 after it, 12
+ *          to the chips; chips 8 apart, 34 tall, r-96, 1px ring, 13 / 6 inside (Figma's ring
+ *          sits inside the box), Poppins 14/22: white with a #3F3E3E ring and #1A1A1A text, the
+ *          active one #A64A4C with an #EADDD4 ring and white text. Search: the same chip at 240
+ *          wide, a 20 icon (#141B34), 8, the placeholder
+ *   grid   rows of four 324-wide cards, 20 apart both ways; Figma's rows leave the last 4 of
+ *          the 1360 empty, so each column is (100% - 64) / 4. Card: a 322-tall white photo
+ *          frame, then a white box with a 1px #EADDD4 ring that counts toward layout, px-12
+ *          py-16: name Montserrat Medium 20/28 black, 8, shades Montserrat Medium 14/22 #3F3E3E
+ *   button 191 x 52 centred: black, r-2, px-20 py-12, Poppins 20/28 white
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-colour-shades,
+.aria-colour-shades *,
+.aria-colour-shades *::before,
+.aria-colour-shades *::after {
+  box-sizing: border-box;
+}
+
+.aria-colour-shades {
+  display: block;
+  padding: 80px 40px;
+  background: #f5ece4;
+}
+
+.aria-colour-shades__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.aria-colour-shades__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+}
+
+/* ---------- Intro (7009:5332) ---------- */
+
+.aria-colour-shades__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  text-align: center;
+}
+
+.aria-colour-shades__eyebrow {
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #f79510;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-colour-shades__title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 64px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-colour-shades__text {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  /* Line breaks come from the setting. break-spaces keeps a space typed before a break, as
+     Figma's "…useful thing ⏎" has, so it counts in the centring the way it does there. */
+  white-space: break-spaces;
+  color: var(--gray, #3f3e3e);
+}
+
+/* ---------- Results ---------- */
+
+.aria-colour-shades__results {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+}
+
+/* ---------- Bar (7009:5337) ---------- */
+
+.aria-colour-shades__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  width: 100%;
+  /* Figma's 1px ring sits inside its p-20, 74-tall box, so the padding gives it up. */
+  padding: 19px;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+}
+
+.aria-colour-shades__quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Figma's "QUICK" box is 50 wide (+8); the browser sets it 0.7 narrower, which would shift
+   every chip, so the box keeps Figma's width. */
+.aria-colour-shades__quick-label {
+  min-width: 58px;
+  padding-right: 8px;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: #8c8c8c;
+  /* Poppins 16/26 lands 1px higher in the browser than in Figma. */
+  position: relative;
+  top: 1px;
+}
+
+.aria-colour-shades__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.aria-colour-shades__chip,
+.aria-colour-shades__search {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  margin: 0;
+  padding: 5px 12px;
+  border: 1px solid var(--gray, #3f3e3e);
+  border-radius: 96px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: #1a1a1a;
+}
+
+.aria-colour-shades__chip {
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-colour-shades__chip:hover {
+  border-color: var(--py, #a64a4c);
+}
+
+.aria-colour-shades__chip.is-active {
+  border-color: var(--cream, #eaddd4);
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-colour-shades__chip:focus-visible,
+.aria-colour-shades__search:focus-within {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+/* Figma top-aligns the 20 icon and the 22 text (icon 6 from the top, not centred). */
+.aria-colour-shades__search {
+  align-items: flex-start;
+  gap: 8px;
+  width: 240px;
+  cursor: text;
+}
+
+.aria-colour-shades__search-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #141b34;
+}
+
+.aria-colour-shades__search-icon svg {
+  display: block;
+}
+
+.aria-colour-shades__search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.aria-colour-shades__search-input::placeholder {
+  opacity: 1;
+  color: #1a1a1a;
+}
+
+.aria-colour-shades__search-input::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+/* ---------- Grid (7009:5369) ---------- */
+
+.aria-colour-shades__grid {
+  display: grid;
+  grid-template-columns: repeat(4, calc((100% - 64px) / 4));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-colour-shades__item {
+  min-width: 0;
+}
+
+.aria-colour-shades__card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.aria-colour-shades__media {
+  position: relative;
+  display: block;
+  height: 322px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-colour-shades__media img,
+.aria-colour-shades__media .aria-colour-shades__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.aria-colour-shades__card:hover .aria-colour-shades__media img {
+  transform: scale(1.03);
+}
+
+.aria-colour-shades__info {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 12px;
+  border: 1px solid var(--cream, #eaddd4);
+  background: var(--white, #fff);
+  font-family: var(--font-heading-family);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.aria-colour-shades__name {
+  overflow: hidden;
+  font-size: 20px;
+  line-height: 28px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--black, #000);
+}
+
+.aria-colour-shades__shades {
+  overflow: hidden;
+  min-height: 22px;
+  font-size: 14px;
+  line-height: 22px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-colour-shades__empty {
+  margin: 0;
+  padding: 40px 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 26px;
+  text-align: center;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-colour-shades__empty[hidden],
+.aria-colour-shades__more[hidden] {
+  display: none;
+}
+
+/* ---------- Button (7009:5384) ---------- */
+
+.aria-colour-shades__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-colour-shades__more:hover,
+.aria-colour-shades__more:focus-visible {
+  background: #2b2b2b;
+}
+
+.aria-colour-shades__more[aria-busy='true'] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ---------- Narrower desktops ---------- */
+
+@media screen and (max-width: 1199px) {
+  .aria-colour-shades__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Mobile (7009:4891) ----------
+ * 375 wide: pt-48 and no bottom padding (the button ends the section). Figma's frame sits at
+ * -2.5 and is 380 wide, which centres the 348 results column with 13.5 either side; the intro
+ * keeps px-16. 32 from the intro to the results, 24 from the bar to the grid, 32 to the button.
+ *   intro  pill, then the title (Montserrat Medium 24/32) and the text (Poppins 16/28, wrapping
+ *          freely: the desktop line break does not apply)
+ *   bar    p-16 (ring inside), one wrapping row 9 / 7 apart: "QUICK" in a 50 box (text + 8),
+ *          the chips (same chip, Rooted at r-14 as drawn), then the search at 311 wide
+ *   grid   two 169 columns 8 apart (the row has 2 to spare), rows 24 apart; photo 205, info
+ *          px-8 py-16 with the 1px ring; name Montserrat Medium 18/24, shades 14/22
+ *   button 184 x 52, px-24 py-12, Poppins 18/28
+ */
+@media screen and (max-width: 749px) {
+  /* The mobile frame has no fill of its own (the desktop one is #F5ECE4). */
+  .aria-colour-shades {
+    padding: 48px 13.5px 0;
+    background: var(--white, #fff);
+  }
+
+  .aria-colour-shades__inner {
+    gap: 32px;
+  }
+
+  .aria-colour-shades__intro {
+    padding: 0 2.5px;
+  }
+
+  /* Measured against the Figma render: both land 1px high at these sizes. */
+  .aria-colour-shades__title {
+    position: relative;
+    top: 1px;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+  }
+
+  .aria-colour-shades__text {
+    position: relative;
+    top: 1px;
+    font-size: 16px;
+    line-height: 28px;
+    white-space: normal;
+  }
+
+  .aria-colour-shades__results {
+    gap: 24px;
+  }
+
+  /* The label, the chips and the search share one wrapping row. */
+  .aria-colour-shades__bar {
+    justify-content: flex-start;
+    gap: 9px 7px;
+    padding: 15px;
+  }
+
+  .aria-colour-shades__quick,
+  .aria-colour-shades__chips {
+    display: contents;
+  }
+
+  /* Figma's "QUICK" box is 50 including its 8 of padding; the word runs past it. */
+  .aria-colour-shades__quick-label {
+    flex: none;
+    width: 50px;
+    min-width: 0;
+  }
+
+  .aria-colour-shades__chip:nth-child(5) {
+    border-radius: 14px;
+  }
+
+  .aria-colour-shades__search {
+    width: 311px;
+    max-width: 100%;
+  }
+
+  .aria-colour-shades__grid {
+    grid-template-columns: repeat(2, calc((100% - 10px) / 2));
+    gap: 24px 8px;
+  }
+
+  .aria-colour-shades__media {
+    height: 205px;
+  }
+
+  .aria-colour-shades__info {
+    padding: 16px 8px;
+  }
+
+  .aria-colour-shades__name {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .aria-colour-shades__more {
+    padding: 12px 24px;
+    font-size: 18px;
+  }
+
+  /* White text renders heavier than Figma without this (as elsewhere on this page). */
+  .aria-colour-shades__more,
+  .aria-colour-shades__chip.is-active {
+    -webkit-font-smoothing: antialiased;
+  }
+}

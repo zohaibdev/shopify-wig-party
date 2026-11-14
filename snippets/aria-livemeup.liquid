@@ -1,0 +1,37 @@
+{%- comment -%}
+  Wig Party — loads the LiveMeUp feed for the Live and Replays sections. Rendered by every
+  section that shows LiveMeUp shows; safe to render more than once on a page (the config is
+  only set the first time and the script guards itself).
+
+  The store's LiveMeUp account is the shop's own myshopify domain, the same one LiveMeUp's
+  landing page uses (data-livemeup-tenantname). Behaviour in assets/aria-livemeup.js.
+{%- endcomment -%}
+{{ 'component-aria-livemeup.css' | asset_url | stylesheet_tag }}
+<script>
+  window.ariaLiveMeUp = window.ariaLiveMeUp || {
+    tenant: {{ shop.permanent_domain | json }},
+    strings: {
+      starts_in: {{ 'aria_theme.live.lmu.starts_in' | t | json }},
+      close: {{ 'accessibility.close' | t | json }},
+      player_error: {{ 'aria_theme.live.lmu.player_error' | t | json }},
+      remind_title: {{ 'aria_theme.live.lmu.remind_title' | t | json }},
+      by_text: {{ 'aria_theme.live.lmu.by_text' | t | json }},
+      by_email: {{ 'aria_theme.live.lmu.by_email' | t | json }},
+      phone_label: {{ 'aria_theme.live.lmu.phone_label' | t | json }},
+      phone_placeholder: {{ 'aria_theme.live.lmu.phone_placeholder' | t | json }},
+      phone_invalid: {{ 'aria_theme.live.lmu.phone_invalid' | t | json }},
+      sms_consent: {{ 'aria_theme.live.lmu.sms_consent' | t | json }},
+      email_label: {{ 'aria_theme.live.lmu.email_label' | t | json }},
+      email_invalid: {{ 'aria_theme.live.lmu.email_invalid' | t | json }},
+      email_consent: {{ 'aria_theme.live.lmu.email_consent' | t | json }},
+      consent_needed: {{ 'aria_theme.live.lmu.consent_needed' | t | json }},
+      remind_submit: {{ 'aria_theme.live.lmu.remind_submit' | t | json }},
+      remind_success: {{ 'aria_theme.live.lmu.remind_success' | t | json }},
+      remind_error: {{ 'aria_theme.live.lmu.remind_error' | t | json }},
+      calendar_title: {{ 'aria_theme.live.lmu.calendar_title' | t | json }},
+      calendar_google: {{ 'aria_theme.live.lmu.calendar_google' | t | json }},
+      calendar_ics: {{ 'aria_theme.live.lmu.calendar_ics' | t | json }}
+    }
+  };
+</script>
+<script src="{{ 'aria-livemeup.js' | asset_url }}" defer="defer"></script>

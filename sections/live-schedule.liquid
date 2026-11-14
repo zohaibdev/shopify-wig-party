@@ -1,0 +1,204 @@
+{%- comment -%}
+  Wig Party, Watch Live schedule. Figma internal file, node 6849:21242
+  (1440 x 730).
+
+  A centred heading + intro, then one card per upcoming show scheduled in the LiveMeUp app:
+  the day pill, the show name, its description and the start time (in the viewer's own
+  time zone). Below, REMIND ME signs up for LiveMeUp's text / email reminder for the next
+  show (it becomes WATCH LIVE once that show is on air), and ADD TO MY CALENDAR offers
+  Google or an .ics for it. Nothing about a show is set here (assets/aria-livemeup.js).
+  Styles in assets/section-aria-live-schedule.css (desktop 6849:21242; mobile 6849:21735 in
+  its max-width 749px block).
+{%- endcomment -%}
+
+{{ 'section-aria-live-schedule.css' | asset_url | stylesheet_tag }}
+{%- render 'aria-livemeup' -%}
+
+<div class="aria-live-sched" style="--aria-live-sched-bg: {{ section.settings.background_color }};" data-lmu-root>
+  {%- if section.settings.heading != blank or section.settings.text != blank -%}
+    <div class="aria-live-sched__head">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="aria-live-sched__title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <p class="aria-live-sched__text">{{ section.settings.text }}</p>
+        {%- comment -%}
+          Mobile (6849:21738) breaks the line where desktop has its double space ("once,
+          fifteen"), so a double space in the text marks the mobile line break. Only one of
+          the two paragraphs is displayed at a time.
+        {%- endcomment -%}
+        <p class="aria-live-sched__text aria-live-sched__text--mob">
+          {{- section.settings.text | escape | replace: '  ', '<br>' -}}
+        </p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="aria-live-sched__list" data-lmu-list data-lmu-source="upcoming" data-lmu-limit="{{ section.settings.count }}">
+    <template data-lmu-template>
+      <li class="aria-live-sched__card">
+        <span class="aria-live-sched__day">
+          <span class="aria-live-sched__day-icon" aria-hidden="true">
+            {{- 'wp-live-calendar.svg' | inline_asset_content -}}
+          </span>
+          <span class="aria-live-sched__day-label" data-lmu-date="weekday"></span>
+        </span>
+        <div class="aria-live-sched__body">
+          <div class="aria-live-sched__copy">
+            <h3 class="aria-live-sched__name" data-lmu-title></h3>
+            <p class="aria-live-sched__desc" data-lmu-description></p>
+          </div>
+          <hr class="aria-live-sched__rule">
+          <p class="aria-live-sched__time">
+            <span class="aria-live-sched__time-icon" aria-hidden="true">
+              {{- 'wp-live-clock.svg' | inline_asset_content -}}
+            </span>
+            <span data-lmu-date="time" data-lmu-if="upcoming"></span>
+            <span data-lmu-if="live">{{ 'aria_theme.live.lmu.on_air' | t }}</span>
+          </p>
+        </div>
+      </li>
+    </template>
+
+    <ul class="aria-live-sched__cards" role="list" data-lmu-items>
+      {%- for i in (1..3) -%}
+        <li class="aria-live-sched__card aria-lmu-skeleton" data-lmu-loading aria-hidden="true" style="height: 244px;"></li>
+      {%- endfor -%}
+    </ul>
+  </div>
+  <div class="aria-live-sched__empty" data-lmu-empty>
+    <p class="aria-live-sched__text">{{ section.settings.empty_text }}</p>
+    {%- if section.settings.empty_link_1_label != blank or section.settings.empty_link_2_label != blank -%}
+      <div class="aria-live-sched__actions">
+        {%- if section.settings.empty_link_1_label != blank and section.settings.empty_link_1_url != blank -%}
+          <a class="aria-live-sched__btn aria-live-sched__btn--fill" href="{{ section.settings.empty_link_1_url }}">{{ section.settings.empty_link_1_label }}</a>
+        {%- endif -%}
+        {%- if section.settings.empty_link_2_label != blank and section.settings.empty_link_2_url != blank -%}
+          <a class="aria-live-sched__btn aria-live-sched__btn--outline" href="{{ section.settings.empty_link_2_url }}" target="_blank" rel="noopener">{{ section.settings.empty_link_2_label }}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+  <p data-lmu-error>{{ 'aria_theme.live.lmu.unavailable' | t }}</p>
+
+  <div class="aria-live-sched__actions" data-lmu-hide-empty data-lmu-hide-loading>
+    {%- if section.settings.primary_label != blank -%}
+      <button
+        type="button"
+        class="aria-live-sched__btn aria-live-sched__btn--fill"
+        data-lmu-next
+        data-lmu-action
+        data-label-upcoming="{{ section.settings.primary_label | escape }}"
+        data-label-live="{{ section.settings.live_label | escape }}"
+        hidden
+      >
+        {{- section.settings.primary_label -}}
+      </button>
+    {%- endif -%}
+    {%- if section.settings.secondary_label != blank -%}
+      <button
+        type="button"
+        class="aria-live-sched__btn aria-live-sched__btn--outline"
+        data-lmu-next
+        data-lmu-calendar
+        data-lmu-if="upcoming"
+        hidden
+      >
+        {{- section.settings.secondary_label -}}
+      </button>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-live-schedule.name",
+  "tag": "section",
+  "class": "aria-live-sched-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.aria-live-schedule.settings.source.content"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-live-schedule.settings.background_color.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "We go LIVE throughout the week",
+      "label": "t:sections.aria-live-schedule.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Kristi goes LIVE on Facebook and Instagram throughout the week.",
+      "label": "t:sections.aria-live-schedule.settings.text.label"
+    },
+    {
+      "type": "range",
+      "id": "count",
+      "min": 1,
+      "max": 7,
+      "step": 1,
+      "default": 5,
+      "label": "t:sections.aria-live-schedule.settings.count.label"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "default": "The next show is not on the calendar yet.",
+      "label": "t:sections.aria-live-schedule.settings.empty_text.label"
+    },
+    {
+      "type": "text",
+      "id": "empty_link_1_label",
+      "default": "Watch a replay",
+      "label": "Empty state: first button label"
+    },
+    {
+      "type": "text",
+      "id": "empty_link_1_url",
+      "default": "/pages/replays",
+      "label": "Empty state: first button link"
+    },
+    {
+      "type": "text",
+      "id": "empty_link_2_label",
+      "default": "Join the Facebook group",
+      "label": "Empty state: second button label"
+    },
+    {
+      "type": "text",
+      "id": "empty_link_2_url",
+      "label": "Empty state: second button link"
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "default": "Remind me before the next one",
+      "label": "t:sections.aria-live-schedule.settings.primary_label.label"
+    },
+    {
+      "type": "text",
+      "id": "live_label",
+      "default": "She is live, watch now",
+      "label": "t:sections.aria-live-schedule.settings.live_label.label"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "default": "Add to my calendar",
+      "label": "t:sections.aria-live-schedule.settings.secondary_label.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-live-schedule.presets.name"
+    }
+  ]
+}
+{% endschema %}

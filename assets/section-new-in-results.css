@@ -1,0 +1,72 @@
+/* Wig Party — NEW IN listing (collection-results, layout `full`), Figma 7454:24710. Desktop only.
+ *
+ * Scoped to #shopify-section-new-in-results so the shared collection-results CSS is untouched.
+ * What differs from the shared `full` layout (Figma 6849:9638):
+ *   section     1388 tall = 80 + 1228 + 80, 1360 content; white -> #EADDD4 background (as `full`)
+ *   quick bar   white -> #EADDD4 gradient with its 1px #EADDD4 ring (`full` makes it plain white)
+ *   sort        trigger ring #EADDD4 when closed (shared: #DCDCDC)
+ *   grid        5 x 260 cards, 15 apart across, 20 apart down (479 tall)
+ *   card        p-16, 21 from photo block to button; photo 240 tall; heart 10 from the right;
+ *               rating Poppins 10/16 #3F3E3E; name Poppins 20/28 #3F3E3E; price Poppins
+ *               SemiBold 22/28 #1A1A1A with the compare Poppins Medium 20/28 #8C8C8C struck;
+ *               button 47 tall, 1px #B1B1B1, "Add to Cart" Poppins Regular 16/26 #3F3E3E
+ *               (sentence case), 4 to the 20px cart icon
+ */
+
+@media screen and (min-width: 750px) {
+  #shopify-section-new-in-results .aria-coll--full .aria-coll__quick {
+    background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-coll__sort-trigger {
+    border-color: #eaddd4;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-coll__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 20px 15px;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card {
+    padding: 16px;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__wishlist {
+    right: 10px;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__rating-value {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 10px;
+    line-height: 16px;
+    letter-spacing: 0;
+    color: #3f3e3e;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__title {
+    line-height: 28px;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__price-current,
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__price-compare {
+    line-height: 28px;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__price-current {
+    color: #1a1a1a;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__price-compare {
+    font-size: 20px;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__cart-btn {
+    padding: 0 24px;
+    color: #3f3e3e;
+  }
+
+  #shopify-section-new-in-results .aria-coll--full .aria-product-card__cart-label {
+    font-weight: 400;
+    text-transform: none;
+  }
+}

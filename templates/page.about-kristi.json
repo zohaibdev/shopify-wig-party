@@ -1,0 +1,212 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections":  {
+                     "about-hero":  {
+                                        "type":  "about-hero",
+                                        "settings":  {
+                                                         "background_color":  "#F5EBE2",
+                                                         "portrait_alt":  "Kristi",
+                                                         "home_label":  "Home",
+                                                         "parent_label":  "Community",
+                                                         "parent_url":  "shopify://pages/community",
+                                                         "current_label":  "About Kristi",
+                                                         "heading":  "Hi I’m Kristi",
+                                                         "text":  "If hair loss has dimmed your confidence, you’re not alone. We bring compassion, quality, and a community that sees you, not just your wig.",
+                                                         "button_label":  "WATCH A LIVE",
+                                                         "button_url":  "shopify://pages/live",
+                                                         "button_2_label":  "MESSAGE KRISTI\u0027S TEAM",
+                                                         "button_2_url":  "shopify://pages/contact"
+                                                     }
+                                    },
+                     "about-story":  {
+                                         "type":  "about-story",
+                                         "blocks":  {
+                                                        "card-1":  {
+                                                                       "type":  "card",
+                                                                       "settings":  {
+                                                                                        "title":  "Why I do it this way",
+                                                                                        "text":  "At Wig Party, our mission is to help women feel confident in their own skin while wearing alternative hair. We believe beauty should feel effortless, empowering, and true to you, every single day. Rather than draw a paycheck, every dollar goes back into the business to maintain one of the largest in-stock selections of Belle Tress Luxury Synthetic Wigs.",
+                                                                                        "link_label":  "",
+                                                                                        "link_url":  ""
+                                                                                    }
+                                                                   },
+                                                        "card-2":  {
+                                                                       "type":  "card",
+                                                                       "settings":  {
+                                                                                        "title":  "What I actually believe",
+                                                                                        "text":  "Wig Party is more than a retailer. We are a sisterhood. A sanctuary. A revolution. We uplift one another with courage, compassion, and confidence.",
+                                                                                        "link_label":  "",
+                                                                                        "link_url":  ""
+                                                                                    }
+                                                                   },
+                                                        "card-3":  {
+                                                                       "type":  "card",
+                                                                       "settings":  {
+                                                                                        "title":  "What we are, and are not",
+                                                                                        "text":  "We are a Belle Tress authorized retailer. Belle Tress curates the best in the industry, staying ahead of trends in natural-looking and natural-feeling hair so you never have to compromise. All sales are final, so please double check your order before you submit payment.",
+                                                                                        "link_label":  "Read more",
+                                                                                        "link_url":  "shopify://pages/belle-tress-wig-collections"
+                                                                                    }
+                                                                   }
+                                                    },
+                                         "block_order":  [
+                                                             "card-1",
+                                                             "card-2",
+                                                             "card-3"
+                                                         ],
+                                         "settings":  {
+                                                          "background_color":  "#FFFFFF"
+                                                      }
+                                     },
+                     "about-quotes":  {
+                                          "type":  "about-quotes",
+                                          "blocks":  {
+                                                         "quote-1":  {
+                                                                         "type":  "quote",
+                                                                         "settings":  {
+                                                                                          "icon":  "community",
+                                                                                          "label":  "ON COMMUNITY",
+                                                                                          "quote":  "“We bring compassion, quality, and a community that sees you, not just your wig.”"
+                                                                                      }
+                                                                     },
+                                                         "quote-2":  {
+                                                                         "type":  "quote",
+                                                                         "settings":  {
+                                                                                          "icon":  "tag",
+                                                                                          "label":  "ON WHAT WE SELL",
+                                                                                          "quote":  "“We don’t just sell wigs. We build confidence. We build trust. We build community. Products are the outcome. People come first.”",
+                                                                                          "text_width":  337
+                                                                                      }
+                                                                     },
+                                                         "quote-3":  {
+                                                                         "type":  "quote",
+                                                                         "settings":  {
+                                                                                          "icon":  "home",
+                                                                                          "label":  "ON A NEW WIG",
+                                                                                          "quote":  "“Put some make-up on and have a selfie photo shoot. It is fun!”"
+                                                                                      }
+                                                                     }
+                                                     },
+                                          "block_order":  [
+                                                              "quote-1",
+                                                              "quote-2",
+                                                              "quote-3"
+                                                          ],
+                                          "settings":  {
+
+                                                       }
+                                      },
+                     "about-lives":  {
+                                         "type":  "about-lives",
+                                         "blocks":  {
+                                                        "poster-1":  {
+                                                                         "type":  "poster",
+                                                                         "settings":  {
+                                                                                          "darken":  true
+                                                                                      }
+                                                                     },
+                                                        "poster-2":  {
+                                                                         "type":  "poster",
+                                                                         "settings":  {
+                                                                                          "darken":  true
+                                                                                      }
+                                                                     },
+                                                        "poster-3":  {
+                                                                         "type":  "poster",
+                                                                         "settings":  {
+                                                                                          "darken":  false
+                                                                                      }
+                                                                     }
+                                                    },
+                                         "block_order":  [
+                                                             "poster-1",
+                                                             "poster-2",
+                                                             "poster-3"
+                                                         ],
+                                         "settings":  {
+                                                          "heading":  "Where the Lives happen",
+                                                          "use_livemeup":  true,
+                                                          "count":  3,
+                                                          "posters_url":  "shopify://pages/replays"
+                                                      }
+                                     },
+                     "about-find-me":  {
+                                           "type":  "about-find-me",
+                                           "settings":  {
+                                                            "heading":  "Come and find me",
+                                                            "text":  "We go LIVE on Facebook and Instagram throughout the week. To hear when, text love to (833) 280-2725. Have a question before you buy? Send my team a message.",
+                                                            "button_label":  "WATCH A LIVE",
+                                                            "button_url":  "shopify://pages/live",
+                                                            "button_2_label":  "MESSAGE KRISTI\u0027S TEAM",
+                                                            "button_2_url":  "shopify://pages/contact",
+                                                            "image_alt":  "Kristi at her desk"
+                                                        }
+                                       },
+                     "trust-strip":  {
+                                         "type":  "cart-trust-strip",
+                                         "blocks":  {
+                                                        "trust-approved-1":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "live",
+                                                                                                  "heading":  "Tried on Live by Kristi",
+                                                                                                  "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-2":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "packaging",
+                                                                                                  "heading":  "Processed in 1 to 3 business days",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-3":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "shipping",
+                                                                                                  "heading":  "Tracking within 24 to 48 hours",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-4":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "consult",
+                                                                                                  "heading":  "All sales final, ask us first",
+                                                                                                  "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             }
+                                                    },
+                                         "block_order":  [
+                                                             "trust-approved-1",
+                                                             "trust-approved-2",
+                                                             "trust-approved-3",
+                                                             "trust-approved-4"
+                                                         ],
+                                         "settings":  {
+                                                          "background_color":  "#ffffff"
+                                                      }
+                                     }
+                 },
+    "order":  [
+                  "about-hero",
+                  "about-story",
+                  "about-quotes",
+                  "about-lives",
+                  "about-find-me",
+                  "trust-strip"
+              ]
+}

@@ -1,0 +1,81 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "reviews-hero": {
+      "type": "new-in-hero",
+      "settings": {
+        "home_label": "Home",
+        "parent_label": "",
+        "current_label": "Reviews",
+        "heading": "One sale page, three reasons something is on it",
+        "text": "We do not show star ratings on this site yet. The best place to see Wig Party customers in their wigs, and to ask them questions, is the Wig Party Facebook group, where customers post their own photos.",
+        "button_label": "JOIN THE FACEBOOK GROUP",
+        "button_url": "https://www.facebook.com/groups/wigpartyshop",
+        "stat_size": "32",
+        "layout": "reviews"
+      }
+    },
+    "cart-trust-strip": {
+      "type": "cart-trust-strip",
+      "blocks": {
+        "trust-approved-1": {
+          "type": "trust_item",
+          "settings": {
+            "default_icon": "live",
+            "heading": "Tried on Live by Kristi",
+            "description": "Text love to (833) 280-2725 for live alerts.",
+            "content_width": true
+          }
+        },
+        "trust-approved-2": {
+          "type": "trust_item",
+          "settings": {
+            "default_icon": "packaging",
+            "heading": "Processed in 1 to 3 business days",
+            "description": "",
+            "content_width": true
+          }
+        },
+        "trust-approved-3": {
+          "type": "trust_item",
+          "settings": {
+            "default_icon": "shipping",
+            "heading": "Tracking within 24 to 48 hours",
+            "description": "",
+            "content_width": true
+          }
+        },
+        "trust-approved-4": {
+          "type": "trust_item",
+          "settings": {
+            "default_icon": "consult",
+            "heading": "All sales final, ask us first",
+            "description": "Email shopwigparty@gmail.com before you order.",
+            "content_width": true
+          }
+        }
+      },
+      "block_order": [
+        "trust-approved-1",
+        "trust-approved-2",
+        "trust-approved-3",
+        "trust-approved-4"
+      ],
+      "settings": {
+        "background_color": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "reviews-hero",
+    "cart-trust-strip"
+  ]
+}

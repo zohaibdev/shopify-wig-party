@@ -1,0 +1,64 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "name":  "Shared trust badges",
+    "type":  "custom.shared_trust",
+    "sections":  {
+                     "trust-badges":  {
+                                          "type":  "trust-badges",
+                                          "blocks":  {
+                                                         "trust-approved-1":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Tried on Live by Kristi",
+                                                                                                   "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                   "default_icon":  "wp-trust-wear-share"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-2":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Processed in 1 to 3 business days",
+                                                                                                   "description":  "",
+                                                                                                   "default_icon":  "cart-trust-packaging-icon"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-3":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Tracking within 24 to 48 hours",
+                                                                                                   "description":  "",
+                                                                                                   "default_icon":  "wp-trust-free-shipping"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-4":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "All sales final, ask us first",
+                                                                                                   "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                   "default_icon":  "cart-trust-consult-icon"
+                                                                                               }
+                                                                              }
+                                                     },
+                                          "block_order":  [
+                                                              "trust-approved-1",
+                                                              "trust-approved-2",
+                                                              "trust-approved-3",
+                                                              "trust-approved-4"
+                                                          ],
+                                          "settings":  {
+                                                           "background_color":  "#ffffff"
+                                                       }
+                                      }
+                 },
+    "order":  [
+                  "trust-badges"
+              ]
+}

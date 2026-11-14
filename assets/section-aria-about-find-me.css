@@ -1,0 +1,317 @@
+/* Wig Party — About Kristi, "Come and find me" (sections/about-find-me.liquid), Figma 7841:3605.
+ *
+ * Desktop geometry (px, Figma): the 1280 x 422 card sits 80 in from each side, straight under
+ * the Lives section (no padding above or below; the trust badges follow).
+ *   card     r-4, clipped, 180deg white -> #EADDD4, px-40 py-32; the copy is centred down it
+ *   copy     571 wide, 32 between text and buttons: heading Montserrat Medium 48/56 black, 16,
+ *            text Poppins 18/28 black (with Figma's line break before "have you guess.")
+ *   buttons  16 apart, 56 tall: a 256 outline (1px black, r-2, px-24 py-12, Poppins 18/28) and
+ *            a 256 #A64A4C (px-50 py-14, Poppins Medium 18/28 white)
+ *   photo    a 607.53 x 468 box at 730.83 / 0 of the card (58.36 past its right edge, 46 past
+ *            its bottom, both cut off by the card), the cut-out at Figma's crop
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-about-find,
+.aria-about-find *,
+.aria-about-find *::before,
+.aria-about-find *::after {
+  box-sizing: border-box;
+}
+
+.aria-about-find {
+  padding: 0 80px;
+  background: var(--white, #fff);
+}
+
+.aria-about-find__card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 1280px;
+  min-height: 422px;
+  margin: 0 auto;
+  padding: 32px 40px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #fff 0%, #eaddd4 100%);
+}
+
+/* ---------- Copy (7841:3606) ---------- */
+
+.aria-about-find__copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 0 1 571px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  min-width: 0;
+}
+
+.aria-about-find__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  color: var(--black, #000);
+}
+
+.aria-about-find__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-about-find__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-about-find__buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.aria-about-find__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 256px;
+  min-height: 56px;
+  padding: 12px 24px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-about-find__btn:hover,
+.aria-about-find__btn:focus-visible {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+.aria-about-find__btn--solid {
+  padding: 14px 50px;
+  border: 0;
+  border-radius: 0;
+  background: var(--py, #a64a4c);
+  font-weight: 500;
+  color: var(--white, #fff);
+}
+
+.aria-about-find__btn--solid:hover,
+.aria-about-find__btn--solid:focus-visible {
+  background: #8e3d3f;
+}
+
+/* ---------- Photo (7841:3616) ---------- */
+
+.aria-about-find__photo {
+  position: absolute;
+  top: 0;
+  right: -58.36px;
+  width: 607.53px;
+  height: 468px;
+  pointer-events: none;
+}
+
+.aria-about-find__photo-box {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.aria-about-find__photo img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's crop of the built-in cut-out, as % of the photo box. */
+.aria-about-find__photo img.aria-about-find__fallback {
+  inset: auto;
+  top: -14.17%;
+  left: -32.15%;
+  width: 123.34%;
+  height: 107.19%;
+  object-fit: fill;
+}
+
+/* No tablet frame: below 1200 the copy keeps to the left half and the photo scales down. */
+@media screen and (min-width: 750px) and (max-width: 1199px) {
+  .aria-about-find {
+    padding: 0 40px;
+  }
+
+  .aria-about-find__copy {
+    flex-basis: 48%;
+  }
+
+  /* The photo scales with the card and keeps Figma's overhang (9.61% past the right, 9.83%
+     past the bottom of its own box), anchored to the bottom so the card can grow. */
+  .aria-about-find__photo {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    width: 55%;
+    height: auto;
+    aspect-ratio: 607.53 / 468;
+    transform: translate(9.61%, 9.83%);
+  }
+
+  .aria-about-find__text br {
+    display: none;
+  }
+
+  .aria-about-find__buttons {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---------- Mobile (Figma 7847:303, 375 x 741) ----------
+ * The card is the full width (r-4, no outer margin), px-16 py-32. Heading Montserrat Medium
+ * 28/36, 16, text Poppins 16/26 (no line break), 32, then full-width buttons 12 apart: the
+ * outline 52 tall inside a 56 slot, the solid one 54 (both Poppins 16/26). The photo box
+ * (497.8 x 383.47, same crop) starts 34.95 below the buttons, 264.99 left of the middle, and
+ * the card ends 338.05 into it, cutting it off.
+ */
+@media screen and (max-width: 749px) {
+  .aria-about-find {
+    padding: 0;
+  }
+
+  .aria-about-find__card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    min-height: 0;
+    padding: 32px 16px 0;
+  }
+
+  .aria-about-find__copy {
+    flex: none;
+    width: 100%;
+  }
+
+  .aria-about-find__title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  /* Poppins 16/26 lands 1px higher in the browser than in Figma. */
+  .aria-about-find__text {
+    position: relative;
+    top: 1px;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .aria-about-find__text br {
+    display: none;
+  }
+
+  .aria-about-find__buttons {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .aria-about-find__btn {
+    width: 100%;
+    min-height: 52px;
+    margin: 2px 0;
+    padding: 12px 24px;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .aria-about-find__btn--solid {
+    min-height: 54px;
+    margin: 0;
+    padding: 14px 50px;
+  }
+
+  .aria-about-find__photo {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: auto;
+    height: 338.05px;
+    margin: 34.95px -16px 0;
+    overflow: hidden;
+  }
+
+  .aria-about-find__photo-box {
+    inset: 0 auto auto calc(50% - 264.99px);
+    width: 497.8px;
+    height: 383.47px;
+  }
+}
+
+/* The trust strip that follows this section on the About page (Figma 7841:3617, mobile
+   7841:4861). Desktop is drawn like the Learn page's: the first badge's two lines do not wrap
+   (they overhang its 255 column, centred). The mobile frame has its own spacing: p-40/16,
+   columns 16 and rows 32 apart, 48 icons, 16 to the text, headings Montserrat Medium 18/26 and
+   copy 14/22, keeping the colour ring line break. Scoped here so the shared cart-trust-strip
+   section is unchanged elsewhere. */
+@media screen and (min-width: 750px) {
+  .aria-about-find-section + .shopify-section .wp-trust-strip__item:first-child .wp-trust-strip__description {
+    white-space: nowrap;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .aria-about-find-section + .shopify-section .wp-trust-strip__inner {
+    gap: 32px 16px;
+    padding: 40px 16px;
+  }
+
+  .aria-about-find-section + .shopify-section .wp-trust-strip__item {
+    gap: 16px;
+  }
+
+  .aria-about-find-section + .shopify-section .wp-trust-strip__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .aria-about-find-section + .shopify-section .wp-trust-strip__text {
+    gap: 8px;
+  }
+
+  .aria-about-find-section + .shopify-section .wp-trust-strip__heading {
+    font-size: 18px;
+    line-height: 26px;
+  }
+
+  .aria-about-find-section + .shopify-section .wp-trust-strip__description {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}

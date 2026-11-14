@@ -46,12 +46,15 @@
       <div
         class="aria-best-sellers__carousel-wrap"
         data-aria-product-carousel
-        data-slides-mobile="1.15"
-        data-slides-sm="2.1"
+        data-slides-mobile="auto"
+        data-slides-sm="auto"
         data-slides-md="3.2"
         data-slides-desktop="4"
         data-slides-lg="3"
         data-space-between="12"
+        data-space-between-mobile="8"
+        data-space-between-sm="8"
+        data-space-between-desktop="12"
       >
         <div class="swiper aria-best-sellers__swiper" data-aria-carousel-swiper>
           <div class="swiper-wrapper">
@@ -64,7 +67,8 @@
                   {%- render 'aria-product-card',
                     product: card_product,
                     feature_tag_metafield: section.settings.feature_tag_metafield,
-                    section_id: section.id
+                    section_id: section.id,
+                    hide_vendor: true
                   -%}
                 {%- else -%}
                   <div class="aria-product-card aria-product-card--empty">
@@ -87,11 +91,22 @@
             <div class="aria-best-sellers__progress-fill" data-aria-carousel-progress><span aria-hidden="true"></span></div>
           </div>
           <div class="aria-best-sellers__nav">
+            {%- comment -%}
+              Mobile (Figma 6576:11267) draws a long arrow, the same vector the other
+              mobile carousels use; tablet/desktop keep the chevron. Both are in the
+              markup and CSS shows one, so the desktop button is unchanged.
+            {%- endcomment -%}
             <button type="button" class="aria-best-sellers__prev" data-aria-carousel-prev aria-label="{{ 'aria_theme.carousel.previous' | t }}">
               {%- render 'aria-icon', name: 'arrow-left' -%}
+              <span class="aria-best-sellers__nav-arrow" aria-hidden="true">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
             </button>
             <button type="button" class="aria-best-sellers__next" data-aria-carousel-next aria-label="{{ 'aria_theme.carousel.next' | t }}">
               {%- render 'aria-icon', name: 'arrow-right' -%}
+              <span class="aria-best-sellers__nav-arrow" aria-hidden="true">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
             </button>
           </div>
         </div>

@@ -1,0 +1,99 @@
+/* Wig Party — PDP breadcrumbs. Figma node 6356:333 ("Frame 2147240322").
+ *
+ * The node is a full-width 46px bar sitting directly under the 110px header, with the
+ * trail starting 40px in (text node 6356:334 at x=40, y=16, 14px tall). Capping the inner
+ * row at `--container` keeps it aligned with every other section on wider screens while
+ * still landing on exactly 40px at the 1440 design width.
+ */
+
+.aria-crumbs,
+.aria-crumbs *,
+.aria-crumbs *::before,
+.aria-crumbs *::after {
+  box-sizing: border-box;
+}
+
+.aria-crumbs {
+  display: block;
+  padding-inline: 40px;
+  background: var(--aria-crumbs-bg, transparent);
+}
+
+.aria-crumbs__inner {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+}
+
+/* Wraps rather than scrolls: a long collection name should push to a second line, not
+   clip the product the customer is actually on. */
+.aria-crumbs__list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-crumbs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Body/Tags + labels token: Poppins Regular 12/14, uppercase. */
+.aria-crumbs__link,
+.aria-crumbs__current {
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.aria-crumbs__link {
+  color: var(--gray, #3f3e3e);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.aria-crumbs__link:hover,
+.aria-crumbs__link:focus-visible {
+  color: var(--py, #a64a4c);
+  text-decoration: underline;
+}
+
+/* The current page is text, not a link — it is where the customer already is. */
+.aria-crumbs__current {
+  color: var(--sy, #000);
+}
+
+.aria-crumbs__sep {
+  color: var(--gray, #3f3e3e);
+  opacity: 0.6;
+  user-select: none;
+}
+
+@media screen and (max-width: 989px) {
+  .aria-crumbs {
+    padding-inline: 24px;
+  }
+
+  .aria-crumbs__inner {
+    height: 40px;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  /* Hidden on true mobile per design direction — the mobile gallery frame
+     (hf0beCVyuHCECkNQfaOm2q, 6441:3509) sits at y=117, directly under the
+     header with no breadcrumb bar above it. */
+  .aria-crumbs {
+    display: none;
+  }
+}

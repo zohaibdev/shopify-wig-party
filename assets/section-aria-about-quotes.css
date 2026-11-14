@@ -1,0 +1,146 @@
+/* Wig Party — About Kristi quotes (sections/about-quotes.liquid), Figma 7841:3565.
+ *
+ * Desktop geometry (px, Figma, 1440 x 448): py-80 px-40 on a to-bottom gradient white ->
+ * #EADDD4.
+ *   cards   1332 wide, centred: 428-wide cards 24 apart, as tall as the tallest (288 with
+ *           Figma's copy). Card: white, r-4, a 1px inside border fading white -> #EADDD4 down,
+ *           py-24 px-16, centred, 20 between icon and copy
+ *   icon    84 x 84, #BC696B (the art's inset is in the SVG's viewBox)
+ *   copy    4 apart: label Poppins Medium 18/28 black; quote Poppins 16/26 #3F3E3E, centred,
+ *           with Figma's line breaks. The middle quote is set 336.953 wide (a block setting)
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-about-quotes,
+.aria-about-quotes *,
+.aria-about-quotes *::before,
+.aria-about-quotes *::after {
+  box-sizing: border-box;
+}
+
+.aria-about-quotes {
+  padding: 80px 40px;
+  background: linear-gradient(180deg, #fff 0%, #eaddd4 100%);
+}
+
+.aria-about-quotes__cards {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 24px;
+  max-width: 1332px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Card (7841:3567) ---------- */
+
+.aria-about-quotes__card {
+  display: flex;
+  flex: 0 1 428px;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+  /* Figma's 1px border sits inside the card without taking space, so it comes off the
+     24 / 16 padding. */
+  padding: 23px 15px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(180deg, #fff 0%, #eaddd4 100%) border-box;
+}
+
+.aria-about-quotes__icon {
+  display: block;
+  flex: none;
+  width: 84px;
+  height: 84px;
+}
+
+.aria-about-quotes__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+}
+
+.aria-about-quotes__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  text-align: center;
+}
+
+.aria-about-quotes__label {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-about-quotes__quote {
+  width: var(--quote-width, 100%);
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+}
+
+/* Poppins 16/26 lands 1px higher in the browser than in Figma, so the quote (and, on mobile,
+   the 16/26 label) is nudged down without moving any box. */
+.aria-about-quotes__quote {
+  position: relative;
+  top: 1px;
+}
+
+/* No tablet frame: below 1200 the cards are narrower than the copy's line breaks, so the
+   quotes wrap on their own. */
+@media screen and (min-width: 750px) and (max-width: 1199px) {
+  .aria-about-quotes__quote br,
+  .aria-about-quotes__eol {
+    display: none;
+  }
+}
+
+/* ---------- Mobile (Figma 7847:263, 375 x 866) ----------
+ * py-40 px-16; the cards stack 16 apart, full width and as tall as their copy; the label is
+ * Poppins Medium 16/26 and every quote uses the full width.
+ */
+@media screen and (max-width: 749px) {
+  .aria-about-quotes {
+    padding: 40px 16px;
+  }
+
+  .aria-about-quotes__cards {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .aria-about-quotes__card {
+    flex: none;
+  }
+
+  .aria-about-quotes__label {
+    position: relative;
+    top: 1px;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .aria-about-quotes__quote {
+    width: 100%;
+  }
+}

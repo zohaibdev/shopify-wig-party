@@ -1,0 +1,237 @@
+/* Wig Party — Compare Shades hero (sections/compare-hero.liquid), Figma 7289:6351.
+ *
+ * Desktop geometry (px, Figma, 1440 x 356, clipped):
+ *   background  1440 x 356: the hair photo placed exactly as in the Find Your Colour hero
+ *               (1442.592 x 1650.823, -0.09% left, -451.2 top at 1440), under a 141.19deg
+ *               wash rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602%
+ *   panel       1360 x 278, centred (39 above and below): rgba(255,255,255,.13), 50
+ *               backdrop blur, 1px white ring that counts toward layout, pt-16 px-40 pb-40,
+ *               32 between the crumbs and the text group; content top-aligned in the fixed box
+ *   crumbs      Poppins 12/14 uppercase #3F3E3E, "  /  " separators, the current crumb Bold
+ *   text group  1278 x 142 (fixed), centred, 12 apart: title Montserrat Medium 48/56 white on
+ *               one line, text Poppins 16/26 white (Figma's "two ⏎" keeps its trailing space)
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-compare-hero,
+.aria-compare-hero *,
+.aria-compare-hero *::before,
+.aria-compare-hero *::after {
+  box-sizing: border-box;
+}
+
+.aria-compare-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 39px 40px;
+  background: #f5ebe2;
+  /* Light-on-grey text: Chrome's macOS subpixel smoothing reads a weight heavier than Figma. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Background (7289:6353) ---------- */
+
+.aria-compare-hero__bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aria-compare-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    141.18614240312124deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+.aria-compare-hero__bg img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's crop of the built-in photo: 100.18% wide, left -0.09%, stretched to 1442.592 x
+   1650.823, and at 1440 the image's 38.115% line sits on the box's middle (-451.2 top in a
+   356 box). Anchoring that line keeps the same band of hair in view at other widths. */
+.aria-compare-hero__bg img.aria-compare-hero__bg-fallback {
+  inset: auto;
+  top: 50%;
+  left: -0.09%;
+  width: 100.18%;
+  height: auto;
+  aspect-ratio: 1442.592 / 1650.823;
+  transform: translateY(-38.115%);
+  object-fit: fill;
+}
+
+/* ---------- Panel (7289:6354) ---------- */
+
+.aria-compare-hero__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  max-width: 1360px;
+  min-height: 278px;
+  margin: 0 auto;
+  padding: 16px 40px 40px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+}
+
+.aria-compare-hero__crumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--gray, #3f3e3e);
+}
+
+/* Figma's separator is "  /  " set in the same run, so it is drawn as preserved text. */
+.aria-compare-hero__crumbs-list li + li::before {
+  content: '  /  ';
+  white-space: pre;
+}
+
+.aria-compare-hero__crumbs-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.aria-compare-hero__crumbs-list a:hover,
+.aria-compare-hero__crumbs-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.aria-compare-hero__crumbs-list [aria-current='page'] {
+  font-weight: 700;
+}
+
+/* Only the crumb is Bold; its separator stays Regular. */
+.aria-compare-hero__crumbs-list [aria-current='page']::before {
+  font-weight: 400;
+}
+
+/* ---------- Text group (7289:6357) ---------- */
+
+.aria-compare-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 142px;
+  text-align: center;
+  color: var(--white, #fff);
+}
+
+.aria-compare-hero__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-compare-hero__text {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  /* Line breaks come from the setting. break-spaces keeps a space typed before a break, as
+     Figma's "…between two ⏎" has, so it counts in the centring the way it does there. */
+  white-space: break-spaces;
+  color: inherit;
+  /* Poppins 16/26 lands 1px higher in the browser than in Figma; nudged without moving a box. */
+  position: relative;
+  top: 1px;
+}
+
+@media screen and (min-width: 1200px) {
+  .aria-compare-hero__title {
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Mobile (Figma 7289:10171, 375 x 424) ----------
+ * py-48 px-16. The photo box is 375 x 432 from the top, centred (Figma lets it run 8 past the
+ * 424 frame; the section clips it), full width here: the photo drawn 720.2 x 825.3 at
+ * -193.3 / -31.2 at 375 (192.07% / -51.54% of the width), under a 104.94deg wash. Panel 343 wide, p-12 inside the 1px ring, 12 apart: the crumbs as on
+ * desktop, then a left-aligned group, 8 apart: title Montserrat Medium 36/46, text Poppins
+ * 16/26 wrapping naturally (the desktop line break is not used here).
+ */
+@media screen and (max-width: 749px) {
+  .aria-compare-hero {
+    padding: 48px 16px;
+  }
+
+  .aria-compare-hero__bg {
+    inset: 0 0 auto;
+    height: 432px;
+  }
+
+  .aria-compare-hero__bg::after {
+    background: linear-gradient(
+      104.93746219757844deg,
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  /* Figma's numbers at 375 as shares of the width, so wider phones scale the same crop. */
+  .aria-compare-hero__bg img.aria-compare-hero__bg-fallback {
+    top: -31.2px;
+    left: -51.54%;
+    width: 192.07%;
+    height: auto;
+    aspect-ratio: 720.2 / 825.3;
+    transform: none;
+  }
+
+  .aria-compare-hero__panel {
+    gap: 12px;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .aria-compare-hero__text-group {
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 0;
+    text-align: left;
+  }
+
+  .aria-compare-hero__title {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-compare-hero__text {
+    white-space: normal;
+  }
+}

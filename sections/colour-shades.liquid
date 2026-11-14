@@ -1,0 +1,331 @@
+{%- comment -%}
+  Wig Party — Find Your Colour page, "Every shade, three lights". Figma internal file,
+  node 7009:5329 (1440 x 1850).
+  A centred intro, a quick-filter bar (`chip` blocks with live counts, plus a search box)
+  and a 4-up grid of a collection's styles, 12 at first and 24 more per click.
+
+  The first 12 cards are rendered here. assets/aria-colour-shades.js then loads the whole
+  collection from ?view=aria-index (templates/collection.aria-index.liquid) to count, filter,
+  search and page the grid, redrawing cards with the same markup.
+  Styles in assets/section-aria-colour-shades.css.
+
+  A chip's rule is matched against one field of each product: its type, title, tags, shade
+  names, or the "in stock" shelf tag; or its lowest price, or how recently it was published.
+  Keys are comma-separated; "-key" excludes, "re:pattern" is a regular expression, and tags
+  match whole tags (the same grammar as the collection page's theme filters).
+{%- endcomment -%}
+
+{{ 'section-aria-colour-shades.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-colour-shades.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign source = section.settings.collection
+  if source == blank
+    assign source = collections.all
+  endif
+  assign chip_blocks = section.blocks | where: 'type', 'chip'
+  assign initial = section.settings.initial_count
+  assign step = section.settings.step_count
+  assign exclude_list = section.settings.exclude_types | downcase | split: ','
+  assign exclude_types = ''
+  for exclude in exclude_list
+    assign exclude_key = exclude | strip
+    if exclude_key != blank
+      assign exclude_types = exclude_types | append: exclude_key | append: '||'
+    endif
+  endfor
+  assign exclude_types = exclude_types | split: '||'
+
+  # -- theme.liquid only font_faces the heading base weight (500); the title is Montserrat 400.
+  assign heading_font_regular = settings.type_header_font | font_modify: 'weight', '400'
+-%}
+{% style %}
+  {%- if heading_font_regular -%}{{ heading_font_regular | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- comment -%}
+    Until the script has drawn the grid, phones show only the mobile count of the 12
+    server-rendered cards (assets/aria-colour-shades.js takes over and sets data-ready).
+  {%- endcomment -%}
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .aria-colour-shades:not([data-ready]) .aria-colour-shades__item:nth-child(n + {{ section.settings.initial_count_mobile | plus: 1 }}) {
+      display: none;
+    }
+  }
+{% endstyle %}
+
+<aria-colour-shades
+  class="aria-colour-shades"
+  data-index-url="{{ source.url }}?view=aria-index"
+  data-initial="{{ initial }}"
+  data-initial-mobile="{{ section.settings.initial_count_mobile }}"
+  data-step="{{ step }}"
+  data-exclude-types="{{ exclude_types | join: '||' | escape }}"
+  data-more-label="{{ section.settings.more_label | escape }}"
+  data-empty-label="{{ section.settings.empty_label | escape }}"
+>
+  <div class="aria-colour-shades__inner">
+    <div class="aria-colour-shades__body">
+      <div class="aria-colour-shades__intro">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="aria-colour-shades__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-colour-shades__title">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="aria-colour-shades__text">{{ section.settings.text | escape }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="aria-colour-shades__results">
+        <div class="aria-colour-shades__bar">
+          <div class="aria-colour-shades__quick">
+            {%- if section.settings.quick_label != blank -%}
+              <span class="aria-colour-shades__quick-label">{{ section.settings.quick_label }}</span>
+            {%- endif -%}
+            {%- if chip_blocks.size > 0 -%}
+              <div class="aria-colour-shades__chips" role="group" aria-label="{{ section.settings.quick_label | default: section.settings.heading | escape }}">
+                {%- for block in chip_blocks -%}
+                  {%- liquid
+                    case block.settings.rule
+                      when 'price'
+                        assign chip_value = block.settings.amount | times: 100
+                      when 'new'
+                        assign chip_value = block.settings.days
+                      else
+                        assign chip_value = block.settings.keys
+                    endcase
+                  -%}
+                  <button
+                    type="button"
+                    class="aria-colour-shades__chip{% if forloop.first %} is-active{% endif %}"
+                    data-chip
+                    data-rule="{{ block.settings.rule }}"
+                    data-value="{{ chip_value | escape }}"
+                    data-label="{{ block.settings.label | escape }}"
+                    aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+                    {{ block.shopify_attributes }}
+                  >
+                    {{- block.settings.label -}}
+                  </button>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+
+          <label class="aria-colour-shades__search">
+            <span class="visually-hidden">{{ section.settings.search_label }}</span>
+            <span class="aria-colour-shades__search-icon">
+              {{- 'wp-replays-search.svg' | inline_asset_content -}}
+            </span>
+            <input
+              class="aria-colour-shades__search-input"
+              type="search"
+              placeholder="{{ section.settings.search_label | escape }}"
+              autocomplete="off"
+              data-search
+            >
+          </label>
+        </div>
+
+        <ul class="aria-colour-shades__grid" role="list" data-grid>
+          {%- assign shown = 0 -%}
+          {%- for product in source.products -%}
+            {%- liquid
+              if shown >= initial
+                break
+              endif
+              assign product_type = product.type | downcase | strip
+              if exclude_types contains product_type
+                continue
+              endif
+              assign shown = shown | plus: 1
+            -%}
+            <li class="aria-colour-shades__item">
+              <a class="aria-colour-shades__card" href="{{ product.url }}">
+                <span class="aria-colour-shades__media">
+                  {%- if product.featured_image -%}
+                    {{
+                      product.featured_image
+                      | image_url: width: 648
+                      | image_tag: widths: '324,648', sizes: '324px', alt: product.featured_image.alt, loading: 'lazy'
+                    }}
+                  {%- else -%}
+                    {{ 'product-apparel-1' | placeholder_svg_tag: 'aria-colour-shades__placeholder' }}
+                  {%- endif -%}
+                </span>
+                <span class="aria-colour-shades__info">
+                  <span class="aria-colour-shades__name">{{ product.title }}</span>
+                  <span class="aria-colour-shades__shades">{% render 'aria-product-shades', product: product %}</span>
+                </span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+        <p class="aria-colour-shades__empty" data-empty hidden>{{ section.settings.empty_label }}</p>
+      </div>
+    </div>
+
+    {%- comment -%}
+      The count of what is left is only known once the index loads (excluded types make the
+      collection's own count wrong), so the label starts at the step size.
+    {%- endcomment -%}
+    <button
+      type="button"
+      class="aria-colour-shades__more"
+      data-more
+      {% if shown < initial %}hidden{% endif %}
+    >
+      {{- section.settings.more_label | replace: '[count]', step -}}
+    </button>
+  </div>
+</aria-colour-shades>
+
+{% schema %}
+{
+  "name": "t:sections.aria-colour-shades.name",
+  "tag": "section",
+  "class": "aria-colour-shades-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "EVERY SHADE, THREE LIGHTS",
+      "label": "t:sections.aria-colour-shades.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Same wig, same head, three rooms",
+      "label": "t:sections.aria-colour-shades.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Daylight by a window, ordinary indoor light, and warm evening light. This is the single most useful thing \nwe can put on a screen and it still is not a substitute for the ring.",
+      "label": "t:sections.aria-colour-shades.settings.text.label",
+      "info": "t:sections.aria-colour-shades.settings.text.info"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.aria-colour-shades.settings.collection.label",
+      "info": "t:sections.aria-colour-shades.settings.collection.info"
+    },
+    {
+      "type": "text",
+      "id": "exclude_types",
+      "default": "Wig Supplies",
+      "label": "t:sections.aria-colour-shades.settings.exclude_types.label",
+      "info": "t:sections.aria-colour-shades.settings.exclude_types.info"
+    },
+    {
+      "type": "text",
+      "id": "quick_label",
+      "default": "QUICK",
+      "label": "t:sections.aria-colour-shades.settings.quick_label.label"
+    },
+    {
+      "type": "text",
+      "id": "search_label",
+      "default": "Search",
+      "label": "t:sections.aria-colour-shades.settings.search_label.label"
+    },
+    {
+      "type": "range",
+      "id": "initial_count",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 12,
+      "label": "t:sections.aria-colour-shades.settings.initial_count.label"
+    },
+    {
+      "type": "range",
+      "id": "initial_count_mobile",
+      "min": 2,
+      "max": 24,
+      "step": 2,
+      "default": 6,
+      "label": "t:sections.aria-colour-shades.settings.initial_count_mobile.label"
+    },
+    {
+      "type": "range",
+      "id": "step_count",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "label": "t:sections.aria-colour-shades.settings.step_count.label"
+    },
+    {
+      "type": "text",
+      "id": "more_label",
+      "default": "SHOW [count] MORE",
+      "label": "t:sections.aria-colour-shades.settings.more_label.label",
+      "info": "t:sections.aria-colour-shades.settings.more_label.info"
+    },
+    {
+      "type": "text",
+      "id": "empty_label",
+      "default": "No styles match. Try another filter or search.",
+      "label": "t:sections.aria-colour-shades.settings.empty_label.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "t:sections.aria-colour-shades.blocks.chip.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "default": "Everything",
+          "label": "t:sections.aria-colour-shades.blocks.chip.settings.label.label",
+          "info": "t:sections.aria-colour-shades.blocks.chip.settings.label.info"
+        },
+        {
+          "type": "select",
+          "id": "rule",
+          "default": "all",
+          "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.label",
+          "options": [
+            { "value": "all", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__1.label" },
+            { "value": "shelf", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__2.label" },
+            { "value": "type", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__3.label" },
+            { "value": "title", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__4.label" },
+            { "value": "tags", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__5.label" },
+            { "value": "colour", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__6.label" },
+            { "value": "price", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__7.label" },
+            { "value": "new", "label": "t:sections.aria-colour-shades.blocks.chip.settings.rule.options__8.label" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "keys",
+          "label": "t:sections.aria-colour-shades.blocks.chip.settings.keys.label",
+          "info": "t:sections.aria-colour-shades.blocks.chip.settings.keys.info"
+        },
+        {
+          "type": "number",
+          "id": "amount",
+          "default": 300,
+          "label": "t:sections.aria-colour-shades.blocks.chip.settings.amount.label"
+        },
+        {
+          "type": "number",
+          "id": "days",
+          "default": 60,
+          "label": "t:sections.aria-colour-shades.blocks.chip.settings.days.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-colour-shades.presets.name",
+      "blocks": [{ "type": "chip" }]
+    }
+  ]
+}
+{% endschema %}

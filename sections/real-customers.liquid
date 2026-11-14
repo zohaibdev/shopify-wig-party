@@ -1,7 +1,85 @@
 {{ 'section-aria-real-customers.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'aria-real-customers.js' | asset_url }}" defer="defer"></script>
 
-<section class="aria-real-customers" style="--aria-rc-bg: {{ section.settings.background_color }};">
+{%- liquid
+  # ==========================================================================
+  # STORY SOURCE, in order of preference:
+  #   1. product  -- customers wearing THIS wig, when the product names its own
+  #   2. shop     -- the site-wide reel, shared with the home page instance
+  #   3. blocks   -- the existing section blocks, so nothing breaks before the
+  #                  definitions exist
+  #
+  # A shop metafield list is used rather than reading every `customer_story`
+  # entry, because a list keeps the order the merchant drags them into.
+  # `product` is nil on the home page, so rung 1 simply falls through there.
+  # ==========================================================================
+  # -- `== blank`, NOT `.size == 0`: an unset metafield is nil, and nil.size is nil
+  # -- rather than 0, so a size comparison silently never matches.
+  assign story_items = product.metafields.wigparty.customer_stories.value
+  if story_items == blank
+    assign story_items = shop.metafields.wigparty.customer_stories.value
+  endif
+  # -- Last metaobject route: every `customer_story` entry, for when no shop
+  # -- metafield list has been set. Order is whatever Shopify returns here, so
+  # -- the shop list above remains the way to control it.
+  if story_items == blank
+    assign story_items = shop.metaobjects.customer_story.values
+  endif
+
+  assign stories_from_metaobject = true
+  if story_items == blank
+    assign stories_from_metaobject = false
+    assign story_items = section.blocks
+  endif
+
+  # -- A merchant's list can contain entries with no image/video/external-video set yet
+  # -- (a `story` block or metaobject added before it's filled in), and they aren't
+  # -- necessarily the last ones in the list. `rc_populated_count` -- counted here, once
+  # -- -- tells the carousel below how many *real* (non-blank) items exist, without
+  # -- materializing a new filtered array: `shop.metaobjects.<type>.values` is a special
+  # -- Shopify resource-list type, and `slice`/`concat` do not reliably build a new array
+  # -- out of it (tried, and it silently produced an empty list) the way they do for a
+  # -- plain array -- only iterating and indexing the original list are safe here.
+  assign rc_populated_count = 0
+  assign rc_keep = ''
+  assign rc_seen_videos = ''
+  for rc_scan_item in story_items
+    assign rc_scan_has_data = false
+    if stories_from_metaobject
+      if rc_scan_item.image.value != blank or rc_scan_item.video.value != blank or rc_scan_item.video_url.value != blank
+        assign rc_scan_has_data = true
+      endif
+    else
+      if rc_scan_item.settings.image != blank or rc_scan_item.settings.video != blank or rc_scan_item.settings.video_url != blank
+        assign rc_scan_has_data = true
+      endif
+    endif
+    # -- Each video plays once: skip a story whose video already appeared in this
+    # -- reel, or the one the page shows elsewhere (exclude_video, e.g. Why Wig Party).
+    if stories_from_metaobject
+      assign rc_scan_key = rc_scan_item.system.handle
+      assign rc_scan_video_id = rc_scan_item.video.value.id
+    else
+      assign rc_scan_key = rc_scan_item.id
+      assign rc_scan_video_id = rc_scan_item.settings.video.id
+    endif
+    if rc_scan_has_data and rc_scan_video_id != blank
+      assign rc_vid_key = '|' | append: rc_scan_video_id | append: '|'
+      if rc_seen_videos contains rc_vid_key
+        assign rc_scan_has_data = false
+      elsif section.settings.exclude_video != blank and section.settings.exclude_video.id == rc_scan_video_id
+        assign rc_scan_has_data = false
+      endif
+      assign rc_seen_videos = rc_seen_videos | append: rc_vid_key
+    endif
+    if rc_scan_has_data
+      assign rc_populated_count = rc_populated_count | plus: 1
+      assign rc_keep = rc_keep | append: '|' | append: rc_scan_key | append: '|'
+    endif
+  endfor
+-%}
+
+<section class="aria-real-customers{% if section.settings.layout_variant == 'product' %} aria-real-customers--product{% endif %}" style="--aria-rc-bg: {{ section.settings.background_color }};">
   <div class="aria-real-customers__inner">
     <div class="aria-real-customers__header">
       {%- if section.settings.show_rating_badge and section.settings.rating_badge_text != blank -%}
@@ -20,214 +98,125 @@
       {%- endif -%}
     </div>
 
-    {%- if section.blocks.size > 0 -%}
+    {%- if rc_populated_count > 0 -%}
       <div class="aria-real-customers__carousel" data-aria-rc-carousel>
         <div class="swiper aria-real-customers__swiper" data-aria-rc-swiper>
           <div class="swiper-wrapper">
-            {%- for block in section.blocks -%}
-              <div class="swiper-slide aria-real-customers__slide" {{ block.shopify_attributes }}>
-                <div class="aria-real-customers__frame">
-                  {%- liquid
-                    # A block can carry its own video; blocks that do not fall back to the
-                    # section-level video so every slide can be a video without duplicating
-                    # the file on each block. Nothing is hardcoded — both come from settings.
-                    assign rc_video = block.settings.video
-                    if rc_video == blank
-                      assign rc_video = section.settings.fallback_video
+            {%- comment -%}
+              With `rewind` (see the JS file for why not `loop`), the two ends of the list
+              have no real neighbour to peek at — a plain rewind carousel shows empty space
+              there instead of the coverflow's usual overlapping card. Two boundary clones on
+              each side (copies of the last two REAL (non-blank) items before the real list,
+              the first two after it) means there is always something to see, at the cost of
+              this not being a mathematically endless loop — clicking through eventually shows
+              the same two photos twice in a row at the seam, which reads as a fluid transition
+              given the very short story data this section is limited to (`max_blocks: 12`),
+              rather than a distracting glitch.
+
+              "Real" slides and both clone pairs all skip any entry with no image/video set (a
+              `story` block/metaobject that exists but hasn't been filled in yet) — found by
+              scanning `story_items` directly (forward for the real loop and the "after"
+              clones, `reversed` for the "before" clones) rather than by assuming the blanks
+              sit at a fixed position, since a merchant's list can have them anywhere.
+            {%- endcomment -%}
+            {%- if rc_populated_count > 1 -%}
+              {%- liquid
+                assign rc_clone_before_1 = blank
+                assign rc_clone_before_2 = blank
+                for rc_item in story_items reversed
+                  assign rc_item_has_data = false
+                  if stories_from_metaobject
+                    assign rc_item_key = '|' | append: rc_item.system.handle | append: '|'
+                  else
+                    assign rc_item_key = '|' | append: rc_item.id | append: '|'
+                  endif
+                  if rc_keep contains rc_item_key
+                    assign rc_item_has_data = true
+                  endif
+                  if rc_item_has_data
+                    if rc_clone_before_2 == blank
+                      assign rc_clone_before_2 = rc_item
+                    elsif rc_clone_before_1 == blank
+                      assign rc_clone_before_1 = rc_item
+                      break
                     endif
+                  endif
+                endfor
+              -%}
+              {%- render 'aria-real-customers-slide',
+                block: rc_clone_before_1,
+                stories_from_metaobject: stories_from_metaobject,
+                section: section,
+                is_clone: true
+              -%}
+              {%- render 'aria-real-customers-slide',
+                block: rc_clone_before_2,
+                stories_from_metaobject: stories_from_metaobject,
+                section: section,
+                is_clone: true
+              -%}
+            {%- endif -%}
 
-                    assign has_video = false
-                    if rc_video != blank
-                      assign has_video = true
-                    endif
-
-                    assign has_external_video = false
-                    if has_video == false and block.settings.video_url != blank
-                      assign has_external_video = true
-                    endif
-
-                    assign rc_title = block.settings.caption | default: section.settings.heading
-                  -%}
-
-                  {%- comment -%}
-                    Poster for the slide. Used by every branch, so it is captured once.
-                    On a video slide this becomes the <video poster>, so the designed photo
-                    is what shows while the file buffers — a video slide is never a blank box.
-                  {%- endcomment -%}
-                  {%- capture story_poster -%}
-                    {%- if block.settings.image != blank -%}
-                      {{
-                        block.settings.image
-                        | image_url: width: 800
-                        | image_tag:
-                          loading: 'lazy',
-                          sizes: '(min-width: 990px) 343px, 70vw',
-                          widths: '320,480,686,800',
-                          class: 'aria-real-customers__image',
-                          alt: block.settings.image.alt | default: block.settings.caption
-                      }}
-                    {%- elsif rc_video != blank and rc_video.preview_image != blank -%}
-                      {{
-                        rc_video.preview_image
-                        | image_url: width: 800
-                        | image_tag:
-                          loading: 'lazy',
-                          sizes: '(min-width: 990px) 343px, 70vw',
-                          widths: '320,480,686,800',
-                          class: 'aria-real-customers__image',
-                          alt: block.settings.caption
-                      }}
-                    {%- else -%}
-                      <span class="aria-real-customers__placeholder">
-                        {{ 'collection-1' | placeholder_svg_tag: 'aria-real-customers__image' }}
-                      </span>
-                    {%- endif -%}
-                  {%- endcapture -%}
-
-                  {%- capture story_play -%}
-                    <span class="aria-real-customers__play" aria-hidden="true">
-                      <img
-                        src="{{ 'wp-play-button.svg' | asset_url }}"
-                        alt=""
-                        width="70"
-                        height="70"
-                        loading="lazy"
-                      >
-                    </span>
-                  {%- endcapture -%}
-
-                  {%- if has_video -%}
-                    {%- comment -%}
-                      Autoplaying, muted, looping, inline video with the theme's own custom
-                      controls. `controls` is deliberately absent, so no native control bar,
-                      timeline, volume slider, fullscreen or PiP chrome ever appears.
-
-                      Built by hand rather than with `video_tag` for one reason: `video_tag`
-                      posts the video's OWN preview frame and offers no way to override it,
-                      and this design wants the merchant's photo as the poster.
-
-                      `muted` must be present as an ATTRIBUTE (not just set from JS) or
-                      Chrome/Safari refuse the autoplay. `playsinline` is what stops iOS
-                      taking the video fullscreen.
-                    {%- endcomment -%}
-                    {%- liquid
-                      assign poster_url = ''
-                      if block.settings.image != blank
-                        assign poster_url = block.settings.image | image_url: width: 800
-                      elsif rc_video.preview_image != blank
-                        assign poster_url = rc_video.preview_image | image_url: width: 800
-                      endif
-                    -%}
-                    <div class="aria-real-customers__media aria-real-customers__media--video" data-aria-video-media>
-                      <video
-                        class="aria-real-customers__video"
-                        data-aria-video
-                        autoplay
-                        muted
-                        loop
-                        playsinline
-                        preload="metadata"
-                        {% if poster_url != blank %}
-                          poster="{{ poster_url }}"
-                        {% endif %}
-                      >
-                        {%- for source in rc_video.sources -%}
-                          <source src="{{ source.url }}" type="{{ source.mime_type }}">
-                        {%- endfor -%}
-                      </video>
-
-                      {%- comment -%}
-                        The two controls sit in OPPOSITE bottom corners, never grouped
-                        together: play/pause bottom-left, sound bottom-right. Both icons are
-                        rendered and CSS shows one per `data-state`, so toggling never
-                        rewrites innerHTML.
-                      {%- endcomment -%}
-                      <button
-                        type="button"
-                        class="aria-video-ctrl aria-video-ctrl--play aria-real-customers__ctrl"
-                        data-aria-video-play
-                        data-state="playing"
-                        data-label-play="{{ 'aria_theme.video.play' | t | escape }}"
-                        data-label-pause="{{ 'aria_theme.video.pause' | t | escape }}"
-                        aria-label="{{ 'aria_theme.video.pause' | t }}"
-                      >
-                        {%- render 'aria-icon', name: 'pause', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--pause' -%}
-                        {%- render 'aria-icon', name: 'play', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--play' -%}
-                      </button>
-
-                      <button
-                        type="button"
-                        class="aria-video-ctrl aria-video-ctrl--sound aria-real-customers__ctrl"
-                        data-aria-video-sound
-                        data-state="muted"
-                        data-label-mute="{{ 'aria_theme.video.mute' | t | escape }}"
-                        data-label-unmute="{{ 'aria_theme.video.unmute' | t | escape }}"
-                        aria-label="{{ 'aria_theme.video.unmute' | t }}"
-                      >
-                        {%- render 'aria-icon', name: 'sound-off', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--off' -%}
-                        {%- render 'aria-icon', name: 'sound-on', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--on' -%}
-                      </button>
-                    </div>
-                  {%- elsif has_external_video -%}
-                    {%- comment -%}
-                      YouTube/Vimeo fall back to the previous click-to-play poster via Dawn's
-                      <deferred-media>. The custom controls cannot drive a third-party iframe
-                      without loading their player APIs, which this section deliberately does
-                      not do, so an external URL keeps that provider's own chrome. Prefer a
-                      Shopify-hosted file here — that is the branch above.
-                    {%- endcomment -%}
-                    {%- assign rc_video_id = block.settings.video_url.id -%}
-                    <deferred-media class="aria-real-customers__media aria-real-customers__media--deferred">
-                      <button
-                        id="Deferred-Poster-{{ block.id }}"
-                        class="aria-real-customers__poster"
-                        type="button"
-                        aria-label="{{ 'aria_theme.real_customers.play_story' | t: name: rc_title }}"
-                      >
-                        {{ story_poster }}
-                        {{ story_play }}
-                      </button>
-
-                      <template>
-                        {%- if block.settings.video_url.type == 'youtube' -%}
-                          <iframe
-                            class="aria-real-customers__video"
-                            src="https://www.youtube.com/embed/{{ rc_video_id }}?enablejsapi=1&playsinline=1&loop=1&playlist={{ rc_video_id }}&autoplay=1"
-                            title="{{ rc_title | escape }}"
-                            allow="autoplay; encrypted-media; picture-in-picture"
-                            allowfullscreen
-                          ></iframe>
-                        {%- else -%}
-                          <iframe
-                            class="aria-real-customers__video"
-                            src="https://player.vimeo.com/video/{{ rc_video_id }}?loop=1&playsinline=1&autoplay=1"
-                            title="{{ rc_title | escape }}"
-                            allow="autoplay; encrypted-media; picture-in-picture"
-                            allowfullscreen
-                          ></iframe>
-                        {%- endif -%}
-                      </template>
-                    </deferred-media>
-                  {%- else -%}
-                    {%- comment -%}
-                      No video on this block and no section fallback set, so the slide stays
-                      an image. Set a video on the block, or one section-level fallback video,
-                      and it joins the video branch above.
-                    {%- endcomment -%}
-                    <div class="aria-real-customers__media">
-                      {{ story_poster }}
-                      {%- if block.settings.show_play_icon -%}
-                        {{ story_play }}
-                      {%- endif -%}
-                    </div>
-                  {%- endif -%}
-
-                  {%- if block.settings.caption != blank -%}
-                    <p class="aria-real-customers__caption">{{ block.settings.caption }}</p>
-                  {%- endif -%}
-                </div>
-              </div>
+            {%- for block in story_items -%}
+              {%- liquid
+                assign rc_real_has_data = false
+                if stories_from_metaobject
+                  assign rc_real_key = '|' | append: block.system.handle | append: '|'
+                else
+                  assign rc_real_key = '|' | append: block.id | append: '|'
+                endif
+                if rc_keep contains rc_real_key
+                  assign rc_real_has_data = true
+                endif
+              -%}
+              {%- unless rc_real_has_data -%}
+                {%- continue -%}
+              {%- endunless -%}
+              {%- render 'aria-real-customers-slide',
+                block: block,
+                stories_from_metaobject: stories_from_metaobject,
+                section: section,
+                is_clone: false
+              -%}
             {%- endfor -%}
+
+            {%- if rc_populated_count > 1 -%}
+              {%- liquid
+                assign rc_clone_after_1 = blank
+                assign rc_clone_after_2 = blank
+                for rc_item in story_items
+                  assign rc_item_has_data = false
+                  if stories_from_metaobject
+                    assign rc_item_key = '|' | append: rc_item.system.handle | append: '|'
+                  else
+                    assign rc_item_key = '|' | append: rc_item.id | append: '|'
+                  endif
+                  if rc_keep contains rc_item_key
+                    assign rc_item_has_data = true
+                  endif
+                  if rc_item_has_data
+                    if rc_clone_after_1 == blank
+                      assign rc_clone_after_1 = rc_item
+                    elsif rc_clone_after_2 == blank
+                      assign rc_clone_after_2 = rc_item
+                      break
+                    endif
+                  endif
+                endfor
+              -%}
+              {%- render 'aria-real-customers-slide',
+                block: rc_clone_after_1,
+                stories_from_metaobject: stories_from_metaobject,
+                section: section,
+                is_clone: true
+              -%}
+              {%- render 'aria-real-customers-slide',
+                block: rc_clone_after_2,
+                stories_from_metaobject: stories_from_metaobject,
+                section: section,
+                is_clone: true
+              -%}
+            {%- endif -%}
           </div>
         </div>
 
@@ -239,6 +228,10 @@
             aria-label="{{ 'aria_theme.carousel.previous' | t }}"
           >
             {%- render 'aria-icon', name: 'arrow-left' -%}
+            {%- comment -%} Mobile long arrow (Figma 6576:10350); CSS shows one or the other. {%- endcomment -%}
+            <span class="aria-real-customers__nav-arrow" aria-hidden="true">
+              {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+            </span>
           </button>
           <button
             type="button"
@@ -247,6 +240,9 @@
             aria-label="{{ 'aria_theme.carousel.next' | t }}"
           >
             {%- render 'aria-icon', name: 'arrow-right' -%}
+            <span class="aria-real-customers__nav-arrow" aria-hidden="true">
+              {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+            </span>
           </button>
         {%- endif -%}
       </div>
@@ -260,6 +256,23 @@
   "tag": "section",
   "class": "aria-real-customers-section",
   "settings": [
+    {
+      "type": "select",
+      "id": "layout_variant",
+      "options": [
+        {
+          "value": "home",
+          "label": "t:sections.aria-real-customers.settings.layout_variant.options__1.label"
+        },
+        {
+          "value": "product",
+          "label": "t:sections.aria-real-customers.settings.layout_variant.options__2.label"
+        }
+      ],
+      "default": "home",
+      "label": "t:sections.aria-real-customers.settings.layout_variant.label",
+      "info": "t:sections.aria-real-customers.settings.layout_variant.info"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -283,6 +296,12 @@
       "id": "fallback_video",
       "label": "t:sections.aria-real-customers.settings.fallback_video.label",
       "info": "t:sections.aria-real-customers.settings.fallback_video.info"
+    },
+    {
+      "type": "video",
+      "id": "exclude_video",
+      "label": "Video shown elsewhere on the page",
+      "info": "Stories with this video are left out so the same clip never shows twice."
     },
     {
       "type": "checkbox",
@@ -316,7 +335,10 @@
         {
           "type": "video_url",
           "id": "video_url",
-          "accept": ["youtube", "vimeo"],
+          "accept": [
+            "youtube",
+            "vimeo"
+          ],
           "label": "t:sections.aria-real-customers.blocks.story.settings.video_url.label"
         },
         {
@@ -339,11 +361,21 @@
     {
       "name": "t:sections.aria-real-customers.presets.name",
       "blocks": [
-        { "type": "story" },
-        { "type": "story" },
-        { "type": "story" },
-        { "type": "story" },
-        { "type": "story" }
+        {
+          "type": "story"
+        },
+        {
+          "type": "story"
+        },
+        {
+          "type": "story"
+        },
+        {
+          "type": "story"
+        },
+        {
+          "type": "story"
+        }
       ]
     }
   ]

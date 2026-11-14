@@ -1,0 +1,550 @@
+/*
+ * Contact body. Desktop: Figma node 7926:26021 (1440 x 1400) — Self-serve column
+ * 7926:26022 (w656) + Contact options column 7926:26037 (w560).
+ * Mobile (@media max-width: 749px): Figma node 7995:746 (Self-serve · Mobile,
+ * 375x1267) + 7995:783 (Contact options · Mobile, 375x1458). Same markup as
+ * desktop throughout — mobile is CSS-only, no schema/markup changes.
+ */
+.wp-contact-body {
+  background: var(--wp-color-white);
+  padding: var(--wp-contact-body-padding);
+}
+
+.wp-contact-body__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--wp-contact-body-gap);
+}
+
+/* --- Self-serve column ---------------------------------------------- */
+
+.wp-contact-selfserve {
+  flex: 0 0 var(--wp-contact-selfserve-width);
+  width: var(--wp-contact-selfserve-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-contact-selfserve-gap);
+}
+
+.wp-contact-selfserve__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-08);
+}
+
+.wp-contact-selfserve__eyebrow {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-eyebrow-size);
+  font-weight: var(--wp-eyebrow-weight);
+  line-height: var(--wp-eyebrow-line-height);
+  color: var(--wp-color-dark-pink);
+}
+
+.wp-contact-selfserve__title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h3-size);
+  font-weight: var(--wp-h3-weight);
+  line-height: var(--wp-h3-line-height);
+  color: var(--wp-color-black);
+}
+
+/* FAQ accordion */
+
+.wp-contact-faq {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--wp-color-btn-ghost-border);
+}
+
+.wp-contact-faq__row {
+  border-bottom: 1px solid var(--wp-color-btn-ghost-border);
+}
+
+.wp-contact-faq__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wp-space-08);
+  padding: var(--wp-space-24) 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.wp-contact-faq__summary::-webkit-details-marker {
+  display: none;
+}
+
+.wp-contact-faq__question {
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h5-size);
+  font-weight: var(--wp-h5-weight);
+  line-height: var(--wp-h5-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-contact-faq__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wp-color-black);
+}
+
+.wp-contact-faq__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.wp-contact-faq__icon-minus {
+  display: none;
+}
+
+.wp-contact-faq__row[open] .wp-contact-faq__icon-minus {
+  display: block;
+}
+
+.wp-contact-faq__row[open] .wp-contact-faq__icon-plus {
+  display: none;
+}
+
+.wp-contact-faq__answer {
+  padding: 0 0 var(--wp-space-24);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-body-small-weight);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-gray);
+}
+
+.wp-contact-faq__answer p {
+  margin: 0;
+}
+
+.wp-contact-faq__link {
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-dark-pink);
+  text-decoration: underline;
+}
+
+/* "Or just turn up" banner */
+
+.wp-contact-turnup {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: var(--wp-contact-selfserve-width);
+  height: var(--wp-contact-turnup-height);
+  border-radius: var(--wp-radius-04);
+  background: var(--wp-contact-turnup-gradient);
+  overflow: hidden;
+}
+
+.wp-contact-turnup__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-16);
+  padding: var(--wp-space-32);
+  min-width: 0;
+}
+
+.wp-contact-turnup__eyebrow {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-eyebrow-size);
+  font-weight: var(--wp-eyebrow-weight);
+  line-height: var(--wp-eyebrow-line-height);
+  color: var(--wp-color-white);
+}
+
+.wp-contact-turnup__body {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-body-small-weight);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-white);
+}
+
+.wp-contact-turnup__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  background: var(--wp-color-black);
+  border-radius: var(--wp-radius-sm);
+  padding: var(--wp-contact-btn-padding);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-medium-size);
+  font-weight: var(--wp-body-medium-weight);
+  line-height: var(--wp-body-medium-line-height);
+  color: var(--wp-color-white);
+  text-decoration: none;
+  text-align: center;
+}
+
+.wp-contact-turnup__photo {
+  flex: 0 0 var(--wp-contact-turnup-photo-width);
+  width: var(--wp-contact-turnup-photo-width);
+}
+
+.wp-contact-turnup__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Contact options column ------------------------------------------ */
+
+.wp-contact-options {
+  flex: 0 0 var(--wp-contact-options-width);
+  width: var(--wp-contact-options-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-24);
+}
+
+.wp-contact-form-card {
+  background: var(--wp-color-white);
+  border: 1px solid var(--wp-color-btn-ghost-border);
+  border-radius: var(--wp-radius-04);
+  padding: var(--wp-space-32);
+  display: flex;
+  flex-direction: column;
+}
+
+.wp-contact-form-card__title {
+  margin: 0 0 var(--wp-space-04);
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h5-size);
+  font-weight: var(--wp-h5-weight);
+  line-height: var(--wp-h5-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-contact-form-card__sub {
+  margin: 0 0 var(--wp-space-24);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-xs-size);
+  font-weight: var(--wp-body-xs-weight);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-gray);
+}
+
+.wp-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-16);
+  margin: 0 0 var(--wp-space-16);
+}
+
+.wp-contact-form__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.wp-contact-form__input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--wp-color-white);
+  border: 1px solid var(--wp-color-btn-ghost-border);
+  border-radius: var(--wp-radius-04);
+  padding: var(--wp-contact-input-padding);
+  height: var(--wp-contact-input-height);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-body-small-weight);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-contact-form__input::placeholder {
+  color: var(--wp-color-gray-500);
+}
+
+.wp-contact-form__input--textarea {
+  height: var(--wp-contact-textarea-height);
+  resize: vertical;
+}
+
+.wp-contact-form__submit {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  background: var(--wp-color-black);
+  border-radius: var(--wp-radius-sm);
+  padding: var(--wp-contact-btn-padding);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-medium-size);
+  font-weight: var(--wp-body-medium-weight);
+  line-height: var(--wp-body-medium-line-height);
+  color: var(--wp-color-white);
+  text-align: center;
+}
+
+.wp-contact-form__message,
+.wp-contact-form__message-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-space-08);
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-contact-form__error-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wp-contact-form__error-link {
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-dark-pink);
+}
+
+.wp-contact-form__field-error {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-space-08);
+  margin-top: var(--wp-space-08);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-xs-size);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-gray);
+}
+
+.wp-contact-form-card__privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--wp-space-08);
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-xs-size);
+  font-weight: var(--wp-body-xs-weight);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-gray);
+}
+
+.wp-contact-form-card__privacy p {
+  margin: 0;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.wp-contact-form-card__privacy-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.wp-contact-form-card__privacy-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* "Other ways" card */
+
+.wp-contact-otherways {
+  background: var(--wp-color-blush);
+  border-radius: var(--wp-radius-04);
+  padding: var(--wp-space-32) var(--wp-space-32) var(--wp-space-16);
+}
+
+.wp-contact-otherways__eyebrow {
+  margin: 0 0 var(--wp-space-16);
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-eyebrow-size);
+  font-weight: var(--wp-eyebrow-weight);
+  line-height: var(--wp-eyebrow-line-height);
+  color: var(--wp-color-dark-pink);
+}
+
+.wp-contact-otherways__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wp-space-16);
+  padding: var(--wp-space-16) 0;
+  border-bottom: 1px solid var(--wp-color-btn-ghost-border);
+}
+
+.wp-contact-otherways__row:last-child {
+  border-bottom: none;
+}
+
+.wp-contact-otherways__label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-04);
+}
+
+.wp-contact-otherways__title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h6-size);
+  font-weight: var(--wp-weight-medium);
+  line-height: var(--wp-h6-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-contact-otherways__subtitle {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-xs-size);
+  font-weight: var(--wp-body-xs-weight);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-gray);
+}
+
+.wp-contact-otherways__value {
+  flex: none;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-weight-medium);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-dark-pink);
+  text-decoration: underline;
+  text-align: right;
+}
+
+@media (max-width: 749px) {
+  /* Section padding now lives on the two blocks below (Figma: Self-serve frame
+     py-40 px-16; Contact options frame pt-0 px-16 pb-40) instead of the outer
+     wrapper, so the 40px gap between them comes from their own padding, not a gap. */
+  .wp-contact-body {
+    padding: 0;
+  }
+
+  .wp-contact-body__inner {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .wp-contact-selfserve,
+  .wp-contact-options,
+  .wp-contact-turnup {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .wp-contact-selfserve {
+    gap: var(--wp-space-24);
+    padding: var(--wp-space-40) var(--wp-space-16);
+  }
+
+  .wp-contact-options {
+    padding: 0 var(--wp-space-16) var(--wp-space-40);
+  }
+
+  /* Heading (7995:748) */
+
+  .wp-contact-selfserve__eyebrow {
+    font-size: var(--wp-m-contact-body-eyebrow-size);
+    line-height: var(--wp-m-contact-body-eyebrow-line-height);
+  }
+
+  .wp-contact-selfserve__title {
+    font-size: var(--wp-m-contact-body-h3-size);
+    line-height: var(--wp-m-contact-body-h3-line-height);
+  }
+
+  /* FAQ list (7995:751) — header gap 16px (question -> icon), 8px gap down to the
+     answer (summary padding-bottom shrinks from 24 to 8, answer keeps its own
+     bottom padding of 24, no markup change). */
+
+  .wp-contact-faq__summary {
+    gap: var(--wp-space-16);
+    padding: var(--wp-space-24) 0 var(--wp-space-08);
+  }
+
+  .wp-contact-faq__question {
+    font-size: var(--wp-m-contact-body-h5-size);
+    line-height: var(--wp-m-contact-body-h5-line-height);
+  }
+
+  /* "Or just turn up" (7995:756) */
+
+  .wp-contact-turnup {
+    /* Markup order is text-then-photo (desktop: text left); Figma mobile (7995:756)
+       stacks photo on top, text below, so the photo is visually reversed to first. */
+    flex-direction: column-reverse;
+    height: auto;
+  }
+
+  .wp-contact-turnup__photo {
+    width: 100%;
+    height: 200px;
+  }
+
+  .wp-contact-turnup__text {
+    padding: var(--wp-space-24) var(--wp-space-20);
+  }
+
+  .wp-contact-turnup__eyebrow {
+    font-size: var(--wp-m-contact-body-eyebrow-size);
+    line-height: var(--wp-m-contact-body-eyebrow-line-height);
+  }
+
+  .wp-contact-turnup__btn {
+    font-size: var(--wp-body-small-size);
+    line-height: var(--wp-body-small-line-height);
+  }
+
+  /* Form card (7995:784) — title -> sub 4px, sub -> first field 24px, submit -> privacy
+     16px: same per-element margins as desktop (section rules above), only padding and
+     title size differ here. */
+
+  .wp-contact-form-card {
+    padding: var(--wp-space-24) var(--wp-space-20);
+  }
+
+  .wp-contact-form-card__title {
+    font-size: var(--wp-m-contact-body-h5-size);
+    line-height: var(--wp-m-contact-body-h5-line-height);
+  }
+
+  /* Other ways (7995:799) — rows stack label-above-value (gap 8) instead of the
+     desktop side-by-side row; eyebrow loses its margin since the gap now comes
+     from the first row's own top padding. */
+
+  .wp-contact-otherways {
+    padding: var(--wp-space-24) var(--wp-space-20) var(--wp-space-08);
+  }
+
+  .wp-contact-otherways__eyebrow {
+    margin: 0;
+    font-size: var(--wp-m-contact-body-eyebrow-size);
+    line-height: var(--wp-m-contact-body-eyebrow-line-height);
+  }
+
+  .wp-contact-otherways__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--wp-space-08);
+  }
+
+  .wp-contact-otherways__title {
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-small-size);
+    line-height: var(--wp-body-small-line-height);
+  }
+
+  .wp-contact-otherways__value {
+    text-align: left;
+  }
+}

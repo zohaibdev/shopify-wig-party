@@ -72,6 +72,8 @@ html {
 .aria-header__announcement {
   color: rgb(var(--color-background));
   background-color: rgb(var(--color-foreground));
+  /* The track ran 6px past the viewport and gave every page horizontal scroll. */
+  overflow-x: clip;
 }
 
 .aria-header__announcement-inner {
@@ -437,7 +439,7 @@ html {
    first item — which would look wrong the moment a merchant reorders the menu.
    The highlight pill is excluded: it is already white-on-rose. */
 .aria-header__menu-link:not(.aria-header__menu-link--highlight):hover,
-.aria-header__menu-link:not(.aria-header__menu-link--highlight)[aria-current='page'] {
+.aria-header__menu-link:not(.aria-header__menu-link--highlight)[aria-current] {
   color: #d05654;
 }
 
@@ -831,6 +833,19 @@ predictive-search[loading] .aria-header__search-results {
   height: 16px;
 }
 
+/*
+ * Desktop-only glyphs (Figma 6316:3408). The search, account and cart buttons carry the
+ * theme's original icons for tablet and mobile and Figma's 16px ones for the >=1280 bar;
+ * this base rule is the resting state (compact on), the desktop block swaps them.
+ */
+.aria-header__icon--desktop {
+  display: none;
+}
+
+.aria-header__new-chip {
+  display: none;
+}
+
 /* ---------- Tablet / desktop ---------- */
 
 @media screen and (min-width: 750px) {
@@ -1091,6 +1106,215 @@ predictive-search[loading] .aria-header__search-results {
 }
 
 
+
+/*
+ * ---------- Desktop header: Figma internal 6343:5156 (1440 x 107) ----------
+ *
+ * Announcement bar 1440 x 39, black, py-10 px-56: Poppins 12/14 uppercase white, centred in
+ * a 1390 box that starts at x 56 (so it overruns the frame by 6 and the text centres 31 right
+ * of the page centre, as drawn); the 76 / 85 x 19 store badges 8 apart, right-aligned at 56.
+ *
+ * Navbar 1440 x 68 white band, px-40 py-14: the 152 x 40 wordmark, 28 to the menu (items 12
+ * apart, each px-8 py-4 around Helvetica 16/18.4 with a 14px chevron 4 after it on the
+ * parents listed in `chevron_items`), 12 to PRE-ORDER (#A64A4C, px-24 py-8, r-2, Jost
+ * Medium 12/22). On the right, 8 apart: a 248 x 36 search pill and two 36px circles, all
+ * filled #CD8080 at 8% with no ring, glyphs in #CD8080; the placeholder is Poppins 14/22
+ * black at 58%. Live carries a 6px #E8332A dot 4 down whose left edge is 3 short of the
+ * item's right edge (the item keeps its px-8); a 35 x 17 #F79510 NEW chip sits over Dailey
+ * Deals, 63 in and 11 above it. The cart count is a 10px #CD8080 disc at (18, 7).
+ *
+ * With only three chevrons and no desktop wishlist the row has room for Figma's 40px inset
+ * and 28px logo gap again, which the 2026-09-08 width budget above had given up; the
+ * overlap was re-measured at 1280-1920 for this pass.
+ */
+@media screen and (min-width: 1280px) {
+  .aria-header__nav {
+    padding: 14px 40px;
+  }
+
+  .aria-header__nav-left {
+    gap: 28px;
+  }
+
+  /* Light text on the black bar and on PRE-ORDER is greyscale-antialiased, which is how
+     Figma renders it; Chrome's default smoothing sets it visibly heavier. */
+  .aria-header__announcement,
+  .aria-header__menu-link--highlight {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* The label box is sized to a whole pixel by aria-header.js. */
+  .aria-header__menu-label {
+    display: inline-block;
+  }
+
+  .aria-header__announcement-inner {
+    position: relative;
+    max-width: 1440px;
+    min-height: 39px;
+    padding: 10px 56px;
+  }
+
+  .aria-header__announcement-track {
+    position: absolute;
+    top: 50%;
+    left: 56px;
+    right: -6px;
+    height: 14px;
+    transform: translateY(-50%);
+  }
+
+  .aria-header__announcement-item {
+    font-family: var(--font-body-family);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--white, #fff);
+  }
+
+  .aria-header__store-links {
+    position: relative;
+    margin-left: auto;
+  }
+
+  .aria-header__icon--desktop {
+    display: block;
+  }
+
+  .aria-header__icon--compact,
+  .aria-header__wishlist--mobile-only {
+    display: none;
+  }
+
+  .aria-header__menu-link {
+    position: relative;
+    padding: 4px 8px;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 18px;
+    letter-spacing: 0;
+    color: var(--black, #000);
+  }
+
+  /* Hover / current page: the #EBD8D9 pill the mega parents already use, text stays black. */
+  .aria-header__menu-link:not(.aria-header__menu-link--highlight):hover,
+  .aria-header__menu-link:not(.aria-header__menu-link--highlight)[aria-current] {
+    background-color: var(--pink-tint, #ebd8d9);
+    color: var(--black, #000);
+  }
+
+  /* Live: the usual px-8; the 6px dot out of flow, 4 down, its left edge 3 short of the
+     item's right edge (so it overhangs by 3). */
+  .aria-header__menu-link > .aria-header__live-dot {
+    position: absolute;
+    top: 4px;
+    left: calc(100% - 3px);
+    right: auto;
+    margin: 0;
+  }
+
+  .aria-header__menu-link.aria-header__menu-link--highlight {
+    align-self: center;
+    min-height: 38px;
+    padding: 8px 24px;
+    border-radius: 2px;
+    background: var(--py, #a64a4c);
+    font-family: var(--aria-header-preorder-font, var(--font-body-family));
+    font-size: 12px;
+    font-weight: var(--aria-header-preorder-weight, 500);
+    line-height: 22px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--white, #fff);
+  }
+
+  .aria-header__new-chip {
+    position: absolute;
+    top: -14px;
+    left: auto;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 35px;
+    height: 17px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: #f79510;
+    font-family: var(--font-body-family);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--black, #000);
+    pointer-events: none;
+  }
+
+  /* Search: 248 x 36, #CD8080 at 8%, no ring, pl-12 pr-10 py-6. */
+  .aria-header__search-form {
+    box-sizing: border-box;
+    justify-content: space-between;
+    height: 36px;
+    padding: 6px 10px 6px 12px;
+    border: 0;
+    background: rgba(205, 128, 128, 0.08);
+  }
+
+  .aria-header__search-input {
+    min-height: 22px;
+    height: 22px;
+    padding: 0;
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--black, #000);
+  }
+
+  .aria-header__search-input::placeholder {
+    color: rgba(0, 0, 0, 0.58);
+    opacity: 1;
+  }
+
+  .aria-header__search-submit {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    color: #cd8080;
+  }
+
+  /* Account and cart: 36px circles, #CD8080 at 8%, no ring, the glyph in #CD8080. */
+  .aria-header__icon-btn {
+    box-sizing: border-box;
+    border: 0;
+    background: rgba(205, 128, 128, 0.08);
+    color: #cd8080;
+  }
+
+  /* Cart count: a 10px #CD8080 disc with an 8px #FBF5F5 digit at (18, 7) in the button. */
+  .aria-header__icon-btn .aria-header__cart-bubble {
+    top: 7px;
+    right: auto;
+    left: 18px;
+    min-width: 10px;
+    height: 10px;
+    padding: 0 2px;
+    background: #cd8080;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 8px;
+    color: #fbf5f5;
+  }
+}
+
 /*
  * NO PER-RANGE MENU GAP. There used to be a `1280-1400px { .aria-header__menu { gap: 16px } }`
  * override here. The >=1280 desktop block sets the approved 12px (V4 6316:3412 spaces the item
@@ -1209,5 +1433,103 @@ predictive-search[loading] .aria-header__search-results {
     left: 0;
     right: 0;
     width: auto;
+  }
+}
+/* ---------- Mobile header, Figma Home mobile 7238:5130 (below 750px) ----------
+ * Announcement bar 69 tall: the message, then the App Store / Google Play badges centred
+ * 8 below it. Header row 48 tall, 16px gutters: the 110x28 wordmark on the left, then four
+ * 32px round icons 2px apart on the right — search, account, cart, menu (no wishlist).
+ * Circles are #cd8080 at 8%, glyphs 16px. */
+@media screen and (max-width: 749px) {
+  .aria-header__announcement-inner {
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+  }
+
+  .aria-header__store-links {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .aria-header__store-link img {
+    display: block;
+    height: 19px;
+    width: auto;
+  }
+
+  .aria-header__nav {
+    gap: 2px;
+    padding: 8px 16px;
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+
+  .aria-header__logo {
+    order: 1;
+    margin-right: auto;
+    flex-shrink: 0;
+  }
+
+  .aria-header__logo-img {
+    width: 110px;
+    height: 28px;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .aria-header__nav-right {
+    order: 2;
+    gap: 2px;
+  }
+
+  /* The wordmark and the hamburger share .aria-header__nav-left; dissolving it lets the
+     wordmark lead and the hamburger come last, after the search / account / cart icons. */
+  .aria-header__nav-left {
+    display: contents;
+  }
+
+  .aria-header__menu-toggle {
+    order: 3;
+  }
+
+  .aria-header .wp-search-overlay-trigger,
+  .aria-header__account,
+  .aria-header__icon-btn,
+  .aria-header__menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(205, 128, 128, 0.08);
+    color: #cd8080;
+    cursor: pointer;
+  }
+
+  .aria-header .wp-search-overlay-trigger img,
+  .aria-header__icon-btn svg,
+  .aria-header__menu-toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .aria-header__nav-right .aria-header__wishlist {
+    display: flex;
+  }
+
+  .aria-header__cart .aria-header__cart-bubble {
+    top: 5px;
+    right: 6px;
+    min-width: 10px;
+    height: 10px;
+    padding: 0 2px;
+    font-size: 8px;
   }
 }

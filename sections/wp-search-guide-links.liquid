@@ -1,0 +1,33 @@
+{%- comment -%}
+  API-only section (not in any template). assets/wp-search-overlay.js fetches
+  /search?q=..&type=article&section_id=wp-search-guide-links and reads the list below to fill
+  GUIDES / FROM THE LIVE in the search overlay. Predictive search returns only ~1 article
+  for a query, the article search returns them all. Max 6, each with title, url, blog handle.
+{%- endcomment -%}
+{%- liquid
+  assign is_article_request = false
+  if search.performed and search.types.size == 1 and search.types.first == 'article'
+    assign is_article_request = true
+  endif
+-%}
+<ul data-wp-guide-links hidden>
+  {%- if is_article_request -%}
+    {%- assign shown = 0 -%}
+    {%- for item in search.results -%}
+      {%- if item.object_type != 'article' or shown >= 6 -%}{%- continue -%}{%- endif -%}
+      {%- assign shown = shown | plus: 1 -%}
+      <li
+        data-title="{{ item.title | escape }}"
+        data-url="{{ item.url }}"
+        data-blog="{{ item.blog.handle | escape }}"
+      ></li>
+    {%- endfor -%}
+  {%- endif -%}
+</ul>
+
+{% schema %}
+{
+  "name": "Search guide links",
+  "settings": []
+}
+{% endschema %}

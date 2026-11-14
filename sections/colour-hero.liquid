@@ -1,0 +1,289 @@
+{%- comment -%}
+  Wig Party — Find Your Colour page, hero. Figma internal file, node 7009:5257 (1440 x 462).
+  A hair photo under a grey wash, with a frosted, white-ringed panel holding breadcrumbs,
+  the title, an intro, two buttons and a stats card of `stat` blocks.
+  Styles in assets/section-aria-colour-hero.css.
+{%- endcomment -%}
+
+{{ 'section-aria-colour-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_label = section.settings.current_label | default: page.title
+  assign stat_blocks = section.blocks | where: 'type', 'stat'
+-%}
+
+<div class="aria-colour-hero">
+  <div class="aria-colour-hero__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1100,1440,2160,2880', sizes: '100vw', alt: '', loading: 'eager'
+      }}
+    {%- else -%}
+      <img
+        class="aria-colour-hero__bg-fallback"
+        src="{{ 'wp-colour-hero.jpg' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="aria-colour-hero__panel">
+    <nav class="aria-colour-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="aria-colour-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank -%}
+          <li><a href="{{ section.settings.parent_url | default: '/#start-here' }}">{{ section.settings.parent_label }}</a></li>
+        {%- endif -%}
+        <li aria-current="page">{{ ' ' }}{{ current_label }}</li>
+      </ol>
+    </nav>
+
+    <div class="aria-colour-hero__body">
+      <div class="aria-colour-hero__copy">
+        <div class="aria-colour-hero__text-group">
+          {%- if section.settings.heading != blank -%}
+            <h1 class="aria-colour-hero__title">{{ section.settings.heading }}</h1>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <p class="aria-colour-hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.button_label != blank or section.settings.button_2_label != blank -%}
+          <div class="aria-colour-hero__buttons">
+            {%- if section.settings.button_label != blank -%}
+              <a class="aria-colour-hero__btn" href="{{ section.settings.button_url | default: '#' }}">
+                {%- comment -%}
+                  The mobile frame (7009:4819) names this button differently from the desktop
+                  frame, so an optional mobile label swaps in below 750px.
+                {%- endcomment -%}
+                {%- if section.settings.button_label_mobile != blank -%}
+                  <span class="aria-colour-hero__btn-label aria-colour-hero__btn-label--desktop">
+                    {{- section.settings.button_label -}}
+                  </span>
+                  <span class="aria-colour-hero__btn-label aria-colour-hero__btn-label--mobile">
+                    {{- section.settings.button_label_mobile -}}
+                  </span>
+                {%- else -%}
+                  {{- section.settings.button_label -}}
+                {%- endif -%}
+              </a>
+            {%- endif -%}
+            {%- if section.settings.button_2_label != blank -%}
+              <a
+                class="aria-colour-hero__btn aria-colour-hero__btn--outline"
+                href="{{ section.settings.button_2_url | default: '#' }}"
+              >
+                {{- section.settings.button_2_label -}}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if stat_blocks.size > 0 -%}
+        <div class="aria-colour-hero__stats">
+          <ul class="aria-colour-hero__stats-row" role="list">
+            {%- for block in stat_blocks -%}
+              {%- liquid
+                case block.settings.icon
+                  when 'styles'
+                    assign icon_file = 'icon-colour-styles.svg'
+                    assign icon_w = '23.6796'
+                    assign icon_h = '24.6624'
+                  when 'clock'
+                    assign icon_file = 'icon-colour-clock.svg'
+                    assign icon_w = '24.0009'
+                    assign icon_h = '22.5014'
+                  else
+                    assign icon_file = 'icon-colour-swap.svg'
+                    assign icon_w = '24.0003'
+                    assign icon_h = '27.2884'
+                endcase
+              -%}
+              <li
+                class="aria-colour-hero__stat"
+                style="--stat-width: {{ block.settings.width }}px;"
+                {{ block.shopify_attributes }}
+              >
+                <span class="aria-colour-hero__stat-icon">
+                  {%- if block.settings.icon_image != blank -%}
+                    {{
+                      block.settings.icon_image
+                      | image_url: width: 96
+                      | image_tag: width: 32, height: 32, alt: '', loading: 'lazy'
+                    }}
+                  {%- else -%}
+                    <img
+                      src="{{ icon_file | asset_url }}"
+                      alt=""
+                      width="{{ icon_w }}"
+                      height="{{ icon_h }}"
+                      loading="lazy"
+                    >
+                  {%- endif -%}
+                </span>
+                <span class="aria-colour-hero__stat-text">
+                  {%- if block.settings.value != blank -%}
+                    <span class="aria-colour-hero__stat-value">{{ block.settings.value }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.label != blank -%}
+                    <span class="aria-colour-hero__stat-label{% if block.settings.label_heading_font %} aria-colour-hero__stat-label--heading{% endif %}">
+                      {{- block.settings.label -}}
+                    </span>
+                  {%- endif -%}
+                </span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-colour-hero.name",
+  "tag": "section",
+  "class": "aria-colour-hero-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-colour-hero.settings.background.label",
+      "info": "t:sections.aria-colour-hero.settings.background.info"
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "t:sections.aria-colour-hero.settings.home_label.label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "Start Here",
+      "label": "t:sections.aria-colour-hero.settings.parent_label.label"
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "t:sections.aria-colour-hero.settings.parent_url.label",
+      "info": "t:sections.aria-colour-hero.settings.parent_url.info"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "Find your colour",
+      "label": "t:sections.aria-colour-hero.settings.current_label.label",
+      "info": "t:sections.aria-colour-hero.settings.current_label.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Screens lie about hair colour. Here is how to work around it.",
+      "label": "t:sections.aria-colour-hero.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Every monitor is calibrated differently and every room is lit differently.\nRooted shades change completely between the two. This page shows\nevery shade in three lights, explains the naming, and gives you three ways to be sure.",
+      "label": "t:sections.aria-colour-hero.settings.text.label",
+      "info": "t:sections.aria-colour-hero.settings.text.info"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "SEE EVERY SHADE",
+      "label": "t:sections.aria-colour-hero.settings.button_label.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label_mobile",
+      "label": "t:sections.aria-colour-hero.settings.button_label_mobile.label",
+      "info": "t:sections.aria-colour-hero.settings.button_label_mobile.info"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-colour-hero.settings.button_url.label"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "default": "SEE EVERY SHADE",
+      "label": "t:sections.aria-colour-hero.settings.button_2_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_2_url",
+      "label": "t:sections.aria-colour-hero.settings.button_2_url.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "t:sections.aria-colour-hero.blocks.stat.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "default": "swap",
+          "label": "t:sections.aria-colour-hero.blocks.stat.settings.icon.label",
+          "options": [
+            { "value": "swap", "label": "t:sections.aria-colour-hero.blocks.stat.settings.icon.options__1.label" },
+            { "value": "styles", "label": "t:sections.aria-colour-hero.blocks.stat.settings.icon.options__2.label" },
+            { "value": "clock", "label": "t:sections.aria-colour-hero.blocks.stat.settings.icon.options__3.label" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "t:sections.aria-colour-hero.blocks.stat.settings.icon_image.label",
+          "info": "t:sections.aria-colour-hero.blocks.stat.settings.icon_image.info"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "default": "47",
+          "label": "t:sections.aria-colour-hero.blocks.stat.settings.value.label"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "shades across the range",
+          "label": "t:sections.aria-colour-hero.blocks.stat.settings.label.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "label_heading_font",
+          "default": false,
+          "label": "t:sections.aria-colour-hero.blocks.stat.settings.label_heading_font.label"
+        },
+        {
+          "type": "range",
+          "id": "width",
+          "min": 80,
+          "max": 180,
+          "step": 1,
+          "unit": "px",
+          "default": 125,
+          "label": "t:sections.aria-colour-hero.blocks.stat.settings.width.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-colour-hero.presets.name",
+      "blocks": [{ "type": "stat" }, { "type": "stat" }, { "type": "stat" }]
+    }
+  ]
+}
+{% endschema %}

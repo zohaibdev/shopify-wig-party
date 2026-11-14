@@ -1,0 +1,35 @@
+{%- comment -%}
+  Wig Party — which products count as "new in", for sections/new-in-hero.liquid and
+  sections/collection-results.liquid. Capture its output:
+    new:<cutoff>:,handle,handle,      products added in the last `days` days
+    latest:0:,handle,handle,          none were, so the newest `fallback` products instead
+  Accepts:
+  - products: the collection's products, newest first (the New In page sorts by
+    created-descending)
+  - days: the window in days
+  - fallback: how many products to show when the window is empty
+  "Added" is the day the product was created, the order the page sorts by — so every new wig
+  sits at the top of the first page, and a wig that was only re-published (a back-in-stock
+  relist) does not count as new.
+{%- endcomment -%}
+{%- liquid
+  assign window_seconds = days | times: 86400
+  assign cutoff = 'now' | date: '%s' | minus: window_seconds
+  assign new_handles = ','
+  for product in products
+    assign added = product.created_at | date: '%s' | plus: 0
+    if added >= cutoff
+      assign new_handles = new_handles | append: product.handle | append: ','
+    endif
+  endfor
+
+  if new_handles != ','
+    echo 'new:' | append: cutoff | append: ':' | append: new_handles
+  else
+    assign latest_handles = ','
+    for product in products limit: fallback
+      assign latest_handles = latest_handles | append: product.handle | append: ','
+    endfor
+    echo 'latest:0:' | append: latest_handles
+  endif
+-%}

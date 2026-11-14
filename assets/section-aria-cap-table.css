@@ -1,0 +1,402 @@
+/* Wig Party — Shop by Cap Construction "Side by side" table (sections/cap-table.liquid),
+ * Figma 6980:6966.
+ *
+ * Desktop geometry (px, Figma, 1440 x 1026):
+ *   bg     a 1440 x 1159 box from the top (clipped at 1026); the photo inside it is
+ *          stretched to 121.79% x 169.75% at -12.44% / -24.41%, under
+ *          rgba(0,0,0,.29) and a 110.9deg rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46)
+ *          78.602% wash
+ *   card   1360 wide, centred (63.5 top and bottom), rgba(255,255,255,.4) with a 30.25
+ *          backdrop blur, r-32, py-56 px-32; 56 from the heading block to the table
+ *   head   eyebrow (Poppins Bold 11/16.5, 1.76 tracking, uppercase), 16, title (Montserrat
+ *          Medium 48/56, 798 wide), both white and centred
+ *   table  rows 29 apart. Every row is a 389 label column (flex 1, px-24 py-8), 67, then
+ *          the values. Head row: four columns 198 / 197 / 196 / 197 wide, 16 apart (as
+ *          drawn, so their centres sit up to 3.5 left of the value cells'), each p-10: a
+ *          47 glyph, 8, the name (Montserrat Medium 20/28 #DFDFDF). Value rows, 48 tall:
+ *          label Montserrat Bold 20/28 (Medium on "Live now"), then four 198 cells 16
+ *          apart, px-16 py-8, centred 18/32 #F6F5F1. The first column and the first row
+ *          are Poppins Medium; the rest is Neue Haas Grotesk Display 55 Roman, which falls
+ *          back to Helvetica Neue.
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-cap-table,
+.aria-cap-table *,
+.aria-cap-table *::before,
+.aria-cap-table *::after {
+  box-sizing: border-box;
+}
+
+.aria-cap-table {
+  position: relative;
+  overflow: hidden;
+  padding: 63.5px 40px;
+  background: var(--white, #fff);
+}
+
+/* ---------- Background (6980:6967) ---------- */
+
+.aria-cap-table__bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1159px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aria-cap-table__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.29) 0%, rgba(0, 0, 0, 0.29) 100%),
+    linear-gradient(110.899deg, rgba(47, 47, 47, 0.46) 12.738%, rgba(222, 222, 222, 0.46) 78.602%);
+}
+
+/* Figma stretches the fill to its own box, so the built-in photo is not cover-fitted. */
+.aria-cap-table__bg-img {
+  position: absolute;
+  top: -24.41%;
+  left: -12.44%;
+  display: block;
+  width: 121.79%;
+  height: 169.75%;
+  max-width: none;
+}
+
+.aria-cap-table__bg-img--custom {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Card (6980:6968) ---------- */
+
+.aria-cap-table__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 56px 32px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(30.25px);
+  backdrop-filter: blur(30.25px);
+}
+
+.aria-cap-table__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  text-align: center;
+  color: var(--white, #fff);
+}
+
+.aria-cap-table__eyebrow {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16.5px;
+  letter-spacing: 1.76px;
+  /* Figma rounds the 16.5 line box to 17, which keeps the card at 899. */
+  min-height: 17px;
+  text-transform: uppercase;
+}
+
+.aria-cap-table__title {
+  max-width: 798px;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+/* ---------- Table (6980:6972) ---------- */
+
+.aria-cap-table__table {
+  display: flex;
+  flex-direction: column;
+  gap: 29px;
+  width: 100%;
+}
+
+.aria-cap-table__row {
+  display: flex;
+  align-items: center;
+  gap: 67px;
+}
+
+.aria-cap-table__corner,
+.aria-cap-table__label {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.aria-cap-table__cols,
+.aria-cap-table__cells {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+  width: 840px;
+}
+
+.aria-cap-table__col {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.aria-cap-table__col:nth-child(1) {
+  width: 198px;
+}
+
+.aria-cap-table__col:nth-child(2),
+.aria-cap-table__col:nth-child(4) {
+  width: 197px;
+}
+
+.aria-cap-table__col:nth-child(3) {
+  width: 196px;
+}
+
+.aria-cap-table__col-icon {
+  display: block;
+  width: 47px;
+  height: 47px;
+  color: var(--white, #fff);
+}
+
+.aria-cap-table__col-icon svg,
+.aria-cap-table__col-icon img {
+  display: block;
+  width: 47px;
+  height: 47px;
+  object-fit: contain;
+}
+
+.aria-cap-table__col-name {
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+  color: #dfdfdf;
+}
+
+.aria-cap-table__label {
+  padding: 8px 24px;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: #f6f5f1;
+}
+
+.aria-cap-table__row--medium .aria-cap-table__label {
+  font-weight: 500;
+}
+
+.aria-cap-table__cell {
+  display: block;
+  flex: none;
+  width: 198px;
+  padding: 8px 16px;
+  font-family: 'Neue Haas Grotesk Display Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 32px;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+  color: #f6f5f1;
+}
+
+/* Poppins Medium marks the first column and the whole first row (Weight), as drawn. */
+.aria-cap-table__cell:first-child,
+.aria-cap-table__row--head + .aria-cap-table__row .aria-cap-table__cell {
+  font-family: var(--font-body-family);
+  font-weight: 500;
+}
+
+/* Mobile-only column indicators (see the mobile block). */
+.aria-cap-table__dots {
+  display: none;
+}
+
+/* ---------- Tablet (no Figma frame yet): let the table scroll ---------- */
+
+@media screen and (max-width: 1439px) {
+  .aria-cap-table__table {
+    overflow-x: auto;
+  }
+
+  .aria-cap-table__row {
+    min-width: 1296px;
+  }
+}
+
+/* ---------- Mobile: Figma 6982:7111 (375 x 812) ----------
+ *
+ *   bg     the same photo and washes (the second at 113.33deg), here a 1440 x 1026 box
+ *          centred on the section (0.5 right of centre) with the photo cover-fitted
+ *   card   343 wide, centred, 35 from the top and 25 from the bottom; r-16, py-32 px-16,
+ *          rows of 32 between the heading block, the table and the indicators
+ *   head   eyebrow as desktop, 16, title Montserrat Medium 32/40
+ *   table  ONE column at a time, rows 16 apart: the head is a right-aligned 125 column
+ *          (47 glyph, 8, Montserrat Medium 20/28 white); each row spreads a label
+ *          (Montserrat SemiBold 16/28 #F6F5F1, py-8, every row) and a centred 125 value
+ *          (Poppins Medium 16/32 #F6F5F1, every column)
+ *   dots   a 28 x 8 white pill for the active column, 8 x 8 #D9D9D9 dots, 3 apart
+ */
+@media screen and (max-width: 749px) {
+  .aria-cap-table {
+    padding: 35px 16px 25px;
+  }
+
+  .aria-cap-table__bg {
+    top: 50%;
+    left: calc(50% + 0.5px);
+    width: 1440px;
+    height: 1026px;
+    transform: translate(-50%, -50%);
+  }
+
+  .aria-cap-table__bg::after {
+    background-image:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.29) 0%, rgba(0, 0, 0, 0.29) 100%),
+      linear-gradient(113.332deg, rgba(47, 47, 47, 0.46) 12.738%, rgba(222, 222, 222, 0.46) 78.602%);
+  }
+
+  .aria-cap-table__bg-img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .aria-cap-table__card {
+    gap: 32px;
+    max-width: 343px;
+    padding: 32px 16px;
+    border-radius: 16px;
+  }
+
+  .aria-cap-table__title {
+    max-width: none;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .aria-cap-table__table {
+    gap: 16px;
+    overflow: visible;
+  }
+
+  .aria-cap-table__row {
+    justify-content: space-between;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .aria-cap-table__row--head {
+    justify-content: flex-end;
+  }
+
+  .aria-cap-table__corner {
+    display: none;
+  }
+
+  .aria-cap-table__cols,
+  .aria-cap-table__cells {
+    gap: 0;
+    width: 125px;
+  }
+
+  .aria-cap-table__col,
+  .aria-cap-table__col:nth-child(n) {
+    width: 125px;
+    padding: 0;
+  }
+
+  .aria-cap-table__col-name {
+    color: var(--white, #fff);
+  }
+
+  .aria-cap-table__label,
+  .aria-cap-table__row--medium .aria-cap-table__label {
+    flex: none;
+    padding: 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 28px;
+  }
+
+  .aria-cap-table__cell,
+  .aria-cap-table__cell:first-child,
+  .aria-cap-table__row--head + .aria-cap-table__row .aria-cap-table__cell {
+    width: 125px;
+    padding: 0;
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 32px;
+  }
+
+  /* Only the active column (data-active, set by assets/aria-cap-table.js). */
+  .aria-cap-table__table[data-active='1'] .aria-cap-table__col:not(:nth-child(1)),
+  .aria-cap-table__table[data-active='1'] .aria-cap-table__cell:not(:nth-child(1)),
+  .aria-cap-table__table[data-active='2'] .aria-cap-table__col:not(:nth-child(2)),
+  .aria-cap-table__table[data-active='2'] .aria-cap-table__cell:not(:nth-child(2)),
+  .aria-cap-table__table[data-active='3'] .aria-cap-table__col:not(:nth-child(3)),
+  .aria-cap-table__table[data-active='3'] .aria-cap-table__cell:not(:nth-child(3)),
+  .aria-cap-table__table[data-active='4'] .aria-cap-table__col:not(:nth-child(4)),
+  .aria-cap-table__table[data-active='4'] .aria-cap-table__cell:not(:nth-child(4)) {
+    display: none;
+  }
+
+  .aria-cap-table__dots {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 8px;
+  }
+
+  .aria-cap-table__dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: #d9d9d9;
+    cursor: pointer;
+    transition: width 0.2s ease, background-color 0.2s ease;
+  }
+
+  .aria-cap-table__dot.is-active {
+    width: 28px;
+    background: var(--white, #fff);
+  }
+}

@@ -1,0 +1,267 @@
+/* Wig Party — Shop by Cap Construction "Book fifteen minutes with Kristi"
+ * (sections/cap-consult.liquid), Figma 6670:1578.
+ *
+ * Desktop geometry (px, Figma, 1440 x 738): py-60, the panel centred.
+ *   bg     a 1440 x 802 box centred on the section (31.73 above and below, clipped); the
+ *          photo stretched to 100.18% x 205.84% at -0.09% / -29.55%, under a 118.89deg
+ *          rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602% wash
+ *   panel  1146 x 618: rgba(255,255,255,.13), 50 backdrop blur, 1px white ring, p-40,
+ *          the copy (471) and the collage (529 x 536) 64 apart, vertically centred
+ *   copy   title (Montserrat Bold 48/56 black, set 536.2 wide, so it overhangs the 471
+ *          column as drawn), 12, text (Helvetica Neue 20/28 black), 48, a 471 x 52 black
+ *          button (p-12, r-2, Poppins 20/28 white)
+ *   collage four photos placed absolutely, later ones on top:
+ *          a 293 / 73.49, 236 x 365   b 94 / 17.27, 199 x 297
+ *          c 0 / 234.49, 188 x 235    d 161 / 236.07, 189 x 284
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-cap-consult,
+.aria-cap-consult *,
+.aria-cap-consult *::before,
+.aria-cap-consult *::after {
+  box-sizing: border-box;
+}
+
+.aria-cap-consult {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  padding: 60px 40px;
+  background: var(--white, #fff);
+}
+
+/* ---------- Background (6670:1579) ---------- */
+
+.aria-cap-consult__bg {
+  position: absolute;
+  top: calc(50% + 0.27px);
+  left: 0;
+  width: 100%;
+  height: 802px;
+  overflow: hidden;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.aria-cap-consult__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(118.89deg, rgba(47, 47, 47, 0.46) 12.738%, rgba(222, 222, 222, 0.46) 78.602%);
+}
+
+/* Figma stretches the fill to its own box, so the built-in photo is not cover-fitted. */
+.aria-cap-consult__bg-img {
+  position: absolute;
+  top: -29.55%;
+  left: -0.09%;
+  display: block;
+  width: 100.18%;
+  height: 205.84%;
+  max-width: none;
+}
+
+.aria-cap-consult__bg-img--custom {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Panel (6670:1580) ---------- */
+
+.aria-cap-consult__panel {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  overflow: hidden;
+  padding: 40px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+}
+
+.aria-cap-consult__copy {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 48px;
+  width: 471px;
+}
+
+.aria-cap-consult__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  color: var(--black, #000);
+}
+
+.aria-cap-consult__title {
+  width: 536.205px;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-cap-consult__text {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+}
+
+.aria-cap-consult__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 12px;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-cap-consult__btn:hover,
+.aria-cap-consult__btn:focus-visible {
+  background: #2b2b2b;
+}
+
+/* ---------- Collage (6670:1590) ---------- */
+
+.aria-cap-consult__collage {
+  position: relative;
+  flex: none;
+  width: 529px;
+  height: 536px;
+}
+
+.aria-cap-consult__photo {
+  position: absolute;
+  overflow: hidden;
+}
+
+.aria-cap-consult__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-cap-consult__photo--a {
+  top: 73.49px;
+  left: 293px;
+  width: 236px;
+  height: 365px;
+}
+
+.aria-cap-consult__photo--b {
+  top: 17.27px;
+  left: 94px;
+  width: 199px;
+  height: 297px;
+}
+
+.aria-cap-consult__photo--c {
+  top: 234.49px;
+  left: 0;
+  width: 188px;
+  height: 235px;
+}
+
+.aria-cap-consult__photo--d {
+  top: 236.07px;
+  left: 161px;
+  width: 189px;
+  height: 284px;
+}
+
+/* ---------- Below desktop (no Figma frame yet): stack ---------- */
+
+@media screen and (max-width: 1199px) {
+  .aria-cap-consult__panel {
+    flex-direction: column;
+    gap: 40px;
+  }
+}
+
+/* ---------- Mobile: Figma 6849:11629 (375 wide) ----------
+ *
+ * Figma's mobile frame carries the newsletter copy; this section keeps its own consult
+ * copy in that layout (user's call, 2026-10-02), so it is 64 shorter than the frame's
+ * 903.55 (no email field).
+ *   frame   py-48 px-16; the photo in a 1622.34-wide box centred on the section and as
+ *           tall as it, stretched as on desktop, under the same 118.89deg wash
+ *   panel   343 wide, the same glass and white ring, p-40 (the 307 copy and collage
+ *           overhang the 263 inner width and are centred, so they sit 18 in); 16 between
+ *           the copy and the collage
+ *   copy    title Montserrat Bold 36/46, 12, text Poppins 20/28 black, 48, a 307 x 52
+ *           button (p-12, Poppins 20/28)
+ *   collage the desktop collage scaled to 0.58127 (307.49 x 311.55); every slot lands on
+ *           Figma's mobile position
+ */
+@media screen and (max-width: 749px) {
+  .aria-cap-consult {
+    padding: 48px 16px;
+  }
+
+  .aria-cap-consult__bg {
+    top: 0;
+    left: 50%;
+    width: 1622.34px;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  .aria-cap-consult__panel {
+    flex-direction: column;
+    gap: 16px;
+    width: 343px;
+    max-width: 100%;
+  }
+
+  .aria-cap-consult__copy {
+    gap: 48px;
+    width: 307px;
+  }
+
+  .aria-cap-consult__title {
+    width: 100%;
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-cap-consult__text {
+    font-family: var(--font-body-family);
+  }
+
+  .aria-cap-consult__collage {
+    margin: 0 -221.514px -224.446px 0;
+    transform: scale(0.58127);
+    transform-origin: 0 0;
+  }
+}

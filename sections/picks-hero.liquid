@@ -1,0 +1,207 @@
+{%- comment -%}
+  Wig Party — Kristi's Picks collection hero. Figma internal file, node 7546:32817 (1440 x 448, desktop).
+  Own section (not an extension of new-in-hero) so NEW IN and Sale heroes stay untouched: panel,
+  spacing and body type differ, and the right side holds a photo instead of a stats card.
+  Both buttons are hidden when their link or label is empty. With "Button 2 plays the latest
+  replay" on, button 2 opens the newest LiveMeUp replay in place (assets/aria-livemeup.js) and its
+  link is only the fallback for when the feed cannot be reached.
+  Styles in assets/section-picks-hero.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-picks-hero.css' | asset_url | stylesheet_tag }}
+{%- if section.settings.latest_replay -%}
+  {%- render 'aria-livemeup' -%}
+{%- endif -%}
+
+{%- liquid
+  assign current_label = section.settings.current_label | default: collection.title
+  assign show_primary = false
+  if section.settings.button_label != blank and section.settings.button_url != blank
+    assign show_primary = true
+  endif
+  assign show_secondary = false
+  if section.settings.button_2_label != blank and section.settings.button_2_url != blank
+    assign show_secondary = true
+  endif
+-%}
+
+<div class="picks-hero"{% if section.settings.latest_replay %} data-lmu-root{% endif %}>
+  <div class="picks-hero__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1100,1440,2160,2880', sizes: '100vw', alt: '', loading: 'eager'
+      }}
+    {%- else -%}
+      <img
+        class="picks-hero__bg-fallback"
+        src="{{ 'picks-hero-bg.png' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="picks-hero__panel">
+    <nav class="picks-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="picks-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank -%}
+          <li><a href="{{ section.settings.parent_url | default: routes.collections_url }}">{{ section.settings.parent_label }}</a></li>
+        {%- endif -%}
+        <li aria-current="page">{{ ' ' }}{{ current_label }}</li>
+      </ol>
+    </nav>
+
+    <div class="picks-hero__copy">
+      <div class="picks-hero__text-group">
+        {%- if section.settings.heading != blank -%}
+          <h1 class="picks-hero__title">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="picks-hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- if show_primary or show_secondary -%}
+        <div class="picks-hero__buttons"{% if section.settings.latest_replay %} data-lmu-featured="replay" data-lmu-keep{% endif %}>
+          {%- if show_primary -%}
+            <a class="picks-hero__btn picks-hero__btn--solid" href="{{ section.settings.button_url }}">{{ section.settings.button_label }}</a>
+          {%- endif -%}
+          {%- if show_secondary -%}
+            <a
+              class="picks-hero__btn picks-hero__btn--outline"
+              href="{{ section.settings.button_2_url }}"
+              {% if section.settings.latest_replay %}data-lmu-href="{{ section.settings.button_2_url }}" data-lmu-play{% endif %}
+            >{{ section.settings.button_2_label }}</a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="picks-hero__photo">
+      {%- if section.settings.image != blank -%}
+        {{
+          section.settings.image
+          | image_url: width: 806
+          | image_tag: widths: '403,806', sizes: '403px', alt: section.settings.image_alt, loading: 'eager', class: 'picks-hero__photo-img'
+        }}
+      {%- else -%}
+        <img
+          class="picks-hero__photo-img picks-hero__photo-fallback"
+          src="{{ 'picks-hero-model.png' | asset_url }}"
+          alt="{{ section.settings.image_alt | escape }}"
+          width="1000"
+          height="1400"
+          loading="eager"
+        >
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Picks hero",
+  "tag": "section",
+  "class": "picks-hero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "Background image",
+      "info": "Leave empty to use the built-in hair photo."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Right side photo",
+      "info": "403 x 426 on desktop. Leave empty to use the built-in photo."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Right side photo alt text"
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "Breadcrumb: home label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "All Collection",
+      "label": "Breadcrumb: middle label",
+      "info": "Optional. Empty gives Home / Kristi's picks."
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "Breadcrumb: middle link"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "Kristi's picks",
+      "label": "Breadcrumb: current page label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "The ones I actually wear",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "I try on everything we sell, usually on camera, usually more than once. These are the ones I keep going back to, and underneath each one I have said why.",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "SHOP THE PICKS",
+      "label": "Button 1 label (black)"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button 1 link",
+      "info": "Button is hidden while the link is empty."
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "default": "WATCH ME TRY THEM",
+      "label": "Button 2 label (outline)"
+    },
+    {
+      "type": "url",
+      "id": "button_2_url",
+      "label": "Button 2 link",
+      "info": "Button is hidden while the link is empty."
+    },
+    {
+      "type": "checkbox",
+      "id": "latest_replay",
+      "default": true,
+      "label": "Button 2 plays the latest replay",
+      "info": "Opens the newest LiveMeUp replay. The link above is used if LiveMeUp cannot be reached."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Picks hero"
+    }
+  ]
+}
+{% endschema %}

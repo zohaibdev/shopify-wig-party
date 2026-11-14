@@ -19,12 +19,15 @@
       <div
         class="aria-new-trending__carousel-wrap"
         data-aria-product-carousel
-        data-slides-mobile="1.4"
-        data-slides-sm="2.4"
+        data-slides-mobile="auto"
+        data-slides-sm="auto"
         data-slides-md="3.4"
         data-slides-desktop="5"
         data-slides-lg="4"
         data-space-between="12"
+        data-space-between-mobile="8"
+        data-space-between-sm="8"
+        data-space-between-desktop="12"
       >
         <div class="swiper aria-new-trending__swiper" data-aria-carousel-swiper>
           <div class="swiper-wrapper">
@@ -42,7 +45,8 @@
                   {%- render 'aria-product-card',
                     product: block.settings.product,
                     feature_tag_metafield: section.settings.feature_tag_metafield,
-                    section_id: section.id
+                    section_id: section.id,
+                    hide_vendor: true
                   -%}
                 {%- else -%}
                   <div class="aria-product-card aria-product-card--empty">
@@ -56,6 +60,17 @@
 
         {%- if section.settings.show_navigation -%}
           <div class="aria-new-trending__controls" data-aria-carousel-controls>
+            {%- comment -%}
+              The progress bar and the long arrows are mobile-only (Figma 6578:12668);
+              CSS hides them from 750px up, where the chevron-only controls are unchanged.
+              Dawn's base.css hides empty divs, hence the inert children.
+            {%- endcomment -%}
+            <div class="aria-new-trending__progress">
+              <div class="aria-new-trending__progress-track"><span aria-hidden="true"></span></div>
+              <div class="aria-new-trending__progress-fill" data-aria-carousel-progress>
+                <span aria-hidden="true"></span>
+              </div>
+            </div>
             <button
               type="button"
               class="aria-new-trending__nav aria-new-trending__nav--prev"
@@ -63,6 +78,9 @@
               aria-label="{{ 'aria_theme.carousel.previous' | t }}"
             >
               {%- render 'aria-icon', name: 'arrow-left' -%}
+              <span class="aria-new-trending__nav-arrow" aria-hidden="true">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
             </button>
             <button
               type="button"
@@ -71,6 +89,9 @@
               aria-label="{{ 'aria_theme.carousel.next' | t }}"
             >
               {%- render 'aria-icon', name: 'arrow-right' -%}
+              <span class="aria-new-trending__nav-arrow" aria-hidden="true">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
             </button>
           </div>
         {%- endif -%}

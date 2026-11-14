@@ -1,0 +1,160 @@
+{%- comment -%}
+  Wig Party — PDP breadcrumbs. Figma node 6356:333, a 46px bar under the header reading
+  HOME / ALL WIGS / LUX V COLLECTION / ARMANI.
+
+  The design shows two collection levels, which Shopify has no native concept of — a
+  product belongs to a flat set of collections, not a tree. So the trail is built as:
+
+    Home  /  a fixed root crumb (section setting)  /  the product's collection  /  title
+
+  The third crumb prefers `collection`, which Shopify populates when the visitor arrived
+  via /collections/<x>/products/<y>, so the trail reflects the path actually taken. When
+  that is absent (a direct link, search, or an ad) it falls back to the product's own
+  collections, skipping the root one so "All Wigs" is never shown twice, and any listed
+  under "Collections to skip" (e.g. the hidden fees collection).
+
+  Every product uses this template, not only wigs, so the root crumb is left out for the
+  product types listed under "Not wigs" (supplies, jewellery): a shampoo reads
+  Home / Wig Supplies & Accessories / Salon Wash, not Home / All Wigs / ….
+{%- endcomment -%}
+
+{{ 'section-aria-pdp-breadcrumbs.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign root_label = section.settings.root_label
+  assign root_url = section.settings.root_url
+
+  assign product_type = product.type | strip | downcase
+  assign not_wig_types = section.settings.not_wig_types | downcase | split: ','
+  for t in not_wig_types
+    assign type_name = t | strip
+    if type_name != blank and type_name == product_type
+      assign root_label = blank
+      break
+    endif
+  endfor
+
+  assign skip_handles = section.settings.skip_collections | downcase | split: ','
+
+  assign crumb_collection = collection
+  if crumb_collection == blank
+    for c in product.collections
+      # -- Skip the collection the root crumb already points at, and Shopify's catch-all.
+      if c.handle == 'all' or c.handle == 'frontpage'
+        continue
+      endif
+      if root_url != blank and root_url contains c.handle
+        continue
+      endif
+      assign skipped = false
+      for h in skip_handles
+        assign skip_handle = h | strip
+        if skip_handle != blank and skip_handle == c.handle
+          assign skipped = true
+          break
+        endif
+      endfor
+      if skipped
+        continue
+      endif
+      assign crumb_collection = c
+      break
+    endfor
+  endif
+-%}
+
+{%- if product != blank -%}
+  <nav
+    class="aria-crumbs"
+    aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}"
+    style="--aria-crumbs-bg: {{ section.settings.background_color }};"
+  >
+    <div class="aria-crumbs__inner">
+      <ol class="aria-crumbs__list">
+        <li class="aria-crumbs__item">
+          <a class="aria-crumbs__link" href="{{ routes.root_url }}">
+            {{- 'aria_theme.pdp.home' | t -}}
+          </a>
+        </li>
+
+        {%- if root_label != blank -%}
+          <li class="aria-crumbs__item">
+            <span class="aria-crumbs__sep" aria-hidden="true">/</span>
+            <a class="aria-crumbs__link" href="{{ root_url | default: routes.all_products_collection_url }}">
+              {{- root_label -}}
+            </a>
+          </li>
+        {%- endif -%}
+
+        {%- if crumb_collection != blank -%}
+          <li class="aria-crumbs__item">
+            <span class="aria-crumbs__sep" aria-hidden="true">/</span>
+            <a class="aria-crumbs__link" href="{{ crumb_collection.url }}">
+              {{- crumb_collection.title -}}
+            </a>
+          </li>
+        {%- endif -%}
+
+        <li class="aria-crumbs__item">
+          <span class="aria-crumbs__sep" aria-hidden="true">/</span>
+          {%- comment -%}
+            The style name only — this store's titles are pipe-delimited
+            ("Amsterdam | Belle Tress | ... | In Stock") and the design shows just
+            "ARMANI". Same snippets/aria-product-short-name.liquid the other PDP
+            sections use for [product_short].
+          {%- endcomment -%}
+          <span class="aria-crumbs__current" aria-current="page">
+            {%- render 'aria-product-short-name', product: product -%}
+          </span>
+        </li>
+      </ol>
+    </div>
+  </nav>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.aria-pdp-breadcrumbs.name",
+  "tag": "section",
+  "class": "aria-crumbs-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "root_label",
+      "default": "All Wigs",
+      "label": "t:sections.aria-pdp-breadcrumbs.settings.root_label.label",
+      "info": "t:sections.aria-pdp-breadcrumbs.settings.root_label.info"
+    },
+    {
+      "type": "url",
+      "id": "root_url",
+      "label": "t:sections.aria-pdp-breadcrumbs.settings.root_url.label"
+    },
+    {
+      "type": "text",
+      "id": "not_wig_types",
+      "default": "Wig Supplies, jewelry",
+      "label": "t:sections.aria-pdp-breadcrumbs.settings.not_wig_types.label",
+      "info": "t:sections.aria-pdp-breadcrumbs.settings.not_wig_types.info"
+    },
+    {
+      "type": "text",
+      "id": "skip_collections",
+      "default": "fees-products",
+      "label": "t:sections.aria-pdp-breadcrumbs.settings.skip_collections.label",
+      "info": "t:sections.aria-pdp-breadcrumbs.settings.skip_collections.info"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "rgba(0,0,0,0)",
+      "label": "t:sections.aria-pdp-breadcrumbs.settings.background_color.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-pdp-breadcrumbs.presets.name"
+    }
+  ]
+}
+{% endschema %}

@@ -1,5 +1,21 @@
 /* Wig Party — Find Your Perfect Wig (sections/find-your-wig.liquid) */
 
+/*
+ * Every other section in this theme declares this reset; this file never did. Without
+ * it, an element with both an explicit width and its own padding/border renders WIDER
+ * than that width (content-box adds them on top instead of counting them inside it).
+ * The View More button is exactly that: `width: 100%` plus 24px of inline padding and a
+ * 1px border rendered ~50px wider than its card, enough to eat the 12/18px gap between
+ * cards entirely and visibly touch the next one. Border-box is what every measurement
+ * elsewhere in this file (and every sibling PDP section) already assumes.
+ */
+.aria-find-wig,
+.aria-find-wig *,
+.aria-find-wig *::before,
+.aria-find-wig *::after {
+  box-sizing: border-box;
+}
+
 .aria-find-wig {
   background: var(--aria-fw-bg, #fff);
   padding-block: 48px 20px;
@@ -81,6 +97,27 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+/* Image shares the View More button's destination. Non-focusable (tabindex="-1" in the
+   markup) since the button already exposes the same link, but :focus-visible is kept here
+   in case that ever changes. `.aria-find-wig__media` already clips overflow, so the scale
+   below never shifts layout. */
+.aria-find-wig__media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.aria-find-wig__media-link:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: -2px;
+}
+
+.aria-find-wig__media-link:hover .aria-find-wig__image {
+  transform: scale(1.02);
 }
 
 /* Cream "cap size" card holds a cut-out product shot that must not be cropped. */
@@ -88,6 +125,9 @@
   border: 1px solid #ebe7e7;
 }
 
+/* Figma 6356:1435: the cut-out is 167.12 x 260 centred in the 326 x 296 box, i.e. 18px
+   of clear space top and bottom. `contain` inside 18px of padding lands on exactly that:
+   the 290 x 260 content area constrains the 0.6428 aspect ratio to 167 x 260. */
 .aria-find-wig__media--contain .aria-find-wig__image {
   object-fit: contain;
   padding: 18px;
@@ -138,12 +178,16 @@
   line-height: 24px;
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease;
 }
 
+/* Every card's button is an anchor — Figma draws the Link on all of them, and a card
+   with no destination yet still falls back to a `#` placeholder rather than dead text.
+   So the hover fill applies unconditionally. */
 .aria-find-wig__btn:hover,
 .aria-find-wig__btn:focus-visible {
   background: var(--py, #a64a4c);
@@ -151,11 +195,218 @@
   color: var(--white, #fff);
 }
 
+/* ------------------------------------------------------------------ *
+ * Mobile-only PDP carousel (product placement, Figma internal file
+ * hf0beCVyuHCECkNQfaOm2q node 6441:4303 — its own 375px frame). The
+ * tablet/desktop grid above is untouched and stays the only structure
+ * for the home placement at every width, and for the product placement
+ * from 750px up (hidden below in the tablet media query, and hidden
+ * here in return). Card content reuses the grid's own
+ * `.aria-find-wig__card/__media/__title/...` classes — every rule below
+ * is scoped under `.aria-find-wig__mobile` so it only ever touches this
+ * new markup, never the grid's cards.
+ * ------------------------------------------------------------------ */
+
+.aria-find-wig__mobile {
+  display: block;
+}
+
+.aria-find-wig__mobile-swiper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.aria-find-wig__mobile .aria-find-wig__item {
+  display: flex;
+  width: 247px;
+  height: auto;
+}
+
+.aria-find-wig__mobile .aria-find-wig__card {
+  width: 100%;
+}
+
+/* This frame's own media ratio (247 x 296, ~0.83), not the grid's 326 x 296 (~1.10) —
+   a narrower card, not the same photo scaled down. */
+.aria-find-wig__mobile .aria-find-wig__media {
+  aspect-ratio: 247 / 296;
+}
+
+/* Poppins BOLD 20/22, centred — the grid's title is Medium 18/26 in sentence case. */
+.aria-find-wig__mobile .aria-find-wig__title {
+  font-family: var(--font-body-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 22px;
+  text-align: center;
+}
+
+/* 16/24 — the grid's subtitle is 15/24 at this breakpoint. */
+.aria-find-wig__mobile .aria-find-wig__subtitle {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* Same treatment the desktop `--product` modifier already gives this button (#231010,
+   uppercase, 16/26) further down this file — Figma draws the identical button on this
+   mobile frame, full width here since the card itself is only 247px. */
+.aria-find-wig__mobile .aria-find-wig__btn {
+  width: 100%;
+  min-height: 47px;
+  padding-block: 0;
+  border-color: #231010;
+  color: #231010;
+  font-size: 16px;
+  line-height: 26px;
+  text-transform: uppercase;
+}
+
+.aria-find-wig__mobile .aria-find-wig__btn:hover,
+.aria-find-wig__mobile .aria-find-wig__btn:focus-visible {
+  background: var(--py, #a64a4c);
+  border-color: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+/* Cards-row -> controls-row gap and control sizing match this same PDP's shade and
+   product carousels exactly (12px gap, 48px row, 4px nav gap, equal 48x48 buttons). */
+.aria-find-wig__mobile-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  margin-top: 12px;
+}
+
+.aria-find-wig__mobile-progress {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 40px;
+  height: 4px;
+}
+
+.aria-find-wig__mobile-progress-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  background: var(--qi, #bc696b);
+  opacity: 0.3;
+}
+
+.aria-find-wig__mobile-progress-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  min-width: 4px;
+  border-radius: 30px;
+  background: var(--py, #a64a4c);
+  transition: width 0.2s ease;
+}
+
+.aria-find-wig__mobile-nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.aria-find-wig__mobile-prev,
+.aria-find-wig__mobile-next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.aria-find-wig__mobile-prev {
+  border: 1px solid #a9aab5;
+  background: var(--white, #fff);
+  color: var(--black, #000);
+}
+
+.aria-find-wig__mobile-next {
+  border: 0;
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-find-wig__mobile-prev:hover:not(:disabled) {
+  border-color: var(--py, #a64a4c);
+  color: var(--py, #a64a4c);
+}
+
+.aria-find-wig__mobile-next:hover:not(:disabled) {
+  background: var(--sy, #000);
+}
+
+.aria-find-wig__mobile-prev:disabled,
+.aria-find-wig__mobile-next:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.aria-find-wig__mobile-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.aria-find-wig__mobile-icon svg {
+  display: block;
+  width: 13.1667px;
+  height: 19.9622px;
+}
+
+.aria-find-wig__mobile-prev .aria-find-wig__mobile-icon svg {
+  transform: rotate(90deg);
+}
+
+.aria-find-wig__mobile-next .aria-find-wig__mobile-icon svg {
+  transform: rotate(-90deg);
+}
+
+.aria-find-wig__mobile-controls[hidden] {
+  display: none;
+}
+
+/* This frame's own section rhythm for the product placement: symmetric 48px padding
+   (the shared base rule's 20px bottom is for the desktop/tablet rhythm that follows a
+   different section), and a 16px header -> grid gap (not the base rule's 32px). Scoped
+   to `--product` since there is no equivalent mobile frame for the home placement. */
+@media screen and (max-width: 749px) {
+  .aria-find-wig--product {
+    padding-block: 48px;
+  }
+
+  .aria-find-wig--product .aria-find-wig__inner {
+    gap: 16px;
+  }
+
+  .aria-find-wig--product .aria-find-wig__grid {
+    display: none;
+  }
+}
+
 /* ---------- Tablet ---------- */
 
 @media screen and (min-width: 750px) {
   .aria-find-wig {
     padding-block: 64px 20px;
+  }
+
+  .aria-find-wig__mobile {
+    display: none;
   }
 
   .aria-find-wig__inner {
@@ -231,5 +482,168 @@
     padding: 12px 24px;
     font-size: 18px;
     line-height: 28px;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------ *
+ * Product-page placement (Figma 6356:1383 → 6356:1385 → 6356:1404).
+ *
+ * Same component and the same 1360 / 4 x 326 / 18px grid as the home page — the frames
+ * differ only in type, spacing and the button treatment:
+ *   heading   SemiBold 600 rather than the theme's Montserrat 500
+ *   title     Poppins Bold 20/22 in Primary/Gray, not 20/28 in black
+ *   subtitle  16/24 rather than 18/28
+ *   button    47px tall, 16/26 UPPERCASE, #231010 on white, rather than 18/28
+ *             sentence case on a transparent ground
+ *   padding   57px above the header and 80px below the grid, rather than the theme's
+ *             --section-spacing and 20
+ *
+ * Driven by the `layout_variant` setting; the default leaves the home page as it was.
+ * ------------------------------------------------------------------ *
+ */
+
+/*
+ * Button treatment (border/background/color/case) is NOT desktop-only — the mobile
+ * frame (hf0beCVyuHCECkNQfaOm2q node 6441:4303) draws the identical #231010-bordered,
+ * uppercase 16/26 button, confirming this is the product placement's button at every
+ * width. It used to live only inside the >=990px block below, so anywhere the grid (not
+ * the dedicated mobile carousel) is visible below 990px — the 750-989px tablet band —
+ * fell back to the home page's black-border sentence-case button instead.
+ *
+ * Height/padding are universal for the same reason: Figma's Link box is a flat 47px
+ * (6356:1415 at desktop, matched again on the mobile frame). Its 15px padding token
+ * describes the inset around a 26px line in a hug-height frame, but the frame is pinned
+ * to 47px, so carrying the padding into CSS on top of that stacks 15 + 26 + 15 + 2 = 58
+ * and the button comes out 11px too tall — height owns the box, the inline padding is
+ * all that is needed.
+ */
+.aria-find-wig--product .aria-find-wig__btn {
+  min-height: 47px;
+  padding-block: 0;
+  padding-inline: 24px;
+  border-color: #231010;
+  background: var(--white, #fff);
+  color: #231010;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  text-transform: uppercase;
+}
+
+/*
+ * Same reasoning for the section background: every other PDP section on this page
+ * (shade carousel, Kristi video, Instagram feed, real customers, join the party) uses
+ * this exact white -> cream gradient, and the mobile frame confirms this section does
+ * too (`bg-gradient-to-b from-white to-[#eaddd4]`) — the base rule's flat
+ * `var(--aria-fw-bg, #fff)` predates that being noticed. Scoped to <=749px only: unlike
+ * the button, there is no desktop frame in hand yet confirming the same gradient belongs
+ * there, so that is left as it was rather than guessed.
+ */
+@media screen and (max-width: 749px) {
+  .aria-find-wig--product {
+    background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+  }
+}
+
+@media screen and (min-width: 990px) {
+  /* 6356:1383 is 1440x724 with its content frame at y=57 and 587 tall, so the frame
+     carries 57 above and 80 below — not the theme's default rhythm at the top. */
+  .aria-find-wig--product {
+    padding-block: 57px 80px;
+  }
+
+  .aria-find-wig--product .aria-find-wig__heading {
+    font-weight: 600;
+  }
+
+  .aria-find-wig--product .aria-find-wig__title {
+    font-family: var(--font-body-family);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 22px;
+    color: var(--gray, #3f3e3e);
+  }
+
+  .aria-find-wig--product .aria-find-wig__subtitle {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  /*
+   * 6356:1434 is a plain white box — the hairline the home card carries is not in this
+   * frame, and against the cream section ground it reads as a visible outline.
+   */
+  .aria-find-wig--product .aria-find-wig__media--contain {
+    border: 0;
+  }
+
+  .aria-find-wig--product .aria-find-wig__btn:hover,
+  .aria-find-wig--product .aria-find-wig__btn:focus-visible {
+    background: var(--py, #a64a4c);
+    border-color: var(--py, #a64a4c);
+    color: var(--white, #fff);
+  }
+}
+/* ---------- Home, mobile: Design V7 (7238:5683, 375 x 739) ----------
+ * White, 48 top and bottom; heading Montserrat 500 36/46. The grid gives way to the same
+ * swipeable row the PDP uses: 169-wide cards 8 apart (two in view), photo 169 x 242,
+ * title Montserrat 500 20/28 black, subtitle Poppins 18/28 #3f3e3e, a 54-tall outline
+ * "View More" in Poppins 18/28 as typed. */
+@media screen and (max-width: 749px) {
+  .aria-find-wig:not(.aria-find-wig--product) {
+    padding-block: 48px;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__grid {
+    display: none;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__heading {
+    font-size: 36px;
+    line-height: 46px;
+    font-weight: 500;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__subheading {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  /* Two 169 cards + 8 run 3px past the right gutter in Figma; let the row reach the edge. */
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__mobile-swiper {
+    width: auto;
+    margin-right: -16px;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__mobile .aria-find-wig__item {
+    width: 169px;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__mobile .aria-find-wig__media {
+    aspect-ratio: 169 / 242;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__mobile .aria-find-wig__title {
+    font-family: var(--font-heading-family);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 28px;
+    color: #000;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__mobile .aria-find-wig__subtitle {
+    font-size: 18px;
+    line-height: 28px;
+    color: #3f3e3e;
+  }
+
+  .aria-find-wig:not(.aria-find-wig--product) .aria-find-wig__mobile .aria-find-wig__btn {
+    min-height: 54px;
+    border-color: #000;
+    color: #000;
+    font-size: 18px;
+    line-height: 28px;
+    text-transform: none;
   }
 }

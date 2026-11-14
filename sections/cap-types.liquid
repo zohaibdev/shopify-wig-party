@@ -1,0 +1,125 @@
+{%- comment -%}
+  Wig Party — Shop by Cap Construction page, the cap-type cards. Figma internal file, node
+  6670:807 (1440 x 1478).
+  A 2-across grid of `cap_type` cards: a photo on a cream well, the type's name, a short
+  explanation, a styles / price line and a SHOP button. Styles in
+  assets/section-aria-cap-types.css.
+{%- endcomment -%}
+
+{{ 'section-aria-cap-types.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cap-types.js' | asset_url }}" defer="defer"></script>
+
+{%- assign card_blocks = section.blocks | where: 'type', 'cap_type' -%}
+
+<div class="aria-cap-types">
+  <div class="aria-cap-types__inner">
+    {%- if card_blocks.size > 0 -%}
+      <ul class="aria-cap-types__grid" role="list">
+        {%- for block in card_blocks -%}
+          {%- liquid
+            assign card_url = '/collections/all'
+            if block.settings.collection_url_slug != blank
+              assign card_url = card_url | append: '?af_cap-construction=' | append: block.settings.collection_url_slug
+            endif
+            assign button_label = block.settings.button_label
+            if button_label == blank
+              assign button_label = 'Shop ' | append: block.settings.title
+            endif
+          -%}
+          <li class="aria-cap-types__card" data-wp-cap-keywords="{{ block.settings.match_keywords | escape }}" {{ block.shopify_attributes }}>
+            <div class="aria-cap-types__content">
+              <div class="aria-cap-types__media">
+                {%- if block.settings.image != blank -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 605
+                    | image_tag: widths: '202,404,605', sizes: '202px', alt: block.settings.image.alt, loading: 'lazy'
+                  }}
+                {%- else -%}
+                  <img src="{{ 'wp-cap-type.png' | asset_url }}" alt="" width="466" height="725" loading="lazy">
+                {%- endif -%}
+              </div>
+              <div class="aria-cap-types__copy">
+                {%- if block.settings.title != blank -%}
+                  <h2 class="aria-cap-types__title">{{ block.settings.title }}</h2>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <p class="aria-cap-types__text">{{ block.settings.text }}</p>
+                {%- endif -%}
+                {%- comment -%}
+                  No server-rendered count/price: JS (assets/cap-types.js) fills this from
+                  ?view=aria-index, matching settings.match_keywords against each product's
+                  type. Left empty (not hidden) so the reserved height in
+                  section-aria-cap-types.css holds whether or not JS can fill it.
+                {%- endcomment -%}
+                <p class="aria-cap-types__meta" data-wp-cap-meta></p>
+              </div>
+            </div>
+            {%- if button_label != blank -%}
+              <a class="aria-cap-types__btn" href="{{ card_url }}">{{ button_label }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-cap-types.name",
+  "tag": "section",
+  "class": "aria-cap-types-section",
+  "max_blocks": 12,
+  "blocks": [
+    {
+      "type": "cap_type",
+      "name": "t:sections.aria-cap-types.blocks.cap_type.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-cap-types.blocks.cap_type.settings.image.label",
+          "info": "t:sections.aria-cap-types.blocks.cap_type.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Extended Lace Front",
+          "label": "t:sections.aria-cap-types.blocks.cap_type.settings.title.label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "Not the collection name. Cap construction decides how it sits, how it moves, how it feels after eight hours, and most of what you pay. Four types, explained without jargon.",
+          "label": "t:sections.aria-cap-types.blocks.cap_type.settings.text.label"
+        },
+        {
+          "type": "text",
+          "id": "match_keywords",
+          "label": "t:sections.aria-cap-types.blocks.cap_type.settings.match_keywords.label",
+          "info": "t:sections.aria-cap-types.blocks.cap_type.settings.match_keywords.info"
+        },
+        {
+          "type": "text",
+          "id": "collection_url_slug",
+          "label": "t:sections.aria-cap-types.blocks.cap_type.settings.collection_url_slug.label",
+          "info": "t:sections.aria-cap-types.blocks.cap_type.settings.collection_url_slug.info"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.aria-cap-types.blocks.cap_type.settings.button_label.label",
+          "info": "t:sections.aria-cap-types.blocks.cap_type.settings.button_label.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-cap-types.presets.name",
+      "blocks": [{ "type": "cap_type" }, { "type": "cap_type" }, { "type": "cap_type" }, { "type": "cap_type" }]
+    }
+  ]
+}
+{% endschema %}

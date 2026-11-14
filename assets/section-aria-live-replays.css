@@ -1,0 +1,311 @@
+/* Wig Party — Watch Live replays (sections/live-replays.liquid), Figma 6849:21380.
+ *
+ * Desktop geometry (px, Figma, 1440 x 864): pt-100 pb-120 px-40, heading then 56 to the
+ * cards, then 48 to a centred black button (6927:1773: 52 tall, px-20, r-2, Poppins 20/28
+ * white). Four cards 22 apart across the 1360 container, in Figma's own 324/323/323/324
+ * proportions so every edge lands on a whole pixel at the design width. Each card: a 240-tall thumbnail with a
+ * 20-tall white duration pill 4 in from the right and 12 up from the bottom, then a white
+ * body, px-12 py-16: date + title (6 apart), 15, the styles, 10, a 54-tall outline link
+ * (6927:1761: 1px black, r-2, py-12, Poppins 18/28 black).
+ */
+
+.aria-live-replays,
+.aria-live-replays *,
+.aria-live-replays *::before,
+.aria-live-replays *::after {
+  box-sizing: border-box;
+}
+
+.aria-live-replays {
+  padding: 100px 40px 120px;
+  background: var(--aria-live-replays-bg, #f5ebe2);
+}
+
+.aria-live-replays__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  max-width: var(--container, 1360px);
+  margin: 0 auto;
+}
+
+/* Montserrat Medium 56/64 black. */
+.aria-live-replays__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-live-replays__cards {
+  display: grid;
+  grid-template-columns: minmax(0, 324fr) minmax(0, 323fr) minmax(0, 323fr) minmax(0, 324fr);
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-live-replays__card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.aria-live-replays__media {
+  position: relative;
+  display: block;
+  height: 240px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-live-replays__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.aria-live-replays__card:hover .aria-live-replays__media img {
+  transform: scale(1.03);
+}
+
+/* White pill, 20 tall, px-12, r-20: Helvetica Neue 9/8 uppercase black in a 32 box. */
+.aria-live-replays__duration {
+  position: absolute;
+  right: 4px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  height: 20px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--white, #fff);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 8px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-live-replays__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 12px;
+  background: var(--white, #fff);
+}
+
+.aria-live-replays__info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.aria-live-replays__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Helvetica Neue 14/20 #3F3E3E. */
+.aria-live-replays__date {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+}
+
+/* Poppins Bold 16/22.5 #1A1A1A; Figma's text box rounds the line to 23. */
+.aria-live-replays__name {
+  min-height: 23px;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22.5px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+}
+
+/* Helvetica Neue 16/24 #626262, capitalised. */
+.aria-live-replays__styles {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  color: #626262;
+}
+
+/* Outline link: 1px black, r-2, py-12 (54 tall), Poppins 18/28 black uppercase. */
+.aria-live-replays__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-live-replays__button:hover,
+.aria-live-replays__button:focus-visible {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+/* 48 below the cards: the inner column's 56 gap less 8. */
+.aria-live-replays__actions {
+  display: flex;
+  justify-content: center;
+  margin-top: -8px;
+}
+
+/* min-width: Figma's 229 box; the browser's text runs a fraction narrower. */
+.aria-live-replays__more {
+  display: inline-flex;
+  min-width: 229px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-live-replays__more:hover,
+.aria-live-replays__more:focus-visible {
+  background: var(--gray, #3f3e3e);
+}
+
+/* ---------- Below desktop (no Figma frame yet) ---------- */
+
+@media screen and (max-width: 989px) {
+  .aria-live-replays {
+    padding: 64px 24px 80px;
+  }
+
+  .aria-live-replays__inner {
+    gap: 32px;
+  }
+
+  .aria-live-replays__title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .aria-live-replays__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Mobile (Figma 6849:21874) ----------
+ * 375 artboard: py-48, heading centred (Montserrat Medium 24/32), 32 down to two columns of
+ * 164 (15 apart, 16 in from each side, rows 20 apart). Card: 240-tall portrait thumbnail with
+ * a 16-tall pill (px-8) 12 in from the right and bottom; body px-8 py-12: date + title
+ * (6 apart), 8, styles in Poppins 16/24, 10, a 36-tall link in Poppins 14/26, still the
+ * #CD8080 outline there (desktop moved to black). The mobile frame has no library button
+ * yet; it sits 32 below the cards.
+ */
+@media screen and (max-width: 749px) {
+  .aria-live-replays {
+    padding: 48px 16px;
+  }
+
+  .aria-live-replays__inner {
+    gap: 32px;
+  }
+
+  .aria-live-replays__title {
+    font-size: 24px;
+    line-height: 32px;
+    text-align: center;
+  }
+
+  .aria-live-replays__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 15px;
+  }
+
+  .aria-live-replays__duration {
+    right: 12px;
+    bottom: 12px;
+    min-width: 48px;
+    height: 16px;
+    padding: 4px 8px;
+  }
+
+  .aria-live-replays__body {
+    padding: 12px 8px;
+  }
+
+  .aria-live-replays__info {
+    gap: 8px;
+  }
+
+  .aria-live-replays__styles {
+    font-family: var(--font-body-family);
+  }
+
+  .aria-live-replays__button {
+    height: 36px;
+    padding: 5px 24px;
+    border-color: #cd8080;
+    border-radius: 0;
+    font-size: 14px;
+    line-height: 26px;
+    color: #cd8080;
+  }
+
+  .aria-live-replays__button:hover,
+  .aria-live-replays__button:focus-visible {
+    background: #cd8080;
+  }
+
+  .aria-live-replays__actions {
+    margin-top: 0;
+  }
+
+  .aria-live-replays__more {
+    font-size: 16px;
+  }
+}

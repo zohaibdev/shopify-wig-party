@@ -1,0 +1,418 @@
+{%- comment -%}
+  Wig Party — NEW IN collection hero. Figma internal file, node 7454:24371 (1440 x 442, desktop).
+  Hair photo under a grey wash, a frosted white-ringed panel with breadcrumb, heading, intro, CTA
+  and a stats card of `stat` blocks. First stat's number can use the page collection's
+  products_count (block setting "Use collection count"); other stats are plain typed text.
+  Each stat block can be hidden via "Show this stat".
+  With "New in: last N days" set (New In page), a stat can count the real thing instead
+  ("Number from"): the wigs added in that window, how many of them are on the shelf, and
+  their shades — the same products the results grid lists (snippets/aria-new-in-set.liquid).
+  When nothing is that new, the newest arrivals stand in, with the "latest" heading and labels.
+  Styles in assets/section-new-in-hero.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-new-in-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign stat_blocks = section.blocks | where: 'type', 'stat'
+  assign current_label = section.settings.current_label | default: collection.title | default: page.title
+  assign button_url = section.settings.button_url
+
+  assign new_mode = blank
+  if section.settings.new_within_days > 0 and collection.handle != blank
+    capture new_set
+      render 'aria-new-in-set', products: collection.products, days: section.settings.new_within_days, fallback: section.settings.fallback_count
+    endcapture
+    assign new_parts = new_set | strip | split: ':'
+    assign new_mode = new_parts[0]
+    assign new_handles = new_parts[2]
+    assign new_count = 0
+    assign new_on_shelf = 0
+    assign new_colours = ''
+    for product in collection.products
+      assign handle_key = ',' | append: product.handle | append: ','
+      unless new_handles contains handle_key
+        continue
+      endunless
+      assign new_count = new_count | plus: 1
+      assign tags_down = product.tags | join: '||' | downcase | split: '||'
+      if tags_down contains 'in stock'
+        assign new_on_shelf = new_on_shelf | plus: 1
+      endif
+      for option in product.options_with_values
+        assign option_name = option.name | downcase
+        unless option_name contains 'colo'
+          continue
+        endunless
+        for value in option.values
+          assign shade_key = value | strip | downcase
+          if shade_key contains 'choose' or shade_key contains 'drop down' or shade_key contains 'dropdown'
+            continue
+          endif
+          assign new_colours = new_colours | append: shade_key | append: '||'
+        endfor
+      endfor
+    endfor
+    assign new_colour_count = new_colours | split: '||' | uniq | size
+  endif
+
+  assign heading = section.settings.heading
+  if new_mode == 'latest' and section.settings.fallback_heading != blank
+    assign heading = section.settings.fallback_heading
+  endif
+-%}
+
+<div class="new-in-hero{% if section.settings.stat_size == '32' %} new-in-hero--stat-32{% endif %}{% if section.settings.layout == 'reviews' %} new-in-hero--reviews{% endif %}">
+  <div class="new-in-hero__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1100,1440,2160,2880', sizes: '100vw', alt: '', loading: 'eager'
+      }}
+    {%- else -%}
+      <img
+        class="new-in-hero__bg-fallback"
+        src="{{ 'new-in-hero-bg.png' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="new-in-hero__panel">
+    <nav class="new-in-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="new-in-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank -%}
+          <li><a href="{{ section.settings.parent_url | default: routes.collections_url }}">{{ section.settings.parent_label }}</a></li>
+        {%- endif -%}
+        <li aria-current="page">{{ ' ' }}{{ current_label }}</li>
+      </ol>
+    </nav>
+
+    <div class="new-in-hero__body">
+      <div class="new-in-hero__copy">
+        <div class="new-in-hero__text-group">
+          {%- if heading != blank -%}
+            <h1 class="new-in-hero__title">{{ heading }}</h1>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <p class="new-in-hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.button_label != blank and button_url != blank -%}
+          <a class="new-in-hero__btn" href="{{ button_url }}">{{ section.settings.button_label }}</a>
+        {%- endif -%}
+      </div>
+
+      {%- if stat_blocks.size > 0 -%}
+        <div class="new-in-hero__stats">
+          <ul class="new-in-hero__stats-row" role="list">
+            {%- for block in stat_blocks -%}
+              {%- liquid
+                case block.settings.default_icon
+                  when 'sale_sample'
+                    assign icon_file = 'sale-hero-stat-icon-sample-sale.svg'
+                    assign icon_w = '24.0003'
+                    assign icon_h = '27.2885'
+                  when 'sale_daily'
+                    assign icon_file = 'sale-hero-stat-icon-daily-deals.svg'
+                    assign icon_w = '23.6796'
+                    assign icon_h = '24.6624'
+                  when 'sale_clearance'
+                    assign icon_file = 'sale-hero-stat-icon-clearance.svg'
+                    assign icon_w = '24.0009'
+                    assign icon_h = '22.5014'
+                  when 'reviews_rating'
+                    assign icon_file = 'reviews-hero-stat-icon-rating.svg'
+                    assign icon_w = '24.0003'
+                    assign icon_h = '27.2885'
+                  when 'reviews_count'
+                    assign icon_file = 'reviews-hero-stat-icon-reviews.svg'
+                    assign icon_w = '23.6796'
+                    assign icon_h = '24.6624'
+                  when 'reviews_points'
+                    assign icon_file = 'reviews-hero-stat-icon-photo-points.svg'
+                    assign icon_w = '24.0009'
+                    assign icon_h = '22.5014'
+                  else
+                    case forloop.index
+                      when 1
+                        assign icon_file = 'new-in-stat-icon-new.svg'
+                        assign icon_w = '24.0003'
+                        assign icon_h = '27.2885'
+                      when 2
+                        assign icon_file = 'new-in-stat-icon-restock.svg'
+                        assign icon_w = '23.6796'
+                        assign icon_h = '24.6624'
+                      else
+                        assign icon_file = 'new-in-stat-icon-colours.svg'
+                        assign icon_w = '24'
+                        assign icon_h = '24'
+                    endcase
+                endcase
+              -%}
+              {%- liquid
+                assign stat_value = block.settings.value
+                if forloop.first and block.settings.use_collection_count and collection.handle != blank and collection.products_count != blank
+                  assign stat_value = collection.products_count
+                endif
+                if block.settings.count_collection != blank
+                  assign stat_value = block.settings.count_collection.products_count
+                endif
+                assign stat_label = block.settings.label
+                if new_mode != blank
+                  case block.settings.source
+                    when 'new_count'
+                      assign stat_value = new_count
+                    when 'new_on_shelf'
+                      assign stat_value = new_on_shelf
+                    when 'new_colours'
+                      assign stat_value = new_colour_count
+                  endcase
+                  if new_mode == 'latest' and block.settings.fallback_label != blank
+                    assign stat_label = block.settings.fallback_label
+                  endif
+                endif
+              -%}
+              {%- if block.settings.show_stat -%}
+                <li class="new-in-hero__stat" {{ block.shopify_attributes }}>
+                  <span class="new-in-hero__stat-icon">
+                    {%- if block.settings.icon_image != blank -%}
+                      {{
+                        block.settings.icon_image
+                        | image_url: width: 96
+                        | image_tag: width: 24, height: 24, alt: '', loading: 'lazy'
+                      }}
+                    {%- else -%}
+                      <img
+                        src="{{ icon_file | asset_url }}"
+                        alt=""
+                        width="{{ icon_w }}"
+                        height="{{ icon_h }}"
+                        loading="lazy"
+                      >
+                    {%- endif -%}
+                  </span>
+                  <span class="new-in-hero__stat-text">
+                    {%- if stat_value != blank -%}
+                      <span class="new-in-hero__stat-value">{{ stat_value }}</span>
+                    {%- endif -%}
+                    {%- if stat_label != blank -%}
+                      <span class="new-in-hero__stat-label">{{ stat_label }}</span>
+                    {%- endif -%}
+                  </span>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "New in hero",
+  "tag": "section",
+  "class": "new-in-hero-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "Background image",
+      "info": "Leave empty to use the built-in hair photo."
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "Breadcrumb: home label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "label": "Breadcrumb: middle label",
+      "info": "Optional. Figma shows 'All Collection' here; empty gives Home / New In."
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "Breadcrumb: middle link"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "New In",
+      "label": "Breadcrumb: current page label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "What landed this month",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "New styles, restocks of things that sold out, and new colours in styles you\nalready know. Belle Tress releases in waves and this is where the wave\nlands.",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "TELL ME WHEN SOMETHING LANDS",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "stat_size",
+      "label": "Stat number size",
+      "options": [
+        { "value": "48", "label": "48 (New in)" },
+        { "value": "32", "label": "32 (Sale)" }
+      ],
+      "default": "48"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "info": "Reviews: button under the row, taller hero.",
+      "options": [
+        { "value": "default", "label": "Default (New in, Sale)" },
+        { "value": "reviews", "label": "Reviews" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "New in"
+    },
+    {
+      "type": "range",
+      "id": "new_within_days",
+      "label": "New in: last N days",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 0,
+      "info": "0 = off (stats are typed). On: stats set to count new wigs use the wigs added in this many days. Sort the page newest first."
+    },
+    {
+      "type": "range",
+      "id": "fallback_count",
+      "label": "Latest arrivals when nothing is new",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "text",
+      "id": "fallback_heading",
+      "label": "Heading when nothing is new",
+      "default": "Our latest arrivals"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon",
+          "info": "24px glyph in a 46px tile. Empty uses the built-in icon."
+        },
+        {
+          "type": "select",
+          "id": "default_icon",
+          "label": "Built-in icon",
+          "options": [
+            { "value": "auto", "label": "By position (New in)" },
+            { "value": "sale_sample", "label": "Sale: sample sale" },
+            { "value": "sale_daily", "label": "Sale: Dailey Deals" },
+            { "value": "sale_clearance", "label": "Sale: clearance" },
+            { "value": "reviews_rating", "label": "Reviews: average rating" },
+            { "value": "reviews_count", "label": "Reviews: review count" },
+            { "value": "reviews_points", "label": "Reviews: photo review points" }
+          ],
+          "default": "auto"
+        },
+        {
+          "type": "collection",
+          "id": "count_collection",
+          "label": "Count from collection",
+          "info": "Number = that collection's product count. Overrides the typed Number."
+        },
+        {
+          "type": "checkbox",
+          "id": "use_collection_count",
+          "label": "Use collection count (1st stat only)",
+          "info": "On: number = this page's collection product count. Off, or no collection, falls back to the typed Number below.",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "default": "18",
+          "label": "Number"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "New this month",
+          "label": "Label"
+        },
+        {
+          "type": "select",
+          "id": "source",
+          "label": "Number from",
+          "info": "Counts need \"New in: last N days\" on.",
+          "options": [
+            { "value": "typed", "label": "Typed number" },
+            { "value": "new_count", "label": "New wigs" },
+            { "value": "new_on_shelf", "label": "New wigs on the shelf" },
+            { "value": "new_colours", "label": "Shades across new wigs" }
+          ],
+          "default": "typed"
+        },
+        {
+          "type": "text",
+          "id": "fallback_label",
+          "label": "Label when nothing is new"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_stat",
+          "label": "Show this stat",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "New in hero",
+      "blocks": [
+        { "type": "stat", "settings": { "value": "18", "label": "New this month" } },
+        { "type": "stat", "settings": { "value": "31", "label": "Back in stock" } },
+        { "type": "stat", "settings": { "value": "9", "label": "New colours" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -67,6 +67,14 @@
     }
   },
   "aria_theme": {
+    "learn": {
+      "articles_count": {
+        "one": "{{ count }} article",
+        "other": "{{ count }} articles"
+      },
+      "read_time": "{{ minutes }} min",
+      "go_to_topic": "Show topic {{ number }}"
+    },
     "header": {
       "search_label": "Search",
       "search_reset": "Clear search",
@@ -81,11 +89,11 @@
     },
     "product_card": {
       "view_product": "View product",
-      "add_to_cart": "Add to cart",
+      "add_to_cart": "Add to Cart",
       "add_to_cart_named": "Add {{ product_name }} to cart",
       "wishlist_named": "Add {{ product_name }} to wishlist",
       "no_reviews": "No reviews yet",
-      "more_colors": "+{{ count }} more colors"
+      "more_colors": "+{{ count }}"
     },
     "collection_card": {
       "shop_now": "Shop now"
@@ -123,6 +131,60 @@
     },
     "about_wig_party": {
       "social_link": "Wig Party on {{ platform }}"
+    },
+    "pdp": {
+      "in_stock": "In Stock",
+      "out_of_stock": "Back Soon",
+      "back_soon": "Back Soon",
+      "save_amount": "Save {{ percent }}%",
+      "colour_prefix": "Colour",
+      "compare_all": "Compare all {{ count }} shades",
+      "choose_colour": "Choose a Color",
+      "how_measure": "How do I measure?",
+      "add_to_cart": "Add to cart",
+      "cap_size": "Cap size",
+      "home": "Home",
+      "breadcrumb": "Breadcrumb"
+    },
+    "reviews": {
+      "out_of_five": "out of 5 · based on {{ count }} reviews",
+      "rating_of": "Rated {{ rating }} out of 5",
+      "read_more": "Read More",
+      "read_less": "Read Less",
+      "empty": "No reviews yet."
+    },
+    "live": {
+      "breadcrumb": "Breadcrumb",
+      "question_sent": "Sent. Kristi will read it out on the show.",
+      "email_placeholder": "Your email, so she can reply",
+      "send": "Send",
+      "lmu": {
+        "unavailable": "Shows cannot be loaded right now. Please try again in a moment.",
+        "on_air": "On air now",
+        "starts_in": "Starts in [time]",
+        "player_error": "The video could not be opened. Please try again.",
+        "remind_title": "Get a reminder before it starts",
+        "by_text": "By text",
+        "by_email": "By email",
+        "phone_label": "Mobile number",
+        "phone_placeholder": "+1 555 123 4567",
+        "phone_invalid": "Enter a mobile number with its country code, e.g. +1 555 123 4567.",
+        "sms_consent": "Also text me offers and news from Wig Party",
+        "email_label": "Email",
+        "email_invalid": "Enter a valid email.",
+        "email_consent": "Email me a reminder for this show",
+        "consent_needed": "Tick the box so we can email you.",
+        "remind_submit": "Remind me",
+        "remind_success": "Done. We will message you before it starts.",
+        "remind_error": "That did not go through. Check the details and try again.",
+        "calendar_title": "Add it to your calendar",
+        "calendar_google": "Google Calendar",
+        "calendar_ics": "Apple / Outlook",
+        "menu_live": "Live now",
+        "menu_next": "Next live",
+        "menu_replay": "Latest replay",
+        "menu_none": "No shows booked yet. See the Live page"
+      }
     }
   },
   "newsletter": {
@@ -342,7 +404,6 @@
       "announcement": "Announcement",
       "announcement_bar": "Announcement bar"
     },
-
     "header": {
       "announcement": "Announcement",
       "menu": "Menu",

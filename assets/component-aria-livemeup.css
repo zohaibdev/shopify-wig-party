@@ -1,0 +1,334 @@
+/* Wig Party — shared pieces for the LiveMeUp-fed Live and Replays sections
+   (assets/aria-livemeup.js): poster covers, loading / empty / error states, and the
+   reminder + calendar dialog. */
+
+/* ---------- Covers ---------- */
+
+/* LiveMeUp covers are 9:16 posters full of text. The poster is shown whole, centred over a
+   blurred copy of itself that fills whatever shape the card is. The selectors carry two
+   classes so they win over each section's own `__media img { object-fit: cover }`. */
+.aria-lmu-cover {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: #e9dfd6;
+}
+
+.aria-lmu-cover > .aria-lmu-cover__back,
+.aria-lmu-cover > .aria-lmu-cover__front {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-lmu-cover > .aria-lmu-cover__back {
+  object-fit: cover;
+  filter: blur(18px) saturate(1.1);
+  transform: scale(1.15);
+  opacity: 0.85;
+}
+
+.aria-lmu-cover > .aria-lmu-cover__front {
+  object-fit: contain;
+}
+
+/* ---------- Loading / empty / error ---------- */
+
+/* Placeholder cards drawn by the Liquid while the feed loads. */
+.aria-lmu-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #ece3db;
+}
+
+.aria-lmu-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-100%);
+  animation: aria-lmu-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes aria-lmu-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aria-lmu-skeleton::after {
+    animation: none;
+  }
+}
+
+.aria-lmu-skeleton-line {
+  display: block;
+  height: 14px;
+  margin-top: 10px;
+  border-radius: 2px;
+  background: #ece3db;
+}
+
+.aria-lmu-skeleton-line--short {
+  width: 45%;
+}
+
+[data-lmu-state='ready'] [data-lmu-loading],
+[data-lmu-state='empty'] [data-lmu-loading],
+[data-lmu-state='error'] [data-lmu-loading] {
+  display: none;
+}
+
+[data-lmu-empty],
+[data-lmu-error] {
+  display: none;
+  margin: 0;
+  padding: 24px 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #6b6b6b;
+}
+
+[data-lmu-state='empty'] [data-lmu-empty],
+[data-lmu-state='error'] [data-lmu-error] {
+  display: block;
+}
+
+[data-lmu-state='empty'] [data-lmu-hide-empty],
+[data-lmu-state='error'] [data-lmu-hide-empty],
+[data-lmu-state='loading'] [data-lmu-hide-loading] {
+  display: none !important;
+}
+
+[data-lmu-list-empty][hidden],
+[data-lmu-if][hidden] {
+  display: none !important;
+}
+
+[data-lmu-do][aria-busy='true'],
+[data-lmu-play][aria-busy='true'] {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+/* ---------- Dialog ---------- */
+
+.aria-lmu-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: var(--white, #fff);
+  color: #1a1a1a;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.aria-lmu-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.aria-lmu-dialog__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 24px 24px;
+}
+
+.aria-lmu-dialog__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 26px;
+  line-height: 1;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.aria-lmu-dialog__title {
+  margin: 0;
+  padding-right: 28px;
+  font-family: var(--font-heading-family);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 30px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+}
+
+.aria-lmu-dialog__event {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 15px;
+  line-height: 22px;
+  color: #1a1a1a;
+}
+
+.aria-lmu-dialog__event span {
+  color: #6b6b6b;
+}
+
+.aria-lmu-dialog__form,
+.aria-lmu-dialog__field,
+.aria-lmu-dialog__links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.aria-lmu-dialog__field[hidden] {
+  display: none;
+}
+
+.aria-lmu-dialog__tabs {
+  display: flex;
+  gap: 20px;
+  font-family: var(--font-body-family);
+  font-size: 15px;
+}
+
+.aria-lmu-dialog__field label,
+.aria-lmu-dialog__tabs label {
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 20px;
+  color: #1a1a1a;
+}
+
+.aria-lmu-dialog__field input[type='tel'],
+.aria-lmu-dialog__field input[type='email'] {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid #cfc6bf;
+  border-radius: 2px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  color: #1a1a1a;
+}
+
+.aria-lmu-dialog__field input:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 1px;
+}
+
+.aria-lmu-dialog__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #6b6b6b !important;
+}
+
+.aria-lmu-dialog__check input {
+  flex: none;
+  margin-top: 3px;
+}
+
+.aria-lmu-dialog__status {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 20px;
+  color: #2e7d32;
+}
+
+.aria-lmu-dialog__status.is-error {
+  color: #b3261e;
+}
+
+.aria-lmu-dialog__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 12px 20px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--white, #fff);
+  cursor: pointer;
+}
+
+.aria-lmu-dialog__submit--outline {
+  background: var(--white, #fff);
+  color: var(--black, #000);
+}
+
+.aria-lmu-dialog__submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.aria-lmu-dialog__submit[hidden],
+.aria-lmu-dialog__tabs[hidden] {
+  display: none;
+}
+
+/* Anything the script shows or hides keeps `hidden` working over the section's display. */
+[data-lmu-featured][hidden],
+[data-lmu-next][hidden],
+[data-lmu-description][hidden] {
+  display: none !important;
+}
+
+/* Placeholder copy that stays when the feed is empty or down, and goes once real shows
+   arrive (the header's Live menu keeps its typed heading and photo until then). */
+[data-lmu-state='ready'] [data-lmu-fallback] {
+  display: none !important;
+}
+
+/* ---------- Header Live menu (snippets/aria-mega-column.liquid, wp-mobile-drawer) ---------- */
+
+/* Once a LiveMeUp cover is laid over the card, Kristi's signature (drawn for the typed
+   photo) would sit on top of the poster's own text, so it steps aside. */
+.aria-mega__media[data-lmu-id] .aria-mega__signature--media,
+.wp-mdrawer__video-card[data-lmu-id] .wp-mdrawer__video-signature {
+  display: none;
+}
+
+/* "Tue 7:00 PM · Show title": one line, the title giving way with an ellipsis. */
+.aria-mega__link--lmu {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.aria-mega__lmu-when {
+  flex: none;
+  font-weight: 500;
+}
+
+.aria-mega__lmu-title,
+.wp-mdrawer__lmu-row {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aria-mega__link.aria-lmu-skeleton {
+  height: 58px;
+  border-color: transparent;
+}

@@ -1,0 +1,133 @@
+{%- comment -%}
+  Wig Party — About Kristi page, "Come and find me". Figma internal file, desktop node
+  7841:3605 (the 1280 x 422 card in frame 7841:3604), mobile node 7847:303 (375 x 741).
+  A rounded white-to-cream card: heading, text and two buttons, with Kristi's cut-out photo
+  cropped by the card on the right (below the buttons on mobile).
+  Styles in assets/section-aria-about-find-me.css.
+{%- endcomment -%}
+
+{{ 'section-aria-about-find-me.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # -- theme.liquid only font_faces the body regular/bold; the consult button is Poppins Medium.
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+-%}
+{% style %}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-about-find">
+  <div class="aria-about-find__card">
+    <div class="aria-about-find__copy">
+      <div class="aria-about-find__text-group">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-about-find__title">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="aria-about-find__text">{{ section.settings.text | escape | newline_to_br }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.button_label != blank or section.settings.button_2_label != blank -%}
+        <div class="aria-about-find__buttons">
+          {%- if section.settings.button_label != blank -%}
+            <a class="aria-about-find__btn" href="{{ section.settings.button_url | default: '/pages/live' }}">
+              {{- section.settings.button_label -}}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.button_2_label != blank -%}
+            <a
+              class="aria-about-find__btn aria-about-find__btn--solid"
+              href="{{ section.settings.button_2_url | default: '/pages/contact' }}"
+            >
+              {{- section.settings.button_2_label -}}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-about-find__photo">
+      <div class="aria-about-find__photo-box">
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 1500
+            | image_tag: widths: '600,900,1200,1500', sizes: '(min-width: 750px) 750px, 615px', alt: section.settings.image.alt, loading: 'lazy'
+          }}
+        {%- else -%}
+          <img
+            class="aria-about-find__fallback"
+            src="{{ 'wp-about-find-me.png' | asset_url }}"
+            alt="{{ section.settings.image_alt | escape }}"
+            width="1264"
+            height="845"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-about-find-me.name",
+  "tag": "section",
+  "class": "aria-about-find-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Come and find me",
+      "label": "t:sections.aria-about-find-me.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "I am live most weeknights and in the group every day. If you would rather talk one- to-one, fifteen minutes on video is free and I would genuinely rather do that than\nhave you guess.",
+      "label": "t:sections.aria-about-find-me.settings.text.label",
+      "info": "t:sections.aria-about-find-me.settings.text.info"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "WATCH A LIVE",
+      "label": "t:sections.aria-about-find-me.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-about-find-me.settings.button_url.label"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "default": "BOOK A CONSULT",
+      "label": "t:sections.aria-about-find-me.settings.button_2_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_2_url",
+      "label": "t:sections.aria-about-find-me.settings.button_2_url.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.aria-about-find-me.settings.image.label",
+      "info": "t:sections.aria-about-find-me.settings.image.info"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "default": "Kristi at her desk",
+      "label": "t:sections.aria-about-find-me.settings.image_alt.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-about-find-me.presets.name"
+    }
+  ]
+}
+{% endschema %}

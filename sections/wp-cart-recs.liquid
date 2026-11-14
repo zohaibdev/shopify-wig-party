@@ -1,0 +1,19 @@
+{%- comment -%}
+  Cart page recommendation pool. Not placed in a template: assets/main-cart.js requests it once via
+  routes.product_recommendations_url?section_id=wp-cart-recs and picks 3 cards from the HTML.
+{%- endcomment -%}
+{%- if recommendations.performed and recommendations.products_count > 0 -%}
+  <div data-wp-recs-pool>
+    {%- for rec in recommendations.products -%}
+      {%- if rec.available -%}
+        {%- render 'wp-cart-rec-card', product: rec -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Cart recommendations"
+}
+{% endschema %}

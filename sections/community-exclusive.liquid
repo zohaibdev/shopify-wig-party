@@ -7,7 +7,10 @@
   # merchant can also run a non-product deal (a category or a flash discount).
   assign deal_title = section.settings.deal_title
   if deal_title == blank and deal != blank
-    assign deal_title = deal.title
+    # -- Supplier-free, so the homepage never names who the store buys from.
+    capture deal_title
+      render 'aria-strip-supplier', text: deal.title
+    endcapture
   endif
 
   assign deal_url = section.settings.primary_button_link
@@ -48,16 +51,33 @@
     <div class="aria-community-exclusive__card">
       <div class="aria-community-exclusive__media">
         {%- if deal_image != blank -%}
-          {{
-            deal_image
-            | image_url: width: 1260
-            | image_tag:
-              loading: 'lazy',
-              sizes: '(min-width: 990px) 630px, 100vw',
-              widths: '480,630,960,1260',
-              class: 'aria-community-exclusive__image',
-              alt: deal_image.alt | default: deal_title
-          }}
+          {%- capture deal_image_alt -%}{%- render 'aria-strip-supplier', text: deal_image.alt -%}{%- endcapture -%}
+          {%- comment -%}
+            Optional mobile crop (Figma 6576:12218 frames the photo 343x282). No theme
+            default on purpose: the deal rotates, so an unset mobile image falls back to
+            the deal's own image rather than to a stale photo of an old deal.
+          {%- endcomment -%}
+          <picture>
+            {%- if section.settings.mobile_image != blank -%}
+              <source
+                media="(max-width: 749px)"
+                srcset="{{ section.settings.mobile_image | image_url: width: 480 }} 480w, {{ section.settings.mobile_image | image_url: width: 750 }} 750w, {{ section.settings.mobile_image | image_url: width: 1100 }} 1100w"
+                sizes="calc(100vw - 32px)"
+                width="{{ section.settings.mobile_image.width }}"
+                height="{{ section.settings.mobile_image.height }}"
+              >
+            {%- endif -%}
+            {{
+              deal_image
+              | image_url: width: 1260
+              | image_tag:
+                loading: 'lazy',
+                sizes: '(min-width: 990px) 630px, 100vw',
+                widths: '480,630,960,1260',
+                class: 'aria-community-exclusive__image',
+                alt: deal_image_alt | default: deal_title
+            }}
+          </picture>
         {%- else -%}
           <img
             src="{{ 'wp-deal-feature.png' | asset_url }}"
@@ -189,6 +209,12 @@
       "id": "image",
       "label": "t:sections.aria-community-exclusive.settings.image.label",
       "info": "t:sections.aria-community-exclusive.settings.image.info"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image",
+      "info": "Optional. Shown below 750px instead of the deal image, cropped to 343 x 282. Leave empty to use the deal image; clear it when the deal changes."
     },
     {
       "type": "text",

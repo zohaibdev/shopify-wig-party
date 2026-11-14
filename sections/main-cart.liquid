@@ -1,0 +1,335 @@
+{{ 'section-main-cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'main-cart.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign threshold_cents = section.settings.free_shipping_threshold | times: 100
+  assign shipping_unlocked = false
+  assign progress = 1.0
+  if threshold_cents > 0
+    assign progress = cart.total_price | times: 1.0 | divided_by: threshold_cents
+    if progress >= 1
+      assign progress = 1.0
+      assign shipping_unlocked = true
+    endif
+  else
+    assign shipping_unlocked = true
+  endif
+  assign remaining = threshold_cents | minus: cart.total_price
+  assign remaining_money = remaining | money
+  assign quarter_money = cart.total_price | divided_by: 4 | money
+  assign total_whole_money = cart.total_price | divided_by: 100 | times: 100 | money_without_trailing_zeros
+
+  assign saved_total = 0
+  for item in cart.items
+    assign base_price = item.original_line_price
+    if item.variant.compare_at_price > item.original_price
+      assign base_price = item.variant.compare_at_price | times: item.quantity
+    endif
+    assign saved_total = saved_total | plus: base_price | minus: item.final_line_price
+  endfor
+-%}
+
+<div
+  class="wp-cart"
+  data-wp-cart
+  data-section-id="{{ section.id }}"
+  style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="wp-cart__inner">
+    {%- if cart.item_count == 0 -%}
+      {%- comment -%} Placeholder empty state, to be replaced. {%- endcomment -%}
+      <div class="wp-cart__empty">
+        <h1 class="wp-cart__empty-title">{{ section.settings.empty_title }}</h1>
+        <a class="wp-cart__checkout" href="{{ routes.all_products_collection_url }}">{{ section.settings.empty_button_label }}</a>
+      </div>
+    {%- else -%}
+      <div class="wp-cart__left">
+        <p class="wp-cart__breadcrumb"><a href="{{ routes.root_url }}">Home</a>  /  <b>Your Bag</b></p>
+
+        <div class="wp-cart__title-block">
+          <h1 class="wp-cart__title">{{ section.settings.heading }}</h1>
+
+          {%- if threshold_cents > 0 -%}
+            <div
+              class="wp-cart__progress"
+              style="--wp-progress: {{ progress }};"
+              data-wp-progress
+              data-threshold-base="{{ threshold_cents }}"
+              data-cart-total="{{ cart.total_price }}"
+              data-cart-currency="{{ cart.currency.iso_code }}"
+              data-unlocked-text="{{ section.settings.progress_unlocked_text | escape }}"
+              data-locked-text="{{ section.settings.progress_locked_text | escape }}"
+            >
+              <p class="wp-cart__progress-title" data-wp-progress-title>
+                {%- if shipping_unlocked -%}
+                  {{ section.settings.progress_unlocked_text }}
+                {%- else -%}
+                  {{ section.settings.progress_locked_text | replace: '[amount]', remaining_money }}
+                {%- endif -%}
+              </p>
+              <div class="wp-cart__progress-bar">
+                <div class="wp-cart__progress-track"><div class="wp-cart__progress-fill" data-wp-progress-fill style="width: {{ progress | times: 100 }}%;"></div></div>
+                <div class="wp-cart__progress-knob"><img src="{{ 'cart-page-progress-truck.svg' | asset_url }}" alt="" width="14.5125" height="12.3307"></div>
+              </div>
+              <p class="wp-cart__progress-text">{{ section.settings.progress_subtext }}</p>
+            </div>
+          {%- endif -%}
+        </div>
+
+        <div class="wp-cart__items">
+          {%- for item in cart.items -%}
+            {%- liquid
+              assign strike_price = item.original_line_price
+              if item.variant.compare_at_price > item.original_price
+                assign strike_price = item.variant.compare_at_price | times: item.quantity
+              endif
+            -%}
+            {%- liquid
+              # Title/variant format copied from snippets/cart-drawer.liquid.
+              capture short_name
+                render 'aria-product-short-name', product: item.product
+              endcapture
+              assign item_title = short_name | strip
+              unless item.product.has_only_default_variant
+                assign item_title = item_title | append: ' · ' | append: item.variant.option1
+              endunless
+              capture clean_title
+                render 'aria-strip-supplier', text: item.product.title
+              endcapture
+              assign title_parts = clean_title | split: '|'
+              assign sub_parts = ''
+              if title_parts.size > 1
+                assign sub_parts = title_parts[1] | strip | remove: ' Collection'
+              endif
+              if item.variant.option2 != blank
+                if sub_parts != blank
+                  assign sub_parts = sub_parts | append: ' · '
+                endif
+                assign sub_parts = sub_parts | append: item.variant.option2
+              endif
+              if item.variant.option3 != blank
+                assign sub_parts = sub_parts | append: ' · ' | append: item.variant.option3
+              endif
+              if sub_parts == blank
+                assign sub_parts = item.product.type
+              endif
+            -%}
+            <div
+              class="wp-cart__item"
+              data-line="{{ forloop.index }}"
+              data-qty="{{ item.quantity }}"
+              data-variant-id="{{ item.variant_id }}"
+              data-cart-wl-id="{{ item.product_id }}"
+              data-cart-wl-variant-id="{{ item.variant.id }}"
+              data-cart-wl-handle="{{ item.product.handle }}"
+              data-cart-wl-title="{{ item.product.title | escape }}"
+              data-cart-wl-url="{{ item.url }}"
+              data-cart-wl-image="{% if item.image %}{{ item.image | image_url: width: 200 }}{% endif %}"
+              data-cart-wl-variant-title="{{ item.variant.option1 | escape }}"
+              data-cart-wl-price="{{ item.final_price | money | strip_html | escape }}"
+              data-cart-wl-available="{{ item.variant.available }}"
+            >
+              <div class="wp-cart__item-media">
+                {%- if item.image -%}
+                  <a href="{{ item.url }}">{{ item.image | image_url: width: 184 | image_tag: loading: 'lazy', alt: item.image.alt }}</a>
+                {%- endif -%}
+              </div>
+              <div class="wp-cart__item-body">
+                <div class="wp-cart__item-top">
+                  <div class="wp-cart__item-row">
+                    <a class="wp-cart__item-name" href="{{ item.url }}">{{ item_title | escape }}</a>
+                    {%- liquid
+              assign line_title_down = item.product.title | downcase
+              assign line_preorder = false
+              if line_title_down contains 'preorder' or line_title_down contains 'pre-order' or line_title_down contains 'pre order'
+                assign line_preorder = true
+              endif
+              for t in item.product.tags
+                assign line_tag_down = t | downcase
+                if line_tag_down contains 'preorder' or line_tag_down contains 'pre-order'
+                  assign line_preorder = true
+                endif
+              endfor
+            -%}
+            {%- if line_preorder -%}<span class="wp-cart__pill">Pre-order</span>{%- elsif item.variant.available -%}<span class="wp-cart__pill">{{ section.settings.in_stock_label }}</span>{%- endif -%}
+                  </div>
+                  <div class="wp-cart__item-row">
+                    <span class="wp-cart__item-variant">{{ sub_parts | escape }}</span>
+                    <span class="wp-cart__item-price">
+                      <span>{{ item.final_line_price | money }}</span>
+                      {%- if strike_price > item.final_line_price -%}<s>{{ strike_price | money }}</s>{%- endif -%}
+                    </span>
+                  </div>
+                </div>
+                <div class="wp-cart__item-row">
+                  <div class="wp-cart__qty">
+                    <button type="button" class="wp-cart__qty-btn wp-cart__qty-btn--minus" data-wp-qty-minus aria-label="Decrease quantity"><img src="{{ 'cart-page-qty-minus.svg' | asset_url }}" alt="" width="11.6667" height="1"></button>
+                    <input class="wp-cart__qty-input" type="number" min="0" inputmode="numeric" value="{{ item.quantity }}" data-wp-qty-input aria-label="Quantity">
+                    <button type="button" class="wp-cart__qty-btn wp-cart__qty-btn--plus" data-wp-qty-plus aria-label="Increase quantity"><img src="{{ 'cart-page-qty-plus.svg' | asset_url }}" alt="" width="11.6667" height="11.6667"></button>
+                  </div>
+                  <div class="wp-cart__item-actions">
+                    <button type="button" class="wp-cart__link-btn wp-cart__remove" data-wp-remove>Remove</button>
+                    {%- if section.settings.show_save_for_later -%}
+                      <button type="button" class="wp-cart__link-btn wp-cart__save" data-wp-save>Save for later</button>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Recommendations: pool is assembled in assets/main-cart.js (upsell product, then /recommendations, then fallback collection). {%- endcomment -%}
+        {%- liquid
+          assign cart_ids = cart.items | map: 'product_id' | join: ','
+          assign first_id = cart.items.first.product_id
+        -%}
+        <div
+          class="wp-cart__recs-box"
+          data-wp-recs
+          data-key="{{ first_id }}"
+          data-url="{{ routes.product_recommendations_url }}?section_id=wp-cart-recs&product_id={{ first_id }}&limit=10&intent=related"
+          data-in-cart=",{{ cart_ids }},"
+          hidden
+        >
+          {%- if settings.cart_upsell_enabled and settings.cart_upsell_product != blank and settings.cart_upsell_product.available -%}
+            <template data-wp-recs-upsell>{%- render 'wp-cart-rec-card', product: settings.cart_upsell_product -%}</template>
+          {%- endif -%}
+          {%- if section.settings.recs_collection != blank -%}
+            <template data-wp-recs-fallback>
+              {%- for rec in section.settings.recs_collection.products limit: 12 -%}
+                {%- if rec.available -%}{%- render 'wp-cart-rec-card', product: rec -%}{%- endif -%}
+              {%- endfor -%}
+            </template>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="wp-cart__right">
+        <p class="wp-cart__count">{{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %} · <a href="{{ routes.all_products_collection_url }}">keep shopping</a></p>
+
+        <form class="wp-cart__summary-form" action="{{ routes.cart_url }}" method="post" novalidate>
+          <div class="wp-cart__summary">
+            <p class="wp-cart__summary-title">Order summary</p>
+            <div class="wp-cart__summary-body">
+              <div class="wp-cart__totals">
+                <div class="wp-cart__totals-rows">
+                  <div class="wp-cart__row"><span>Subtotal</span><span>{{ cart.total_price | money }}</span></div>
+                  {%- if saved_total > 0 -%}
+                    <div class="wp-cart__row"><span>You saved</span><span>−{{ saved_total | money }}</span></div>
+                  {%- endif -%}
+                  <div class="wp-cart__row"><span>Shipping</span><span>{% if threshold_cents > 0 and shipping_unlocked %}Free{% else %}Calculated at checkout{% endif %}</span></div>
+                </div>
+                <span class="wp-cart__divider"><img src="{{ 'cart-page-summary-divider.svg' | asset_url }}" alt="" width="559" height="1"></span>
+                <div class="wp-cart__row wp-cart__row--total"><span>Total</span><span>{{ cart.total_price | money }}</span></div>
+              </div>
+              <button type="submit" name="checkout" class="wp-cart__checkout">Checkout</button>
+            </div>
+
+            <div class="wp-cart__payments">
+              <span class="wp-cart__pay"><img src="{{ 'cart-page-pay-visa.svg' | asset_url }}" alt="Visa" width="58" height="40"></span>
+              <span class="wp-cart__pay wp-cart__pay--boxed wp-cart__pay--mastercard"><img src="{{ 'cart-page-pay-mastercard.svg' | asset_url }}" alt="Mastercard" width="37.2666" height="22.333"></span>
+              <span class="wp-cart__pay"><img src="{{ 'cart-page-pay-shoppay.svg' | asset_url }}" alt="Shop Pay" width="58" height="40"></span>
+              <span class="wp-cart__pay"><img src="{{ 'cart-page-pay-applepay.svg' | asset_url }}" alt="Apple Pay" width="58" height="40"></span>
+              <span class="wp-cart__pay wp-cart__pay--boxed wp-cart__pay--amazon"><img src="{{ 'cart-page-pay-amazon.svg' | asset_url }}" alt="Amazon Pay" width="45.333" height="14.3617"></span>
+              <span class="wp-cart__pay wp-cart__pay--boxed wp-cart__pay--paypal"><img src="{{ 'cart-page-pay-paypal.svg' | asset_url }}" alt="PayPal" width="17.9901" height="21.9406"></span>
+            </div>
+
+            {%- if section.settings.show_notes -%}
+              <textarea class="wp-cart__notes" name="note" rows="3" placeholder="Order notes" aria-label="Order notes">{{ cart.note }}</textarea>
+            {%- endif -%}
+
+            {%- if section.settings.klarna_text != blank -%}
+              <p class="wp-cart__klarna">{{ section.settings.klarna_text | replace: '[amount]', quarter_money }}</p>
+            {%- endif -%}
+
+            <div class="wp-cart__trust">
+              <div class="wp-cart__trust-item"><img src="{{ 'cart-page-trust-returns.svg' | asset_url }}" alt="" width="14.9943" height="15.0019"><span>{{ section.settings.trust_1 }}</span></div>
+              <div class="wp-cart__trust-item"><img src="{{ 'cart-page-trust-packaging.svg' | asset_url }}" alt="" width="14.998" height="16"><span>{{ section.settings.trust_2 }}</span></div>
+              <div class="wp-cart__trust-item"><img src="{{ 'cart-page-trust-consult.svg' | asset_url }}" alt="" width="14.375" height="16"><span>{{ section.settings.trust_3 }}</span></div>
+            </div>
+          </div>
+        </form>
+
+        <div class="wp-cart__consult">
+          <div class="wp-cart__consult-inner">
+            <img class="wp-cart__consult-photo" src="{{ 'cart-page-consult-kristi-photo.jpg' | asset_url }}" alt="" width="138.574" height="147.719" loading="lazy">
+            <div class="wp-cart__consult-content">
+              <div class="wp-cart__consult-text">
+                <p class="wp-cart__consult-title">{{ section.settings.consult_title | replace: '[total]', total_whole_money }}</p>
+                <p class="wp-cart__consult-copy">{{ section.settings.consult_text }}</p>
+              </div>
+              {%- if section.settings.consult_url != blank -%}
+                <a class="wp-cart__consult-btn" href="{{ section.settings.consult_url }}">{{ section.settings.consult_button }}</a>
+              {%- endif -%}
+            </div>
+          </div>
+          <img class="wp-cart__consult-signature" src="{{ 'cart-page-consult-kristi-signature.svg' | asset_url }}" alt="" width="52.0755" height="20">
+        </div>
+
+        <div class="wp-cart__features">
+          {%- for block in section.blocks -%}
+            <div class="wp-cart__feature" {{ block.shopify_attributes }}>
+              <span class="wp-cart__feature-icon"><img src="{{ block.settings.icon | prepend: 'cart-page-feature-' | append: '.svg' | asset_url }}" alt="" width="35" height="35"></span>
+              <p class="wp-cart__feature-title">{{ block.settings.title }}</p>
+              <p class="wp-cart__feature-text">{{ block.settings.text }}</p>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cart (Wig Party)",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Your bag" },
+    { "type": "header", "content": "Free shipping progress" },
+    { "type": "number", "id": "free_shipping_threshold", "label": "Free shipping threshold (store currency, 0 = hide)", "default": 0 },
+    { "type": "text", "id": "progress_unlocked_text", "label": "Unlocked text", "default": "Free shipping unlocked" },
+    { "type": "text", "id": "progress_locked_text", "label": "Locked text ([amount] = amount remaining)", "default": "[amount] away from free shipping" },
+    { "type": "text", "id": "progress_subtext", "label": "Sub text" },
+    { "type": "header", "content": "Line items" },
+    { "type": "text", "id": "in_stock_label", "label": "In stock pill", "default": "In stock" },
+    { "type": "checkbox", "id": "show_save_for_later", "label": "Show Save for later link", "default": true },
+    { "type": "checkbox", "id": "show_notes", "label": "Show order notes", "default": false },
+    { "type": "header", "content": "Recommendations" },
+    { "type": "collection", "id": "recs_collection", "label": "Fallback collection (optional)" },
+    { "type": "header", "content": "Order summary" },
+    { "type": "text", "id": "klarna_text", "label": "Installments note ([amount] = total / 4)", "default": "Or 4 interest-free payments of [amount] with Sezzle. Taxes calculated at checkout." },
+    { "type": "text", "id": "trust_1", "label": "Trust 1", "default": "Processed in 1 to 3 business days" },
+    { "type": "text", "id": "trust_2", "label": "Trust 2", "default": "Tracking within 24 to 48 hours" },
+    { "type": "text", "id": "trust_3", "label": "Trust 3", "default": "All sales final, ask us first" },
+    { "type": "header", "content": "Consult card" },
+    { "type": "text", "id": "consult_title", "label": "Title ([total] = cart total)", "default": "Questions before you check out?" },
+    { "type": "textarea", "id": "consult_text", "label": "Text", "default": "All sales are final, so please contact us before placing your order if you are unsure about a style, colour or cap size." },
+    { "type": "text", "id": "consult_button", "label": "Button label", "default": "Message Kristi's team" },
+    { "type": "url", "id": "consult_url", "label": "Button link (empty hides button)" },
+    { "type": "header", "content": "Empty state (placeholder)" },
+    { "type": "text", "id": "empty_title", "label": "Title", "default": "Your bag is empty" },
+    { "type": "text", "id": "empty_button_label", "label": "Button label", "default": "Continue shopping" },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Top padding", "default": 16 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "label": "Bottom padding", "default": 40 }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature card",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "returns", "options": [
+          { "value": "returns", "label": "Returns" },
+          { "value": "gift", "label": "Gift" },
+          { "value": "shipping", "label": "Shipping" },
+          { "value": "price-match", "label": "Question" }
+        ] },
+        { "type": "text", "id": "title", "label": "Title", "default": "All sales final, ask us first" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Email shopwigparty@gmail.com before you order." }
+      ]
+    }
+  ]
+}
+{% endschema %}

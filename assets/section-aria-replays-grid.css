@@ -1,0 +1,477 @@
+/* Wig Party â€” Replays archive grid (sections/replays-grid.liquid), Figma 6849:8557.
+ *
+ * Desktop geometry (px, Figma, 1440 x 1964): white, pt-80 pb-80 px-40, a 1360 column.
+ *   bar    1360 x 74, white -> #EADDD4, 1px #EADDD4 ring, r-8, p-20 (inside the ring):
+ *          QUICK (Poppins 16/26 #8C8C8C, 8 of right margin), 12, the chips 8 apart; a 240
+ *          search pill on the right. Chips: 34 tall, px-13 py-6 inside a 1px ring, r-96,
+ *          Poppins 14/22 â€” the active one #A64A4C with a #EADDD4 ring and white text, the
+ *          rest white with a #3F3E3E ring and #1A1A1A text.
+ *   grid   32 below the bar: 324-wide cards 20 apart both ways (four of them take 1356 of
+ *          the 1360); each a 324 x 322 photo with a white "1h 12m" pill (Montserrat Medium
+ *          14/22, px-12 py-4, r-20) 8 up from the bottom, then a white body with a 1px
+ *          #EADDD4 ring, px-12 py-16 inside it: date (Montserrat Medium 14/22 #3F3E3E) and
+ *          title (Montserrat Medium 20/28 black) 8 apart, 8, styles (Poppins 16/26 #626262),
+ *          20, a 54-tall outline button (1px black, r-2, Poppins 18/28 black).
+ *   more   40 below the grid: black, r-2, px-20 py-12, Poppins 20/28 white, centred.
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-replays-grid,
+.aria-replays-grid *,
+.aria-replays-grid *::before,
+.aria-replays-grid *::after {
+  box-sizing: border-box;
+}
+
+.aria-replays-grid {
+  padding: 80px 40px;
+  background: var(--aria-replays-grid-bg, #fff);
+}
+
+.aria-replays-grid__inner {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--container, 1360px);
+  margin: 0 auto;
+}
+
+/* ---------- Filter bar (6849:8560) ---------- */
+
+.aria-replays-grid__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 19px;
+  border: 1px solid #eaddd4;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+}
+
+.aria-replays-grid__quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.aria-replays-grid__quick-label {
+  padding-right: 8px;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: #8c8c8c;
+}
+
+.aria-replays-grid__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.aria-replays-grid__chip {
+  margin: 0;
+  padding: 5px 12px;
+  border: 1px solid #3f3e3e;
+  border-radius: 96px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-replays-grid__chip:hover,
+.aria-replays-grid__chip:focus-visible {
+  border-color: var(--py, #a64a4c);
+  color: var(--py, #a64a4c);
+}
+
+.aria-replays-grid__chip.is-active {
+  border-color: #eaddd4;
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+/* Search: a 240 pill, 20px icon 8 from the field. */
+.aria-replays-grid__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 240px;
+  height: 34px;
+  padding: 5px 12px;
+  border: 1px solid #3f3e3e;
+  border-radius: 96px;
+  background: var(--white, #fff);
+  color: #141b34;
+  cursor: text;
+}
+
+.aria-replays-grid__search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.aria-replays-grid__search-icon svg {
+  display: block;
+  width: 18.1667px;
+  height: 18.1667px;
+}
+
+.aria-replays-grid__search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.aria-replays-grid__search-input::placeholder {
+  color: #1a1a1a;
+  opacity: 1;
+}
+
+.aria-replays-grid__search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.aria-replays-grid__search:focus-within {
+  border-color: var(--py, #a64a4c);
+}
+
+/* ---------- Grid (6849:8592) ---------- */
+
+/* Four 324 columns 20 apart use 1356 of the 1360, so the grid stops 4 short as in Figma. */
+.aria-replays-grid__cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  width: calc(100% - 4px);
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-replays-grid__card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.aria-replays-grid__card.is-hidden {
+  display: none;
+}
+
+.aria-replays-grid__media {
+  position: relative;
+  display: block;
+  height: 322px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-replays-grid__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.aria-replays-grid__card:hover .aria-replays-grid__media img {
+  transform: scale(1.03);
+}
+
+.aria-replays-grid__duration {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--white, #fff);
+  font-family: var(--font-heading-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-replays-grid__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px 12px;
+  border: 1px solid #eaddd4;
+  background: var(--white, #fff);
+}
+
+.aria-replays-grid__info {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aria-replays-grid__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aria-replays-grid__date,
+.aria-replays-grid__name {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.aria-replays-grid__date {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-replays-grid__name {
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--black, #000);
+}
+
+.aria-replays-grid__styles {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: #626262;
+}
+
+.aria-replays-grid__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  background: transparent;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-replays-grid__button:hover,
+.aria-replays-grid__button:focus-visible {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+.aria-replays-grid__empty {
+  margin: 32px 0 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 26px;
+  text-align: center;
+  color: #626262;
+}
+
+.aria-replays-grid__empty[hidden] {
+  display: none;
+}
+
+/* ---------- Show more (6849:8608) ---------- */
+
+.aria-replays-grid__more-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.aria-replays-grid__more {
+  margin-top: 40px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-replays-grid__more:hover,
+.aria-replays-grid__more:focus-visible {
+  background: #2b2b2b;
+}
+
+.aria-replays-grid__more[hidden] {
+  display: none;
+}
+
+/* ---------- Below desktop (no Figma frame yet) ---------- */
+
+@media screen and (max-width: 1199px) {
+  .aria-replays-grid__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-replays-grid {
+    padding: 48px 24px;
+  }
+
+  .aria-replays-grid__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aria-replays-grid__search {
+    width: 100%;
+  }
+}
+
+/* ---------- Mobile (Figma 6849:8988) ----------
+ * 375 artboard: pt-56 pb-56 px-16. Bar: p-16 inside its ring, chips wrapping 7 apart with 9
+ * between rows, QUICK in a 50 box (its 8px margin spills), and a full-width 40-tall search
+ * (px-13 py-9, #3F3E3E text). Cards 24 below: two columns of 169, 8 apart (346, so the pair
+ * runs 3 past the 343 column as drawn), rows 24 apart. Card: 214 photo with a 24-tall pill
+ * (Montserrat Medium 10/16, px-8) 8 from the right and 12 up; body px-8 py-12: date and
+ * title 4 apart, 8, styles (Poppins 14/20), 16, a 38 button (py-8, Poppins 12/20). SHOW
+ * MORE 32 below: px-24 py-12, Poppins 18/28.
+ */
+@media screen and (max-width: 749px) {
+  .aria-replays-grid {
+    padding: 56px 16px;
+  }
+
+  .aria-replays-grid__bar {
+    justify-content: flex-start;
+    gap: 9px 7px;
+    padding: 15px;
+  }
+
+  .aria-replays-grid__quick,
+  .aria-replays-grid__chips {
+    display: contents;
+  }
+
+  .aria-replays-grid__quick-label {
+    width: 50px;
+    padding-right: 0;
+  }
+
+  /* Figma top-aligns the icon and text in the pill (py-9), rather than centring them. */
+  .aria-replays-grid__search {
+    align-items: flex-start;
+    width: 100%;
+    height: 40px;
+    padding: 8px 12px;
+    color: #3f3e3e;
+  }
+
+  .aria-replays-grid__search-input,
+  .aria-replays-grid__search-input::placeholder {
+    color: #3f3e3e;
+  }
+
+  .aria-replays-grid__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 8px;
+    width: 100%;
+    margin-top: 24px;
+  }
+
+  .aria-replays-grid__media {
+    height: 214px;
+  }
+
+  .aria-replays-grid__duration {
+    right: 8px;
+    bottom: 12px;
+    padding: 4px 8px;
+    font-size: 10px;
+    line-height: 16px;
+  }
+
+  .aria-replays-grid__body {
+    gap: 16px;
+    padding: 12px 8px;
+  }
+
+  .aria-replays-grid__meta {
+    gap: 4px;
+  }
+
+  .aria-replays-grid__styles {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .aria-replays-grid__button {
+    padding: 8px 24px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .aria-replays-grid__more {
+    margin-top: 32px;
+    padding: 12px 24px;
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+/* ---------- Long LiveMeUp titles wrap inside their card ---------- */
+.aria-replays-grid__cards {
+  width: 100%;
+  max-width: 100%;
+}
+
+.aria-replays-grid__cards > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

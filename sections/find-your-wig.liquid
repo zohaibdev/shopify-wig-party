@@ -1,7 +1,7 @@
 {{ 'section-aria-find-your-wig.css' | asset_url | stylesheet_tag }}
 
 <section
-  class="aria-find-wig"
+  class="aria-find-wig{% if section.settings.layout_variant == 'product' %} aria-find-wig--product{% endif %}"
   style="--aria-fw-bg: {{ section.settings.background_color }};"
 >
   <div class="aria-find-wig__inner">
@@ -24,6 +24,7 @@
             if block.settings.image_fit == 'contain'
               assign fit_class = ' aria-find-wig__media--contain'
             endif
+            assign card_url = block.settings.url | default: block.settings.link.url
           -%}
           <li class="aria-find-wig__item" {{ block.shopify_attributes }}>
             <div class="aria-find-wig__card">
@@ -31,12 +32,29 @@
                 class="aria-find-wig__media{{ fit_class }}"
                 style="--aria-fw-card-bg: {{ block.settings.background_color }};"
               >
+                {%- comment -%}
+                  Image reuses the same destination as the View More button below, so both
+                  point at one place. tabindex="-1" + aria-hidden keep this out of the tab
+                  order and the a11y tree — the button already exposes the same link, so a
+                  screen reader or keyboard user would otherwise hit the same destination
+                  twice per card. Omitted entirely when no destination is set, so a blank
+                  card never ships a dead/placeholder link on the image.
+                {%- endcomment -%}
+                {%- if card_url != blank -%}
+                  <a
+                    href="{{ card_url }}"
+                    class="aria-find-wig__media-link"
+                    aria-label="{{ block.settings.title | default: block.settings.button_label }}"
+                    tabindex="-1"
+                    aria-hidden="true"
+                  >
+                {%- endif -%}
                 {%- if block.settings.image != blank -%}
                   {{
                     block.settings.image
                     | image_url: width: 652
                     | image_tag:
-                      loading: 'lazy',
+                      loading: 'eager',
                       sizes: '(min-width: 990px) 326px, (min-width: 750px) 45vw, 90vw',
                       widths: '326,489,652',
                       class: 'aria-find-wig__image',
@@ -53,11 +71,14 @@
                     alt=""
                     width="326"
                     height="296"
-                    loading="lazy"
+                    loading="eager"
                     class="aria-find-wig__image"
                   >
                 {%- else -%}
                   {{ 'collection-1' | placeholder_svg_tag: 'aria-find-wig__image' }}
+                {%- endif -%}
+                {%- if card_url != blank -%}
+                  </a>
                 {%- endif -%}
               </div>
 
@@ -72,22 +93,167 @@
 
               {%- if block.settings.button_label != blank -%}
                 {%- comment -%}
-                  Rendered as a link when a destination is set and a disabled-looking span
-                  otherwise, so the card never presents a dead control.
+                  Figma 6356:1401 / 1415 / 1429 / 1443 draws the Link on every card, so the
+                  button is tied to the label, not to the URL — gating it on the link meant
+                  an un-linked card (the state every preset block ships in) rendered no
+                  button at all.
+
+                  It is always an anchor, so it always hovers, focuses and clicks like the
+                  button the design draws. Until a destination is set it falls back to `#`,
+                  and the controller at the foot of this file swallows the click so the page
+                  does not jump to the top.
                 {%- endcomment -%}
-                {%- if block.settings.link != blank -%}
-                  <a href="{{ block.settings.link }}" class="aria-find-wig__btn">
-                    {{- block.settings.button_label -}}
-                  </a>
-                {%- endif -%}
+                <a href="{{ card_url | default: '#' }}" class="aria-find-wig__btn">
+                  {{- block.settings.button_label -}}
+                </a>
               {%- endif -%}
             </div>
           </li>
         {%- endfor -%}
       </ul>
     {%- endif -%}
+
+    {%- comment -%} Home Design V7 (7238:5683) uses the same swipeable row on mobile, with its own card size and type. {%- endcomment -%}
+    {%- if section.blocks.size > 0 -%}
+      <script src="{{ 'aria-product-carousel.js' | asset_url }}" defer="defer"></script>
+      {%- comment -%}
+        Mobile-only PDP carousel (Figma node 6441:4303, its own 375px frame — a
+        swipeable row with nav + progress, not the tablet/desktop grid above scaled
+        down). The grid renders unconditionally and is only hidden here via CSS
+        (max-width: 749px), so this adds a new mobile interaction without touching the
+        grid's own markup, styling or behaviour at any width. Card content is a copy of
+        the grid's loop body, styled via `.aria-find-wig__mobile` descendant overrides in
+        the stylesheet rather than new classes, so both stay driven by the same block
+        settings.
+
+        Attributes stay on their own lines: a whitespace-trimming Liquid comment between
+        them welds neighbouring attribute names together and silently stops Swiper
+        initialising (documented in best-sellers.liquid).
+      {%- endcomment -%}
+      <div
+        class="aria-find-wig__mobile"
+        data-aria-product-carousel
+        data-slides-mobile="auto"
+        data-slides-sm="auto"
+        data-slides-md="auto"
+        data-slides-desktop="auto"
+        data-space-between="{% if section.settings.layout_variant == 'product' %}12{% else %}8{% endif %}"
+      >
+        <div class="swiper aria-find-wig__mobile-swiper" data-aria-carousel-swiper>
+          <div class="swiper-wrapper">
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign fit_class = ''
+                if block.settings.image_fit == 'contain'
+                  assign fit_class = ' aria-find-wig__media--contain'
+                endif
+              -%}
+              <div class="swiper-slide aria-find-wig__item" {{ block.shopify_attributes }}>
+                <div class="aria-find-wig__card">
+                  <div
+                    class="aria-find-wig__media{{ fit_class }}"
+                    style="--aria-fw-card-bg: {{ block.settings.background_color }};"
+                  >
+                    {%- if block.settings.image != blank -%}
+                      {{
+                        block.settings.image
+                        | image_url: width: 494
+                        | image_tag:
+                          loading: 'eager',
+                          widths: '247,494',
+                          class: 'aria-find-wig__image',
+                          alt: block.settings.image.alt | default: block.settings.title
+                      }}
+                    {%- elsif block.settings.default_image != 'none' -%}
+                      <img
+                        src="{{ block.settings.default_image | asset_url }}"
+                        alt=""
+                        width="247"
+                        height="296"
+                        loading="eager"
+                        class="aria-find-wig__image"
+                      >
+                    {%- else -%}
+                      {{ 'collection-1' | placeholder_svg_tag: 'aria-find-wig__image' }}
+                    {%- endif -%}
+                  </div>
+
+                  <div class="aria-find-wig__text">
+                    {%- if block.settings.title != blank -%}
+                      <h3 class="aria-find-wig__title">{{ block.settings.title }}</h3>
+                    {%- endif -%}
+                    {%- if block.settings.subtitle != blank -%}
+                      <p class="aria-find-wig__subtitle">{{ block.settings.subtitle }}</p>
+                    {%- endif -%}
+                  </div>
+
+                  {%- if block.settings.button_label != blank -%}
+                    {%- assign card_url = block.settings.url | default: block.settings.link.url | default: '#' -%}
+                    <a href="{{ card_url }}" class="aria-find-wig__btn">
+                      {{- block.settings.button_label -}}
+                    </a>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="aria-find-wig__mobile-controls" data-aria-carousel-controls>
+          <div class="aria-find-wig__mobile-progress">
+            <div class="aria-find-wig__mobile-progress-track"><span aria-hidden="true"></span></div>
+            <div class="aria-find-wig__mobile-progress-fill" data-aria-carousel-progress>
+              <span aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="aria-find-wig__mobile-nav">
+            <button
+              type="button"
+              class="aria-find-wig__mobile-prev"
+              data-aria-carousel-prev
+              aria-label="{{ 'aria_theme.carousel.previous' | t }}"
+            >
+              <span class="aria-find-wig__mobile-icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+            <button
+              type="button"
+              class="aria-find-wig__mobile-next"
+              data-aria-carousel-next
+              aria-label="{{ 'aria_theme.carousel.next' | t }}"
+            >
+              <span class="aria-find-wig__mobile-icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
   </div>
 </section>
+
+{%- comment -%}
+  Placeholder-link guard. Delegated on the document so it survives a theme-editor section
+  re-render, and flagged so a re-render cannot bind a second copy.
+{%- endcomment -%}
+<script>
+  (function () {
+    if (window.ariaFindWigBound) return;
+    window.ariaFindWigBound = true;
+
+    document.addEventListener('click', function (event) {
+      var btn = event.target.closest('.aria-find-wig__btn');
+      // A bare `#` would scroll the shopper to the top of the page, which is worse than
+      // doing nothing. The moment a real URL is set in the block settings this stops
+      // matching and the link navigates normally.
+      if (btn && btn.getAttribute('href') === '#') {
+        event.preventDefault();
+      }
+    });
+  })();
+</script>
 
 {% schema %}
 {
@@ -95,6 +261,23 @@
   "tag": "section",
   "class": "aria-find-wig-section",
   "settings": [
+    {
+      "type": "select",
+      "id": "layout_variant",
+      "options": [
+        {
+          "value": "home",
+          "label": "t:sections.aria-find-your-wig.settings.layout_variant.options__1.label"
+        },
+        {
+          "value": "product",
+          "label": "t:sections.aria-find-your-wig.settings.layout_variant.options__2.label"
+        }
+      ],
+      "default": "home",
+      "label": "t:sections.aria-find-your-wig.settings.layout_variant.label",
+      "info": "t:sections.aria-find-your-wig.settings.layout_variant.info"
+    },
     {
       "type": "text",
       "id": "heading",
@@ -140,11 +323,26 @@
           "type": "select",
           "id": "default_image",
           "options": [
-            { "value": "none", "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.none" },
-            { "value": "wp-find-length.jpg", "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.length" },
-            { "value": "wp-find-texture.jpg", "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.texture" },
-            { "value": "wp-find-color.jpg", "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.color" },
-            { "value": "wp-find-cap.png", "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.cap" }
+            {
+              "value": "none",
+              "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.none"
+            },
+            {
+              "value": "wp-find-length.jpg",
+              "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.length"
+            },
+            {
+              "value": "wp-find-texture.jpg",
+              "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.texture"
+            },
+            {
+              "value": "wp-find-color.jpg",
+              "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.color"
+            },
+            {
+              "value": "wp-find-cap.png",
+              "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.options.cap"
+            }
           ],
           "default": "none",
           "label": "t:sections.aria-find-your-wig.blocks.card.settings.default_image.label",
@@ -154,8 +352,14 @@
           "type": "select",
           "id": "image_fit",
           "options": [
-            { "value": "cover", "label": "t:sections.aria-find-your-wig.blocks.card.settings.image_fit.options.cover" },
-            { "value": "contain", "label": "t:sections.aria-find-your-wig.blocks.card.settings.image_fit.options.contain" }
+            {
+              "value": "cover",
+              "label": "t:sections.aria-find-your-wig.blocks.card.settings.image_fit.options.cover"
+            },
+            {
+              "value": "contain",
+              "label": "t:sections.aria-find-your-wig.blocks.card.settings.image_fit.options.contain"
+            }
           ],
           "default": "cover",
           "label": "t:sections.aria-find-your-wig.blocks.card.settings.image_fit.label",
@@ -174,9 +378,15 @@
           "label": "t:sections.aria-find-your-wig.blocks.card.settings.button_label.label"
         },
         {
-          "type": "url",
+          "type": "collection",
           "id": "link",
           "label": "t:sections.aria-find-your-wig.blocks.card.settings.link.label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.aria-find-your-wig.blocks.card.settings.url.label",
+          "info": "t:sections.aria-find-your-wig.blocks.card.settings.url.info"
         }
       ]
     }
@@ -186,9 +396,27 @@
     {
       "name": "t:sections.aria-find-your-wig.presets.name",
       "blocks": [
-        { "type": "card", "settings": { "title": "By Length", "default_image": "wp-find-length.jpg" } },
-        { "type": "card", "settings": { "title": "By Texture", "default_image": "wp-find-texture.jpg" } },
-        { "type": "card", "settings": { "title": "Color Comparison", "default_image": "wp-find-color.jpg" } },
+        {
+          "type": "card",
+          "settings": {
+            "title": "By Length",
+            "default_image": "wp-find-length.jpg"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "By Texture",
+            "default_image": "wp-find-texture.jpg"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Color Comparison",
+            "default_image": "wp-find-color.jpg"
+          }
+        },
         {
           "type": "card",
           "settings": {

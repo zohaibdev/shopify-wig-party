@@ -46,7 +46,7 @@
           "type": "social",
           "settings": {
             "platform": "instagram",
-            "url": "https://www.facebook.com/groups/wigpartyshop"
+            "url": "https://www.instagram.com/wigparty.shop/"
           }
         },
         "social-3": {
@@ -77,7 +77,9 @@
       "settings": {
         "show_newsletter": true,
         "newsletter_heading": "Join the Party",
-        "newsletter_text": "New styles, live shows & deals — plus 10% off your first order.",
+        "newsletter_text": "New styles, live show alerts and deals from Kristi, straight to your inbox.",
+        "app_store_url": "https://apps.apple.com/us/app/wig-party/id6766784326",
+        "google_play_url": "https://play.google.com/store/apps/details?id=net.belletress",
         "newsletter_placeholder": "Enter your email address",
         "newsletter_button_label": "Subscribe",
         "legal_menu": "footer-bottom",

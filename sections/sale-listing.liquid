@@ -1,0 +1,326 @@
+{%- comment -%}
+  Wig Party — SALE listing (Figma 7547:4684, desktop 1360 wide).
+  Order: reason chips -> reasons banner -> 3-column grid -> Show more.
+  Own section, not collection-results. Chips are tag URLs of the current collection; when the page
+  runs on an alternate template (template.suffix, e.g. sale) the same suffix is kept as ?view= in every
+  chip link, in the "Show more" link and in its fetch. No counts, no sort, no "N wigs" line.
+  Cards are the collection page's shared `aria-product-card`, rendered with the same params as
+  sections/collection-results.liquid; its grid-scoped look (.aria-coll ...) is replicated under
+  .wp-sale-listing in section-sale-listing.css. snippets/sale-card.liquid is kept but unused.
+  aria-product-card.js and aria-wishlist.js are global (layout/theme.liquid, delegated listeners).
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'component-aria-product-card.css' | asset_url | stylesheet_tag }}
+{{ 'section-sale-listing.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'sale-listing.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign view_query = ''
+  if template.suffix != blank
+    assign view_query = '?view=' | append: template.suffix
+  endif
+-%}
+
+{%- paginate collection.products by section.settings.products_per_page -%}
+  <div
+    class="wp-sale-listing"
+    data-wp-sale-listing
+    data-section-id="{{ section.id }}"
+    data-view="{{ template.suffix }}"
+    style="--wp-sale-pad-top: {{ section.settings.padding_top }}px; --wp-sale-pad-bottom: {{ section.settings.padding_bottom }}px;"
+  >
+    <div class="wp-sale-listing__inner">
+      <nav class="wp-sale-listing__chips-row" aria-label="{{ section.settings.label | escape }}">
+        {%- if section.settings.label != blank -%}
+          <span class="wp-sale-listing__chips-label">{{ section.settings.label | escape }}</span>
+        {%- endif -%}
+        <div class="wp-sale-listing__chips">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'chip' -%}
+              {%- liquid
+                assign chip_tag = block.settings.tag | strip
+                assign chip_link = block.settings.link
+                assign chip_active = false
+                assign chip_url = collection.url
+                if chip_link != blank
+                  assign chip_url = chip_link
+                  assign chip_link_handle = chip_link | split: '?' | first | split: '/' | last
+                  if chip_link_handle == collection.handle and current_tags == blank
+                    assign chip_active = true
+                  endif
+                elsif chip_tag == blank
+                  if current_tags == blank
+                    assign chip_active = true
+                  endif
+                else
+                  assign chip_handle = chip_tag | handle
+                  assign chip_url = collection.url | append: '/' | append: chip_handle
+                  for current_tag in current_tags
+                    assign current_handle = current_tag | handle
+                    if current_handle == chip_handle
+                      assign chip_active = true
+                    endif
+                  endfor
+                endif
+              -%}
+              <a
+                class="wp-sale-listing__chip{% if chip_active %} wp-sale-listing__chip--active{% endif %}"
+                href="{{ chip_url }}"
+                {% if chip_active %}aria-current="page"{% endif %}
+                {{ block.shopify_attributes }}
+              >{{ block.settings.label | escape }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </nav>
+
+      {%- render 'sale-reasons-banner',
+        section_id: section.id,
+        background_image: section.settings.background_image,
+        signature: section.settings.signature,
+        blocks: section.blocks
+      -%}
+
+      <div class="wp-sale-listing__results">
+        {%- if collection.products.size > 0 -%}
+          <ul class="wp-sale-listing__grid" role="list" data-wp-sale-grid>
+            {%- for product in collection.products -%}
+              <li class="wp-sale-listing__item">
+                {%- render 'aria-product-card',
+                  product: product,
+                  feature_tag_metafield: section.settings.feature_tag_metafield,
+                  section_id: section.id,
+                  quick_add_icon: 'mega-cart-02'
+                -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          {%- liquid
+            assign shown_so_far = paginate.current_offset | plus: paginate.current_size
+            assign remaining = paginate.items | minus: shown_so_far
+            assign more_token = '{n}'
+            assign more_count = remaining
+            if more_count > paginate.page_size
+              assign more_count = paginate.page_size
+            endif
+            assign next_url = paginate.next.url
+          -%}
+          <div class="wp-sale-listing__more-wrap" data-wp-sale-more-wrap>
+            {%- if paginate.next and remaining > 0 -%}
+              <a
+                class="wp-sale-listing__more"
+                href="{{ next_url }}"
+                data-wp-sale-more
+              >{{ section.settings.more_label | replace: more_token, more_count }}</a>
+            {%- endif -%}
+          </div>
+        {%- else -%}
+          <p class="wp-sale-listing__empty">{{ section.settings.empty_text | escape }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Sale listing",
+  "tag": "section",
+  "class": "sale-listing",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Chips row label",
+      "default": "WHY IT IS REDUCED"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 12,
+      "info": "First page and each Show more step."
+    },
+    {
+      "type": "text",
+      "id": "more_label",
+      "label": "Show more button",
+      "default": "Show {n} more",
+      "info": "Use {n} for the number left to show."
+    },
+    {
+      "type": "text",
+      "id": "feature_tag_metafield",
+      "label": "Card badge metafield",
+      "default": "custom.feature_tags"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Text when no products match",
+      "default": "No products match this filter."
+    },
+    {
+      "type": "header",
+      "content": "Reasons banner"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Banner background image",
+      "info": "Leave empty for the default photo of Kristi."
+    },
+    {
+      "type": "image_picker",
+      "id": "signature",
+      "label": "Banner signature",
+      "info": "Shown at 239 x 92, top left. Leave empty for the default."
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Chip",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Product tag",
+          "info": "Leave empty for the chip that shows everything."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Optional. A collection link here overrides the tag."
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "name": "Banner card",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag label"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "info": "Shown in uppercase."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sale listing",
+      "blocks": [
+        {
+          "type": "chip",
+          "settings": {
+            "label": "Everything"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "label": "Sample sale",
+            "tag": "sample-sale"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "label": "Dailey Deals",
+            "tag": "dailey-deals"
+          }
+        },
+        {
+          "type": "chip",
+          "settings": {
+            "label": "Clearance",
+            "tag": "clearance"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Sample sale",
+            "heading": "Tried on, photographed, or an ex-display",
+            "text": "Handled but not worn out. We say exactly what is up with each one on its own page, and they are still returnable."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Dailey Deals",
+            "heading": "One style, one day, a better price",
+            "text": "Kristi picks it. It changes daily and it is the reason a lot of people check in every morning."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Clearance",
+            "heading": "Retired styles and discontinued colours",
+            "text": "Belle Tress stops making things. When they do, what is left goes here and it does not come back."
+          }
+        }
+      ]
+    }
+  ],
+  "enabled_on": {
+    "templates": ["collection"]
+  }
+}
+{% endschema %}

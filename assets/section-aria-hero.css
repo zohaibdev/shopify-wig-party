@@ -400,3 +400,234 @@
     justify-content: center;
   }
 }
+/* Emphasis in the description is a mobile-only accent (dark pink, below). Desktop keeps
+   the words as plain body text, so the weight is neutralised at every width. */
+.aria-hero__description strong {
+  font-weight: inherit;
+}
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6576:11042 (375 x 870). Everything below is scoped under 750px, so
+ * tablet (750-989) and desktop (990+) are untouched.
+ *
+ * Composition: the photo fills the whole section and fades to #F4EDE5; the copy column
+ * is anchored to the section's BOTTOM (frame 6576:11083, bottom: 0); and the Live card
+ * sits in that column under the buttons instead of floating over the photo.
+ *
+ * The Live card lives inside `.aria-hero__media` in the markup (desktop pins it to the
+ * photo). Here `__media` becomes `display: contents`, which promotes both its <img> and
+ * the card to children of the section's flex column, so the card can be ordered after
+ * the copy with no duplicate markup.
+ *
+ * Vertical ladder (px, Figma): 40 pad / 26 rating / 8 / 46.19 logo / 4 / 62 words / 4 /
+ * 112 description / 24 / 52 buttons / 8 / 181 card / 40 pad = 607.19, plus 262.81 of
+ * photo above = 870.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* 870 / 375: the frame's height scales with the viewport so the photo crop holds. */
+    min-height: 232vw;
+    background: #f4ede5;
+  }
+
+  /* The 70vh cap and 4:5 box belong to the stacked tablet layout; here the section
+     itself is the photo box. */
+  .aria-hero__media {
+    display: contents;
+  }
+
+  .aria-hero__media picture {
+    display: contents;
+  }
+
+  /* Figma fill: 281.08% x 117.87% of the 375 x 870 frame, offset -143.69% / -2.12%.
+     Expressed in vw so the crop is identical at every phone width. */
+  .aria-hero__image {
+    inset: auto;
+    top: -4.9173vw;
+    left: -143.69vw;
+    width: 281.08vw;
+    height: 273.46vw;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Figma overlay on the photo: transparent to #F4EDE5 between 33.234% and 66.552%. */
+  .aria-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(181.59deg, rgba(255, 255, 255, 0) 33.234%, #f4ede5 66.552%);
+    pointer-events: none;
+  }
+
+  /* Above the photo and its fade (both absolute, painted earlier/later in tree order). */
+  .aria-hero__inner {
+    z-index: 1;
+    width: 100%;
+    order: 1;
+  }
+
+  .aria-hero__content {
+    padding: 40px 16px 0;
+  }
+
+  /* Rating pill (6576:11086): 299 x 26, px-4 py-2, 8px stars -> label, 14/22 #2B2C2B. */
+  .aria-hero__rating-badge {
+    padding: 2px 4px;
+    gap: 8px;
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    line-height: 22px;
+    /* Dawn's body letter-spacing (0.06rem) widened the pill 299 -> 316. */
+    letter-spacing: 0;
+    color: #2b2c2b;
+    margin-bottom: 8px;
+  }
+
+  .aria-hero__rating-stars {
+    gap: 2px;
+    color: var(--py, #a64a4c);
+  }
+
+  .aria-hero__rating-stars .aria-icon {
+    display: block;
+  }
+
+  /* Wordmark (6576:11105): 175.52 x 46.19, then 4px to the word rows. */
+  .aria-hero__logo {
+    margin-bottom: 4px;
+  }
+
+  .aria-hero__logo img {
+    display: block;
+    width: 175.52px;
+    max-width: none;
+    height: 46.19px;
+  }
+
+  /* Words (6576:11107): Montserrat Medium 20/28, 12px between words, 6px between rows. */
+  .aria-hero__eyebrow {
+    gap: 6px 12px;
+    margin: 0 0 4px;
+    font-family: var(--font-heading-family);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  /* Description (6576:11111): Poppins 18/28 #3F3E3E, accents #A64A4C, 24px to buttons. */
+  .aria-hero__description,
+  .aria-hero__description p {
+    font-family: var(--font-body-family);
+    font-size: 18px;
+    line-height: 28px;
+    color: #3f3e3e;
+    letter-spacing: 0;
+  }
+
+  .aria-hero__description {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .aria-hero__description strong {
+    color: var(--py, #a64a4c);
+  }
+
+  /* Buttons (6576:11112): one row, 8px apart; the first is a fixed 201 wide, the second
+     takes the rest (134 at 375). Figma's 18px label nearly fills the 201px button, so its
+     nominal 24px side padding cannot also apply; the labels are centred in fixed boxes
+     instead, which is what the frame draws. */
+  .aria-hero__actions {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .aria-hero__btn {
+    box-sizing: border-box;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 52px;
+    padding-inline: 0;
+    white-space: nowrap;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  .aria-hero__btn:first-child {
+    flex: 0 0 201px;
+  }
+
+  /* Live card (6576:11119): in the column under the buttons, 343 wide, #BC696B with a
+     1px white border, radius 4. Figma's stroke sits inside its 12px padding, so CSS
+     padding is 11 + 1 border to keep the content 12px from the outer edge (181 tall). */
+  .aria-hero__live-badge {
+    position: relative;
+    z-index: 1;
+    order: 2;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    box-sizing: border-box;
+    margin: 8px 16px 40px;
+    padding: 11px;
+    border-radius: 4px;
+  }
+
+  .aria-hero__live-badge-header {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .aria-hero__live-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Montserrat Medium 20/28 white. */
+  .aria-hero__live-title {
+    font-family: var(--font-heading-family);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0;
+    color: var(--white, #fff);
+  }
+
+  /* Poppins Italic 16/26. */
+  .aria-hero__live-subtitle {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 14/22 with Figma's white -> #EADDD4 text gradient; 12px to the link. */
+  .aria-hero__live-description {
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0;
+    margin-bottom: 12px;
+    background-image: linear-gradient(to bottom, #fff, #eaddd4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Watch Live (6576:11127): 125 x 39, px-16 py-8.5, Poppins Bold 12/22 uppercase. */
+  .aria-hero__live-cta {
+    box-sizing: border-box;
+    min-height: 39px;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+}

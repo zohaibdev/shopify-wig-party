@@ -4,7 +4,8 @@
   swaps into #cart-icon-bubble after every cart mutation). Keeping both call sites on this one
   snippet guarantees the icon doesn't flicker back to a different style after add-to-cart.
 {%- endcomment -%}
-{%- render 'aria-icon', name: 'cart', class: 'aria-header__icon-svg' -%}
+{%- render 'aria-icon', name: 'cart', class: 'aria-header__icon-svg aria-header__icon--compact' -%}
+{%- render 'aria-icon', name: 'nav-cart', class: 'aria-header__icon-svg aria-header__icon--desktop' -%}
 <span class="visually-hidden">{{ 'general.cart.view' | t: count: cart.item_count }}</span>
 {%- if cart != empty -%}
   <div class="aria-header__cart-bubble" aria-hidden="true">

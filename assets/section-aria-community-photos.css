@@ -364,3 +364,128 @@
     min-width: 0;
   }
 }
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6578:13055 (375 x 1166). Scoped under 750px, so tablet and desktop are
+ * untouched.
+ *
+ * Ladder (px, Figma): 48 pad / 555 feature / 20 / 144 heading / 18 / 28 subheading / 20 /
+ * 52 button / 20 / 213 photo strip / 48 pad = 1166.
+ * Quote panel (pinned to the feature's base, p-25 with its 1px ring inside): 104 quote /
+ * 8 / 24 author / 24 / 39 button; the 75 x 60 quote mark 25px in from its bottom-right.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-ugc__layout {
+    gap: 20px;
+  }
+
+  /* Feature (6578:13057): 343 x 555. */
+  .aria-ugc__feature-media {
+    position: relative;
+    aspect-ratio: 343 / 555;
+    overflow: hidden;
+  }
+
+  /* Figma zooms the photo to 126.41% x 111.32% of the box, offset -13.29% / -1.84% (more
+     of the top than a plain cover crop shows); cover keeps any other image undistorted. */
+  .aria-ugc__feature-img {
+    position: absolute;
+    left: -13.29%;
+    top: -1.84%;
+    width: 126.41%;
+    height: 111.32%;
+    max-width: none;
+  }
+
+  .aria-ugc__quote-panel {
+    box-sizing: border-box;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  /* Poppins Italic 16/26 white. Dawn's base `blockquote` rule adds a left rule and
+     1rem indent, neither of which is in the frame. */
+  .aria-ugc__quote {
+    max-width: none;
+    padding-left: 0;
+    border-left: 0;
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins Medium 16/24 white, 8px under the quote (24 panel gap - 16). */
+  .aria-ugc__quote-author {
+    margin-top: -16px;
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0;
+  }
+
+  /* Share Your Story (6578:13064): 130 x 39, px-16 py-8.5, Helvetica Bold 12/22 #111. */
+  .aria-ugc__quote-btn {
+    box-sizing: border-box;
+    min-height: 39px;
+    padding: 8.5px 16px;
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0;
+  }
+
+  .aria-ugc__quote-mark {
+    right: 25px;
+    bottom: 25px;
+    width: 75px;
+  }
+
+  .aria-ugc__side {
+    gap: 20px;
+  }
+
+  .aria-ugc__side-top {
+    gap: 20px;
+  }
+
+  /* Mobile Title: Montserrat Medium 40/48 black. */
+  .aria-ugc__heading {
+    font-family: var(--font-heading-family);
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 48px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 20/28 #3F3E3E. */
+  .aria-ugc__subheading {
+    font-family: var(--font-body-family);
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  /* Black button (6578:13075): 52 tall with its 1px border, px-24, Poppins 18/28. */
+  .aria-ugc__btn {
+    box-sizing: border-box;
+    min-height: 52px;
+    padding: 11px 23px;
+    font-family: var(--font-body-family);
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  /* Photo strip: 194 x 213 photos 7.889 apart (Swiper -mobile/-sm gap), square-cornered,
+     running past the gutter to the viewport edge. */
+  .aria-ugc__strip {
+    margin-right: -16px;
+  }
+
+  .aria-ugc__strip-item {
+    width: 193.974px;
+  }
+
+  .aria-ugc__strip-img {
+    aspect-ratio: 193.974 / 212.991;
+    border-radius: 0;
+  }
+}

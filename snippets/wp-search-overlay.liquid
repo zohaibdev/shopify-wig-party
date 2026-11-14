@@ -1,0 +1,84 @@
+{%- comment -%}
+  New search overlay (desktop, 1280px and up). Rendered by sections/header.liquid only when the
+  "Use new search overlay" setting is on. Below 1280px the old header search is used.
+  CSS and JS load from here so nothing extra ships when the setting is off.
+
+  Accepts:
+  - placeholder: {String} Field placeholder
+  - live_blog: {String} Blog handle for FROM THE LIVE (empty = group hidden)
+{%- endcomment -%}
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'wp-search-overlay.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'wp-search-overlay.js' | asset_url }}" defer="defer"></script>
+
+<button
+  type="button"
+  class="wp-search-overlay-trigger"
+  data-wp-search-open
+  aria-expanded="false"
+  aria-controls="WpSearchOverlay"
+>
+  <img src="{{ 'wp-search-overlay-search-icon.svg' | asset_url }}" alt="" width="24" height="24">
+  <span class="visually-hidden">{{ 'aria_theme.header.search_label' | t }}</span>
+</button>
+
+<wp-search-overlay
+  id="WpSearchOverlay"
+  class="wp-search-overlay"
+  data-loading-text="{{ 'accessibility.loading' | t }}"
+  data-live-blog="{{ live_blog | handleize }}"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ 'aria_theme.header.search_label' | t }}"
+>
+  <div class="wp-search-overlay__backdrop" data-wp-so-backdrop></div>
+  <div class="wp-search-overlay__sheet">
+    <div class="wp-search-overlay__row">
+      <form
+        action="{{ routes.search_url }}"
+        method="get"
+        role="search"
+        class="wp-search-overlay__form"
+      >
+        <div class="wp-search-overlay__field">
+          <img
+            class="wp-search-overlay__field-icon"
+            src="{{ 'wp-search-overlay-search-icon.svg' | asset_url }}"
+            alt=""
+            width="24"
+            height="24"
+          >
+          <input
+            type="search"
+            name="q"
+            value=""
+            placeholder="{{ placeholder }}"
+            class="wp-search-overlay__input"
+            aria-label="{{ 'aria_theme.header.search_label' | t }}"
+            autocomplete="off"
+            aria-expanded="false"
+            aria-controls="wp-predictive-search-results"
+          >
+          <input type="hidden" name="options[prefix]" value="last">
+          <input type="hidden" name="type" value="product">
+          <button type="reset" class="hidden visually-hidden" tabindex="-1">
+            <span class="visually-hidden">{{ 'aria_theme.header.search_reset' | t }}</span>
+          </button>
+        </div>
+      </form>
+      <button
+        type="button"
+        class="wp-search-overlay__close"
+        data-wp-so-close
+      >
+        <img src="{{ 'wp-search-overlay-close-icon.svg' | asset_url }}" alt="" width="20" height="20">
+        <span>{{ 'accessibility.close' | t }}</span>
+      </button>
+    </div>
+
+    <div class="wp-search-overlay__suggestions">
+      <div data-predictive-search tabindex="-1"></div>
+    </div>
+    <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
+  </div>
+</wp-search-overlay>

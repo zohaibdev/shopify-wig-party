@@ -35,7 +35,11 @@
             "promo_2_badge": "Icons Collection",
             "promo_2_badge_style": "white",
             "promo_2_button_label": "See the deal",
-            "promo_2_button_url": "shopify://collections/dailey-deal-sales"
+            "promo_2_button_url": "shopify://collections/dailey-deal-sales",
+            "cap_menu": "shop-by-cap-construction",
+            "collection_menu": "header-shop-shop-by-collection",
+            "color_menu": "shop-by-color",
+            "size_menu": "shop-by-size-length"
           }
         },
         "mega-best-sellers": {
@@ -43,12 +47,12 @@
           "settings": {
             "enabled": true,
             "feature_image": "shopify://shop_images/hairs.png",
-            "feature_heading": "Top 3 this quarter",
-            "feature_text": "City, Kristi, and Lux drive most of the last 90 days of sales.",
+            "feature_heading": "Best Sellers",
+            "feature_text": "Shop the styles in our Best Sellers collection.",
             "feature_button_label": "Shop best sellers",
-            "feature_button_url": "",
-            "products_heading": "Best Sellers · The styles that actually sell",
-            "collection": ""
+            "feature_button_url": "shopify://collections/best-sellers",
+            "products_heading": "Best Sellers",
+            "collection": "best-sellers"
           }
         },
         "mega-start-here": {
@@ -66,7 +70,7 @@
             "media_heading": "Live Tonight · 7:00 PM CT",
             "media_image": "shopify://shop_images/1_c1f8b06d-c9b2-4724-ad2b-c35f1381d762.png",
             "media_button_label": "Watch the live show",
-            "media_button_url": "shopify://pages/live-shows"
+            "media_button_url": "shopify://pages/live"
           }
         },
         "mega-community": {
@@ -79,7 +83,7 @@
             "feature_button_url": "https://www.facebook.com/groups/wigpartyshop",
             "gallery_collection": "cafe-collection",
             "gallery_button_label": "See the gallery  →",
-            "gallery_button_url": ""
+            "gallery_button_url": "shopify://pages/community"
           }
         },
         "mega-dailey-deals": {
@@ -88,10 +92,10 @@
             "enabled": true,
             "feature_image": "shopify://shop_images/2_4919838c-7fa2-4eb1-af25-62bacc814fef.png",
             "feature_heading": "Dailey Deals + Clearance",
-            "feature_text": "Two old menu items become one place — a fresh markdown every single day.",
+            "feature_text": "Dailey Deals, Sale and Clearance, all in one place.",
             "feature_button_label": "Shop all deals",
             "feature_button_url": "shopify://collections/dailey-deal-sales",
-            "products_heading": "Dailey Deals · New markdowns every day",
+            "products_heading": "Dailey Deals",
             "collection": "dailey-deal-sales",
             "product_badge": "Deal",
             "product_badge_style": "pink"
@@ -114,18 +118,140 @@
         "show_live_dot": true,
         "live_dot_menu_item": "Live",
         "search_placeholder": "What are you looking for?",
+        "wp_search_overlay": true,
         "show_app_store": true,
         "app_store_url": "https://apps.apple.com/us/app/wig-party/id6766784326",
         "show_google_play": true,
         "google_play_url": "https://play.google.com/store/apps/details?id=net.belletress",
-        "mega_ticker_text": "JOIN US LIVE ON FACEBOOK  ·  1,100+ BELLE TRESS WIGS IN STOCK  ·  SHOP BY STYLE",
-        "mega_show_placeholders": true,
+        "mega_ticker_text": "JOIN US LIVE ON FACEBOOK  ·  SHOP BY STYLE",
+        "show_wishlist_desktop": true,
         "announcement_color_scheme": "scheme-1",
         "nav_color_scheme": "scheme-1"
+      }
+    },
+    "wp-mobile-drawer": {
+      "type": "wp-mobile-drawer",
+      "blocks": {
+        "panel-shop": {
+          "type": "panel_shop",
+          "settings": {
+            "label": "Shop",
+            "group_1_title": "CAP CONSTRUCTION",
+            "group_1_menu": "shop-by-cap-construction",
+            "group_2_title": "BY COLLECTION",
+            "group_2_menu": "header-shop-shop-by-collection",
+            "group_3_title": "SHOP BY COLOR",
+            "group_3_menu": "shop-by-color",
+            "group_4_title": "BY SIZE & LENGTH",
+            "group_4_menu": "shop-by-size-length",
+            "featured_heading": "BEST SELLERS & MARKDOWNS",
+            "promo_1_image": "shopify://shop_images/image-1.png",
+            "promo_1_badge": "New Arrival",
+            "promo_1_badge_style": "amber",
+            "promo_1_button_url": "shopify://collections/dailey-deal-sales",
+            "promo_2_image": "shopify://shop_images/image-1.png",
+            "promo_2_badge": "Icons Collection",
+            "promo_2_badge_style": "white",
+            "promo_2_button_url": "shopify://collections/dailey-deal-sales"
+          }
+        },
+        "panel-start": {
+          "type": "panel_start",
+          "settings": {
+            "label": "Start Here",
+            "group_1_title": "WIG 101: THE BASICS",
+            "group_1_menu": "header-start-here-wig-101-the-basics",
+            "group_2_title": "GUIDES & ANSWERS",
+            "group_2_menu": "header-start-here-guides-answers",
+            "featured_heading": "BEST SELLERS",
+            "product_1": "triple-confidence-by-kristi-1",
+            "product_2": "triple-confidence-by-kristi-protect-your-belle-tress-wig-new-8oz",
+            "product_3": "belle-tress-adriana-wig-hand-tied-lux-se-collection-preorder-copy"
+          }
+        },
+        "panel-live": {
+          "type": "panel_live",
+          "settings": {
+            "label": "Live",
+            "show_live_dot": true,
+            "group_1_title": "CATCH UP",
+            "group_1_menu": "header-live-catch-up",
+            "group_1_manual_links": "Watch past replays | /pages/replays",
+            "group_2_title": "THIS WEEK'S SCHEDULE",
+            "group_2_menu": "header-live-this-week-s-schedule",
+            "group_2_manual_links": "This week's new styles | /collections/new-in\nHow Live shopping works | \nJoin the Facebook group | https://www.facebook.com/groups/wigpartyshop",
+            "video_heading": "LIVE TONIGHT · 7:00 PM CT",
+            "video_image": "shopify://shop_images/1_c1f8b06d-c9b2-4724-ad2b-c35f1381d762.png",
+            "video_url": "shopify://pages/live"
+          }
+        },
+        "panel-community": {
+          "type": "panel_community",
+          "settings": {
+            "label": "Community",
+            "group_1_title": "OUR HEART",
+            "group_1_menu": "header-community-our-heart",
+            "group_1_manual_links": "Kristi's story | /pages/about-kristi\nOur mission | \nReviews & testimonials | /pages/reviews",
+            "featured_heading": "REAL WOMEN, REAL WIGS",
+            "gallery_button_label": "See the gallery  →",
+            "gallery_button_url": "shopify://pages/community",
+            "sisterhood_label": "THE SISTERHOOD",
+            "sisterhood_title": "Join our Facebook group",
+            "sisterhood_copy": "Real talk, support, and first looks with women just like you.",
+            "sisterhood_button_label": "Join the group",
+            "sisterhood_button_url": "https://www.facebook.com/groups/wigpartyshop",
+            "photo_1": "shopify://shop_images/image-1.png",
+            "photo_2": "shopify://shop_images/image-1.png",
+            "photo_3": "shopify://shop_images/image-1.png"
+          }
+        },
+        "panel-deals": {
+          "type": "panel_deals",
+          "settings": {
+            "label": "Dailey Deals",
+            "show_new_badge": true,
+            "new_badge_label": "NEW",
+            "group_1_title": "ALL THE WAYS TO SAVE",
+            "group_1_menu": "header-dailey-deals-all-the-ways-to-save",
+            "group_1_manual_links": "Today's Dailey Deals | /collections/dailey-deal-sales\nSale | /collections/sale\nClearance | /collections/clearance",
+            "promo_image": "shopify://shop_images/2_4919838c-7fa2-4eb1-af25-62bacc814fef.png",
+            "promo_title": "Dailey Deals + Clearance",
+            "promo_button_label": "Shop all deals",
+            "promo_button_url": "shopify://collections/dailey-deal-sales",
+            "featured_heading": "DAILEY DEALS",
+            "featured_collection": "dailey-deal-sales",
+            "promo_copy": "Dailey Deals, Sale and Clearance, all in one place."
+          }
+        }
+      },
+      "block_order": [
+        "panel-shop",
+        "panel-start",
+        "panel-live",
+        "panel-community",
+        "panel-deals"
+      ],
+      "settings": {
+        "logo": "shopify://shop_images/hero-logo.png",
+        "search_placeholder": "What are you looking for?",
+        "preorder_label": "Pre-Order",
+        "preorder_url": "/collections/all-pre-order-options",
+        "account_label": "Sign in / Create account",
+        "account_url": "",
+        "live_eyebrow": "LIVE TONIGHT · 7:00 PM CT",
+        "live_title": "Join us live on Facebook",
+        "live_copy": "See the wigs. Ask questions. Laugh with friends.",
+        "live_button_label": "Watch Live",
+        "live_button_url": "shopify://pages/live",
+        "show_app_store": true,
+        "app_store_url": "https://apps.apple.com/us/app/wig-party/id6766784326",
+        "show_google_play": true,
+        "google_play_url": "https://play.google.com/store/apps/details?id=net.belletress"
       }
     }
   },
   "order": [
-    "header"
+    "header",
+    "wp-mobile-drawer"
   ]
 }

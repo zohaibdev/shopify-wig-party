@@ -85,6 +85,27 @@
   height: auto;
 }
 
+/*
+ * wp-kristi-signature.svg is authored in brand pink for dark and cream placements; on this
+ * near-white panel the design calls for black. The file is painted as a mask so the colour
+ * can be set here without forking artwork that other sections share — the same approach the
+ * PDP buy box uses for the banner signature.
+ *
+ * `aspect-ratio` is load-bearing: the masked box is an empty <span>, so `height: auto` above
+ * would collapse it to zero. 276x106 is the asset's own ratio, which keeps every breakpoint
+ * below sizing from width alone.
+ *
+ * Scoped to the theme asset on purpose. A merchant-uploaded signature stays a real <img>,
+ * because masking it would flatten whatever they chose into a solid silhouette.
+ */
+.aria-education__signature-img--brand {
+  flex: none;
+  aspect-ratio: 276 / 106;
+  background-color: var(--sy, #000);
+  -webkit-mask: var(--aria-eg-signature) no-repeat center / contain;
+  mask: var(--aria-eg-signature) no-repeat center / contain;
+}
+
 .aria-education__heading {
   margin: 0;
   width: 100%;
@@ -147,6 +168,18 @@
 .aria-education__link-label {
   min-width: 0;
   overflow-wrap: break-word;
+}
+
+/*
+ * The PDP frame (Figma 6356:811) left-aligns the labels and pads them 20px all round,
+ * giving 62px rows; the homepage frame centres them on 16px/20px padding for 54px rows.
+ * Same component, two placements — so this is a modifier driven by the `link_style`
+ * setting, and the default keeps the homepage exactly as it was.
+ */
+.aria-education--links-left .aria-education__link {
+  justify-content: flex-start;
+  padding: 20px;
+  text-align: left;
 }
 
 /*
@@ -248,5 +281,54 @@
 
   .aria-education__links {
     margin-top: 32px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:3885 — its own 375px frame, not including the photo panel above
+ * it, which this node does not cover).
+ *
+ * This file is mobile-first (the unqualified rules above already target
+ * small screens), but several of those values were guesses made before
+ * this frame was pulled. Rather than edit them directly — which would
+ * also change the 750px/990px look, since those blocks only override
+ * specific properties on top of the base — every fix below lives in its
+ * own max-width block, appended after the min-width ones so it wins the
+ * cascade at ≤749px without touching desktop or tablet.
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* p-16 uniform, not the base rule's 24px/16px. */
+  .aria-education__panel {
+    padding: 16px;
+  }
+
+  /* py-20 px-16, not the base rule's 24px/16px (gap stays 20px, already
+     correct — the card's own children are 20px apart on this frame, same
+     as the base rule already states). */
+  .aria-education__card {
+    padding: 20px 16px;
+  }
+
+  .aria-education__signature-img {
+    width: 194.352px;
+  }
+
+  /* Mobile/Heading/H1 token: 36/46 (weight is already the correct 500 via
+     --heading-h2-weight, so only size/line-height need restating here) —
+     not the base rule's 32px / unitless 1.15 guess. */
+  .aria-education__heading {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  /* Mobile/Mobile/Small/Small token: Poppins Regular 16/26 — not the base
+     rule's 16/20. Padding drops to a uniform 16px (base is 16px/20px), and
+     the label is NOT uppercase on this frame — confirmed by both the node
+     and the attached screenshot ("Where to start", not "WHERE TO START"). */
+  .aria-education__link {
+    padding: 16px;
+    line-height: 26px;
+    text-transform: none;
   }
 }

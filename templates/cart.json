@@ -8,42 +8,117 @@
  * ------------------------------------------------------------
  */
 {
-  "sections": {
-    "cart-items": {
-      "type": "main-cart-items",
-      "settings": {
-        "color_scheme": "scheme-1",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
-    "cart-footer": {
-      "type": "main-cart-footer",
-      "settings": {
-        "color_scheme": "scheme-1",
-        "padding_top": 20,
-        "padding_bottom": 40
-      },
-      "blocks": {
-        "subtotal": {
-          "type": "subtotal",
-          "settings": {
-          }
-        },
-        "buttons": {
-          "type": "buttons",
-          "settings": {
-          }
-        }
-      },
-      "block_order": [
-        "subtotal",
-        "buttons"
-      ]
-    }
-  },
-  "order": [
-    "cart-items",
-    "cart-footer"
-  ]
+    "sections":  {
+                     "main":  {
+                                  "type":  "main-cart",
+                                  "blocks":  {
+                                                 "feature-1":  {
+                                                                   "type":  "feature",
+                                                                   "settings":  {
+                                                                                    "icon":  "returns",
+                                                                                    "title":  "Tried on Live by Kristi",
+                                                                                    "text":  "Text love to (833) 280-2725 for live alerts."
+                                                                                }
+                                                               },
+                                                 "feature-2":  {
+                                                                   "type":  "feature",
+                                                                   "settings":  {
+                                                                                    "icon":  "gift",
+                                                                                    "title":  "Processed in 1 to 3 business days",
+                                                                                    "text":  ""
+                                                                                }
+                                                               },
+                                                 "feature-3":  {
+                                                                   "type":  "feature",
+                                                                   "settings":  {
+                                                                                    "icon":  "shipping",
+                                                                                    "title":  "Tracking within 24 to 48 hours",
+                                                                                    "text":  ""
+                                                                                }
+                                                               },
+                                                 "feature-4":  {
+                                                                   "type":  "feature",
+                                                                   "settings":  {
+                                                                                    "icon":  "price-match",
+                                                                                    "title":  "All sales final, ask us first",
+                                                                                    "text":  "Email shopwigparty@gmail.com before you order."
+                                                                                }
+                                                               }
+                                             },
+                                  "block_order":  [
+                                                      "feature-1",
+                                                      "feature-2",
+                                                      "feature-3",
+                                                      "feature-4"
+                                                  ],
+                                  "settings":  {
+                                                   "heading":  "Your bag",
+                                                   "free_shipping_threshold":  0,
+                                                   "progress_subtext":  "",
+                                                   "recs_collection":  "wig-supplies",
+                                                   "klarna_text":  "Or 4 interest-free payments of [amount] with Sezzle. Taxes and shipping calculated at checkout.",
+                                                   "trust_1":  "Processed in 1 to 3 business days",
+                                                   "trust_2":  "Tracking within 24 to 48 hours",
+                                                   "trust_3":  "All sales final, ask us first",
+                                                   "consult_title":  "Questions before you check out?",
+                                                   "consult_text":  "All sales are final, so please contact us before placing your order if you are unsure about a style, colour or cap size.",
+                                                   "consult_button":  "Message Kristi\u0027s team",
+                                                   "consult_url":  "/pages/contact"
+                                               }
+                              },
+                     "trust-strip":  {
+                                         "type":  "cart-trust-strip",
+                                         "blocks":  {
+                                                        "trust-approved-1":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "live",
+                                                                                                  "heading":  "Tried on Live by Kristi",
+                                                                                                  "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-2":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "packaging",
+                                                                                                  "heading":  "Processed in 1 to 3 business days",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-3":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "shipping",
+                                                                                                  "heading":  "Tracking within 24 to 48 hours",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-4":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "consult",
+                                                                                                  "heading":  "All sales final, ask us first",
+                                                                                                  "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             }
+                                                    },
+                                         "block_order":  [
+                                                             "trust-approved-1",
+                                                             "trust-approved-2",
+                                                             "trust-approved-3",
+                                                             "trust-approved-4"
+                                                         ],
+                                         "settings":  {
+                                                          "background_color":  "#ffffff"
+                                                      }
+                                     }
+                 },
+    "order":  [
+                  "main",
+                  "trust-strip"
+              ]
 }

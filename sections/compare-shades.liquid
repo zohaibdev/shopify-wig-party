@@ -1,0 +1,194 @@
+{%- comment -%}
+  Wig Party: Compare Shades page, side by side. Figma internal file, node 7289:6360.
+
+  Real data only: the shades are one wig's own variants (the colour option, ETA text stripped
+  for display) and each variant's image, built in snippets/compare-wig-shades.liquid.
+  A wig picker above the columns lists the wigs in the chosen collection (wig supplies and
+  products with fewer than two colours left out); picking one loads ?product=<handle>, and
+  assets/aria-compare-shades.js fetches that wig's shades through the Section Rendering API
+  (sections/compare-product-shades.liquid). The default wig is the section's product setting.
+
+  The JSON below carries the same shade fields the slider (compare-slider) and the table
+  (compare-table: wig, collection, cap, price, status) read from the aria-compare:* events.
+  Styles in assets/section-aria-compare-shades.css plus the small block below.
+{%- endcomment -%}
+
+{{ 'section-aria-compare-shades.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-compare-shades.js' | asset_url }}" defer="defer"></script>
+
+{% style %}
+  #shopify-section-{{ section.id }} .aria-compare-shades.is-pending .aria-compare-shades__columns {
+    visibility: hidden;
+    animation: aria-compare-shades-reveal 0s 3s forwards;
+  }
+  @keyframes aria-compare-shades-reveal {
+    to { visibility: visible; }
+  }
+  .aria-compare-table__table.is-pending .aria-compare-table__col-name,
+  .aria-compare-table__table.is-pending .aria-compare-table__row[data-field] .aria-compare-table__cell {
+    visibility: hidden;
+    animation: aria-compare-table-reveal 0s 3s forwards;
+  }
+  @keyframes aria-compare-table-reveal {
+    to { visibility: visible; }
+  }
+  /* Variant photos are one picture per shade, so there are no separate lighting swatches. */
+  #shopify-section-{{ section.id }} .aria-compare-shades__lights { display: none; }
+  #shopify-section-{{ section.id }} .aria-compare-shades__desc:empty { display: none; }
+  #shopify-section-{{ section.id }} .aria-compare-shades__picker {
+    max-width: 1360px;
+    margin: 0 auto 24px;
+  }
+  #shopify-section-{{ section.id }} .aria-compare-shades__picker-label {
+    display: block;
+    margin: 0 0 8px;
+    font-family: var(--font-heading-family);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 26px;
+  }
+  #shopify-section-{{ section.id }} .aria-compare-shades__picker .aria-compare-shades__select {
+    max-width: 670px;
+    border: 1px solid #000;
+  }
+  #shopify-section-{{ section.id }} .aria-compare-shades__shop {
+    display: inline-block;
+    margin-top: 4px;
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--white, #fff);
+    text-decoration: underline;
+  }
+  #shopify-section-{{ section.id }} .aria-compare-shades__meta {
+    margin: 0;
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--white, #fff);
+  }
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .aria-compare-shades__picker { margin-bottom: 16px; }
+  }
+{% endstyle %}
+
+{%- liquid
+  assign wig_collection = section.settings.collection
+  if wig_collection == blank
+    assign wig_collection = collections['all-in-stock-wigs']
+  endif
+
+  assign default_wig = section.settings.product
+  if default_wig == blank
+    for candidate in wig_collection.products
+      if candidate.type != 'Wig Supplies' and candidate.variants.size > 1
+        assign default_wig = candidate
+        break
+      endif
+    endfor
+  endif
+-%}
+
+<aria-compare-shades class="aria-compare-shades is-pending" data-label-c="{{ section.settings.label_c | escape }}" data-default-product="{{ default_wig.handle | escape }}">
+  {%- if default_wig != blank -%}
+    <script type="application/json" data-shades>
+      {%- render 'compare-wig-shades', wig: default_wig -%}
+    </script>
+  {%- endif -%}
+
+  <div class="aria-compare-shades__picker">
+    <label class="aria-compare-shades__picker-label" for="CompareWig-{{ section.id }}">{{ section.settings.picker_label }}</label>
+    <div class="aria-compare-shades__select">
+      <select id="CompareWig-{{ section.id }}" data-wig-picker>
+        {%- paginate wig_collection.products by 250 -%}
+          {%- for wig in wig_collection.products -%}
+            {%- if wig.type == 'Wig Supplies' or wig.variants.size < 2 -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign wig_label = wig.title | split: '|' | first | strip
+              assign wig_parts = wig.title | split: '|'
+              for part in wig_parts
+                if part contains 'Collection'
+                  assign part_clean = part | strip
+                  assign wig_label = wig_label | append: ' (' | append: part_clean | append: ')'
+                  break
+                endif
+              endfor
+            -%}
+            <option value="{{ wig.handle | escape }}"{% if wig.handle == default_wig.handle %} selected{% endif %}>{{ wig_label | escape }}</option>
+          {%- endfor -%}
+        {%- endpaginate -%}
+      </select>
+      <span class="aria-compare-shades__chevron">
+        {{- 'icon-compare-chevron.svg' | inline_asset_content -}}
+      </span>
+    </div>
+  </div>
+
+  <div class="aria-compare-shades__columns">
+    {%- for column in (1..2) -%}
+      {%- liquid
+        if column == 1
+          assign column_label = section.settings.label_a
+        else
+          assign column_label = section.settings.label_b
+        endif
+        assign select_id = 'CompareShade-' | append: section.id | append: '-' | append: column
+      -%}
+      <div class="aria-compare-shades__column" data-column>
+        {%- if column_label != blank -%}
+          <h2 class="aria-compare-shades__label">
+            <label for="{{ select_id }}">{{ column_label }}</label>
+          </h2>
+        {%- endif -%}
+
+        <div class="aria-compare-shades__body">
+          <div class="aria-compare-shades__select">
+            <select id="{{ select_id }}" data-select></select>
+            <span class="aria-compare-shades__chevron">
+              {{- 'icon-compare-chevron.svg' | inline_asset_content -}}
+            </span>
+          </div>
+
+          <div class="aria-compare-shades__detail">
+            <div class="aria-compare-shades__photo">
+              <img src="{{ default_wig.featured_image | image_url: width: 1212 }}" alt="" width="1212" height="1280">
+            </div>
+            <p class="aria-compare-shades__meta" data-meta></p>
+            <a class="aria-compare-shades__shop" href="{{ default_wig.url | default: '/collections/all-in-stock-wigs' }}" data-shop>{{ section.settings.shop_label }}</a>
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" role="status" data-compare-announce></p>
+
+  <div class="aria-compare-shades__empty" data-compare-empty hidden>
+    <p class="aria-compare-shades__empty-text" data-compare-empty-text>{{ section.settings.empty_text | escape }}</p>
+    {%- if section.settings.empty_link_label != blank -%}
+      <a class="aria-compare-shades__empty-link" href="/collections/all-in-stock-wigs" data-compare-empty-link>{{ section.settings.empty_link_label }}</a>
+    {%- endif -%}
+  </div>
+</aria-compare-shades>
+
+{% schema %}
+{
+  "name": "t:sections.aria-compare-shades.name",
+  "tag": "section",
+  "class": "aria-compare-shades-section",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Wigs to choose from", "info": "Blank uses All In Stock Wigs. Wig supplies and products with one colour are left out." },
+    { "type": "product", "id": "product", "label": "Default wig" },
+    { "type": "text", "id": "picker_label", "default": "Choose a wig", "label": "Wig picker label" },
+    { "type": "text", "id": "label_a", "default": "SHADE A", "label": "t:sections.aria-compare-shades.settings.label_a.label" },
+    { "type": "text", "id": "label_b", "default": "SHADE B", "label": "t:sections.aria-compare-shades.settings.label_b.label" },
+    { "type": "text", "id": "label_c", "default": "SHADE C", "label": "t:sections.aria-compare-shades.settings.label_c.label" },
+    { "type": "text", "id": "shop_label", "default": "SHOP THIS SHADE", "label": "Shade link label" },
+    { "type": "text", "id": "empty_text", "default": "[product] has only one shade, so there is nothing to compare.", "label": "t:sections.aria-compare-shades.settings.empty_text.label" },
+    { "type": "text", "id": "empty_link_label", "default": "SHOP IN STOCK WIGS", "label": "t:sections.aria-compare-shades.settings.empty_link_label.label" }
+  ],
+  "presets": [
+    { "name": "t:sections.aria-compare-shades.presets.name" }
+  ]
+}
+{% endschema %}

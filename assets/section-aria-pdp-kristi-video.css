@@ -1,0 +1,358 @@
+/* Wig Party — PDP "Kristi styled this one" video + signup, Figma node 6356:539.
+ *
+ * Frame is 1440x778: 80px vertical / 40px horizontal padding around a glass card that is
+ * 1146 wide and 618 tall. The card is content-sized in Figma (471 text + 64 gap + 529
+ * video + 2x40 padding + 2x1 border = 1146), so those parts are stated and the card
+ * follows from them rather than being pinned to a container width.
+ */
+
+.aria-kristi,
+.aria-kristi *,
+.aria-kristi *::before,
+.aria-kristi *::after {
+  box-sizing: border-box;
+}
+
+.aria-kristi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  background: linear-gradient(
+    180deg,
+    var(--aria-kristi-from, #fff) 0%,
+    var(--aria-kristi-to, #eaddd4) 100%
+  );
+}
+
+/* The frosted card. `backdrop-filter` is the effect Figma specifies; where it is not
+   supported the translucent fill alone still reads correctly against the gradient. */
+.aria-kristi__card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  max-width: 1146px;
+  width: 100%;
+  padding: 40px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(211, 210, 210, 0.13);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  overflow: hidden;
+}
+
+/* --- Text column (6356:541) — 471 wide, 48px between copy and form --- */
+
+.aria-kristi__body {
+  flex: 0 0 471px;
+  width: 471px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 48px;
+}
+
+.aria-kristi__text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Montserrat Bold 48/56. The theme's heading family is Montserrat but its weight setting
+   is 500, and this heading is explicitly bold in the design, so 700 is stated. */
+.aria-kristi__heading {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-kristi__copy {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-kristi__copy p {
+  margin: 0;
+}
+
+.aria-kristi__copy p + p {
+  margin-top: 12px;
+}
+
+/* --- Signup form (6356:545) — input 56, button 52, 8px apart --- */
+
+.aria-kristi__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  width: 100%;
+}
+
+/* Figma centres the placeholder text in the field, so the input is centre-aligned
+   rather than the usual leading alignment. */
+.aria-kristi__input {
+  width: 100%;
+  height: 56px;
+  padding: 10px 12px;
+  border: 1px solid var(--white, #fff);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.17);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--gray, #3f3e3e);
+  text-align: center;
+}
+
+.aria-kristi__input::placeholder {
+  color: var(--gray, #3f3e3e);
+  opacity: 0.72;
+}
+
+.aria-kristi__input:focus {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 1px;
+}
+
+.aria-kristi__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 12px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--white, #fff);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.aria-kristi__submit:hover {
+  background: var(--py, #a64a4c);
+  border-color: var(--py, #a64a4c);
+}
+
+/* Shopify renders form errors and the success message inside the form. */
+.aria-kristi__message {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-kristi__message--error {
+  color: #d02e2e;
+}
+
+/* --- Video panel (6356:550) — 529x536 --- */
+
+.aria-kristi__media {
+  position: relative;
+  flex: 0 0 529px;
+  width: 529px;
+  height: 536px;
+  background: var(--white, #fff);
+  overflow: hidden;
+}
+
+/* The poster fills the panel; Figma's source image is larger than the frame and
+   cropped, which object-fit: cover reproduces. */
+.aria-kristi__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.aria-kristi__poster img,
+.aria-kristi__poster svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Figma places the button 28px from the right edge and 26.44px from the bottom. */
+.aria-kristi__play {
+  position: absolute;
+  right: 28px;
+  bottom: 26.44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(192, 192, 192, 0.5);
+  backdrop-filter: blur(16.7px);
+  -webkit-backdrop-filter: blur(16.7px);
+  color: var(--white, #fff);
+  pointer-events: none;
+}
+
+.aria-kristi__play svg {
+  display: block;
+  width: 70px;
+  height: 70px;
+}
+
+/* Once DeferredMedia swaps in the iframe/video it sets [loaded]; the poster is removed
+   from view and the player fills the same 529x536 box. */
+.aria-kristi__media[loaded] .aria-kristi__poster {
+  display: none;
+}
+
+.aria-kristi__media iframe,
+.aria-kristi__media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reflow. Desktop is the design of record; the card stacks once the
+ * two fixed columns no longer fit.
+ * ------------------------------------------------------------------ */
+
+@media screen and (max-width: 1229px) {
+  .aria-kristi__body,
+  .aria-kristi__media {
+    flex: 1 1 0;
+    width: auto;
+  }
+
+  .aria-kristi__media {
+    height: auto;
+    aspect-ratio: 529 / 536;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-kristi {
+    padding: 56px 24px;
+  }
+
+  .aria-kristi__card {
+    flex-direction: column;
+    gap: 40px;
+    padding: 24px;
+  }
+
+  .aria-kristi__body,
+  .aria-kristi__media {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .aria-kristi__heading {
+    font-size: 36px;
+    line-height: 44px;
+  }
+
+  .aria-kristi__copy,
+  .aria-kristi__input,
+  .aria-kristi__submit {
+    font-size: 18px;
+  }
+
+  .aria-kristi__play {
+    right: 16px;
+    bottom: 16px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .aria-kristi__play svg {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:3748 — its own 375px frame, not the 1440/990px frames scaled
+ * down further).
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-kristi {
+    padding: 40px 16px;
+  }
+
+  /* This frame's own values — tighter than the 989px block's 24px/40px,
+     which are for the wider tablet card. */
+  .aria-kristi__card {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  /* Montserrat BOLD (weight already 700 at every breakpoint, unchanged) at
+     36/46 — not the previous guess of 28/36. */
+  .aria-kristi__heading {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-kristi__body {
+    gap: 32px;
+  }
+
+  /* Mobile/Mobile/Large/Regular token is 20/28 — the SAME size as desktop,
+     not a further step down from the 989px block's 18px. True mobile is
+     bigger than tablet here, confirmed by the node's own font token. */
+  .aria-kristi__copy,
+  .aria-kristi__input,
+  .aria-kristi__submit {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  /* This frame's own image container is 309 x 390 — a much narrower, taller
+     ratio than desktop's 529/536 (inherited via the 1229px rule), not a
+     further-cropped version of the tablet card. */
+  .aria-kristi__media {
+    aspect-ratio: 309 / 390;
+  }
+
+  /* The play button is stated at the SAME 70x70 size and the SAME 28px/
+     26.44px offset as desktop in this node — not shrunk further the way the
+     989px block shrinks it for the tablet card. */
+  .aria-kristi__play {
+    right: 28px;
+    bottom: 26.44px;
+    width: 70px;
+    height: 70px;
+  }
+
+  .aria-kristi__play svg {
+    width: 70px;
+    height: 70px;
+  }
+}

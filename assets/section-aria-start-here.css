@@ -314,3 +314,128 @@
     justify-content: center;
   }
 }
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6576:11746 (inside frame 6576:11745, 375 wide). Scoped under 750px, so
+ * tablet and desktop are untouched.
+ *
+ * The frame paints ONE gradient behind Start Here and Meet the Icons together: #F5EBE2
+ * to white at 55.171% of its 1981px, i.e. at 1092.94px. It is expressed in px here so
+ * this section (941px tall: 48 + 837 + 56) carries the first 941px of it, and
+ * section-aria-meet-the-icons.css continues from the same colour, with no seam.
+ *
+ * Vertical ladder (px, Figma): 48 pad / 46 heading / 8 / 52 description / 32 / 3 rows
+ * of 225 cards 12 apart / 56 to Meet the Icons.
+ * Card (165.5 x 225, p-16, space-between): 120 icon box / -9 / 52 title / 4 / 26 subtitle.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-start-here {
+    background: linear-gradient(
+      180deg,
+      var(--aria-sh-bg-from, #f5ebe2) 0px,
+      var(--aria-sh-bg-to, #ffffff) 1092.94px
+    );
+    padding-block: 48px 56px;
+  }
+
+  .aria-start-here__inner {
+    gap: 32px;
+  }
+
+  .aria-start-here__header {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Mobile H1: Montserrat Medium 36/46 black. */
+  .aria-start-here__heading {
+    width: 100%;
+    font-family: var(--font-heading-family);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 46px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 16/26 #3F3E3E. */
+  .aria-start-here__description {
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  /* White card, 1px WHITE border as drawn (the frame sits the cards on the peach half of
+     the gradient, where white-on-white edges are not in play), radius 10. Figma's p-16
+     is measured from the outer edge with the stroke inside it, so CSS padding is 15. */
+  .aria-start-here__card {
+    box-sizing: border-box;
+    height: 225px;
+    min-height: 0;
+    gap: 0;
+    padding: 15px;
+    border-color: var(--white, #fff);
+  }
+
+  /* 120px icon box, pulled 9px into the text below it. */
+  .aria-start-here__icon {
+    flex: none;
+    width: 120px;
+    height: 120px;
+    margin-bottom: -9px;
+  }
+
+  /* The line art is drawn at its own size inside the box, not stretched to fill it.
+     The frame's three drawings are 60-76px tall; the other three (hair cut, colour guide,
+     common mistakes) are not in this frame and are drawn up to the full 120px, which the
+     -9px overlap above would push into the title. 102px (120 less 9 at each edge, since
+     the art is centred) keeps every drawing clear of it without touching the three the
+     frame does specify. */
+  .aria-start-here__icon-img {
+    width: auto;
+    height: auto;
+    max-width: 120px;
+    max-height: 102px;
+    object-fit: contain;
+  }
+
+  /* Per-drawing offsets from each frame's inset (centred in the box otherwise). */
+  .aria-start-here__icon[data-icon='wp-icon-measure-head'] .aria-start-here__icon-img {
+    translate: 0 -0.55px;
+  }
+
+  .aria-start-here__icon[data-icon='wp-icon-wig-101'] .aria-start-here__icon-img {
+    translate: 0.3px 7.21px;
+  }
+
+  .aria-start-here__icon[data-icon='wp-icon-cap-construction'] .aria-start-here__icon-img {
+    translate: 0 -1.25px;
+  }
+
+  /* Text column is 144 wide — wider than the card's 133.5px content box, overhanging it
+     evenly (flex centring), which is what lets "Get the perfect fit" sit on one line. */
+  .aria-start-here__text {
+    flex: none;
+    width: 144px;
+    gap: 4px;
+  }
+
+  /* Poppins 16/26 black; always two lines tall so every subtitle lands on one line. */
+  .aria-start-here__title {
+    display: block;
+    width: 100%;
+    min-height: 52px;
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 16/26 #787878, one line, sentence case as written. */
+  .aria-start-here__subtitle {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-transform: none;
+  }
+}

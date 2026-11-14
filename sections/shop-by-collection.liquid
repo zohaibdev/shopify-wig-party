@@ -23,21 +23,24 @@
           {%- liquid
             assign collection_item = block.settings.collection
             assign card_title = block.settings.title_override | default: collection_item.title
+            # -- The photo picked in the theme editor (Figma has photos here), else the first
+            # -- product's photo, else the collection's image, so a card never falls back to line art.
+            assign card_image = block.settings.image | default: collection_item.products.first.featured_image | default: collection_item.featured_image
           -%}
           <li class="aria-shop-collection__item" {{ block.shopify_attributes }}>
             {%- if collection_item != blank -%}
               <a href="{{ collection_item.url }}" class="aria-shop-collection__card">
                 <span class="aria-shop-collection__image-wrap">
-                  {%- if collection_item.featured_image != blank -%}
+                  {%- if card_image != blank -%}
                     {{
-                      collection_item.featured_image
+                      card_image
                       | image_url: width: 800
                       | image_tag:
                         loading: 'lazy',
                         sizes: '(min-width: 990px) 328px, 50vw',
                         widths: '328,480,656,800,984',
                         class: 'aria-shop-collection__image',
-                        alt: collection_item.featured_image.alt | default: card_title
+                        alt: card_image.alt | default: card_title
                     }}
                   {%- else -%}
                     <span class="aria-shop-collection__placeholder">
@@ -60,6 +63,110 @@
           </li>
         {%- endfor -%}
       </ul>
+
+      <script src="{{ 'aria-product-carousel.js' | asset_url }}" defer="defer"></script>
+      {%- comment -%}
+        Mobile-only carousel (Figma 6576:10134, its own 375px frame): a swipeable row of
+        fixed 169 x 215 cards with a progress bar and prev/next, not the 2-up grid above
+        scaled down. The grid still renders at every width and is only hidden below 750px
+        in CSS, so tablet and desktop keep their exact markup, styling and behaviour —
+        the same approach find-your-wig.liquid takes for its PDP carousel. Card content
+        repeats the grid's loop body so both stay driven by the same block settings.
+
+        Attributes stay on their own lines: a whitespace-trimming Liquid comment between
+        them welds neighbouring attribute names together and silently stops Swiper
+        initialising (documented in best-sellers.liquid).
+      {%- endcomment -%}
+      <div
+        class="aria-shop-collection__mobile"
+        data-aria-product-carousel
+        data-slides-mobile="auto"
+        data-slides-sm="auto"
+        data-slides-md="auto"
+        data-slides-desktop="auto"
+        data-space-between="12"
+      >
+        <div class="swiper aria-shop-collection__mobile-swiper" data-aria-carousel-swiper>
+          <div class="swiper-wrapper">
+            {%- for block in collection_blocks -%}
+              {%- liquid
+                assign collection_item = block.settings.collection
+                assign card_title = block.settings.title_override | default: collection_item.title
+                assign card_image = block.settings.image | default: collection_item.products.first.featured_image | default: collection_item.featured_image
+              -%}
+              <div class="swiper-slide aria-shop-collection__mobile-slide" {{ block.shopify_attributes }}>
+                {%- if collection_item != blank -%}
+                  <a href="{{ collection_item.url }}" class="aria-shop-collection__card">
+                    <span class="aria-shop-collection__image-wrap">
+                      {%- if card_image != blank -%}
+                        {{
+                          card_image
+                          | image_url: width: 507
+                          | image_tag:
+                            loading: 'lazy',
+                            sizes: '169px',
+                            widths: '169,338,507',
+                            class: 'aria-shop-collection__image',
+                            alt: card_image.alt | default: card_title
+                        }}
+                      {%- else -%}
+                        <span class="aria-shop-collection__placeholder">
+                          {{ 'collection-1' | placeholder_svg_tag: 'aria-shop-collection__image aria-shop-collection__placeholder-svg' }}
+                        </span>
+                      {%- endif -%}
+                    </span>
+                    <span class="aria-shop-collection__title">{{ card_title }}</span>
+                  </a>
+                {%- else -%}
+                  <div class="aria-shop-collection__card aria-shop-collection__card--empty">
+                    <span class="aria-shop-collection__image-wrap">
+                      <span class="aria-shop-collection__placeholder">
+                        {{ 'collection-1' | placeholder_svg_tag: 'aria-shop-collection__image aria-shop-collection__placeholder-svg' }}
+                      </span>
+                    </span>
+                    <span class="aria-shop-collection__title">{{ card_title | default: 'Select a collection' }}</span>
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="aria-shop-collection__mobile-controls" data-aria-carousel-controls>
+          <div class="aria-shop-collection__mobile-progress">
+            {%- comment -%}
+              Dawn's base.css hides any empty div via `:empty { display: none }`, so each
+              decorative bar carries an inert child to survive it.
+            {%- endcomment -%}
+            <div class="aria-shop-collection__mobile-progress-track"><span aria-hidden="true"></span></div>
+            <div class="aria-shop-collection__mobile-progress-fill" data-aria-carousel-progress>
+              <span aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="aria-shop-collection__mobile-nav">
+            <button
+              type="button"
+              class="aria-shop-collection__mobile-prev"
+              data-aria-carousel-prev
+              aria-label="{{ 'aria_theme.carousel.previous' | t }}"
+            >
+              <span class="aria-shop-collection__mobile-icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+            <button
+              type="button"
+              class="aria-shop-collection__mobile-next"
+              data-aria-carousel-next
+              aria-label="{{ 'aria_theme.carousel.next' | t }}"
+            >
+              <span class="aria-shop-collection__mobile-icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
     {%- else -%}
       <p class="aria-shop-collection__empty">{{ 'aria_theme.collection_card.shop_now' | t }}</p>
     {%- endif -%}
@@ -100,6 +207,12 @@
           "type": "collection",
           "id": "collection",
           "label": "t:sections.aria-shop-by-collection.blocks.collection.settings.collection.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-shop-by-collection.blocks.collection.settings.image.label",
+          "info": "t:sections.aria-shop-by-collection.blocks.collection.settings.image.info"
         },
         {
           "type": "text",

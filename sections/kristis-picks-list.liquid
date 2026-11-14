@@ -1,0 +1,111 @@
+{%- comment -%}
+  Wig Party — Kristi's Picks list. Figma internal file, node 7546:32832 (1440 x 1451, desktop), row 7546:32833.
+  With "Products from" set to the collection (the default), one row per published product of the
+  collection the page is opened on, in its sort order — on the store that is the "Kristi's Picks"
+  smart collection, every product tagged kristis-pick after a show. A `pick` block whose product
+  matches adds Kristi's chip, subline, quote and image choice to that row; an empty collection
+  shows a short message instead. With it set to the blocks, one row per `pick` block. Row markup in snippets/kristis-pick-row.liquid. First button quick adds the first available
+  variant through /cart/add.js (assets/kristis-picks-list.js), second links to the product page.
+  Styles in assets/section-kristis-picks-list.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-kristis-picks-list.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="kp-list"
+  id="kristis-picks"
+  data-kp-list
+  style="--kp-pad-top: {{ section.settings.padding_top }}px; --kp-pad-bottom: {{ section.settings.padding_bottom }}px; --kp-pad-top-m: {{ section.settings.padding_top_mobile }}px; --kp-pad-bottom-m: {{ section.settings.padding_bottom_mobile }}px;"
+>
+  <div class="kp-list__inner">
+    {%- if section.settings.source == 'collection' -%}
+      {%- if collection.products_count == 0 -%}
+        <div class="kp-list__empty">
+          <p class="kp-list__empty-text">{{ section.settings.empty_text }}</p>
+          {%- if section.settings.empty_link_label != blank -%}
+            <a class="kp-row__btn kp-row__btn--secondary" href="{{ section.settings.empty_link_url | default: '/pages/replays' }}">{{ section.settings.empty_link_label }}</a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      {%- paginate collection.products by section.settings.limit -%}
+        {%- for product in collection.products -%}
+          {%- liquid
+            assign pick_block = nil
+            for block in section.blocks
+              if block.settings.product != blank and block.settings.product.id == product.id
+                assign pick_block = block
+                break
+              endif
+            endfor
+          -%}
+          {%- render 'kristis-pick-row', product: product, block: pick_block, settings: section.settings -%}
+        {%- endfor -%}
+      {%- endpaginate -%}
+    {%- else -%}
+      {%- for block in section.blocks -%}
+        {%- render 'kristis-pick-row', product: block.settings.product, block: block, settings: section.settings -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</div>
+
+<script src="{{ 'kristis-picks-list.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Kristi's picks list",
+  "settings": [
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Products from",
+      "options": [
+        { "value": "collection", "label": "This collection" },
+        { "value": "blocks", "label": "Pick blocks only" }
+      ],
+      "default": "collection",
+      "info": "With this collection, pick blocks add notes (chip, subline, quote) to their matching product."
+    },
+    { "type": "range", "id": "limit", "label": "Products shown", "min": 2, "max": 24, "step": 1, "default": 12 },
+    { "type": "text", "id": "empty_text", "label": "Message when the collection is empty", "default": "Kristi's picks from the latest replay will be here soon." },
+    { "type": "text", "id": "empty_link_label", "label": "Empty message link label", "default": "Watch the replays" },
+    { "type": "url", "id": "empty_link_url", "label": "Empty message link", "info": "Empty uses the Replays page." },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "label": "Top padding", "min": 0, "max": 160, "step": 8, "unit": "px", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "label": "Bottom padding", "min": 0, "max": 160, "step": 8, "unit": "px", "default": 0 },
+    { "type": "range", "id": "padding_top_mobile", "label": "Top padding (mobile)", "min": 0, "max": 160, "step": 8, "unit": "px", "default": 48 },
+    { "type": "range", "id": "padding_bottom_mobile", "label": "Bottom padding (mobile)", "min": 0, "max": 160, "step": 8, "unit": "px", "default": 48 },
+    { "type": "header", "content": "Labels" },
+    { "type": "text", "id": "button_prefix", "label": "Quick add label start", "default": "SHOP" },
+    { "type": "text", "id": "link_label", "label": "Product link label", "default": "Watch her wear it" },
+    { "type": "text", "id": "added_label", "label": "Added label", "default": "Added" },
+    { "type": "text", "id": "sold_out_label", "label": "Sold out label", "default": "Sold out" }
+  ],
+  "blocks": [
+    {
+      "type": "pick",
+      "name": "Pick",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "range", "id": "image_number", "label": "Image number", "min": 1, "max": 5, "step": 1, "default": 1, "info": "Pick another product image if the first is a collage." },
+        { "type": "image_picker", "id": "fallback_image", "label": "Fallback image" },
+        { "type": "text", "id": "price_text", "label": "Price text", "info": "Used only when no product is selected." },
+        { "type": "text", "id": "name", "label": "Name override", "info": "Empty uses the first part of the product title." },
+        { "type": "text", "id": "chip", "label": "Chip text" },
+        { "type": "text", "id": "subline", "label": "Subline", "default": "LUX V HT · hand-tied · mid-length" },
+        { "type": "textarea", "id": "quote", "label": "Quote", "info": "Add curly quotes around the text." }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Kristi's picks list",
+      "blocks": [
+        { "type": "pick" }, { "type": "pick" }, { "type": "pick" }, { "type": "pick" }
+      ]
+    }
+  ]
+}
+{% endschema %}

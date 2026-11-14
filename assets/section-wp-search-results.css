@@ -1,0 +1,804 @@
+.wp-search {
+  padding: var(--wp-search-pad-top, var(--wp-search-pad-block)) var(--wp-search-pad-inline) var(--wp-search-pad-bottom, var(--wp-search-pad-block));
+  background: var(--wp-gradient-card);
+  font-family: var(--wp-font-body);
+  color: var(--wp-color-gray);
+}
+
+.wp-search *,
+.wp-search *::before,
+.wp-search *::after {
+  box-sizing: border-box;
+}
+
+.wp-search__inner {
+  max-width: var(--wp-search-container-width);
+  margin: 0 auto;
+}
+
+/* ---------- Heading ---------- */
+.wp-search__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-search-title-gap);
+  margin-bottom: var(--wp-search-title-bar-gap);
+}
+
+.wp-search__title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-page-title-size);
+  font-weight: var(--wp-page-title-weight);
+  line-height: var(--wp-page-title-line-height);
+  letter-spacing: var(--wp-letter-spacing);
+  color: var(--wp-color-black);
+}
+
+.wp-search__subtitle {
+  margin: 0;
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-body-small-weight);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-gray);
+}
+
+/* ---------- Filter row ---------- */
+.wp-search__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--wp-search-bar-padding);
+  border: 1px solid var(--wp-color-cream);
+  border-radius: var(--wp-radius-08);
+  background: var(--wp-gradient-filter-bar);
+  margin-bottom: var(--wp-search-bar-grid-gap);
+}
+
+.wp-search__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-space-12);
+}
+
+.wp-search__filter-label {
+  padding-right: var(--wp-space-08);
+  font-size: var(--wp-body-small-size);
+  line-height: var(--wp-body-small-line-height);
+  text-transform: uppercase;
+  color: var(--wp-color-warm-gray-600);
+  white-space: nowrap;
+}
+
+.wp-search__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--wp-search-chip-gap);
+}
+
+.wp-search__chip {
+  display: inline-block;
+  padding: var(--wp-search-chip-padding);
+  border: 1px solid var(--wp-color-gray);
+  border-radius: var(--wp-radius-96);
+  background: var(--wp-color-white);
+  font-size: var(--wp-body-xs-size);
+  font-weight: var(--wp-body-xs-weight);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-warm-gray-950);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wp-search__chip--active {
+  border-color: var(--wp-color-cream);
+  background: var(--wp-color-dark-pink);
+  color: var(--wp-color-white);
+}
+
+.wp-search__chip:focus-visible,
+.wp-search__sort-trigger:focus-visible,
+.wp-search__sort-option:focus-visible,
+.wp-search__more:focus-visible {
+  outline: 2px solid var(--wp-color-dark-pink);
+  outline-offset: 2px;
+}
+
+/* ---------- Sort ---------- */
+.wp-search__sort {
+  position: relative;
+}
+
+.wp-search__sort-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: var(--wp-search-sort-width);
+  height: var(--wp-search-sort-height);
+  padding: var(--wp-search-sort-padding);
+  border: 1px solid var(--wp-color-cream);
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-color-white);
+  font-family: var(--wp-font-body);
+  cursor: pointer;
+}
+
+.wp-search__sort-text {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-space-04);
+  white-space: nowrap;
+}
+
+.wp-search__sort-label {
+  font-size: var(--wp-tag-size);
+  line-height: var(--wp-tag-line-height);
+  text-transform: uppercase;
+  color: var(--wp-color-gray);
+}
+
+.wp-search__sort-value {
+  font-size: var(--wp-body-xs-size);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-search__sort-chevron {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  transform: rotate(180deg);
+}
+
+.wp-search__sort-trigger[aria-expanded='true'] .wp-search__sort-chevron {
+  transform: none;
+}
+
+.wp-search__sort-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 5;
+  width: var(--wp-search-sort-width);
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--wp-color-cream);
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-color-white);
+}
+
+.wp-search__sort-menu[hidden] {
+  display: none;
+}
+
+.wp-search__sort-option {
+  display: block;
+  padding: 8px 16px;
+  font-size: var(--wp-body-xs-size);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-black);
+  text-decoration: none;
+}
+
+.wp-search__sort-option[aria-selected='true'] {
+  background: var(--wp-color-gray-100);
+}
+
+.wp-search__sort-option:hover {
+  background: var(--wp-color-cream);
+}
+
+/* ---------- Grid ---------- */
+.wp-search__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--wp-search-columns), minmax(0, 1fr));
+  column-gap: var(--wp-search-col-gap);
+  row-gap: var(--wp-search-row-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wp-search__item {
+  display: flex;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Show more ---------- */
+.wp-search__more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--wp-search-more-gap);
+}
+
+.wp-search__more-wrap:empty {
+  display: none;
+}
+
+.wp-search__more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--wp-search-more-padding);
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-search-more-bg);
+  font-size: var(--wp-body-medium-size);
+  font-weight: var(--wp-body-medium-weight);
+  line-height: var(--wp-body-medium-line-height);
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--wp-color-white);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.wp-search__more.is-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ---------- Card ---------- */
+.wp-search-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-search-card-gap);
+  width: 100%;
+  padding: var(--wp-search-card-padding);
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-color-white);
+}
+
+.wp-search-card__top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-12);
+}
+
+.wp-search-card__media {
+  position: relative;
+  height: var(--wp-search-image-height);
+  overflow: hidden;
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-color-white);
+}
+
+.wp-search-card__media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.wp-search-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wp-search-card__wishlist {
+  position: absolute;
+  top: var(--wp-search-heart-inset);
+  right: var(--wp-search-heart-inset);
+  width: var(--wp-search-heart-size);
+  height: var(--wp-search-heart-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.wp-search-card__wishlist svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Saved state (not in Figma): dark pink circle. */
+.wp-search-card__wishlist[aria-pressed='true'] rect {
+  fill: var(--wp-color-dark-pink);
+}
+
+.wp-search-card__chip {
+  position: absolute;
+  left: var(--wp-search-heart-inset);
+  bottom: var(--wp-search-heart-inset);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: var(--wp-search-chip-new-padding);
+  border-radius: var(--wp-radius-08);
+  background: var(--wp-color-chip-new);
+  font-size: var(--wp-tag-size);
+  font-weight: var(--wp-tag-weight);
+  line-height: var(--wp-tag-line-height);
+  text-transform: uppercase;
+  color: var(--wp-color-black);
+  white-space: nowrap;
+}
+
+.wp-search-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-24);
+}
+
+.wp-search-card__meta,
+.wp-search-card__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-space-08);
+}
+
+.wp-search-card__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-space-04);
+}
+
+.wp-search-card__stars {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-space-02);
+}
+
+.wp-search-card__star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--wp-search-star-size);
+  height: var(--wp-search-star-size);
+}
+
+.wp-search-card__star--empty {
+  opacity: 0.3;
+}
+
+.wp-search-card__rating-value {
+  font-size: var(--wp-caption-size);
+  font-weight: var(--wp-caption-weight);
+  line-height: var(--wp-caption-line-height);
+  color: var(--wp-color-warm-gray-900);
+  white-space: nowrap;
+}
+
+.wp-search-card__title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-large-size);
+  font-weight: var(--wp-body-large-weight);
+  line-height: var(--wp-body-large-line-height);
+  color: var(--wp-color-gray);
+}
+
+.wp-search-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wp-search-card__swatches {
+  display: flex;
+  align-items: center;
+  gap: var(--wp-space-04);
+}
+
+.wp-search-card__swatch {
+  flex: 0 0 auto;
+  width: var(--wp-search-swatch-size);
+  height: var(--wp-search-swatch-size);
+  border: 1px solid var(--wp-color-warm-gray-500);
+  border-radius: 50%;
+  background: var(--wp-search-swatch, var(--wp-color-gray-100)) center / cover no-repeat;
+}
+
+.wp-search-card__swatch-more {
+  font-size: var(--wp-caption-size);
+  font-weight: var(--wp-caption-weight);
+  line-height: var(--wp-caption-line-height);
+  color: var(--wp-color-warm-gray-900);
+  white-space: nowrap;
+}
+
+.wp-search-card__price {
+  display: flex;
+  flex-wrap: wrap; /* sale + compare price did not fit the 768px cards and scrolled the page */
+  align-items: center;
+  gap: var(--wp-space-08);
+  font-size: var(--wp-search-price-size);
+  line-height: var(--wp-search-price-line-height);
+  white-space: nowrap;
+}
+
+.wp-search-card__price-current {
+  font-weight: var(--wp-search-price-weight);
+  color: var(--wp-color-warm-gray-950);
+}
+
+.wp-search-card__price-compare {
+  font-weight: var(--wp-search-price-compare-weight);
+  color: var(--wp-color-warm-gray-600);
+  text-decoration: none;
+}
+
+.wp-search-card__quick-add {
+  display: block;
+  margin-top: auto;
+}
+
+.wp-search-card__cart-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--wp-btn-gap);
+  width: 100%;
+  height: var(--wp-search-cart-btn-height);
+  padding: var(--wp-search-cart-btn-padding);
+  border: 1px solid var(--wp-color-warm-gray-500);
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-color-white);
+  font-family: var(--wp-btn-font-family);
+  font-size: var(--wp-btn-font-size);
+  font-weight: var(--wp-btn-secondary-weight);
+  line-height: var(--wp-btn-line-height);
+  color: var(--wp-color-gray);
+  cursor: pointer;
+}
+
+.wp-search-card__cart-btn svg {
+  flex: 0 0 auto;
+  width: var(--wp-btn-secondary-icon-size);
+  height: var(--wp-btn-secondary-icon-size);
+}
+
+.wp-search-card__cart-btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wp-search-card__cart-btn:focus-visible {
+  outline: 2px solid var(--wp-color-dark-pink);
+  outline-offset: 2px;
+}
+
+.wp-search-card__cart-btn .loading__spinner {
+  position: absolute;
+}
+
+/* Filter active, zero products (not in Figma: reuses empty-state body tokens) */
+.wp-search__no-match {
+  margin: 0;
+  text-align: center;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-medium-size);
+  font-weight: var(--wp-body-medium-weight);
+  line-height: var(--wp-body-medium-line-height);
+  color: var(--wp-empty-body-color);
+}
+
+/* Eyebrow label above the heading: mobile only, empty by default (schema text). */
+.wp-search__eyebrow {
+  display: none;
+  margin: 0;
+}
+
+/* ---------- Mobile (375px), part A: heading, chips, sort, grid, card ---------- */
+@media (max-width: 749px) {
+  .wp-search {
+    padding-left: var(--wp-m-search-pad-x);
+    padding-right: var(--wp-m-search-pad-x);
+  }
+
+  /* Heading */
+  .wp-search__header {
+    gap: var(--wp-m-search-header-gap);
+  }
+
+  .wp-search__eyebrow {
+    display: block;
+    font-size: var(--wp-m-tag-size);
+    line-height: var(--wp-m-tag-line-height);
+    text-transform: uppercase;
+    color: var(--wp-m-search-eyebrow-color);
+  }
+
+  /* Filter row: chips card, then full-width sort */
+  .wp-search__bar {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--wp-m-search-bar-gap);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .wp-search__filters {
+    flex-wrap: wrap;
+    align-content: center;
+    gap: var(--wp-m-search-filters-gap);
+    padding: var(--wp-m-search-filters-padding);
+    border: 1px solid var(--wp-m-search-filters-border-color);
+    border-radius: var(--wp-radius-08);
+    background: var(--wp-gradient-card);
+  }
+
+  .wp-search__filter-label {
+    flex: 0 0 var(--wp-m-search-label-width);
+  }
+
+  /* Label and chips share one wrapping flow */
+  .wp-search__chips {
+    display: contents;
+  }
+
+  .wp-search__chip {
+    padding: var(--wp-m-search-chip-padding);
+  }
+
+  .wp-search__sort-trigger {
+    width: 100%;
+    height: var(--wp-m-search-sort-height);
+    padding: var(--wp-m-search-sort-padding);
+  }
+
+  .wp-search__sort-label,
+  .wp-search__sort-value {
+    font-size: var(--wp-m-body-xs-size);
+    line-height: var(--wp-m-body-xs-line-height);
+    color: var(--wp-color-black);
+  }
+
+  .wp-search__sort-menu {
+    left: 0;
+    width: 100%;
+  }
+
+  /* Grid: 2 columns */
+  .wp-search__grid {
+    grid-template-columns: repeat(var(--wp-m-search-columns), minmax(0, 1fr));
+    column-gap: var(--wp-m-search-col-gap);
+    row-gap: var(--wp-m-search-row-gap);
+  }
+
+  /* Card (Figma has no heart: hidden) */
+  .wp-search-card {
+    gap: var(--wp-m-search-card-gap);
+    padding: var(--wp-m-search-card-padding);
+  }
+
+  .wp-search-card__top {
+    gap: var(--wp-m-search-card-top-gap);
+  }
+
+  .wp-search-card__media {
+    height: var(--wp-m-search-image-height);
+  }
+
+  .wp-search-card__image {
+    object-position: 50% 0;
+  }
+
+  .wp-search-card__wishlist {
+    display: none;
+  }
+
+  .wp-search-card__chip {
+    left: var(--wp-m-search-chip-inset);
+    bottom: var(--wp-m-search-chip-inset);
+  }
+
+  .wp-search-card__meta {
+    gap: var(--wp-m-search-meta-gap);
+  }
+
+  .wp-search-card__rating-value,
+  .wp-search-card__swatch-more {
+    color: var(--wp-m-search-rating-color);
+  }
+
+  .wp-search-card__swatches {
+    gap: var(--wp-m-search-swatch-gap);
+  }
+
+  .wp-search-card__swatch {
+    border-color: var(--wp-m-search-swatch-border-color);
+  }
+
+  .wp-search-card__price {
+    gap: var(--wp-m-search-price-gap);
+    font-size: var(--wp-m-search-price-size);
+    line-height: var(--wp-m-search-price-line-height);
+  }
+
+  .wp-search-card__price-current {
+    font-weight: var(--wp-m-search-price-weight);
+    color: var(--wp-m-search-price-color);
+  }
+
+  .wp-search-card__price-compare {
+    font-weight: var(--wp-m-search-price-weight);
+    color: var(--wp-color-gray);
+    text-decoration: line-through;
+    opacity: var(--wp-m-search-price-compare-opacity);
+  }
+
+  .wp-search-card__cart-btn {
+    padding: var(--wp-m-search-cart-padding);
+    border-color: var(--wp-color-btn-secondary-border);
+    font-size: var(--wp-m-search-cart-size);
+    font-weight: var(--wp-m-search-cart-weight);
+    line-height: var(--wp-m-search-cart-line-height);
+    text-transform: uppercase;
+    color: var(--wp-color-black);
+  }
+}
+
+/* Mobile card fixes: long prices wrap inside the card, Add to Cart stays on one line */
+@media (max-width: 749px) {
+  .wp-search-card__price {
+    flex-wrap: wrap;
+    gap: var(--wp-m-search-price-row-gap) var(--wp-m-search-price-gap);
+    min-width: 0;
+  }
+
+  .wp-search-card__price-current,
+  .wp-search-card__price-compare {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .wp-search-card__cart-btn,
+  .wp-search-card__cart-label {
+    white-space: nowrap;
+  }
+}
+
+/* Swatches are buttons now (assets/wp-card-swatches.js): reset UA chrome, same disc as before.
+   Selected = black ring outside the 1px border, so nothing in the row moves. */
+.wp-search-card__swatches {
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.wp-search-card__swatch {
+  margin: 0;
+  padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.wp-search-card__swatch[hidden] {
+  display: none;
+}
+
+.wp-search-card__swatch.is-selected {
+  border-color: var(--wp-color-white);
+  box-shadow: 0 0 0 1px var(--wp-color-black);
+}
+
+.wp-search-card__swatch:focus-visible {
+  outline: 2px solid var(--wp-color-dark-pink);
+  outline-offset: 2px;
+}
+
+.wp-search-card__swatch-more {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.wp-search-card__swatch-more:focus-visible {
+  outline: 2px solid var(--wp-color-dark-pink);
+  outline-offset: 2px;
+}
+
+/* Colour name on hover / focus / tap; out of flow, positioned by the JS. */
+.wp-search-card .wp-card-swatch-tooltip {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  padding: var(--wp-space-04) var(--wp-space-08);
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-color-warm-gray-950);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-caption-size);
+  font-weight: var(--wp-caption-weight);
+  line-height: var(--wp-caption-line-height);
+  color: var(--wp-color-white);
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.wp-search-card .wp-card-swatch-tooltip.is-visible {
+  opacity: 1;
+}
+
+/* Add to Cart hover: pointer devices only, never on sold out / disabled / busy. */
+.wp-search-card__cart-btn {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.wp-search-card__cart-btn svg path {
+  transition: stroke 0.2s ease;
+}
+
+@media (hover: hover) {
+  .wp-search-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):hover,
+  .wp-search-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):focus-visible {
+    border-color: var(--wp-color-black);
+    background: var(--wp-color-black);
+    color: var(--wp-color-white);
+  }
+
+  .wp-search-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):hover svg path,
+  .wp-search-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):focus-visible svg path {
+    stroke: var(--wp-color-white);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wp-search-card__cart-btn,
+  .wp-search-card__cart-btn svg path,
+  .wp-search-card .wp-card-swatch-tooltip {
+    transition: none;
+  }
+}
+
+/* ---------- Card type, QA pass 2026-10-29 ----------
+ * Same values as the collection grids: title 20/28; price 22/28 #1a1a1a with the struck
+ * compare 20/28 #8c8c8c; swatch count Poppins 10/16 #3f3e3e; "Add to Cart" Poppins 400,
+ * Title Case. Desktop and tablet; the mobile card keeps its own values above. */
+@media screen and (min-width: 750px) {
+  .wp-search-card__title {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .wp-search-card__price {
+    line-height: 28px;
+  }
+
+  .wp-search-card__price-current {
+    font-size: 22px;
+    line-height: 28px;
+    color: #1a1a1a;
+  }
+
+  .wp-search-card__price-compare {
+    font-size: 20px;
+    line-height: 28px;
+    color: #8c8c8c;
+  }
+
+  .wp-search-card__swatch-more {
+    font-family: var(--wp-font-body);
+    font-size: 10px;
+    line-height: 16px;
+    color: #3f3e3e;
+  }
+
+  .wp-search-card__cart-label {
+    font-weight: 400;
+    text-transform: none;
+  }
+}

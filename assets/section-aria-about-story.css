@@ -1,0 +1,205 @@
+/* Wig Party — About Kristi story cards (sections/about-story.liquid), Figma 7841:3547.
+ *
+ * Desktop geometry (px, Figma, 1440 x 759, white): py-80 px-40.
+ *   band      1360 wide, p-48, 180deg gradient #BC696B -> #FFBABC
+ *   cards     a row 16 apart, each 410.67 wide and as tall as the tallest (503 with Figma's
+ *             copy). Card: rgba(235,193,192,.2) under Figma's Glass effect (rebuilt from sampled
+ *             pixels as a 14% fill, a faint left-to-right light and a pale pink inner rim), p-16, 12 between photo and copy
+ *   photo     378.67 x 267 on white, clipped; built-in photos placed with Figma's crop
+ *   copy      12 apart: title Montserrat Bold 16/24 #1A1A1A; text Poppins 16/26 #3F3E3E, the
+ *             inline link Poppins SemiBold #A64A4C
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-about-story,
+.aria-about-story *,
+.aria-about-story *::before,
+.aria-about-story *::after {
+  box-sizing: border-box;
+}
+
+.aria-about-story {
+  padding: 80px 40px;
+  background: var(--about-story-bg, #fff);
+}
+
+.aria-about-story__band {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 48px;
+  background: linear-gradient(180deg, #bc696b 0%, #ffbabc 100%);
+}
+
+.aria-about-story__cards {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Card (7841:3550) ---------- */
+
+.aria-about-story__card {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  /* Figma's Glass over its rgba(235,193,192,.2) fill, matched from sampled pixels: a little
+     lighter towards the right, and a pale pink rim, fainter on the right side. */
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.08) 100%),
+    rgba(235, 193, 192, 0.14);
+  box-shadow:
+    inset 1px 0 0 rgba(255, 232, 234, 0.6),
+    inset 0 1px 0 rgba(255, 232, 234, 0.6),
+    inset -1px 0 0 rgba(255, 232, 234, 0.3),
+    inset 0 -1px 0 rgba(255, 232, 234, 0.6);
+}
+
+.aria-about-story__media {
+  position: relative;
+  flex: none;
+  height: 267px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-about-story__media img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's crops of the built-in photos, as % of the photo box (it stretches them to fit, so the
+   same numbers hold on mobile's 279 x 220 box). */
+.aria-about-story__media img.aria-about-story__fallback {
+  inset: auto;
+  object-fit: fill;
+}
+
+.aria-about-story__media img.aria-about-story__fallback--1 {
+  top: -3.18%;
+  left: -41.43%;
+  width: 143.23%;
+  height: 107.68%;
+}
+
+.aria-about-story__media img.aria-about-story__fallback--2 {
+  top: -27.19%;
+  left: 0;
+  height: 196.78%;
+}
+
+.aria-about-story__media img.aria-about-story__fallback--3 {
+  top: -15.69%;
+  left: 0;
+  height: 252.24%;
+}
+
+/* ---------- Copy (7841:3552) ---------- */
+
+.aria-about-story__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aria-about-story__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+}
+
+.aria-about-story__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+}
+
+/* On desktop, Montserrat 16/24 and Poppins 16/26 land 1px higher in the browser than in Figma,
+   so both are nudged down without moving any box (mobile's 14/22 lands where Figma puts it). */
+@media screen and (min-width: 750px) {
+  .aria-about-story__title,
+  .aria-about-story__text {
+    position: relative;
+    top: 1px;
+  }
+}
+
+.aria-about-story__link {
+  font-weight: 600;
+  color: var(--py, #a64a4c);
+  text-decoration: none;
+}
+
+.aria-about-story__link:hover,
+.aria-about-story__link:focus-visible {
+  text-decoration: underline;
+}
+
+/* No tablet frame: below 1200 the photo box keeps Figma's 378.67 x 267 proportions, so the
+   built-in crops scale instead of squashing, and the band's padding eases to 24. */
+@media screen and (min-width: 750px) and (max-width: 1199px) {
+  .aria-about-story__band {
+    padding: 24px;
+  }
+
+  .aria-about-story__media {
+    height: auto;
+    aspect-ratio: 378.67 / 267;
+  }
+}
+
+/* ---------- Mobile (Figma 7847:245, 375 x 1500) ----------
+ * py-40 px-16; the band p-16; the cards stack 16 apart, each p-16 with a 279 x 220 photo (same
+ * crops), then the title in Poppins Regular 14/22 #1A1A1A and the text Poppins 14/22.
+ */
+@media screen and (max-width: 749px) {
+  .aria-about-story {
+    padding: 40px 16px;
+  }
+
+  .aria-about-story__band {
+    padding: 16px;
+  }
+
+  .aria-about-story__cards {
+    flex-direction: column;
+  }
+
+  .aria-about-story__card {
+    flex: none;
+  }
+
+  .aria-about-story__media {
+    height: 220px;
+  }
+
+  .aria-about-story__title {
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  .aria-about-story__text {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}

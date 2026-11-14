@@ -1,0 +1,295 @@
+/* Wig Party — Sale pricing explainer (sections/sale-pricing-explainer.liquid)
+ * Figma: node 7547:4988 (desktop, 1440 x 626)
+ *   section  padding 80 40 80, gradient #f5ebe2 -> white at 184.45%
+ *   label    20/28, 16 to the intro; intro (heading 56/64 + description 16/26, gap 12), 40 to the columns
+ *   columns  3 x 445.33, gap 12; card white, 1px white border, radius 10, padding 24/32 + border = 25/33
+ *   icon     64 x 64 white tile, radius 8, art inset 25% / 15.28% / 27.08% / 15.51%
+ *   copy     gap 4; title 16/26 black; text 16/24 #787878 capitalize, centered
+ */
+
+@media (min-width: 750px) {
+  .wp-sale-explainer,
+  .wp-sale-explainer *,
+  .wp-sale-explainer *::before,
+  .wp-sale-explainer *::after {
+    box-sizing: border-box;
+  }
+
+  .wp-sale-explainer {
+    --wp-sale-explainer-bg: linear-gradient(to bottom, #f5ebe2, #ffffff 184.45%);
+    --wp-sale-explainer-text-gray: #787878;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 40px;
+    background: var(--wp-sale-explainer-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .wp-sale-explainer__label {
+    margin: 0 0 16px;
+    font-family: Poppins, sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 28px;
+    color: var(--wp-color-black, #000000);
+    text-align: center;
+  }
+
+  .wp-sale-explainer__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .wp-sale-explainer__heading {
+    margin: 0;
+    font-family: Montserrat, sans-serif;
+    font-size: 56px;
+    font-weight: 500;
+    line-height: 64px;
+    letter-spacing: 0;
+    color: var(--wp-color-black, #000000);
+    white-space: nowrap;
+  }
+
+  .wp-sale-explainer__description {
+    width: 100%;
+    max-width: 662px;
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    color: var(--wp-color-gray, #3f3e3e);
+  }
+
+  .wp-sale-explainer__columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .wp-sale-explainer__column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 32px;
+    background: var(--wp-color-white, #ffffff);
+    border: 1px solid var(--wp-color-white, #ffffff);
+    border-radius: var(--wp-radius-10, 10px);
+  }
+
+  .wp-sale-explainer__icon {
+    position: relative;
+    flex: none;
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
+    background: var(--wp-color-white, #ffffff);
+    border-radius: 8px;
+  }
+
+  .wp-sale-explainer__icon-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .wp-sale-explainer__icon-art {
+    position: absolute;
+    top: 25%;
+    right: 15.28%;
+    bottom: 27.08%;
+    left: 15.51%;
+  }
+
+  .wp-sale-explainer__icon-art img {
+    position: absolute;
+    top: -3.26%;
+    left: -2.26%;
+    display: block;
+    width: 104.52%;
+    max-width: none;
+    height: 106.52%;
+  }
+
+  .wp-sale-explainer__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .wp-sale-explainer__title {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    color: var(--wp-color-black, #000000);
+  }
+
+  .wp-sale-explainer__text {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--wp-sale-explainer-text-gray);
+    text-transform: capitalize;
+  }
+}
+
+/* Mobile (Figma 7547:5530, 375 x 1024): stacked cards. Tokens --wp-m-sale-explainer-*. */
+@media (max-width: 749px) {
+  .wp-sale-explainer,
+  .wp-sale-explainer *,
+  .wp-sale-explainer *::before,
+  .wp-sale-explainer *::after {
+    box-sizing: border-box;
+  }
+
+  .wp-sale-explainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--wp-m-sale-explainer-padding);
+    background: linear-gradient(to bottom, #f5ebe2, #ffffff 184.45%);
+  }
+
+  .wp-sale-explainer__label {
+    margin: 0 0 var(--wp-m-sale-explainer-label-gap);
+    font-family: Poppins, sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+    color: var(--wp-color-black, #000000);
+    text-align: center;
+  }
+
+  .wp-sale-explainer__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-m-sale-explainer-intro-gap);
+    width: 100%;
+    margin-bottom: var(--wp-m-sale-explainer-intro-margin);
+    text-align: center;
+  }
+
+  .wp-sale-explainer__heading {
+    margin: 0;
+    width: 100%;
+    font-family: Montserrat, sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+    color: var(--wp-color-black, #000000);
+  }
+
+  .wp-sale-explainer__description {
+    width: 100%;
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    color: var(--wp-color-gray, #3f3e3e);
+  }
+
+  .wp-sale-explainer__columns {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-m-sale-explainer-cards-gap);
+    width: 100%;
+  }
+
+  .wp-sale-explainer__column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-m-sale-explainer-card-gap);
+    min-height: var(--wp-m-sale-explainer-card-min-height);
+    padding: 24px;
+    background: var(--wp-color-white, #ffffff);
+    border: 1px solid var(--wp-color-white, #ffffff);
+    border-radius: 10px;
+  }
+
+  .wp-sale-explainer__icon {
+    position: relative;
+    flex: none;
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
+    background: var(--wp-color-white, #ffffff);
+    border-radius: 8px;
+  }
+
+  .wp-sale-explainer__icon-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .wp-sale-explainer__icon-art {
+    position: absolute;
+    top: 25%;
+    right: 15.28%;
+    bottom: 27.08%;
+    left: 15.51%;
+  }
+
+  .wp-sale-explainer__icon-art img {
+    position: absolute;
+    top: -3.26%;
+    left: -2.26%;
+    display: block;
+    width: 104.52%;
+    max-width: none;
+    height: 106.52%;
+  }
+
+  .wp-sale-explainer__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .wp-sale-explainer__title {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    color: var(--wp-color-black, #000000);
+  }
+
+  .wp-sale-explainer__text {
+    margin: 0;
+    font-family: Poppins, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #787878;
+    text-transform: capitalize;
+  }
+}

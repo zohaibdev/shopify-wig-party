@@ -1,0 +1,715 @@
+/* Wig Party search overlay. Desktop only (1280px and up). Tokens: design-tokens.css (--wp-so-*). */
+
+/* Below 1280px the old header search is untouched; its wrapper must not affect layout. */
+.wp-search-legacy {
+  display: contents;
+}
+
+.wp-search-overlay-trigger,
+.wp-search-overlay {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  /* The header's own search field stays in the navbar. Its old dropdown is never shown here:
+     wp-search-overlay.js stops the field's input/focus events before the old PredictiveSearch sees them. */
+  .wp-search-legacy .aria-header__search-results {
+    display: none !important;
+  }
+}
+
+/* Shared overlay rules: desktop (1280+) and mobile (below 750). The mobile overrides are at the end of the file.
+   750 to 1279 keeps the old header search. */
+@media (min-width: 1280px), (max-width: 749px) {
+  .wp-search-overlay {
+    display: block;
+    position: fixed;
+    top: var(--wp-so-top);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--wp-so-z);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .wp-search-overlay[open] {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .wp-search-overlay__backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--wp-so-backdrop);
+  }
+
+  .wp-search-overlay__sheet {
+    position: relative;
+    box-sizing: border-box;
+    padding: var(--wp-so-row-y) 0;
+    background: var(--wp-so-bg);
+    box-shadow: var(--wp-so-shadow);
+    font-family: var(--wp-font-body);
+  }
+
+  .wp-search-overlay[results] .wp-search-overlay__sheet {
+    min-height: var(--wp-so-sheet-height);
+    padding-bottom: var(--wp-so-bottom);
+  }
+
+  .wp-search-overlay__row,
+  .wp-search-overlay__suggestions {
+    width: min(var(--wp-so-row-width), calc(100% - 2 * var(--wp-so-row-x)));
+    margin-inline: auto;
+  }
+
+  .wp-search-overlay__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wp-so-close-gap);
+    height: var(--wp-so-row-height);
+  }
+
+  .wp-search-overlay__form {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .wp-search-overlay__field {
+    display: flex;
+    align-items: center;
+    gap: var(--wp-space-12);
+    box-sizing: border-box;
+    height: var(--wp-so-row-height);
+    padding-inline: var(--wp-so-field-icon-x);
+    background: var(--wp-so-field-bg);
+    border-radius: var(--wp-so-field-radius);
+  }
+
+  .wp-search-overlay__field:focus-within {
+    outline: 1px solid var(--wp-color-dark-pink);
+    outline-offset: 2px;
+  }
+
+  .wp-search-overlay__field-icon {
+    flex: none;
+    width: var(--wp-so-field-icon-size);
+    height: var(--wp-so-field-icon-size);
+    object-fit: none;
+  }
+
+  .wp-search-overlay__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-small-size);
+    line-height: var(--wp-body-small-line-height);
+    font-weight: var(--wp-weight-regular);
+    color: var(--wp-color-heading-dark);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* base.css:733 `*:focus-visible` paints --focused-base-outline / --focused-base-box-shadow on the input
+     itself, which showed as a second box inside the pill. The focus look lives on the wrapper (:focus-within). */
+  .wp-search-overlay__input:focus,
+  .wp-search-overlay__input:focus-visible {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .wp-search-overlay__input::placeholder {
+    color: var(--wp-so-text-warm);
+    opacity: 1;
+  }
+
+  .wp-search-overlay__input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .wp-search-overlay__close {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    box-sizing: border-box;
+    width: var(--wp-so-close-width);
+    height: 46px;
+    padding: 0 12px;
+    gap: var(--wp-space-08);
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-xs-size);
+    line-height: var(--wp-body-xs-line-height);
+    font-weight: var(--wp-body-medium-strong-weight);
+    color: var(--wp-color-dark-pink);
+  }
+
+  .wp-search-overlay__close img {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    object-fit: none;
+  }
+
+  .wp-search-overlay__close:focus-visible {
+    outline: 1px solid var(--wp-color-dark-pink);
+    outline-offset: 2px;
+  }
+
+  /* Empty query: field and Close only. The results area exists only once there is a query. */
+  .wp-search-overlay__suggestions {
+    display: none;
+    margin-top: var(--wp-so-gap);
+  }
+
+  .wp-search-overlay[results] .wp-search-overlay__suggestions {
+    display: block;
+  }
+
+  .wp-so__layout {
+    display: flex;
+    gap: calc(var(--wp-so-panel-x) - var(--wp-so-row-x) - var(--wp-so-left-col));
+    min-height: var(--wp-so-suggestions-height);
+  }
+
+  .wp-so__left {
+    flex: none;
+    width: var(--wp-so-left-col);
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-so-group-gap);
+  }
+
+  .wp-so__group[hidden] {
+    display: none;
+  }
+
+  .wp-so__heading {
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-small-size);
+    line-height: var(--wp-body-small-line-height);
+    font-weight: var(--wp-body-small-caps-weight);
+    text-transform: uppercase;
+    letter-spacing: var(--wp-letter-spacing);
+    color: var(--wp-so-text-warm);
+  }
+
+  .wp-so__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-so-item-gap);
+    margin: var(--wp-so-heading-gap) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wp-so__group[data-first] .wp-so__list {
+    margin-top: var(--wp-so-first-heading-gap);
+  }
+
+  .wp-so__item {
+    margin: 0;
+  }
+
+  .wp-so__link {
+    display: flex;
+    gap: var(--wp-space-04);
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-so-count-size);
+    line-height: var(--wp-so-count-line-height);
+    font-weight: var(--wp-body-large-weight);
+    color: var(--wp-color-heading-dark);
+    text-decoration: none;
+  }
+
+  .wp-so__link:hover,
+  .wp-so__item[aria-selected='true'] .wp-so__link {
+    color: var(--wp-color-dark-pink);
+  }
+
+  .wp-so__link:focus-visible {
+    outline: 1px solid var(--wp-color-dark-pink);
+    outline-offset: 2px;
+  }
+
+  .wp-so__panel {
+    flex: none;
+    box-sizing: border-box;
+    width: var(--wp-so-panel-width);
+    min-width: 0;
+    padding: var(--wp-so-panel-padding);
+    overflow: hidden;
+    border-radius: var(--wp-so-panel-radius);
+    background: var(--wp-gradient-card);
+  }
+
+  /* The heading rule and the card row run to the panel's right edge, so the 4th card is cut by the panel, not the padding. */
+  .wp-so__panel-heading,
+  .wp-so__cards {
+    margin-right: calc(-1 * var(--wp-so-panel-pad-x));
+  }
+
+  .wp-so__cards {
+    padding-right: var(--wp-so-panel-pad-x);
+  }
+
+  .wp-so__panel-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wp-space-08);
+    box-sizing: border-box;
+    min-height: var(--wp-so-panel-heading-height);
+    padding-bottom: var(--wp-space-12);
+    border-bottom: 1px solid var(--wp-so-panel-border);
+  }
+
+  .wp-so__panel-icon {
+    flex: none;
+    width: var(--wp-so-field-icon-size);
+    height: var(--wp-so-field-icon-size);
+    margin-top: 1px;
+    object-fit: contain;
+  }
+
+  .wp-so__panel-title {
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-small-size);
+    line-height: var(--wp-body-small-line-height);
+    font-weight: var(--wp-body-small-caps-weight);
+    text-transform: uppercase;
+    color: var(--wp-color-heading-dark);
+  }
+
+  .wp-so__empty {
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-medium-size);
+    line-height: var(--wp-body-medium-line-height);
+    font-weight: var(--wp-body-medium-weight);
+    color: var(--wp-color-heading-dark);
+  }
+}
+
+/* Product cards + See all (Figma 7455:26086, 7455:26161). Desktop and mobile (mobile overrides at the end). */
+@media (min-width: 1280px), (max-width: 749px) {
+  .wp-so__cards {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wp-so-card-gap);
+    margin: var(--wp-so-cards-top) 0 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .wp-so__cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wp-so__card {
+    flex: 0 0 var(--wp-so-card-width);
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-so-card-stack-gap);
+    margin: 0;
+    scroll-snap-align: start;
+  }
+
+  .wp-so__card-media {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: var(--wp-so-card-width);
+    height: var(--wp-so-card-image-height);
+    overflow: hidden;
+    border-radius: var(--wp-so-card-radius);
+    background: var(--wp-color-white);
+  }
+
+  .wp-so__card-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: bottom;
+  }
+
+  .wp-so__chip {
+    position: absolute;
+    top: var(--wp-so-chip-offset);
+    left: var(--wp-so-chip-offset);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: var(--wp-so-chip-height);
+    padding: var(--wp-so-chip-padding);
+    border-radius: var(--wp-so-card-radius);
+    background: var(--wp-so-chip-bg);
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-tag-size);
+    line-height: var(--wp-tag-line-height);
+    font-weight: var(--wp-tag-weight);
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--wp-color-black);
+  }
+
+  .wp-so__card-name {
+    position: absolute;
+    left: var(--wp-so-name-left);
+    bottom: var(--wp-so-name-bottom);
+    width: var(--wp-so-name-width);
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-small-size);
+    line-height: var(--wp-body-small-line-height);
+    font-weight: var(--wp-body-small-caps-weight);
+    text-transform: uppercase;
+    background: var(--wp-so-name-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .wp-so__card-media:focus-visible,
+  .wp-so__tile:focus-visible,
+  .wp-so__card-meta:focus-visible,
+  .wp-so__see-all:focus-visible {
+    outline: 1px solid var(--wp-color-dark-pink);
+    outline-offset: 2px;
+  }
+
+  .wp-so__card-info {
+    display: flex;
+    align-items: center;
+    gap: var(--wp-so-info-gap);
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--wp-so-info-padding);
+    border: 1px solid var(--wp-color-black);
+    border-radius: var(--wp-so-info-radius);
+    -webkit-backdrop-filter: blur(var(--wp-so-info-blur));
+    backdrop-filter: blur(var(--wp-so-info-blur));
+  }
+
+  .wp-so__tile {
+    position: relative;
+    flex: none;
+    display: block;
+    box-sizing: border-box;
+    width: var(--wp-so-tile-size);
+    height: var(--wp-so-tile-size);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--wp-color-white);
+    border-radius: var(--wp-so-card-radius);
+    background: var(--wp-color-silver-gray);
+    cursor: pointer;
+  }
+
+  .wp-so__tile-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    border-radius: var(--wp-so-card-radius);
+  }
+
+  .wp-so__tile-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--wp-so-tile-icon-size);
+    height: var(--wp-so-tile-icon-size);
+    transform: translate(-50%, -50%);
+  }
+
+  .wp-so__tile[aria-busy='true'] {
+    opacity: 0.5;
+    cursor: progress;
+  }
+
+  .wp-so__card-img {
+    transition: transform var(--wp-so-hover-transition);
+  }
+
+  .wp-so__card-media:hover .wp-so__card-img,
+  .wp-so__card-media:focus-visible .wp-so__card-img {
+    transform: scale(var(--wp-so-hover-scale));
+  }
+
+  .wp-so__card-meta {
+    transition: opacity var(--wp-so-hover-transition);
+  }
+
+  .wp-so__card-meta:hover {
+    opacity: var(--wp-so-hover-opacity);
+  }
+
+  .wp-so__tile--soldout,
+  .wp-so__tile--soldout:hover {
+    opacity: var(--wp-so-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* Added / error: tint over the photo, icon swapped for a tick or "!" drawn in CSS (no new asset). */
+  .wp-so__tile[data-state='added']::after,
+  .wp-so__tile[data-state='error']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--wp-so-added-bg);
+    color: var(--wp-color-white);
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-medium-size);
+    line-height: var(--wp-so-tile-size);
+    text-align: center;
+  }
+
+  .wp-so__tile[data-state='added']::after {
+    content: '\2713';
+  }
+
+  .wp-so__tile[data-state='error']::after {
+    content: '!';
+    background: var(--wp-so-error-bg);
+  }
+
+  .wp-so__tile[data-state='added'] .wp-so__tile-icon,
+  .wp-so__tile[data-state='error'] .wp-so__tile-icon {
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wp-so__card-img,
+    .wp-so__card-meta {
+      transition: none;
+    }
+
+    .wp-so__card-media:hover .wp-so__card-img,
+    .wp-so__card-media:focus-visible .wp-so__card-img {
+      transform: none;
+    }
+  }
+
+  .wp-so__card-meta {
+    flex: 0 1 var(--wp-so-info-content-width);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wp-space-04);
+    min-width: 0;
+    color: var(--wp-color-black);
+    text-decoration: none;
+  }
+
+  .wp-so__card-meta-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-so-meta-size);
+    line-height: var(--wp-so-meta-line-height);
+    font-weight: var(--wp-body-xs-weight);
+  }
+
+  .wp-so__card-price {
+    flex: none;
+    margin-left: auto;
+    text-align: right;
+    white-space: nowrap;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-so-price-size);
+    line-height: var(--wp-so-price-line-height);
+    font-weight: var(--wp-body-medium-strong-weight);
+  }
+
+  .wp-so__see-all {
+    display: inline-block;
+    margin-top: var(--wp-so-see-all-top);
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-so-see-all-size);
+    line-height: var(--wp-so-see-all-line-height);
+    font-weight: var(--wp-body-small-caps-weight);
+    color: var(--wp-color-black);
+    text-decoration: none;
+  }
+
+  .wp-so__see-all:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ---------- Mobile (below 750px). Figma 7455:26250: pill 7455:26300, group 7455:26313, card 7455:26351 ---------- */
+@media (max-width: 749px) {
+  .wp-search-overlay {
+    bottom: auto;
+    height: var(--wp-so-vh, calc(100dvh - var(--wp-so-top)));
+  }
+
+  /* The sheet takes the full height, so the backdrop is never visible. */
+  .wp-search-overlay__backdrop {
+    display: none;
+  }
+
+  .wp-search-overlay__sheet {
+    height: 100%;
+    padding: 0 var(--wp-m-so-pad-x) var(--wp-m-so-pad-bottom);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: none;
+  }
+
+  .wp-search-overlay[results] .wp-search-overlay__sheet {
+    min-height: 0;
+    padding-bottom: var(--wp-m-so-pad-bottom);
+  }
+
+  /* Pill row stays at the top while the results scroll under it. */
+  .wp-search-overlay__row {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: var(--wp-m-so-pill-top) 0 var(--wp-m-so-pill-bottom);
+    background: var(--wp-so-bg);
+  }
+
+  .wp-search-overlay__suggestions {
+    width: 100%;
+    margin: 0;
+  }
+
+  .wp-search-overlay__field {
+    height: var(--wp-m-so-pill-height);
+    padding: var(--wp-m-so-pill-pad-y) calc(var(--wp-m-so-pill-pad-x) + var(--wp-m-so-close-size)) var(--wp-m-so-pill-pad-y) var(--wp-m-so-pill-pad-x);
+  }
+
+  .wp-search-overlay__field-icon {
+    width: var(--wp-m-so-icon-size);
+    height: var(--wp-m-so-icon-size);
+    object-fit: contain;
+  }
+
+  .wp-search-overlay__input {
+    font-size: var(--wp-m-so-input-size);
+    line-height: var(--wp-m-so-input-line-height);
+    color: var(--wp-color-black);
+  }
+
+  /* X sits inside the pill, right edge 16px in (Figma: 32x32 button, 20px icon, no "Close" text). */
+  .wp-search-overlay__close {
+    position: absolute;
+    top: calc(var(--wp-m-so-pill-top) + (var(--wp-m-so-pill-height) - var(--wp-m-so-close-size)) / 2);
+    right: var(--wp-m-so-pill-pad-x);
+    justify-content: center;
+    width: var(--wp-m-so-close-size);
+    height: var(--wp-m-so-close-size);
+    padding: 0;
+  }
+
+  .wp-search-overlay__close span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .wp-so__layout {
+    flex-direction: column;
+    gap: var(--wp-m-so-layout-gap);
+    min-height: 0;
+  }
+
+  .wp-so__left {
+    width: 100%;
+    gap: var(--wp-m-so-group-gap);
+  }
+
+  .wp-so__heading {
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-m-so-heading-size);
+    line-height: var(--wp-m-so-heading-line-height);
+    font-weight: var(--wp-m-so-heading-weight);
+    color: var(--wp-color-black);
+  }
+
+  .wp-so__list,
+  .wp-so__group[data-first] .wp-so__list {
+    margin-top: var(--wp-m-so-heading-gap);
+    gap: var(--wp-m-so-item-gap);
+  }
+
+  .wp-so__link {
+    font-size: var(--wp-m-so-item-size);
+    line-height: var(--wp-m-so-item-line-height);
+    font-weight: var(--wp-m-so-item-weight);
+    color: var(--wp-so-text-warm);
+  }
+
+  .wp-so__panel {
+    width: 100%;
+    padding: var(--wp-m-so-panel-padding);
+  }
+
+  .wp-so__panel-heading,
+  .wp-so__cards {
+    margin-right: 0;
+  }
+
+  .wp-so__cards {
+    flex-direction: column;
+    gap: var(--wp-m-so-card-gap);
+    padding-right: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  /* Max 4 products on mobile (the section prints up to 10 for desktop). */
+  .wp-so__card:nth-child(n + 5) {
+    display: none;
+  }
+
+  .wp-so__card,
+  .wp-so__card-media {
+    width: 100%;
+    flex: none;
+  }
+
+  .wp-so__card-meta {
+    flex: 1 1 auto;
+  }
+}

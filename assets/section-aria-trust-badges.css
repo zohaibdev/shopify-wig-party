@@ -64,6 +64,9 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  /* 2026-11-06: lets the column shrink to the item instead of to its longest word. */
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* V4: Montserrat Medium 20/28. Heading family so it stays merchant-controlled. */
@@ -80,6 +83,10 @@
   font-size: 14px;
   line-height: 22px;
   color: #3f3e3e;
+  /* 2026-11-06: "shopwigparty@gmail.com" is one unbreakable word (185px) in a 139px
+     column on phones; it overflowed every page (shared trust group) by 13-14px. */
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 @media screen and (min-width: 750px) {
@@ -122,7 +129,14 @@
   .aria-trust__list {
     grid-template-columns: repeat(4, minmax(0, 255px));
     justify-content: center;
+    /* Figma centres the shorter badges against the two-line "Pay in 4" (91 vs 80 top). */
+    align-items: center;
     gap: 70px;
+  }
+
+  /* Figma's 165px text box breaks it "Shop now. Pay later / with Shop Pay." */
+  .aria-trust__item:nth-child(4) .aria-trust__description {
+    max-width: 165px;
   }
 }
 
@@ -143,5 +157,71 @@
 @media screen and (min-width: 990px) and (max-width: 1279px) {
   .aria-trust__list {
     gap: 28px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Mobile — Figma internal file hf0beCVyuHCECkNQfaOm2q, node 6760:4224
+ * (375 x 440). Replaces the older single-column frame (6441:4400).
+ *
+ * White, 48px above (Figma has nothing below; 48px is added), 16px sides. A 2 x 2 grid of 167.5 x 188
+ * badges, 8px between columns and 16px between rows. Each badge: 64px icon,
+ * 16px, a two-line (56px) Montserrat Medium 20/28 title, 8px, a two-line (44px)
+ * Poppins 14/22 #3F3E3E description.
+ *
+ * Figma breaks the lines with fixed text-box widths per badge, so those are
+ * reproduced by position (the section holds at most four badges); the 56 / 44px
+ * minimums keep the rows level when a text runs to one line ("Pay in 4").
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* Figma has nothing below; 48px added (matching the top) so the next section does
+     not butt against the descriptions. */
+  .aria-trust {
+    padding-block: 48px;
+  }
+
+  .aria-trust__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 8px;
+    justify-items: stretch;
+  }
+
+  .aria-trust__item {
+    max-width: none;
+  }
+
+  .aria-trust__text {
+    width: 100%;
+  }
+
+  /* Figma sets both with 0 letter-spacing (the theme's body default is 0.6px). */
+  .aria-trust__title {
+    min-height: 56px;
+    letter-spacing: 0;
+  }
+
+  .aria-trust__description {
+    min-height: 44px;
+    letter-spacing: 0;
+  }
+
+  /* Figma's text-box widths: 105.85 / full / 105.85 / full for the titles and
+     105.85 / 149.88 / 133.68 / 138.53 for the descriptions. */
+  .aria-trust__item:nth-child(1) .aria-trust__title,
+  .aria-trust__item:nth-child(1) .aria-trust__description,
+  .aria-trust__item:nth-child(3) .aria-trust__title {
+    max-width: 105.852px;
+  }
+
+  .aria-trust__item:nth-child(2) .aria-trust__description {
+    max-width: 149.883px;
+  }
+
+  .aria-trust__item:nth-child(3) .aria-trust__description {
+    max-width: 133.676px;
+  }
+
+  .aria-trust__item:nth-child(4) .aria-trust__description {
+    max-width: 138.531px;
   }
 }

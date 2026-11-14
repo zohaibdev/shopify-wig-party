@@ -1,0 +1,454 @@
+/* Wig Party — Learn hero (sections/learn-hero.liquid), Figma 7605:7661.
+ *
+ * Desktop geometry (px, Figma, 1440 x 442, clipped):
+ *   background  1440 x 468 from the top: the same hair photo and crop as the Find Your Colour
+ *               hero (100.18% wide, -0.09% left, -96.41% top at 1440), under a 133.4deg wash
+ *               rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602%
+ *   panel       1360 x 362 at 40 / 40: rgba(255,255,255,.13), 50 backdrop blur, 1px white
+ *               ring that counts toward layout, pt-16 px-40 pb-40, content centred, 12 between
+ *               crumbs and body. The 1280 body overhangs the right padding by 2, as Figma draws it.
+ *   crumbs      Poppins 12/14 uppercase white; the separator is "  /" with no trailing space,
+ *               and the current crumb is Bold ("Home  /" + Bold "Learn")
+ *   copy        651 wide: title Montserrat Medium 48/56 white, 8, intro Poppins 16/26 white
+ *               (584.225, one line), 20, black button 264 x 52 (Poppins 18/28, px-24 py-12, r-2)
+ *   stats       629 x 202, vertically centred: rgba(255,255,255,.2), 34.4 backdrop blur, r-8,
+ *               px-40 py-24; three columns 85 / 68 / 78 spread across 549 ("Free" overflows its
+ *               68 column, as drawn). Each: a 46 white r-8 icon tile, 16, then a 92-tall block:
+ *               value Montserrat Medium 48/56, 8, label Montserrat Medium 20/28
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-learn-hero,
+.aria-learn-hero *,
+.aria-learn-hero *::before,
+.aria-learn-hero *::after {
+  box-sizing: border-box;
+}
+
+.aria-learn-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 40px;
+  /* Light-on-grey text: Chrome's macOS subpixel smoothing reads a weight heavier than Figma. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Background (7605:7663) ---------- */
+
+.aria-learn-hero__bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 468px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aria-learn-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    133.39934543901973deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+.aria-learn-hero__bg img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's crop of the built-in photo, stretched to 1442.592 x 1650.823; at 1440 the image's
+   41.508% line sits on the middle of the 468 box. Anchoring that line keeps the same band of
+   hair in view at other widths. */
+.aria-learn-hero__bg img.aria-learn-hero__bg-fallback {
+  inset: auto;
+  top: 50%;
+  left: -0.09%;
+  width: 100.18%;
+  height: auto;
+  aspect-ratio: 1442.592 / 1650.823;
+  transform: translateY(-41.508%);
+  object-fit: fill;
+}
+
+/* ---------- Panel (7605:7665) ---------- */
+
+.aria-learn-hero__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  max-width: 1360px;
+  min-height: 362px;
+  margin: 0 auto;
+  padding: 16px 40px 40px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+}
+
+.aria-learn-hero__crumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+}
+
+/* Figma's separator is "  /" set in the same run, so it is drawn as preserved text. */
+.aria-learn-hero__crumbs-list li + li::before {
+  content: '  /';
+  font-weight: 400;
+  white-space: pre;
+}
+
+.aria-learn-hero__crumbs-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.aria-learn-hero__crumbs-list a:hover,
+.aria-learn-hero__crumbs-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.aria-learn-hero__crumbs-list [aria-current='page'] {
+  font-weight: 700;
+}
+
+.aria-learn-hero__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% + 2px);
+  max-width: 1280px;
+}
+
+/* ---------- Copy (7605:7669) ---------- */
+
+.aria-learn-hero__copy {
+  display: flex;
+  flex: 0 1 651px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+.aria-learn-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  color: var(--white, #fff);
+}
+
+.aria-learn-hero__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-learn-hero__text {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-learn-hero__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-learn-hero__btn:hover,
+.aria-learn-hero__btn:focus-visible {
+  background: #2b2b2b;
+}
+
+/* ---------- Stats (7605:7674) ---------- */
+
+.aria-learn-hero__stats {
+  display: flex;
+  flex: 0 0 629px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 40px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(34.4px);
+  backdrop-filter: blur(34.4px);
+}
+
+.aria-learn-hero__stats-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-learn-hero__stat {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: var(--stat-width, 85px);
+}
+
+.aria-learn-hero__stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0 2px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--white, #fff);
+}
+
+.aria-learn-hero__stat-icon img {
+  display: block;
+  flex: none;
+  max-width: none;
+}
+
+.aria-learn-hero__stat-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  height: 92px;
+  color: var(--white, #fff);
+}
+
+.aria-learn-hero__stat-value,
+.aria-learn-hero__stat-label {
+  font-family: var(--font-heading-family);
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.aria-learn-hero__stat-value {
+  font-size: 48px;
+  line-height: 56px;
+}
+
+.aria-learn-hero__stat-label {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+/* Poppins 16/26 lands 1px higher in the browser than in Figma (as in the colour hero), so the
+   intro is nudged down without moving any box. */
+.aria-learn-hero__text {
+  position: relative;
+  top: 1px;
+}
+
+.aria-learn-hero__start {
+  display: block;
+  height: 0;
+}
+
+/* ---------- Narrower desktops: let the copy give way to the stats card ---------- */
+
+@media screen and (max-width: 1299px) {
+  .aria-learn-hero__body {
+    gap: 32px;
+  }
+}
+
+/* The second glyph of a stat is only drawn on mobile (block setting `icon_mobile`). */
+.aria-learn-hero__stat-glyph--mobile {
+  display: none !important;
+}
+
+/* ---------- Mobile (7605:8071) ----------
+ * 375 x 480: the photo box is 377 x 480 at -2 / 0 (clipped by the section), the photo inside it
+ * 198.5% x 179.66% at -54.84% / -6.91%, under a 103.6deg wash with the desktop colours.
+ * Panel 343 at 16 / 24 (26 below), p-12, the same ring / fill / blur, 12 from crumbs to body.
+ * Crumbs Poppins 14/22, not uppercase, "  /  " separators, regular current crumb.
+ * Body (317), 24 apart: title Montserrat Medium 28/39, 8, intro 16/26; the black button 56
+ * tall (Poppins 18/28, px-24); the stats card (px-16 py-12, r-8; three columns 12 apart:
+ * a 32 white r-5.565 tile with the desktop glyph at 32/46 scale, 16, value Montserrat Medium
+ * 20/28, 8, label Montserrat Medium 12/20).
+ */
+@media screen and (max-width: 749px) {
+  .aria-learn-hero {
+    padding: 24px 16px 26px;
+  }
+
+  .aria-learn-hero__bg {
+    bottom: 0;
+    left: -2px;
+    height: auto;
+  }
+
+  .aria-learn-hero__bg::after {
+    background: linear-gradient(
+      103.5705936831488deg,
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .aria-learn-hero__bg img.aria-learn-hero__bg-fallback {
+    top: -6.91%;
+    left: -54.84%;
+    width: 198.5%;
+    height: 179.66%;
+    aspect-ratio: auto;
+    transform: none;
+  }
+
+  .aria-learn-hero__panel {
+    min-height: 0;
+    padding: 12px;
+  }
+
+  .aria-learn-hero__crumbs-list {
+    font-size: 14px;
+    line-height: 22px;
+    text-transform: none;
+  }
+
+  .aria-learn-hero__crumbs-list li + li::before {
+    content: '  /  ';
+  }
+
+  .aria-learn-hero__crumbs-list [aria-current='page'] {
+    font-weight: 400;
+  }
+
+  .aria-learn-hero__body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .aria-learn-hero__copy {
+    display: contents;
+  }
+
+  /* Measured by pixel shift: Montserrat 28/39 lands 1px high (as in the colour hero). */
+  .aria-learn-hero__title {
+    position: relative;
+    top: 1px;
+    font-size: 28px;
+    line-height: 39px;
+  }
+
+  .aria-learn-hero__text {
+    width: 100%;
+  }
+
+  .aria-learn-hero__btn {
+    width: 100%;
+    height: 56px;
+  }
+
+  .aria-learn-hero__stats {
+    flex: none;
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .aria-learn-hero__stats-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .aria-learn-hero__stat {
+    flex: 1 0 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .aria-learn-hero__stat-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0 1.391px;
+    border-radius: 5.565px;
+  }
+
+  /* The mobile glyphs are the desktop ones at 32/46. */
+  .aria-learn-hero__stat-icon img {
+    transform: scale(0.695652);
+  }
+
+  .aria-learn-hero__stat-glyph--desktop {
+    display: none !important;
+  }
+
+  .aria-learn-hero__stat-glyph--mobile {
+    display: block !important;
+  }
+
+  .aria-learn-hero__stat-text {
+    height: auto;
+  }
+
+  .aria-learn-hero__stat-value {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-learn-hero__stat-label {
+    font-size: 12px;
+    line-height: 20px;
+    white-space: normal;
+  }
+}

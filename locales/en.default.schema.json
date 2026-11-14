@@ -424,6 +424,16 @@
         },
         "panel_gradient_end": {
           "label": "Panel gradient end"
+        },
+        "link_style": {
+          "label": "Guide link style",
+          "info": "\"Roomy, left-aligned\" matches the product page design; \"Compact, centred\" matches the home page.",
+          "options__1": {
+            "label": "Compact, centred"
+          },
+          "options__2": {
+            "label": "Roomy, left-aligned"
+          }
         }
       },
       "blocks": {
@@ -459,6 +469,16 @@
         },
         "background_color": {
           "label": "Background color"
+        },
+        "layout_variant": {
+          "label": "Layout",
+          "info": "\"Product page\" matches the PDP design: bolder heading, uppercase outlined buttons and tighter card type.",
+          "options__1": {
+            "label": "Home page"
+          },
+          "options__2": {
+            "label": "Product page"
+          }
         }
       },
       "blocks": {
@@ -501,6 +521,10 @@
             },
             "link": {
               "label": "Button link"
+            },
+            "url": {
+              "label": "Link (optional)",
+              "info": "Overrides the collection, e.g. a page or a filtered collection."
             }
           }
         }
@@ -637,6 +661,35 @@
         "mega_show_placeholders": {
           "label": "Show placeholder rows",
           "info": "While a mega-menu column’s Shopify menu does not exist yet, fill it with the design’s example rows so the panel keeps its structure. Real menu items always take priority. TURN THIS OFF BEFORE LAUNCH so shoppers never see example links."
+        },
+        "chevron_items": {
+          "label": "Menu items with a dropdown arrow",
+          "info": "Comma separated, matching the menu titles (desktop). Leave blank for none."
+        },
+        "new_badge_item": {
+          "label": "Menu item with the NEW badge"
+        },
+        "new_badge_text": {
+          "label": "NEW badge text",
+          "info": "Leave blank to hide the badge."
+        },
+        "preorder_font": {
+          "label": "Pre-order button font"
+        },
+        "show_wishlist_desktop": {
+          "label": "Show the wishlist icon on desktop",
+          "info": "The desktop navbar design has none; tablet and mobile keep it either way."
+        },
+        "live_fallback_enabled": {
+          "label": "Add Live to the desktop menu if it is missing",
+          "info": "Only while the menu has no Live link; add one under Content → Menus and this stops by itself."
+        },
+        "live_fallback_url": {
+          "label": "Live link",
+          "info": "Leave blank for /pages/live."
+        },
+        "live_fallback_after": {
+          "label": "Show Live after this menu item"
         }
       },
       "blocks": {
@@ -874,6 +927,16 @@
         },
         "background_color": {
           "label": "Background color"
+        },
+        "layout_variant": {
+          "label": "Layout",
+          "info": "\"Product page\" matches the PDP design: a narrower column, tighter heading and inset arrows.",
+          "options__1": {
+            "label": "Home page"
+          },
+          "options__2": {
+            "label": "Product page"
+          }
         }
       },
       "blocks": {
@@ -1328,6 +1391,10 @@
               "label": "Photo",
               "info": "The lifestyle shot. Falls back to the linked product's image."
             },
+            "video": {
+              "label": "Video",
+              "info": "Use instead of the photo for a reel or video post. If both are set, the video plays and the photo becomes its cover frame."
+            },
             "product": {
               "label": "Tagged product",
               "info": "Supplies the title, price and add-to-cart button."
@@ -1548,6 +1615,10 @@
           "settings": {
             "collection": {
               "label": "Collection"
+            },
+            "image": {
+              "label": "Image",
+              "info": "Card photo. Leave blank to use the first product's photo."
             },
             "title_override": {
               "label": "Title override",
@@ -4623,6 +4694,1807 @@
         "open_by_default": {
           "label": "Open by default"
         }
+      }
+    },
+    "aria-pdp-buy-box": {
+      "name": "PDP buy box",
+      "settings": {
+        "eyebrow_text": {
+          "label": "Eyebrow text",
+          "info": "Leave blank to build it from the product vendor and type."
+        },
+        "show_stock_badge": {
+          "label": "Show stock badge"
+        },
+        "show_rating": {
+          "label": "Show rating"
+        },
+        "rating_value": {
+          "label": "Rating value"
+        },
+        "rating_count": {
+          "label": "Review count"
+        },
+        "summary": {
+          "label": "Short summary",
+          "info": "Leave blank to use the first 30 words of the product description."
+        },
+        "finance_text": {
+          "label": "Financing line",
+          "info": "Use [amount] for one instalment — it is calculated from the live price (price ÷ 4). Liquid delimiters cannot be used here."
+        },
+        "compare_all_link": {
+          "label": "“Compare all” link"
+        },
+        "cap_measure_link": {
+          "label": "“How do I measure?” link"
+        },
+        "video_header": {
+          "content": "Gallery video pill"
+        },
+        "video_avatar": {
+          "label": "Avatar"
+        },
+        "video_label": {
+          "label": "Label"
+        },
+        "video_link": {
+          "label": "Link"
+        },
+        "banner_header": {
+          "content": "Kristi banner"
+        },
+        "banner_image": {
+          "label": "Image"
+        },
+        "banner_text": {
+          "label": "Text"
+        }
+      },
+      "blocks": {
+        "trust": {
+          "name": "Trust card",
+          "settings": {
+            "title": {
+              "label": "Title"
+            },
+            "description": {
+              "label": "Description"
+            },
+            "default_icon": {
+              "label": "Built-in icon",
+              "options__1": {
+                "label": "45-day returns"
+              },
+              "options__2": {
+                "label": "Free gift"
+              },
+              "options__3": {
+                "label": "Free shipping"
+              },
+              "options__4": {
+                "label": "Price match"
+              }
+            },
+            "icon": {
+              "label": "Custom icon",
+              "info": "Leave blank to use the built-in icon. Shown at 35px."
+            }
+          }
+        },
+        "cap_size": {
+          "name": "Cap size",
+          "settings": {
+            "name": {
+              "label": "Option value",
+              "info": "Must match a value of the product's cap size option exactly."
+            },
+            "caption": {
+              "label": "Caption"
+            },
+            "image": {
+              "label": "Image",
+              "info": "Leave blank to use the built-in measuring diagram. Shown at 36×49px."
+            }
+          }
+        },
+        "accordion": {
+          "name": "Accordion row",
+          "settings": {
+            "title": {
+              "label": "Title"
+            },
+            "content": {
+              "label": "Content"
+            },
+            "use_product_description": {
+              "label": "Use the product description"
+            },
+            "open": {
+              "label": "Open by default"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "PDP buy box"
+      }
+    },
+    "aria-pdp-shade-carousel": {
+      "name": "PDP shade carousel",
+      "settings": {
+        "heading": {
+          "label": "Heading",
+          "info": "Tokens: [product_short] (title up to the first \"|\"), [product] (full title), [count] (number of shades, spelled out, e.g. \"ten\")."
+        },
+        "background_color": {
+          "label": "Background color"
+        },
+        "exclude_values": {
+          "label": "Exclude option values",
+          "info": "Comma-separated. Any colour option containing one of these phrases is hidden and not counted in the heading. Case-insensitive. Only applies when the product has no Shades metafield set."
+        }
+      },
+      "presets": {
+        "name": "PDP shade carousel"
+      }
+    },
+    "aria-pdp-kristi-video": {
+      "name": "PDP Kristi video + signup",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "copy": {
+          "label": "Text"
+        },
+        "form_header": {
+          "content": "Signup form"
+        },
+        "placeholder": {
+          "label": "Email placeholder"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "video_header": {
+          "content": "Video"
+        },
+        "poster": {
+          "label": "Poster image",
+          "info": "Leave blank to use the uploaded video's own preview. Shown at 529x536."
+        },
+        "video": {
+          "label": "Video (uploaded to Shopify)"
+        },
+        "video_url": {
+          "label": "Video URL",
+          "info": "Used when no Shopify-hosted video is selected. YouTube or Vimeo."
+        },
+        "play_label": {
+          "label": "Play button label"
+        },
+        "background_header": {
+          "content": "Background gradient"
+        },
+        "gradient_from": {
+          "label": "Gradient top"
+        },
+        "gradient_to": {
+          "label": "Gradient bottom"
+        }
+      },
+      "presets": {
+        "name": "PDP Kristi video + signup"
+      }
+    },
+    "aria-pdp-reviews": {
+      "name": "PDP customer reviews",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "summary_header": {
+          "content": "Rating summary"
+        },
+        "rating_value": {
+          "label": "Average rating",
+          "info": "Used only when the product has no reviews metafield."
+        },
+        "rating_count": {
+          "label": "Total reviews"
+        },
+        "count_5": {
+          "label": "5-star count"
+        },
+        "count_4": {
+          "label": "4-star count"
+        },
+        "count_3": {
+          "label": "3-star count"
+        },
+        "count_2": {
+          "label": "2-star count"
+        },
+        "count_1": {
+          "label": "1-star count"
+        },
+        "aside_header": {
+          "content": "Write a review"
+        },
+        "write_label": {
+          "label": "Button label"
+        },
+        "write_link": {
+          "label": "Button link"
+        },
+        "show_signature": {
+          "label": "Show Kristi signature"
+        },
+        "photos_header": {
+          "content": "Customer photos"
+        },
+        "photos_title": {
+          "label": "Heading"
+        },
+        "list_header": {
+          "content": "Review list"
+        },
+        "initial_count": {
+          "label": "Reviews shown initially"
+        },
+        "load_step": {
+          "label": "Reviews added per click"
+        },
+        "load_label": {
+          "label": "Load more label"
+        },
+        "background_header": {
+          "content": "Background gradient"
+        },
+        "gradient_from": {
+          "label": "Gradient top"
+        },
+        "gradient_to": {
+          "label": "Gradient bottom"
+        }
+      },
+      "blocks": {
+        "photo": {
+          "name": "Customer photo",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "alt": {
+              "label": "Alt text"
+            }
+          }
+        },
+        "review": {
+          "name": "Review",
+          "settings": {
+            "name": {
+              "label": "Reviewer name"
+            },
+            "avatar": {
+              "label": "Avatar"
+            },
+            "verified": {
+              "label": "Show verified badge"
+            },
+            "role": {
+              "label": "Role label"
+            },
+            "date": {
+              "label": "Date"
+            },
+            "rating": {
+              "label": "Rating"
+            },
+            "title": {
+              "label": "Title"
+            },
+            "text": {
+              "label": "Review text"
+            },
+            "image_1": {
+              "label": "Photo 1"
+            },
+            "image_2": {
+              "label": "Photo 2"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "PDP customer reviews"
+      }
+    },
+    "aria-pdp-product-carousel": {
+      "name": "PDP product carousel",
+      "settings": {
+        "heading": {
+          "label": "Heading",
+          "info": "Use [product_short] for the product title up to the first \"|\"."
+        },
+        "source_header": {
+          "content": "Products"
+        },
+        "source": {
+          "label": "Product source",
+          "options__1": {
+            "label": "Automatic recommendations"
+          },
+          "options__2": {
+            "label": "A collection"
+          },
+          "options__3": {
+            "label": "Recently viewed by the shopper"
+          }
+        },
+        "collection": {
+          "label": "Collection",
+          "info": "Used when the source is \"A collection\"."
+        },
+        "intent": {
+          "label": "Recommendation type",
+          "info": "\"Complementary\" needs products configured in the Search & Discovery app; it shows nothing when unset. \"Related\" always returns results.",
+          "options__1": {
+            "label": "Related products"
+          },
+          "options__2": {
+            "label": "Complementary products"
+          }
+        },
+        "products_to_show": {
+          "label": "Products to show"
+        },
+        "feature_tag_metafield": {
+          "label": "Feature tag metafield",
+          "info": "Namespace and key for the card badge, e.g. custom.feature_tags."
+        },
+        "layout_header": {
+          "content": "Layout"
+        },
+        "container": {
+          "label": "Column width",
+          "info": "\"Narrow\" is the 1280 column used by \"Suggested by Kristi\", where the fourth card is clipped on purpose.",
+          "options__1": {
+            "label": "Wide (1360)"
+          },
+          "options__2": {
+            "label": "Narrow (1280)"
+          }
+        },
+        "slides_desktop": {
+          "label": "Cards per view (desktop)",
+          "options__1": {
+            "label": "Four, filling the column"
+          },
+          "options__2": {
+            "label": "Fixed 331px, overflowing"
+          }
+        },
+        "background_color": {
+          "label": "Background color"
+        }
+      },
+      "presets": {
+        "name": "PDP product carousel"
+      }
+    },
+    "compare-product-shades": {
+      "name": "Compare: product shades (data)"
+    },
+    "aria-pdp-breadcrumbs": {
+      "name": "PDP breadcrumbs",
+      "settings": {
+        "root_label": {
+          "label": "Root crumb label",
+          "info": "The fixed second crumb, e.g. \"All Wigs\". Leave blank to show only Home / collection / product."
+        },
+        "root_url": {
+          "label": "Root crumb link"
+        },
+        "not_wig_types": {
+          "label": "Not wigs (product types)",
+          "info": "Comma-separated product types that skip the root crumb, e.g. Wig Supplies, jewelry."
+        },
+        "skip_collections": {
+          "label": "Collections to skip",
+          "info": "Comma-separated collection handles never shown as the collection crumb, e.g. fees-products."
+        },
+        "background_color": {
+          "label": "Background"
+        }
+      },
+      "presets": {
+        "name": "PDP breadcrumbs"
+      }
+    },
+    "aria-live-watch": {
+      "name": "Watch Live",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "crumbs_header": {
+          "content": "Breadcrumb"
+        },
+        "crumb_parent": {
+          "label": "Middle crumb label"
+        },
+        "crumb_parent_url": {
+          "label": "Middle crumb link"
+        },
+        "crumb_current": {
+          "label": "Current crumb",
+          "info": "Leave blank to use the page title."
+        },
+        "video_header": {
+          "content": "Featured show"
+        },
+        "play_label": {
+          "label": "Play button label (screen readers)"
+        },
+        "live_label": {
+          "label": "Live badge"
+        },
+        "copy_header": {
+          "content": "Show details"
+        },
+        "showing_header": {
+          "content": "Up next & just aired"
+        },
+        "showing_heading": {
+          "label": "Heading"
+        },
+        "showing_note": {
+          "label": "Note"
+        },
+        "ask_header": {
+          "content": "Ask the Community"
+        },
+        "ask_heading": {
+          "label": "Heading"
+        },
+        "ask_placeholder": {
+          "label": "Question placeholder"
+        },
+        "ask_note": {
+          "label": "Note"
+        },
+        "source": {
+          "content": "Shows, dates and replays come from the LiveMeUp app. Schedule or publish them there; this section updates on its own."
+        },
+        "replay_label": {
+          "label": "Pill on a replay"
+        },
+        "empty_text": {
+          "label": "Text when there are no shows"
+        },
+        "rows": {
+          "label": "Rows in the side list"
+        },
+        "watch_label": {
+          "label": "Row button: replay"
+        },
+        "watch_live_label": {
+          "label": "Row button: live show"
+        },
+        "remind_label": {
+          "label": "Row button: upcoming show"
+        },
+        "shop_live_label": {
+          "label": "Main button while live"
+        },
+        "shop_upcoming_label": {
+          "label": "Main button before a show"
+        },
+        "shop_replay_label": {
+          "label": "Main button for a replay"
+        }
+      },
+      "presets": {
+        "name": "Watch Live"
+      }
+    },
+    "aria-live-schedule": {
+      "name": "Watch Live schedule",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text"
+        },
+        "primary_label": {
+          "label": "Reminder button"
+        },
+        "secondary_label": {
+          "label": "Calendar button"
+        },
+        "source": {
+          "content": "Shows, dates and replays come from the LiveMeUp app. Schedule or publish them there; this section updates on its own."
+        },
+        "count": {
+          "label": "Most shows to show"
+        },
+        "empty_text": {
+          "label": "Text when no show is scheduled"
+        },
+        "live_label": {
+          "label": "Reminder button while a show is live"
+        }
+      },
+      "presets": {
+        "name": "Watch Live schedule"
+      }
+    },
+    "aria-live-steps": {
+      "name": "Watch Live steps",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "heading": {
+          "label": "Heading",
+          "info": "Line breaks are kept."
+        },
+        "text": {
+          "label": "Text"
+        }
+      },
+      "blocks": {
+        "step": {
+          "name": "Step",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown at 388x251."
+            },
+            "fallback": {
+              "label": "Built-in image",
+              "options__none": {
+                "label": "None"
+              },
+              "options__1": {
+                "label": "Kristi at her desk"
+              },
+              "options__2": {
+                "label": "Close-up"
+              },
+              "options__3": {
+                "label": "In the studio"
+              },
+              "options__4": {
+                "label": "Wig detail"
+              }
+            },
+            "title": {
+              "label": "Title"
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Watch Live steps"
+      }
+    },
+    "aria-live-replays": {
+      "name": "Watch Live replays",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_url": {
+          "label": "Button link"
+        },
+        "source": {
+          "content": "Shows, dates and replays come from the LiveMeUp app. Schedule or publish them there; this section updates on its own."
+        },
+        "count": {
+          "label": "Replays to show"
+        },
+        "card_button_label": {
+          "label": "Card button label"
+        },
+        "empty_text": {
+          "label": "Text when there are no replays"
+        }
+      },
+      "presets": {
+        "name": "Watch Live replays"
+      }
+    },
+    "aria-replays-hero": {
+      "name": "Replays hero",
+      "settings": {
+        "image": {
+          "label": "Background image",
+          "info": "Leave blank for the built-in hair texture. Shown under a grey wash."
+        },
+        "crumbs_header": {
+          "content": "Breadcrumb"
+        },
+        "crumb_parent": {
+          "label": "Middle crumb label"
+        },
+        "crumb_parent_url": {
+          "label": "Middle crumb link"
+        },
+        "crumb_current": {
+          "label": "Current crumb",
+          "info": "Leave blank to use the page title."
+        },
+        "copy_header": {
+          "content": "Text"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Intro"
+        },
+        "button_label": {
+          "label": "Button label"
+        },
+        "button_url": {
+          "label": "Button link"
+        }
+      },
+      "blocks": {
+        "stat": {
+          "name": "Stat",
+          "settings": {
+            "icon": {
+              "label": "Icon",
+              "options__replays": {
+                "label": "Replays (arrows)"
+              },
+              "options__styles": {
+                "label": "Styles (profile)"
+              },
+              "options__never": {
+                "label": "Never expires (clock)"
+              }
+            },
+            "value": {
+              "label": "Figure",
+              "info": "Used when Figure is \"Typed below\", or while LiveMeUp is unavailable."
+            },
+            "label": {
+              "label": "Label"
+            },
+            "source": {
+              "label": "Figure",
+              "options__custom": {
+                "label": "Typed below"
+              },
+              "options__replay_count": {
+                "label": "Number of replays (LiveMeUp)"
+              },
+              "options__upcoming_count": {
+                "label": "Shows coming up (LiveMeUp)"
+              },
+              "options__latest_replay": {
+                "label": "Date of the latest replay (LiveMeUp)"
+              }
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Replays hero"
+      }
+    },
+    "aria-replays-grid": {
+      "name": "Replays grid",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "quick_label": {
+          "label": "Filter row label"
+        },
+        "all_label": {
+          "label": "All-replays chip label"
+        },
+        "search_placeholder": {
+          "label": "Search placeholder"
+        },
+        "empty_text": {
+          "label": "No-results message"
+        },
+        "initial_count": {
+          "label": "Replays shown at first"
+        },
+        "step": {
+          "label": "Replays added per click"
+        },
+        "more_label": {
+          "label": "Show-more label",
+          "info": "[count] is replaced with how many the click will show."
+        },
+        "initial_count_mobile": {
+          "label": "Replays shown at first on mobile"
+        },
+        "source": {
+          "content": "Every replay published in the LiveMeUp app shows here, newest first. Chips filter by words in the replay titles."
+        },
+        "none_text": {
+          "label": "Text when there are no replays"
+        },
+        "button_label": {
+          "label": "Card button label"
+        }
+      },
+      "blocks": {
+        "filter": {
+          "name": "Filter chip",
+          "settings": {
+            "label": {
+              "label": "Label"
+            },
+            "keywords": {
+              "label": "Title words",
+              "info": "Comma-separated. A replay matches when any of these appears in its title; leave blank to use the chip label. Chips that match nothing are hidden."
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Replays grid"
+      }
+    },
+    "aria-replay-chapters": {
+      "name": "Replay chapters",
+      "settings": {
+        "background_color": {
+          "label": "Background",
+          "info": "Fades to white halfway down."
+        },
+        "copy_header": {
+          "content": "Text"
+        },
+        "badge": {
+          "label": "Badge"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Intro"
+        },
+        "play_label": {
+          "label": "Play button label"
+        },
+        "chapters_header": {
+          "content": "Side list"
+        },
+        "button_label": {
+          "label": "Shop-everything button label"
+        },
+        "source": {
+          "content": "Shows the replay named by ?replay=<id> in the page address, else the latest one from the LiveMeUp app, with the next replays beside it."
+        },
+        "rows": {
+          "label": "Replays in the side list"
+        },
+        "empty_text": {
+          "label": "Text when there are no replays"
+        }
+      },
+      "presets": {
+        "name": "Replay chapters"
+      }
+    },
+    "aria-community-intro": {
+      "name": "Community intro",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "eyebrow": {
+          "label": "Eyebrow",
+          "info": "Small label above the heading."
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Intro"
+        },
+        "primary_label": {
+          "label": "First button label"
+        },
+        "primary_url": {
+          "label": "First button link"
+        },
+        "secondary_label": {
+          "label": "Second button label"
+        },
+        "secondary_url": {
+          "label": "Second button link"
+        },
+        "cards_heading": {
+          "label": "Cards heading"
+        }
+      },
+      "blocks": {
+        "stat": {
+          "name": "Stat",
+          "settings": {
+            "value": {
+              "label": "Figure"
+            },
+            "label": {
+              "label": "Label"
+            }
+          }
+        },
+        "card": {
+          "name": "Card",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown at 438x382. Leave blank for the built-in photo."
+            },
+            "title": {
+              "label": "Title"
+            },
+            "text": {
+              "label": "Text"
+            },
+            "button_label": {
+              "label": "Button label"
+            },
+            "url": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Community intro"
+      }
+    },
+    "aria-colour-shades": {
+      "name": "Find your colour shades",
+      "settings": {
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" },
+        "text": {
+          "label": "Text",
+          "info": "Line breaks are kept."
+        },
+        "collection": {
+          "label": "Collection",
+          "info": "The styles shown, counted and filtered. Leave blank for every product."
+        },
+        "exclude_types": {
+          "label": "Exclude product types",
+          "info": "Comma-separated. These products are left out of the grid and the counts."
+        },
+        "quick_label": { "label": "Chips label" },
+        "search_label": { "label": "Search placeholder" },
+        "initial_count": { "label": "Cards shown at first" },
+        "initial_count_mobile": { "label": "Cards shown at first on mobile" },
+        "step_count": { "label": "Cards added per click" },
+        "more_label": {
+          "label": "Show more label",
+          "info": "[count] becomes the number of cards the click adds."
+        },
+        "empty_label": { "label": "No results text" }
+      },
+      "blocks": {
+        "chip": {
+          "name": "Quick chip",
+          "settings": {
+            "label": {
+              "label": "Label",
+              "info": "The count is added after it, e.g. Everything (258)."
+            },
+            "rule": {
+              "label": "Shows",
+              "options__1": { "label": "Everything" },
+              "options__2": { "label": "On our shelf (tagged in stock)" },
+              "options__3": { "label": "Product type matches keys" },
+              "options__4": { "label": "Title matches keys" },
+              "options__5": { "label": "Tags match keys" },
+              "options__6": { "label": "A shade name matches keys" },
+              "options__7": { "label": "Price at most the amount" },
+              "options__8": { "label": "Published in the last days" }
+            },
+            "keys": {
+              "label": "Keys",
+              "info": "Comma-separated. -key excludes, re:pattern is a regular expression, tags match whole tags."
+            },
+            "amount": { "label": "Amount (price rule)" },
+            "days": { "label": "Days (published rule)" }
+          }
+        }
+      },
+      "presets": { "name": "Find your colour shades" }
+    },
+    "aria-colour-tips": {
+      "name": "Colour: tips",
+      "settings": {
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" }
+      },
+      "blocks": {
+        "tip": {
+          "name": "Tip",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown 388 x 501, cropped to fill. Leave blank for a built-in photo."
+            },
+            "tag": { "label": "Tag" },
+            "title": { "label": "Title" },
+            "text": {
+              "label": "Text",
+              "info": "Line breaks are kept as typed."
+            }
+          }
+        }
+      },
+      "presets": { "name": "Colour: tips" }
+    },
+    "aria-colour-ways": {
+      "name": "Colour: ways to be sure",
+      "settings": {
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" }
+      },
+      "blocks": {
+        "way": {
+          "name": "Way",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown 392 x 320 (mobile full width x 218), cropped to fill. Leave blank for a built-in photo."
+            },
+            "tag": { "label": "Tag" },
+            "title": { "label": "Title" },
+            "text": { "label": "Text" },
+            "button_label": { "label": "Button label" },
+            "button_url": {
+              "label": "Button link",
+              "info": "The button is hidden until a link is set."
+            }
+          }
+        }
+      },
+      "presets": { "name": "Colour: ways to be sure" }
+    },
+    "aria-colour-naming": {
+      "name": "Find your colour naming",
+      "settings": {
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" },
+        "text": { "label": "Text" },
+        "example": {
+          "label": "Example colour name",
+          "info": "Shown above the cards."
+        }
+      },
+      "blocks": {
+        "part": {
+          "name": "Name part",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown 379 x 267, cropped to fill. Leave blank for a built-in photo."
+            },
+            "tag": { "label": "Tag" },
+            "title": { "label": "Title" },
+            "text": { "label": "Text" }
+          }
+        }
+      },
+      "presets": { "name": "Find your colour naming" }
+    },
+    "aria-consult-banner": {
+      "name": "Consult banner",
+      "settings": {
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" },
+        "text": { "label": "Text" },
+        "button_label": { "label": "Button label" },
+        "button_url": { "label": "Button link" },
+        "photo": {
+          "label": "Photo",
+          "info": "Shown at the card's right, 566 x 436, bleeding off the edge. Leave blank for the built-in photo of Kristi."
+        }
+      },
+      "presets": { "name": "Consult banner" }
+    },
+    "aria-compare-table": {
+      "name": "Compare table",
+      "settings": {
+        "background": {
+          "label": "Background image",
+          "info": "Shown under a dark wash. Leave blank for the built-in hair photo."
+        },
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" },
+        "column_1": { "label": "First shade" },
+        "column_2": { "label": "Second shade" },
+        "icon": {
+          "label": "Column icon",
+          "info": "Shown 47 x 47 above each shade name. Leave blank for the built-in icon."
+        }
+      },
+      "blocks": {
+        "row": {
+          "name": "Row",
+          "settings": {
+            "label": { "label": "Label" },
+            "value_1": { "label": "First shade" },
+            "value_2": { "label": "Second shade" }
+          }
+        }
+      },
+      "presets": { "name": "Compare table" }
+    },
+    "aria-compare-slider": {
+      "name": "Compare slider",
+      "settings": {
+        "photo": {
+          "label": "Photo",
+          "info": "Used on a side whose shade (in the Compare shades section) has no photo of its own. Leave blank for the built-in photo."
+        },
+        "start_position": {
+          "label": "Starting split (%)",
+          "info": "Where the dividing line starts, from the left. Figma's is 48.7."
+        },
+        "start_position_mobile": {
+          "label": "Starting split on mobile (%)",
+          "info": "Figma's is 50.2."
+        },
+        "label_a": { "label": "Left side name (for screen readers)" },
+        "label_b": { "label": "Right side name (for screen readers)" },
+        "handle_label": { "label": "Handle label (for screen readers)" },
+        "swap_label": { "label": "Swap button label" },
+        "show_third": {
+          "label": "Show \"Add a third\" button",
+          "info": "Off by default: the 3-way layout is not designed yet."
+        },
+        "third_label": { "label": "Second button label" },
+        "third_remove_label": { "label": "Second button label while a third shade is shown" },
+        "label_c": { "label": "Shade C photo name (for screen readers)" },
+        "handle_c_label": { "label": "Second handle label (for screen readers)" },
+        "live_label": { "label": "Third button label" },
+        "live_url": {
+          "label": "Third button link",
+          "info": "Leave blank for the Live page."
+        }
+      },
+      "presets": { "name": "Compare slider" }
+    },
+    "aria-compare-shades": {
+      "name": "Compare shades",
+      "settings": {
+        "label_a": { "label": "First column label" },
+        "label_b": { "label": "Second column label" },
+        "empty_text": { "label": "No shades message", "info": "Shown when the page is opened from a wig whose shade_for_comparison metafield lists no comparable shade. [product] is the wig's name." },
+        "empty_link_label": { "label": "No shades link label", "info": "Links back to the wig." },
+        "label_c": { "label": "Shade C label", "info": "Heading of the third column that ADD A THIRD (in the slider) opens." },
+        "start_a": { "label": "First column starts on shade" },
+        "start_b": { "label": "Second column starts on shade" },
+        "daylight_label": { "label": "Daylight label" },
+        "indoor_label": { "label": "Indoor label" },
+        "evening_label": { "label": "Evening label" }
+      },
+      "blocks": {
+        "shade": {
+          "name": "Shade",
+          "settings": {
+            "name": { "label": "Shade name" },
+            "slug": {
+              "label": "URL slug",
+              "info": "For ?a=/?b= links. Leave blank to use the shade name."
+            },
+            "photo": {
+              "label": "Photo",
+              "info": "Shown 606 x 640, cropped from the top. Leave blank for the built-in photo."
+            },
+            "comparison_image": {
+              "label": "Slider photo (landscape)",
+              "info": "Shown in the slider, 1035 x 888, cropped to fill. Leave blank to use the photo above."
+            },
+            "daylight": { "label": "Daylight swatch" },
+            "indoor": { "label": "Indoor swatch" },
+            "evening": { "label": "Evening swatch" },
+            "lead": {
+              "label": "Lead",
+              "info": "Shown in black before the description, e.g. Rooted."
+            },
+            "text": { "label": "Description" },
+            "table_header": { "content": "Compare table" },
+            "table_name": {
+              "label": "Table column name",
+              "info": "Leave blank to use the shade name."
+            },
+            "root": { "label": "Table: Root" },
+            "length": { "label": "Table: Length" },
+            "undertone": { "label": "Table: Undertone" },
+            "reads_as": { "label": "Table: Reads as" },
+            "best_with": { "label": "Table: Best with" },
+            "noticeable": { "label": "Table: Noticeable?" },
+            "available_in": { "label": "Table: Available in" }
+          }
+        }
+      },
+      "presets": { "name": "Compare shades" }
+    },
+    "aria-compare-hero": {
+      "name": "Compare shades hero",
+      "settings": {
+        "background": {
+          "label": "Background image",
+          "info": "Shown under a grey wash. Leave blank for the built-in hair photo."
+        },
+        "home_label": { "label": "Home crumb" },
+        "parent_label": { "label": "Parent crumb" },
+        "parent_url": {
+          "label": "Parent crumb link",
+          "info": "Leave blank to link to the Start Here section on the home page."
+        },
+        "current_label": {
+          "label": "Current crumb",
+          "info": "Leave blank to use the page title."
+        },
+        "heading": { "label": "Heading" },
+        "text": {
+          "label": "Text",
+          "info": "Line breaks are kept."
+        }
+      },
+      "presets": { "name": "Compare shades hero" }
+    },
+    "aria-learn-hero": {
+      "name": "Learn hero",
+      "settings": {
+        "background": {
+          "label": "Background image",
+          "info": "Shown under a grey wash. Leave blank for the built-in hair photo."
+        },
+        "home_label": { "label": "Home crumb" },
+        "parent_label": {
+          "label": "Parent crumb",
+          "info": "Optional. Shown only when it has a link."
+        },
+        "parent_url": { "label": "Parent crumb link" },
+        "current_label": {
+          "label": "Current crumb",
+          "info": "Leave blank to use the page title."
+        },
+        "heading": { "label": "Heading" },
+        "text": {
+          "label": "Text",
+          "info": "Line breaks are kept."
+        },
+        "button_label": { "label": "Button label" },
+        "button_url": {
+          "label": "Button link",
+          "info": "Leave blank to scroll to the next section."
+        }
+      },
+      "blocks": {
+        "stat": {
+          "name": "Stat",
+          "settings": {
+            "icon": {
+              "label": "Icon",
+              "options__1": { "label": "Swap arrows" },
+              "options__2": { "label": "Styled head" },
+              "options__3": { "label": "Colour circles" },
+              "options__4": { "label": "Clock" }
+            },
+            "icon_mobile": {
+              "label": "Icon on mobile",
+              "options__0": { "label": "Same as desktop" }
+            },
+            "icon_image": {
+              "label": "Custom icon",
+              "info": "Shown 32 x 32 in the white tile. Leave blank to use the icon above."
+            },
+            "value": { "label": "Value" },
+            "label": { "label": "Label" },
+            "width": {
+              "label": "Column width",
+              "info": "The columns are spread across the card; this sets where each one starts."
+            }
+          }
+        }
+      },
+      "presets": { "name": "Learn hero" }
+    },
+    "aria-learn-guides": {
+      "name": "Learn guides",
+      "settings": {
+        "filter_label": { "label": "Filter label" },
+        "all_label": { "label": "Show-all chip label" },
+        "show_signature": { "label": "Show Kristi's signature" },
+        "signature_alt": { "label": "Signature alt text" },
+        "empty_text": {
+          "label": "Empty message",
+          "info": "Shown when a chip has no matching guides."
+        }
+      },
+      "blocks": {
+        "chip": {
+          "name": "Chip",
+          "settings": {
+            "label": {
+              "label": "Label",
+              "info": "Guides whose topics include this label are shown when the chip is pressed."
+            }
+          }
+        },
+        "guide": {
+          "name": "Guide",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown 366 x 336. The first three guides fall back to the built-in photos."
+            },
+            "title": {
+              "label": "Title",
+              "info": "Line breaks are kept."
+            },
+            "text": {
+              "label": "Text",
+              "info": "Line breaks are kept."
+            },
+            "button_label": { "label": "Button label" },
+            "button_url": {
+              "label": "Button link",
+              "info": "The button is hidden until a link is set."
+            },
+            "topics": {
+              "label": "Topics",
+              "info": "Chip labels this guide belongs to, separated by commas (e.g. Wig 101, Care)."
+            },
+            "title_breaks_mobile": { "label": "Keep the title's line breaks on mobile" },
+            "text_breaks_mobile": { "label": "Keep the text's line breaks on mobile" },
+            "mobile_bleed": {
+              "label": "Full-bleed photo on mobile",
+              "info": "Shows the photo at its desktop size (366 x 336), wider than the card and with no top padding."
+            }
+          }
+        }
+      },
+      "presets": { "name": "Learn guides" }
+    },
+    "aria-learn-ask": {
+      "name": "Learn ask a question",
+      "settings": {
+        "background": {
+          "label": "Background image",
+          "info": "Shown under a grey wash. Leave blank for the built-in hair photo."
+        },
+        "heading": { "label": "Heading" },
+        "text": {
+          "label": "Text",
+          "info": "Line breaks are kept."
+        },
+        "button_label": { "label": "Button label" },
+        "button_url": {
+          "label": "Button link",
+          "info": "The button is hidden until a link is set."
+        },
+        "collage": {
+          "content": "Collage",
+          "info": "Leave an image blank to use its built-in photo."
+        },
+        "image_1": { "label": "Tall right photo (236 x 365)" },
+        "image_2": { "label": "Top photo (199 x 297)" },
+        "image_3": { "label": "Bottom left photo (188 x 235)" },
+        "image_4": { "label": "Bottom front photo (189 x 284)" }
+      },
+      "presets": { "name": "Learn ask a question" }
+    },
+    "aria-learn-library": {
+      "name": "Learn library",
+      "settings": {
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" }
+      },
+      "blocks": {
+        "topic": {
+          "name": "Topic",
+          "settings": {
+            "title": { "label": "Title" },
+            "blog": {
+              "label": "Blog",
+              "info": "Used with the tag below. Leave blank for the News blog."
+            },
+            "tag": {
+              "label": "Article tag",
+              "info": "When articles in the blog carry this tag, the first four are shown and all of them are counted. Otherwise the articles picked below are shown."
+            },
+            "article_1": { "label": "Article 1" },
+            "article_2": { "label": "Article 2" },
+            "article_3": { "label": "Article 3" },
+            "article_4": { "label": "Article 4" }
+          }
+        }
+      },
+      "presets": { "name": "Learn library" }
+    },
+    "aria-about-hero": {
+      "name": "About hero",
+      "settings": {
+        "background": {
+          "label": "Background photo",
+          "info": "Leave empty to use the built-in hair photo."
+        },
+        "background_color": {
+          "label": "Background colour"
+        },
+        "portrait": {
+          "label": "Portrait",
+          "info": "A cut-out photo with a transparent background. Leave empty to use the built-in photo of Kristi."
+        },
+        "portrait_alt": {
+          "label": "Built-in portrait alt text"
+        },
+        "crumbs_header": {
+          "content": "Breadcrumbs"
+        },
+        "home_label": {
+          "label": "Home label"
+        },
+        "parent_label": {
+          "label": "Parent label"
+        },
+        "parent_url": {
+          "label": "Parent link"
+        },
+        "current_label": {
+          "label": "Current page label",
+          "info": "Leave empty to use the page title."
+        },
+        "content_header": {
+          "content": "Content"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text",
+          "info": "Line breaks are kept."
+        },
+        "button_label": {
+          "label": "First button label"
+        },
+        "button_url": {
+          "label": "First button link"
+        },
+        "button_2_label": {
+          "label": "Second button label"
+        },
+        "button_2_url": {
+          "label": "Second button link"
+        }
+      },
+      "presets": {
+        "name": "About hero"
+      }
+    },
+    "aria-about-story": {
+      "name": "About story cards",
+      "settings": {
+        "background_color": {
+          "label": "Background colour"
+        }
+      },
+      "blocks": {
+        "card": {
+          "name": "Card",
+          "settings": {
+            "image": {
+              "label": "Photo",
+              "info": "Leave empty to use the built-in photo for this position."
+            },
+            "title": {
+              "label": "Title"
+            },
+            "text": {
+              "label": "Text"
+            },
+            "link_label": {
+              "label": "Link label",
+              "info": "Shown at the end of the text, e.g. Read more."
+            },
+            "link_url": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "About story cards"
+      }
+    },
+    "aria-about-quotes": {
+      "name": "About quotes",
+      "blocks": {
+        "quote": {
+          "name": "Quote",
+          "settings": {
+            "icon": {
+              "label": "Icon",
+              "options__1": {
+                "label": "Community"
+              },
+              "options__2": {
+                "label": "Price tag"
+              },
+              "options__3": {
+                "label": "Home"
+              }
+            },
+            "icon_image": {
+              "label": "Custom icon",
+              "info": "Replaces the icon above. Shown at 84 x 84."
+            },
+            "label": {
+              "label": "Label"
+            },
+            "quote": {
+              "label": "Quote",
+              "info": "Line breaks are kept."
+            },
+            "text_width": {
+              "label": "Quote width on desktop (px)",
+              "info": "Leave empty to use the full card width."
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "About quotes"
+      }
+    },
+    "aria-about-lives": {
+      "name": "About Lives",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "use_livemeup": {
+          "label": "Show the latest replays",
+          "info": "Cards come from the LiveMeUp app and play in its shoppable player. The posters below show while it loads, or if it cannot be reached."
+        },
+        "count": {
+          "label": "Replays to show"
+        },
+        "posters_url": {
+          "label": "Poster link",
+          "info": "Where a poster goes when it has no link of its own. Defaults to the Replays page."
+        }
+      },
+      "blocks": {
+        "poster": {
+          "name": "Poster",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Leave empty to use the built-in poster for this position."
+            },
+            "darken": {
+              "label": "Darken the poster"
+            },
+            "label": {
+              "label": "Accessible label"
+            },
+            "link": {
+              "label": "Link"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "About Lives"
+      }
+    },
+    "aria-about-find-me": {
+      "name": "About come and find me",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "text": {
+          "label": "Text",
+          "info": "Line breaks are kept on desktop."
+        },
+        "button_label": {
+          "label": "First button label"
+        },
+        "button_url": {
+          "label": "First button link"
+        },
+        "button_2_label": {
+          "label": "Second button label"
+        },
+        "button_2_url": {
+          "label": "Second button link"
+        },
+        "image": {
+          "label": "Photo",
+          "info": "A cut-out photo. Leave empty to use the built-in photo of Kristi."
+        },
+        "image_alt": {
+          "label": "Built-in photo alt text"
+        }
+      },
+      "presets": {
+        "name": "About come and find me"
+      }
+    },
+    "aria-colour-hero": {
+      "name": "Find your colour hero",
+      "settings": {
+        "background": {
+          "label": "Background image",
+          "info": "Shown under a grey wash. Leave blank for the built-in hair photo."
+        },
+        "home_label": { "label": "Home crumb" },
+        "parent_label": { "label": "Parent crumb" },
+        "parent_url": {
+          "label": "Parent crumb link",
+          "info": "Leave blank to link to the Start Here section on the home page."
+        },
+        "current_label": {
+          "label": "Current crumb",
+          "info": "Leave blank to use the page title."
+        },
+        "heading": { "label": "Heading" },
+        "text": {
+          "label": "Text",
+          "info": "Line breaks are kept."
+        },
+        "button_label": { "label": "Button label" },
+        "button_label_mobile": {
+          "label": "Button label on mobile",
+          "info": "Optional. Replaces the button label below 750px."
+        },
+        "button_url": { "label": "Button link" },
+        "button_2_label": { "label": "Outline button label" },
+        "button_2_url": { "label": "Outline button link" }
+      },
+      "blocks": {
+        "stat": {
+          "name": "Stat",
+          "settings": {
+            "icon": {
+              "label": "Icon",
+              "options__1": { "label": "Swap arrows" },
+              "options__2": { "label": "Styled head" },
+              "options__3": { "label": "Clock" }
+            },
+            "icon_image": {
+              "label": "Custom icon",
+              "info": "Shown 32 x 32 in the white tile. Leave blank to use the icon above."
+            },
+            "value": { "label": "Value" },
+            "label": { "label": "Label" },
+            "label_heading_font": { "label": "Set the label in the heading font" },
+            "width": { "label": "Column width" }
+          }
+        }
+      },
+      "presets": { "name": "Find your colour hero" }
+    },
+    "aria-cap-hero": {
+      "name": "Cap construction hero",
+      "settings": {
+        "home_label": { "label": "Home crumb" },
+        "shop_label": { "label": "Shop crumb" },
+        "shop_url": { "label": "Shop crumb link" },
+        "current_label": {
+          "label": "Current crumb",
+          "info": "Leave blank to use the page title."
+        },
+        "heading": { "label": "Heading" },
+        "text": { "label": "Text" },
+        "button_label": { "label": "Button label" },
+        "button_url": { "label": "Button link" },
+        "start_slide": { "label": "Starting slide" }
+      },
+      "blocks": {
+        "slide": {
+          "name": "Slide",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown 175 x 271 at the top of the white panel. Leave blank for the built-in cap photo."
+            }
+          }
+        }
+      },
+      "presets": { "name": "Cap construction hero" }
+    },
+    "aria-cap-consult": {
+      "name": "Cap construction consult",
+      "settings": {
+        "background": {
+          "label": "Background image",
+          "info": "Shown under a grey wash. Leave blank for the built-in hair photo."
+        },
+        "heading": { "label": "Heading" },
+        "text": { "label": "Text" },
+        "button_label": { "label": "Button label" },
+        "button_url": { "label": "Button link" },
+        "header_photos": { "content": "Photo collage" },
+        "photo_a": { "label": "Right photo (236 x 365)" },
+        "photo_b": { "label": "Top photo (199 x 297)" },
+        "photo_c": { "label": "Bottom-left photo (188 x 235)" },
+        "photo_d": { "label": "Bottom-middle photo (189 x 284)" }
+      },
+      "presets": { "name": "Cap construction consult" }
+    },
+    "aria-cap-table": {
+      "name": "Cap construction table",
+      "settings": {
+        "background": {
+          "label": "Background image",
+          "info": "Shown under a dark wash. Leave blank for the built-in hair photo."
+        },
+        "eyebrow": { "label": "Eyebrow" },
+        "heading": { "label": "Heading" },
+        "header_columns": { "content": "Columns" },
+        "column_1": { "label": "Column 1" },
+        "column_2": { "label": "Column 2" },
+        "column_3": { "label": "Column 3" },
+        "column_4": { "label": "Column 4" },
+        "column_icon": { "label": "Icon (leave blank for the built-in one)" }
+      },
+      "blocks": {
+        "row": {
+          "name": "Row",
+          "settings": {
+            "label": { "label": "Label" },
+            "label_weight": {
+              "label": "Label weight",
+              "options__1": { "label": "Bold" },
+              "options__2": { "label": "Medium" }
+            },
+            "value_1": { "label": "Column 1 value" },
+            "value_2": { "label": "Column 2 value" },
+            "value_3": { "label": "Column 3 value" },
+            "value_4": { "label": "Column 4 value" }
+          }
+        }
+      },
+      "presets": { "name": "Cap construction table" }
+    },
+    "aria-cap-types": {
+      "name": "Cap construction types",
+      "blocks": {
+        "cap_type": {
+          "name": "Cap type",
+          "settings": {
+            "image": {
+              "label": "Image",
+              "info": "Shown 202 x 314 on the cream panel; a transparent PNG works best. Leave blank for the built-in cap photo."
+            },
+            "title": { "label": "Title" },
+            "text": { "label": "Text" },
+            "match_keywords": {
+              "label": "Match keywords",
+              "info": "Comma-separated. Matched as substrings of the product type, case-insensitive. Fills the styles/price line and must track \"Cap construction\" in the Results section below."
+            },
+            "collection_url_slug": {
+              "label": "Collection filter slug",
+              "info": "The af_cap-construction value this card's button links to, e.g. hand-tied."
+            },
+            "button_label": {
+              "label": "Button label",
+              "info": "Leave blank for \"Shop\" plus the title."
+            }
+          }
+        }
+      },
+      "presets": { "name": "Cap construction types" }
+    },
+    "aria-community-audience": {
+      "name": "Community audience",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "heading": {
+          "label": "Heading"
+        }
+      },
+      "blocks": {
+        "reason": {
+          "name": "Reason",
+          "settings": {
+            "icon": {
+              "label": "Icon",
+              "info": "Leave blank for the built-in hair icon."
+            },
+            "glyph": {
+              "label": "Icon",
+              "info": "Built-in icon, used when no icon image is set.",
+              "options__1": { "label": "Medical" },
+              "options__2": { "label": "Transition" },
+              "options__3": { "label": "Thinning" },
+              "options__4": { "label": "Convenience" },
+              "options__5": { "label": "Fashion" },
+              "options__6": { "label": "Not saying" }
+            },
+            "title": {
+              "label": "Title"
+            },
+            "text": {
+              "label": "Text"
+            }
+          }
+        }
+      },
+      "presets": {
+        "name": "Community audience"
+      }
+    },
+    "aria-community-kristi": {
+      "name": "Community Kristi note",
+      "settings": {
+        "background_color": {
+          "label": "Background"
+        },
+        "heading": {
+          "label": "Heading"
+        },
+        "quote": {
+          "label": "Quote",
+          "info": "Line breaks are kept."
+        },
+        "note": {
+          "label": "Note"
+        },
+        "show_signature": {
+          "label": "Show Kristi's signature"
+        },
+        "video_header": {
+          "content": "Video"
+        },
+        "poster": {
+          "label": "Poster image",
+          "info": "Leave blank for the built-in still. Shown at 711x503."
+        },
+        "video": {
+          "label": "Video (uploaded to Shopify)"
+        },
+        "video_url": {
+          "label": "Video URL"
+        },
+        "play_label": {
+          "label": "Play button label"
+        }
+      },
+      "presets": {
+        "name": "Community Kristi note"
       }
     }
   }

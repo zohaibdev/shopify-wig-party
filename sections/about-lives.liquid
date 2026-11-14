@@ -1,0 +1,162 @@
+{%- comment -%}
+  Wig Party — About Kristi page, "Where the Lives happen". Figma internal file, desktop node
+  7841:3592 (1440 x 592), mobile node 7847:290 (375 x 386).
+  A centred heading over a row of video cards with a frosted play button; on mobile the row
+  scrolls sideways.
+
+  With "Show the latest replays" on (the default), the cards are the newest replays from the
+  LiveMeUp app (assets/aria-livemeup.js): its cover, and the play button opens LiveMeUp's
+  shoppable player in place. Figma's three posters are drawn until the feed arrives and stay
+  if it cannot be reached, each linking to the Replays page. With it off, only the posters
+  show. Styles in assets/section-aria-about-lives.css.
+{%- endcomment -%}
+
+{{ 'section-aria-about-lives.css' | asset_url | stylesheet_tag }}
+{%- if section.settings.use_livemeup -%}
+  {%- render 'aria-livemeup' -%}
+{%- endif -%}
+
+{%- liquid
+  assign fallback_files = 'wp-about-story-2.jpg,guide-size-model-mobile.jpg,wp-about-live-3.jpg' | split: ','
+  assign fallback_sizes = '511x709,544x698,1600x890' | split: ','
+  assign posters_url = section.settings.posters_url | default: '/pages/replays'
+  assign play_icon = 'wp-pdp-kristi-play.svg' | inline_asset_content
+-%}
+
+<div class="aria-about-lives"{% if section.settings.use_livemeup %} data-lmu-root{% endif %}>
+  {%- if section.settings.heading != blank -%}
+    <h2 class="aria-about-lives__title">{{ section.settings.heading }}</h2>
+  {%- endif -%}
+
+  {%- if section.settings.use_livemeup -%}
+    <div class="aria-about-lives__live" data-lmu-list data-lmu-source="replays" data-lmu-limit="{{ section.settings.count }}">
+      <template data-lmu-template>
+        <li class="aria-about-lives__card">
+          <a class="aria-about-lives__media" href="#" data-lmu-href data-lmu-play>
+            <span data-lmu-cover="401"></span>
+            <span class="aria-about-lives__play" aria-hidden="true">{{ play_icon }}</span>
+            <span class="visually-hidden" data-lmu-title></span>
+          </a>
+        </li>
+      </template>
+      <ul class="aria-about-lives__cards" role="list" data-lmu-items></ul>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%}
+    Figma's posters: the whole row without LiveMeUp, and its loading / unavailable state with it
+    (hidden once the feed is ready, see component-aria-livemeup.css).
+  {%- endcomment -%}
+  <ul class="aria-about-lives__cards" role="list"{% if section.settings.use_livemeup %} data-lmu-fallback{% endif %}>
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign fallback_index = forloop.index0 | modulo: 3
+        assign fallback_size = fallback_sizes[fallback_index] | split: 'x'
+      -%}
+      <li class="aria-about-lives__card" {{ block.shopify_attributes }}>
+        <a
+          class="aria-about-lives__media{% if block.settings.darken %} aria-about-lives__media--darken{% endif %}"
+          href="{{ block.settings.link | default: posters_url }}"
+        >
+          {%- if block.settings.image != blank -%}
+            {{
+              block.settings.image
+              | image_url: width: 1200
+              | image_tag: widths: '400,600,800,1200', sizes: '(min-width: 750px) 401px, 280px', alt: '', loading: 'lazy'
+            }}
+          {%- else -%}
+            <img
+              class="aria-about-lives__fallback aria-about-lives__fallback--{{ fallback_index | plus: 1 }}"
+              src="{{ fallback_files[fallback_index] | asset_url }}"
+              alt=""
+              width="{{ fallback_size[0] }}"
+              height="{{ fallback_size[1] }}"
+              loading="lazy"
+            >
+          {%- endif -%}
+          <span class="aria-about-lives__play" aria-hidden="true">{{ play_icon }}</span>
+          <span class="visually-hidden">{{ block.settings.label | default: section.settings.heading }}</span>
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-about-lives.name",
+  "tag": "section",
+  "class": "aria-about-lives-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Where the Lives happen",
+      "label": "t:sections.aria-about-lives.settings.heading.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_livemeup",
+      "default": true,
+      "label": "t:sections.aria-about-lives.settings.use_livemeup.label",
+      "info": "t:sections.aria-about-lives.settings.use_livemeup.info"
+    },
+    {
+      "type": "range",
+      "id": "count",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "label": "t:sections.aria-about-lives.settings.count.label"
+    },
+    {
+      "type": "url",
+      "id": "posters_url",
+      "label": "t:sections.aria-about-lives.settings.posters_url.label",
+      "info": "t:sections.aria-about-lives.settings.posters_url.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "poster",
+      "name": "t:sections.aria-about-lives.blocks.poster.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-about-lives.blocks.poster.settings.image.label",
+          "info": "t:sections.aria-about-lives.blocks.poster.settings.image.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "darken",
+          "default": true,
+          "label": "t:sections.aria-about-lives.blocks.poster.settings.darken.label"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.aria-about-lives.blocks.poster.settings.label.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.aria-about-lives.blocks.poster.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-about-lives.presets.name",
+      "blocks": [
+        { "type": "poster" },
+        { "type": "poster" },
+        { "type": "poster", "settings": { "darken": false } }
+      ]
+    }
+  ]
+}
+{% endschema %}

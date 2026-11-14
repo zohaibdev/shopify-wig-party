@@ -1,6 +1,7 @@
 {{ 'section-aria-start-here.css' | asset_url | stylesheet_tag }}
 
 <section
+  id="start-here"
   class="aria-start-here"
   style="--aria-sh-bg-from: {{ section.settings.background_gradient_start }}; --aria-sh-bg-to: {{ section.settings.background_gradient_end }};"
 >
@@ -27,7 +28,17 @@
           -%}
           <li class="aria-start-here__item" {{ block.shopify_attributes }}>
             <{% if has_link %}a href="{{ block.settings.link }}"{% else %}div{% endif %} class="aria-start-here__card">
-              <span class="aria-start-here__icon">
+              {%- comment -%}
+                `data-icon` names the default line art, so the mobile layout (Figma
+                6576:11746) can place each drawing where its frame does; the artwork
+                sits at slightly different heights inside the 120px box per icon.
+              {%- endcomment -%}
+              <span
+                class="aria-start-here__icon"
+                {% if block.settings.icon == blank %}
+                  data-icon="{{ block.settings.default_icon }}"
+                {% endif %}
+              >
                 {%- if block.settings.icon != blank -%}
                   {{
                     block.settings.icon

@@ -10,6 +10,32 @@
   style="--aria-hero-bg: {{ section.settings.background_color }};"
 >
   <div class="aria-hero__media">
+    {%- comment -%}
+      Mobile (Figma 6576:11042) uses its own, taller crop of the shoot: a 1264x1229 photo
+      drawn at 281.08vw x 273.46vw, not the 1600x821 desktop frame. A <picture> source
+      swaps it in below 750px only, so phones download just the mobile file and the
+      desktop <img> (and everything styled on it) is unchanged. `281vw` is its rendered
+      width at every phone size, which is what the browser needs to pick a sharp file.
+      Falls back to the theme's copy of the Figma photo until a merchant picks one.
+    {%- endcomment -%}
+    <picture>
+      {%- if section.settings.mobile_image != blank -%}
+        <source
+          media="(max-width: 749px)"
+          srcset="{{ section.settings.mobile_image | image_url: width: 750 }} 750w, {{ section.settings.mobile_image | image_url: width: 1100 }} 1100w, {{ section.settings.mobile_image | image_url: width: 1500 }} 1500w, {{ section.settings.mobile_image | image_url: width: 2200 }} 2200w"
+          sizes="281vw"
+          width="{{ section.settings.mobile_image.width }}"
+          height="{{ section.settings.mobile_image.height }}"
+        >
+      {%- else -%}
+        <source
+          media="(max-width: 749px)"
+          srcset="{{ 'wp-hero-mobile.jpg' | asset_img_url: '750x' }} 750w, {{ 'wp-hero-mobile.jpg' | asset_img_url: '1100x' }} 1100w, {{ 'wp-hero-mobile.jpg' | asset_url }} 1264w"
+          sizes="281vw"
+          width="1264"
+          height="1229"
+        >
+      {%- endif -%}
     {%- if section.settings.image != blank -%}
       {{
         section.settings.image
@@ -38,6 +64,7 @@
         class="aria-hero__image"
       >
     {%- endif -%}
+    </picture>
     {%- comment -%}
       V4 puts no scrim or gradient over the hero photo — the copy sits directly on the
       naturally light left side of the image. The `.aria-hero__fade` element that used to
@@ -165,6 +192,12 @@
       "label": "t:sections.aria-hero.settings.image.label"
     },
     {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image",
+      "info": "Shown below 750px instead of the image above. Use a near-square photo (about 1264 x 1229) with the face in the right half; the mobile layout crops into it. Empty uses the theme's default mobile photo."
+    },
+    {
       "type": "color",
       "id": "background_color",
       "default": "#F1E3D8",
@@ -199,8 +232,9 @@
     {
       "type": "richtext",
       "id": "description",
-      "default": "<p>Helping women discover confidence through beautiful wigs, trusted education, and a community that understands.</p>",
-      "label": "t:sections.aria-hero.settings.description.label"
+      "default": "<p>Helping women discover confidence through <strong>beautiful wigs,</strong> trusted <strong>education</strong>, and a community that <strong>understands.</strong></p>",
+      "label": "t:sections.aria-hero.settings.description.label",
+      "info": "Bold words are shown in dark pink on mobile. On desktop they stay regular text."
     },
     {
       "type": "header",

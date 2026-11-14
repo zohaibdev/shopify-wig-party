@@ -8,6 +8,18 @@
      data-slides-lg                              optional: slides per view for 990-1279px
                                                  only; defaults to -desktop
      data-space-between                          gutter in px
+     data-space-between-mobile                   optional: gutter in px below 560px only;
+                                                 defaults to -space-between, so a carousel
+                                                 that does not set it is unaffected
+     data-space-between-sm                       optional: gutter in px for 560-749px only;
+                                                 defaults to -space-between, likewise
+     data-space-between-desktop                  optional: gutter in px restated from 750px
+                                                 up. Needed alongside a -mobile override:
+                                                 Swiper falls back to the BASE params for
+                                                 anything a breakpoint does not list, so
+                                                 without it 750+ inherits the mobile gap.
+                                                 Opt-in, so carousels that do not set it
+                                                 keep their current gaps at every width
 
    Optional children:
      [data-aria-carousel-swiper]     the .swiper element (required)
@@ -94,9 +106,17 @@
       if (controls) controls.hidden = !!instance.isLocked;
     }
 
+    var spaceBetween = num(wrap, 'data-space-between', 12);
+
+    /* Only present when the carousel sets data-space-between-desktop; spread into the
+       750/990/1280 steps so an absent attribute adds nothing to them. */
+    var desktopGap = wrap.hasAttribute('data-space-between-desktop')
+      ? { spaceBetween: num(wrap, 'data-space-between-desktop', spaceBetween) }
+      : {};
+
     var swiper = new Swiper(swiperEl, {
       slidesPerView: num(wrap, 'data-slides-mobile', 1.3),
-      spaceBetween: num(wrap, 'data-space-between', 12),
+      spaceBetween: num(wrap, 'data-space-between-mobile', spaceBetween),
       watchOverflow: true,
       a11y: true,
       /*
@@ -110,10 +130,20 @@
        * exactly as before at every width. Do not fold these two back into one breakpoint.
        */
       breakpoints: {
-        560: { slidesPerView: num(wrap, 'data-slides-sm', 2.2) },
-        750: { slidesPerView: num(wrap, 'data-slides-md', 3.2) },
-        990: { slidesPerView: num(wrap, 'data-slides-lg', num(wrap, 'data-slides-desktop', 4)) },
-        1280: { slidesPerView: num(wrap, 'data-slides-desktop', 4) },
+        /* Swiper breakpoints only override the properties they list — anything else
+           falls back to the base params above, not the previous breakpoint. So the
+           560 step must restate `spaceBetween` explicitly, or a `-mobile` override
+           would silently keep applying above 560 too. */
+        560: {
+          slidesPerView: num(wrap, 'data-slides-sm', 2.2),
+          spaceBetween: num(wrap, 'data-space-between-sm', spaceBetween),
+        },
+        750: Object.assign({ slidesPerView: num(wrap, 'data-slides-md', 3.2) }, desktopGap),
+        990: Object.assign(
+          { slidesPerView: num(wrap, 'data-slides-lg', num(wrap, 'data-slides-desktop', 4)) },
+          desktopGap
+        ),
+        1280: Object.assign({ slidesPerView: num(wrap, 'data-slides-desktop', 4) }, desktopGap),
       },
       on: {
         progress: function (instance) {

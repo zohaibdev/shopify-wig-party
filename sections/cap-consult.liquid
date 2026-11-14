@@ -1,0 +1,150 @@
+{%- comment -%}
+  Wig Party — Shop by Cap Construction page, "Book fifteen minutes with Kristi". Figma
+  internal file, node 6670:1578 (1440 x 738).
+  A frosted, white-ringed panel over the hair photo (the same file as the table section):
+  heading, text and BOOK A CONSULT on the left, a four-photo collage on the right. Each
+  collage slot is a setting; the built-in photos are the Figma slots pre-composed at 2x.
+  Styles in assets/section-aria-cap-consult.css.
+{%- endcomment -%}
+
+{{ 'section-aria-cap-consult.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # -- theme.liquid only font_faces the heading base weight (500); the title is Montserrat 700.
+  assign heading_font_bold = settings.type_header_font | font_modify: 'weight', '700'
+-%}
+{% style %}
+  {%- if heading_font_bold -%}{{ heading_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-cap-consult">
+  <div class="aria-cap-consult__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '1440,2160,2880', sizes: '100vw', alt: '', loading: 'lazy', class: 'aria-cap-consult__bg-img aria-cap-consult__bg-img--custom'
+      }}
+    {%- else -%}
+      <img class="aria-cap-consult__bg-img" src="{{ 'wp-cap-table-bg.jpg' | asset_url }}" alt="" width="531" height="606" loading="lazy">
+    {%- endif -%}
+  </div>
+
+  <div class="aria-cap-consult__panel">
+    <div class="aria-cap-consult__copy">
+      <div class="aria-cap-consult__text-group">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-cap-consult__title">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="aria-cap-consult__text">{{ section.settings.text }}</p>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.button_label != blank -%}
+        <a class="aria-cap-consult__btn" href="{{ section.settings.button_url | default: '#' }}">
+          {{- section.settings.button_label -}}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-cap-consult__collage" aria-hidden="true">
+      {%- assign slots = 'a,b,c,d' | split: ',' -%}
+      {%- for slot in slots -%}
+        {%- liquid
+          assign image_key = 'photo_' | append: slot
+          assign slot_image = section.settings[image_key]
+          case slot
+            when 'a'
+              assign w = 472
+              assign h = 730
+            when 'b'
+              assign w = 398
+              assign h = 594
+            when 'c'
+              assign w = 376
+              assign h = 470
+            when 'd'
+              assign w = 378
+              assign h = 568
+          endcase
+          assign fallback = 'wp-cap-consult-' | append: slot | append: '.jpg'
+        -%}
+        <div class="aria-cap-consult__photo aria-cap-consult__photo--{{ slot }}">
+          {%- if slot_image != blank -%}
+            {{ slot_image | image_url: width: w | image_tag: alt: '', loading: 'lazy' }}
+          {%- else -%}
+            <img src="{{ fallback | asset_url }}" alt="" width="{{ w }}" height="{{ h }}" loading="lazy">
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-cap-consult.name",
+  "tag": "section",
+  "class": "aria-cap-consult-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-cap-consult.settings.background.label",
+      "info": "t:sections.aria-cap-consult.settings.background.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Not sure about the cap or the colour?",
+      "label": "t:sections.aria-cap-consult.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "All sales are final, so please message Kristi's team with any question before you order.",
+      "label": "t:sections.aria-cap-consult.settings.text.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Message Kristi's team",
+      "label": "t:sections.aria-cap-consult.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-cap-consult.settings.button_url.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-cap-consult.settings.header_photos.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "photo_a",
+      "label": "t:sections.aria-cap-consult.settings.photo_a.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "photo_b",
+      "label": "t:sections.aria-cap-consult.settings.photo_b.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "photo_c",
+      "label": "t:sections.aria-cap-consult.settings.photo_c.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "photo_d",
+      "label": "t:sections.aria-cap-consult.settings.photo_d.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-cap-consult.presets.name"
+    }
+  ]
+}
+{% endschema %}

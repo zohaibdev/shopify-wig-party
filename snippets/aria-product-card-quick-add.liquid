@@ -5,13 +5,16 @@
   one copy of the <product-form> wiring.
 
   Params: product, section_id, is_sold_out, icon (optional), variant_id (optional),
-          hard_disable (optional)
+          hard_disable (optional), product_name (optional)
+
+  `product_name` is the name the button's accessible label reads out. Call sites that show a
+  supplier-free title (aria-strip-supplier) pass that same title so the hidden label does not
+  name the supplier either. Defaults to `product.title`.
 
   `hard_disable` emits the NATIVE `disabled` attribute alongside `aria-disabled` when the
-  product is sold out. `aria-disabled` alone stops product-form.js, but this store also runs
-  Rebuy Smart Cart, whose own script listens for clicks on add-to-cart buttons and posts
-  `/cart/add.js` itself, ignoring `aria-disabled` entirely (verified: the theme handler
-  returned and Rebuy still added the item). `pointer-events: none` blocks a real mouse
+  product is sold out. `aria-disabled` alone stops product-form.js, but any third-party
+  script that listens for clicks on add-to-cart buttons and posts `/cart/add.js` itself
+  ignores it. `pointer-events: none` blocks a real mouse
   click but not a keyboard Enter on a focused button, so only a natively disabled button —
   which cannot be focused or activated at all — closes the hole for a sold-out product.
   Opt-in, so existing call sites render byte-identically.
@@ -24,6 +27,7 @@
   `icon` lets a call site swap the glyph without forking this snippet. The mega menu passes
   V4's own `mega-cart-02`; everywhere else keeps the theme's `cart`.
 {%- endcomment -%}
+{%- assign quick_add_name = product_name | default: product.title -%}
 <product-form class="aria-product-card__quick-add">
   <form
     method="post"
@@ -52,7 +56,7 @@
           disabled
         {% endif %}
       {% endif %}
-      aria-label="{{ 'aria_theme.product_card.add_to_cart_named' | t: product_name: product.title }}"
+      aria-label="{{ 'aria_theme.product_card.add_to_cart_named' | t: product_name: quick_add_name }}"
     >
       {%- comment -%}
         Resolved with `assign` first rather than `name: icon | default: 'cart'`. Filters on a
@@ -65,6 +69,16 @@
           assign quick_add_icon = 'cart'
         endif
       -%}
+      {%- comment -%}
+        Hidden everywhere by default (component-aria-product-card.css) — this button is
+        icon-only at every other call site (mega menu, Instagram feed, the compact card,
+        the desktop/tablet product card). One consumer (the PDP "buy alongside" mobile
+        carousel, section-aria-pdp-product-carousel.css) shows it, matching a Figma frame
+        where the mobile card's action row is a single full-width "Add to Cart" button
+        rather than the desktop View Product + icon pair. Real text rather than a CSS
+        `content` string so it still comes from the existing locale key.
+      {%- endcomment -%}
+      <span class="aria-product-card__cart-label">{{ 'aria_theme.product_card.add_to_cart' | t }}</span>
       {%- render 'aria-icon', name: quick_add_icon -%}
       <span class="loading__spinner hidden" aria-hidden="true"></span>
     </button>

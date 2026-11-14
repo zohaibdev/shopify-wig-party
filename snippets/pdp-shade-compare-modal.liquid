@@ -1,0 +1,184 @@
+{%- comment -%}
+  Wig Party PDP: "Compare all N shades" pop-up (Nov 6). Opened by the compare link in
+  sections/pdp-buy-box.liquid; without JS the link still goes to the full comparison page.
+
+  One card per colour value, in variant order, from the product's own variants (the
+  first available variant of that colour, else the first one, as the swatches do).
+  Shade names drop ETA text the same way snippets/compare-wig-shades.liquid does.
+  "Choose this shade" checks the matching colour swatch radio in the buy box and fires
+  its change event, so price, add to cart and gallery follow (assets/pdp-shade-compare-modal.js).
+
+  Accepts:
+  - product: {Object}
+  - colour_option: {Object} the product's Color/Colour option
+  - section_id: {String}
+  - compare_href: {String} the full comparison page URL
+  - is_preorder: {Boolean} optional, product-level pre-order
+  - preorder_eta: {String} optional
+{%- endcomment -%}
+{{ 'pdp-shade-compare-modal.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'pdp-shade-compare-modal.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign sc_index = colour_option.position | minus: 1
+  assign sc_total = 0
+  for sc_v in colour_option.values
+    assign sc_vk = sc_v | downcase
+    unless sc_vk contains 'choose' or sc_vk contains 'drop down' or sc_vk contains 'dropdown'
+      assign sc_total = sc_total | plus: 1
+    endunless
+  endfor
+  assign sc_title_id = 'PdpShadeCompareTitle-' | append: section_id
+-%}
+<dialog
+  class="pdp-shade-compare"
+  id="PdpShadeCompare-{{ section_id }}"
+  data-pdp-shade-compare
+  data-colour-position="{{ colour_option.position }}"
+  aria-labelledby="{{ sc_title_id }}"
+>
+  <div class="pdp-shade-compare__panel">
+    <div class="pdp-shade-compare__head">
+      <div>
+        <h2 class="pdp-shade-compare__title" id="{{ sc_title_id }}">
+          {{- 'aria_theme.pdp.compare_all' | t: count: sc_total -}}
+        </h2>
+        <p class="pdp-shade-compare__hint">Pick 2 or more shades to see them side by side.</p>
+      </div>
+      <button type="button" class="pdp-shade-compare__close" data-pdp-shade-compare-close aria-label="{{ 'accessibility.close' | t }}">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="pdp-shade-compare__picker" role="group" aria-label="Shades to compare">
+      <ul class="pdp-shade-compare__chips" role="list">
+        {%- for value in colour_option.values -%}
+          {%- liquid
+            assign sc_key = value | downcase
+            if sc_key contains 'choose' or sc_key contains 'drop down' or sc_key contains 'dropdown'
+              continue
+            endif
+          -%}
+          {%- liquid
+            assign sc_name = value | split: 'ETA' | first | strip
+            assign sc_last = sc_name | slice: -1
+            if sc_last == '('
+              assign sc_name = sc_name | remove_last: '(' | strip
+            endif
+            assign sc_last = sc_name | slice: -1
+            if sc_last == '-'
+              assign sc_name = sc_name | remove_last: '-' | strip
+            endif
+            if sc_name == blank
+              assign sc_name = value
+            endif
+          -%}
+          <li>
+            <button
+              type="button"
+              class="pdp-shade-compare__chip"
+              data-pdp-shade-chip="{{ forloop.index0 }}"
+              aria-pressed="false"
+            >
+              {{- sc_name -}}
+            </button>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <button type="button" class="pdp-shade-compare__show-all" data-pdp-shade-show-all>Show all {{ sc_total }}</button>
+    </div>
+
+    <ul class="pdp-shade-compare__cards" role="list" data-pdp-shade-cards>
+      {%- for value in colour_option.values -%}
+          {%- liquid
+            assign sc_key = value | downcase
+            if sc_key contains 'choose' or sc_key contains 'drop down' or sc_key contains 'dropdown'
+              continue
+            endif
+          -%}
+        {%- liquid
+          assign sc_variant = null
+          for variant in product.variants
+            if variant.options[sc_index] == value
+              if sc_variant == null
+                assign sc_variant = variant
+              endif
+              if variant.available
+                assign sc_variant = variant
+                break
+              endif
+            endif
+          endfor
+
+          assign sc_name = value | split: 'ETA' | first | strip
+          assign sc_last = sc_name | slice: -1
+          if sc_last == '('
+            assign sc_name = sc_name | remove_last: '(' | strip
+          endif
+          assign sc_last = sc_name | slice: -1
+          if sc_last == '-'
+            assign sc_name = sc_name | remove_last: '-' | strip
+          endif
+          if sc_name == blank
+            assign sc_name = value
+          endif
+
+          assign sc_image = sc_variant.featured_image | default: product.featured_image
+
+          if value contains 'ETA'
+            assign sc_status = value | split: 'ETA' | last | remove: ':' | remove: ')' | strip | prepend: 'Pre-order · ETA '
+            assign sc_status_kind = 'preorder'
+          elsif is_preorder
+            assign sc_status = 'Pre-order'
+            if preorder_eta != blank
+              assign sc_status = sc_status | append: ' · ETA ' | append: preorder_eta
+            endif
+            assign sc_status_kind = 'preorder'
+          elsif sc_variant.available
+            assign sc_status = 'Available'
+            assign sc_status_kind = 'available'
+          else
+            assign sc_status = 'Sold out'
+            assign sc_status_kind = 'soldout'
+          endif
+        -%}
+        <li
+          class="pdp-shade-compare__card"
+          data-pdp-shade-card="{{ forloop.index0 }}"
+          data-value="{{ value | escape }}"
+          data-variant-id="{{ sc_variant.id }}"
+          hidden
+        >
+          <div class="pdp-shade-compare__media">
+            {%- if sc_image != blank -%}
+              {{
+                sc_image
+                | image_url: width: 900
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '300,450,600,900',
+                  sizes: '(min-width: 990px) 300px, (min-width: 750px) 33vw, 50vw',
+                  alt: sc_name
+              }}
+            {%- endif -%}
+          </div>
+          <div class="pdp-shade-compare__body">
+            <p class="pdp-shade-compare__current" data-pdp-shade-current hidden>Your current shade</p>
+            <h3 class="pdp-shade-compare__name">{{ sc_name }}</h3>
+            <p class="pdp-shade-compare__meta">
+              <span class="pdp-shade-compare__price">{{ sc_variant.price | money }}</span>
+              <span class="pdp-shade-compare__status pdp-shade-compare__status--{{ sc_status_kind }}">{{ sc_status }}</span>
+            </p>
+            <button type="button" class="pdp-shade-compare__choose" data-pdp-shade-choose>
+              Choose this shade
+            </button>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <div class="pdp-shade-compare__foot">
+      <a class="pdp-shade-compare__full" href="{{ compare_href | escape }}">Open full comparison</a>
+    </div>
+  </div>
+</dialog>

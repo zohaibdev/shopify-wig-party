@@ -1,0 +1,1783 @@
+/*
+ * Wig Party design tokens (desktop)
+ * Source: Figma 02. Wig Party | Internal, node 7378:1785 (cart-page · Desktop)
+ * Values are taken as-is from Figma. No rounding.
+ */
+
+:root {
+  /* ---------- Colors: brand ---------- */
+  --wp-color-white: #ffffff;
+  --wp-color-black: #000000;
+  --wp-color-gray: #3f3e3e;            /* Primary/Gray */
+  --wp-color-cream: #eaddd4;
+  --wp-color-pink: #bc696b;            /* Primary/Pink */
+  --wp-color-dark-pink: #a64a4c;       /* Primary/Dark Pink */
+  --wp-color-neutral: #eaddd4;        /* Brand / Neutral */
+
+  /* ---------- Colors: neutrals / text ---------- */
+  --wp-color-text-primary: #101828;    /* Text Color/Text Primary */
+  --wp-color-heading-dark: #181d27;    /* Heading Tittle Dark */
+  --wp-color-gray-800: #252b37;
+  --wp-color-gray-600: #535862;
+  --wp-color-gray-100: #f2f4f7;
+  --wp-color-black-300: #545454;       /* Foundation/Black/black-300 */
+  --wp-color-text-gray-2: #b3b3b3;     /* Text Dark Gray 2 */
+  --wp-color-text-gray-3: #e0e0e0;     /* Text Dark Gray 3 */
+  --wp-color-disabled: #a4a7ae;
+  --wp-color-silver-gray: #cacac7;     /* Light Silver Gray */
+
+  /* ---------- Colors: used in button / component nodes ---------- */
+  --wp-color-btn-secondary-text: #404040;
+  --wp-color-btn-secondary-border: #b1b1b1;
+  --wp-color-btn-ghost-bg: rgba(255, 255, 255, 0.17);
+  --wp-color-btn-ghost-border: #dddddd;
+  --wp-gradient-discount-bg: linear-gradient(to bottom, #f5ebe2, #ffffff 55.171%);
+  --wp-opacity-discount-label: 0.57;
+
+  /* ---------- Typography: families ---------- */
+  --wp-font-heading: "Montserrat", sans-serif;
+  --wp-font-body: "Poppins", sans-serif;
+
+  /* ---------- Typography: weights ---------- */
+  --wp-weight-regular: 400;
+  --wp-weight-medium: 500;
+  --wp-weight-semibold: 600;
+
+  /* ---------- Typography: headings (Montserrat Medium) ---------- */
+  --wp-h3-size: 28px;
+  --wp-h3-weight: 500;
+  --wp-h3-line-height: 38px;
+
+  --wp-h4-size: 24px;                  /* Desktop/Heading/H4 */
+  --wp-h4-weight: 500;
+  --wp-h4-line-height: 32px;
+  --wp-h4-mobile-size: 20px;           /* Mobile/Heading/H4 (reference for later) */
+  --wp-h4-mobile-line-height: 28px;
+
+  --wp-h5-size: 20px;
+  --wp-h5-weight: 500;
+  --wp-h5-line-height: 28px;
+
+  /* ---------- Typography: body (Poppins) ---------- */
+  --wp-body-large-size: 20px;
+  --wp-body-large-weight: 400;
+  --wp-body-large-line-height: 28px;
+
+  --wp-body-medium-size: 18px;
+  --wp-body-medium-weight: 400;
+  --wp-body-medium-line-height: 28px;
+  --wp-body-medium-strong-weight: 500; /* Body/Medium/Medium */
+
+  --wp-body-small-size: 16px;
+  --wp-body-small-weight: 400;
+  --wp-body-small-line-height: 26px;
+  --wp-body-small-caps-weight: 500;    /* Body Small ALL CAP (uppercase applied in component) */
+
+  --wp-body-xs-size: 14px;
+  --wp-body-xs-weight: 400;
+  --wp-body-xs-line-height: 22px;
+
+  --wp-tag-size: 12px;                 /* Tags + Labels */
+  --wp-tag-weight: 400;
+  --wp-tag-line-height: 14px;
+
+  --wp-letter-spacing: 0;
+
+  /* ---------- Spacing ---------- */
+  --wp-space-02: 2px;
+  --wp-space-04: 4px;
+  --wp-space-08: 8px;
+  --wp-space-12: 12px;
+  --wp-space-16: 16px;
+  --wp-space-40: 40px;
+
+  /* ---------- Border radius ---------- */
+  --wp-radius-none: 0;                 /* primary button (checkout), discount code */
+  --wp-radius-sm: 2px;                 /* secondary + ghost buttons */
+
+  /* ---------- Buttons ---------- */
+  --wp-btn-font-family: var(--wp-font-body);
+  --wp-btn-font-size: 16px;
+  --wp-btn-line-height: 26px;
+  --wp-btn-text-transform: uppercase;
+  --wp-btn-gap: 4px;
+
+  /* Primary: CHECKOUT */
+  --wp-btn-primary-bg: var(--wp-color-dark-pink);
+  --wp-btn-primary-color: var(--wp-color-white);
+  --wp-btn-primary-weight: 500;
+  --wp-btn-primary-padding: 12px 20px;
+  --wp-btn-primary-radius: var(--wp-radius-none);
+  --wp-btn-primary-border: 0;
+
+  /* Secondary: ADD TO CART */
+  --wp-btn-secondary-bg: var(--wp-color-white);
+  --wp-btn-secondary-color: var(--wp-color-btn-secondary-text);
+  --wp-btn-secondary-weight: 600;
+  --wp-btn-secondary-padding: 15px 24px;
+  --wp-btn-secondary-radius: var(--wp-radius-sm);
+  --wp-btn-secondary-border: 1px solid var(--wp-color-btn-secondary-border);
+  --wp-btn-secondary-icon-size: 20px;
+
+  /* Ghost on dark: BOOK A CONSULT */
+  --wp-btn-ghost-bg: var(--wp-color-btn-ghost-bg);
+  --wp-btn-ghost-color: var(--wp-color-white);
+  --wp-btn-ghost-weight: 400;
+  --wp-btn-ghost-padding: 10px 12px;
+  --wp-btn-ghost-radius: var(--wp-radius-sm);
+  --wp-btn-ghost-border: 1px solid var(--wp-color-btn-ghost-border);
+
+  /* Dashed: DISCOUNT CODE */
+  --wp-btn-dashed-bg: var(--wp-gradient-discount-bg);
+  --wp-btn-dashed-color: var(--wp-color-gray);
+  --wp-btn-dashed-weight: 500;
+  --wp-btn-dashed-padding: 12px 20px;
+  --wp-btn-dashed-radius: var(--wp-radius-none);
+  --wp-btn-dashed-border: 1px dashed var(--wp-color-gray);
+}
+
+/* ---------- Cart page additions (Figma node 7378:1858) ---------- */
+:root {
+  /* Colors */
+  --wp-color-chip-new: #f79510;                 /* New Arrival chip */
+  --wp-color-price-dark: #252424;               /* recommendation price */
+  --wp-color-summary-note-bg: rgba(234, 221, 212, 0.92); /* Klarna strip */
+  --wp-color-payment-border: var(--wp-color-gray-100);
+  --wp-progress-fill: var(--wp-color-dark-pink); /* shipping progress fill */
+  --wp-gradient-card: linear-gradient(to bottom, #ffffff, #eaddd4);
+
+  /* Typography */
+  --wp-price-rec-size: 22px;
+  --wp-price-rec-weight: 600;
+  --wp-price-rec-line-height: 18px;
+  --wp-pill-size: 10px;
+  --wp-pill-weight: 500;
+  --wp-pill-line-height: 18px;
+  --wp-total-value-weight: 700;
+  --wp-summary-title-weight: 700;
+  --wp-feature-title-size: 18px;
+  --wp-feature-title-weight: 500;
+  --wp-feature-title-line-height: 28px;
+
+  /* Spacing / layout */
+  --wp-space-06: 6px;
+  --wp-space-10: 10px;
+  --wp-space-13: 13px;
+  --wp-space-21: 21px;
+  --wp-space-32: 32px;
+  --wp-cart-container-width: 1360px;
+  --wp-cart-left-width: 727px;
+  --wp-cart-right-width: 593px;
+
+  /* Radius */
+  --wp-radius-04: 4px;
+  --wp-radius-06: 6px;
+  --wp-radius-10: 10px;
+  --wp-radius-14: 14px;
+  --wp-radius-140: 140px;
+
+  /* Shadow */
+  --wp-shadow-feature-card: 0 8px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Cart trust strip (node 7452:6511) */
+:root {
+  --wp-trust-padding: 80px;
+  --wp-trust-gap: 70px;
+  --wp-trust-column-width: 255px;
+  --wp-trust-icon-size: 64px;
+}
+
+/* Cart page: consult button hover */
+:root {
+  --wp-btn-ghost-bg-hover: rgba(255, 255, 255, 0.3);
+  --wp-btn-transition: 0.2s ease;
+}
+
+/*
+ * Mobile tokens (375px). Source: Figma node 7433:1153 (Cart-page · Mobile).
+ * Parts: breadcrumb 7433:1203, bag title + progress 7433:1205, item cards 7433:1222.
+ * Separate --wp-m-* names; desktop vars are not overridden.
+ */
+@media (max-width: 749px) {
+  :root {
+    /* layout */
+    --wp-m-gutter: 16px;
+    --wp-m-content-width: 343px;
+    --wp-m-stack-gap: 16px;
+
+    /* breadcrumb */
+    --wp-m-tag-size: 12px;
+    --wp-m-tag-line-height: 14px;
+
+    /* headings (Montserrat 500) */
+    --wp-m-h3-size: 24px;
+    --wp-m-h3-line-height: 32px;
+    --wp-m-h4-size: 20px;
+    --wp-m-h4-line-height: 28px;
+
+    /* body (Poppins 400) */
+    --wp-m-body-small-size: 16px;
+    --wp-m-body-small-line-height: 26px;
+    --wp-m-body-xs-size: 14px;
+    --wp-m-body-xs-line-height: 22px;
+
+    /* progress card */
+    --wp-m-progress-padding: 12px 16px;
+    --wp-m-progress-gap: 12px;
+
+    /* item card */
+    --wp-m-item-padding: 8px;
+    --wp-m-item-gap: 8px;
+    --wp-m-item-media-width: 92px;
+    --wp-m-item-media-height: 158px;
+    --wp-m-item-name-width: 146.069px;
+    --wp-m-item-price-size: 16px;
+    --wp-m-item-price-line-height: 24px;
+    --wp-m-item-meta-gap: 4px;
+    --wp-m-item-controls-gap: 2px;
+
+    /* IN STOCK chip (Montserrat 500, uppercase) */
+    --wp-m-chip-size: 10px;
+    --wp-m-chip-line-height: 18px;
+    --wp-m-chip-padding: 2px 6px;
+    --wp-m-chip-radius: 14px;
+
+    /* Remove / Save for later */
+    --wp-m-link-size: 12px;
+    --wp-m-link-line-height: 22px;
+    --wp-m-link-gap: 9px;
+  }
+}
+
+/*
+ * Mobile recommendation row tokens. Source: Figma node 7433:1284 (cards 1-3; 4th card 220x410 ignored by decision).
+ * Price font: Figma Helvetica Neue Medium is not in the theme, Poppins 500 is used instead.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-rec-padding: 12px;
+    --wp-m-rec-gap: 12px;
+    --wp-m-rec-card-width: 150px;
+    --wp-m-rec-media-height: 240px;
+    --wp-m-rec-info-gap: 13px;
+    --wp-m-rec-card-gap: 21px;
+    --wp-m-rec-title-size: 20px;
+    --wp-m-rec-title-line-height: 28px;
+    --wp-m-rec-price-size: 20px;
+    --wp-m-rec-price-weight: 500;
+    --wp-m-rec-price-line-height: 28px;
+  }
+}
+
+/*
+ * Mobile order summary (session 3). Source: Figma node 7449:4884 (343px frame).
+ * Values as-is. Desktop tokens reused for colors, tag type, pay radius, gradient.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-sum-gap: 16px;
+    --wp-m-sum-padding: 16px;
+    --wp-m-sum-inner-gap: 12px;
+    --wp-m-sum-count-size: 18px;
+    --wp-m-sum-count-line-height: 28px;
+    --wp-m-sum-title-size: 20px;
+    --wp-m-sum-title-line-height: 28px;
+    --wp-m-sum-row-size: 20px;
+    --wp-m-sum-row-line-height: 28px;
+    --wp-m-sum-total-label-size: 24px;
+    --wp-m-sum-total-label-line-height: 32px;
+    --wp-m-sum-total-value-size: 20px;
+    --wp-m-sum-total-value-line-height: 28px;
+    --wp-m-sum-btn-padding: 12px 20px;
+    --wp-m-pay-width: 58px;
+    --wp-m-pay-height: 40px;
+    --wp-m-pay-gap: 12px;
+    --wp-m-klarna-padding: 8px 0;
+    --wp-m-trust-icon-gap: 6px;
+    --wp-m-trust-1-width: 97px;
+    --wp-m-trust-2-text-width: 93.068px;
+    --wp-m-trust-3-text-width: 84.597px;
+  }
+}
+
+/*
+ * Mobile consult card + feature cards (session 4).
+ * Source: Figma nodes 7433:1457 (consult) and 7433:1462 (features). Values as-is.
+ * Photo crop: img 132.63% high, top -18.92% => object-position y = 58.76 / 101.34 = 57.98%.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-consult-padding: 16px;
+    --wp-m-consult-gap: 12px;
+    --wp-m-consult-photo-ratio: 309 / 310.5913;
+    --wp-m-consult-photo-position: 50% 57.98%;
+    --wp-m-consult-title-copy-gap: 9px;
+    --wp-m-consult-copy-btn-gap: 24px;
+    --wp-m-consult-sig-width: 64.342px;
+    --wp-m-consult-sig-height: 24.711px;
+    --wp-m-feature-gap: 12px;
+    --wp-m-feature-height: 78px;
+    --wp-m-feature-padding: 16.37px 16px 0 74px;
+    --wp-m-feature-icon-top: 13.57px;
+    --wp-m-feature-icon-size: 48px;
+    --wp-m-feature-icon-img: 35px;
+  }
+}
+
+/*
+ * Mobile trust strip (session 5). Source: Figma node 7452:6561 (375 frame).
+ * Values as-is. Colors reuse desktop tokens.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-trust-padding: 48px 16px;
+    --wp-m-trust-col-gap: 8px;
+    --wp-m-trust-row-gap: 24px;
+    --wp-m-trust-item-gap: 16px;
+    --wp-m-trust-text-gap: 8px;
+    --wp-m-trust-icon-size: 64px;
+    --wp-m-trust-heading-size: 20px;
+    --wp-m-trust-heading-line-height: 28px;
+    --wp-m-trust-desc-size: 14px;
+    --wp-m-trust-desc-line-height: 22px;
+  }
+}
+
+/*
+ * Search results page (desktop). Source: Figma 7453:19119, nodes 7453:19124 (heading),
+ * 7453:19129 (filter row), 7453:19161 (card), 7453:19668 (show more). Values as-is.
+ * Container width, 5 columns, card 260, column gap 15 and row gap 20 are from the brief.
+ * Block padding 80/80, side 40, heading-bar 40, bar-grid 32, grid-button 64 from Figma metadata.
+ */
+:root {
+  /* Colors (Figma warm grays; --wp-color-gray-600 is a different, cooler gray) */
+  --wp-color-warm-gray-950: #241f1e;
+  --wp-color-warm-gray-900: #382f2d;
+  --wp-color-warm-gray-600: #91837e;
+  --wp-color-warm-gray-500: #b8aca7;
+  --wp-gradient-filter-bar: linear-gradient(to bottom, #ffffff, #eaddd4);
+
+  /* Typography */
+  --wp-page-title-size: 32px;          /* Desktop/Heading/Page Title, Montserrat 500 */
+  --wp-page-title-weight: 500;
+  --wp-page-title-line-height: 40px;
+  --wp-caption-size: 10px;             /* Desktop/Body/Caption/Regular */
+  --wp-caption-weight: 400;
+  --wp-caption-line-height: 16px;
+  --wp-search-price-size: 22px;
+  --wp-search-price-line-height: 28px;
+  --wp-search-price-weight: 600;
+  --wp-search-price-compare-weight: 500;
+
+  /* Spacing / radius */
+  --wp-space-20: 20px;
+  --wp-space-24: 24px;
+  --wp-radius-08: 8px;
+  --wp-radius-96: 96px;
+
+  /* Search layout */
+  --wp-search-container-width: 1360px;
+  --wp-search-columns: 5;
+  --wp-search-card-width: 260px;
+  --wp-search-col-gap: 15px;
+  --wp-search-row-gap: 20px;
+  --wp-search-title-gap: 16px;
+  --wp-search-title-bar-gap: 40px;     /* heading to filter row */
+  --wp-search-bar-grid-gap: 32px;      /* filter row to grid */
+  --wp-search-pad-block: 80px;         /* section top and bottom */
+  --wp-search-pad-inline: 40px;
+  --wp-search-more-gap: 64px;          /* grid to show more button */
+
+  /* Filter row */
+  --wp-search-bar-padding: 12px 20px;
+  --wp-search-chip-padding: 5px 13px;
+  --wp-search-chip-gap: 8px;
+  --wp-search-sort-width: 240px;
+  --wp-search-sort-height: 40px;
+  --wp-search-sort-padding: 12px 16px;
+
+  /* Card */
+  --wp-search-card-padding: 16px;
+  --wp-search-card-gap: 20px;
+  --wp-search-image-height: 240px;
+  --wp-search-heart-size: 28px;
+  --wp-search-heart-inset: 10px;
+  --wp-search-chip-new-padding: 4px 8px;
+  --wp-search-star-size: 12px;
+  --wp-search-swatch-size: 15px;
+  --wp-search-cart-btn-height: 47px;
+  --wp-search-cart-btn-padding: 16px 24px;
+
+  /* Show more */
+  --wp-search-more-bg: var(--wp-color-black);
+  --wp-search-more-padding: 12px 24px;
+}
+
+/*
+ * Search guides section (desktop). Source: Figma 7453:19669 (frame screenshot),
+ * 7453:19670 (heading), 7453:19672 (card).
+ */
+:root {
+  --wp-h1-size: 56px;                  /* Desktop/Heading/H1 */
+  --wp-h1-weight: 500;
+  --wp-h1-line-height: 64px;
+
+  --wp-color-gray-25: #f9f7f6;         /* colors/gray/25 */
+  --wp-color-guides-bg: #efeae7;       /* flat section fill, sampled from the node screenshot */
+  --wp-radius-card-lg: 12px;
+
+  --wp-guides-pad-top: 80px;
+  --wp-guides-pad-bottom: 80px;
+  --wp-guides-pad-x: 47px;
+  --wp-guides-heading-gap: 64px;
+  --wp-guides-container: 1346px;
+  --wp-guides-card-width: 438px;
+  --wp-guides-card-gap: 16px;
+  --wp-guides-image-height: 382px;
+  --wp-guides-body-padding: 24px 12px 16px;
+  --wp-guides-body-gap: 24px;
+  --wp-guides-text-gap: 12px;
+  --wp-guides-link-height: 47px;
+  --wp-guides-link-padding-x: 24px;
+  --wp-guides-link-bg: var(--wp-color-white);
+  --wp-guides-link-color: var(--wp-color-black);
+  --wp-guides-link-border: 1px solid var(--wp-color-black);
+  --wp-guides-link-radius: var(--wp-radius-sm);
+  --wp-guides-media-hover-scale: 1.03;
+  --wp-guides-media-transition: 0.2s;
+}
+
+/*
+ * Search collections section (desktop). Source: Figma 7453:19708 (screenshot),
+ * 7453:19709 (heading), 7453:19711 (card 1). Background reuses --wp-color-guides-bg.
+ */
+:root {
+  --wp-collections-container: 1360px;
+  --wp-collections-pad-x: 40px;
+  --wp-collections-pad-bottom: 80px;
+  --wp-collections-heading-gap: 64px;
+  --wp-collections-gap: 24px;
+  --wp-collections-card-width: 668px;
+  --wp-collections-card-height: 156px;
+  --wp-collections-card-padding: 16px 20px;
+  --wp-collections-card-radius: var(--wp-radius-08);
+  --wp-collections-thumb-size: 122px;
+  --wp-collections-thumb-radius: 4px;
+  --wp-collections-text-pad-left: 16px;
+  --wp-collections-text-gap: 12px;
+  --wp-collections-body-gap: 16px;
+  --wp-collections-link-color: var(--wp-color-dark-pink);
+}
+
+/*
+ * Empty state (desktop). Source: Figma 7452:11136 (search no-results, inside 7452:11384).
+ * Card white 775, padding 56, gap 56; text gap 16; buttons gap 16, height 54.
+ */
+:root {
+  --wp-empty-card-width: 775px;
+  --wp-empty-card-padding: 56px;
+  --wp-empty-card-gap: 56px;
+  --wp-empty-card-bg: var(--wp-color-white);
+  --wp-empty-text-gap: 16px;
+  --wp-empty-heading-size: 32px;
+  --wp-empty-heading-weight: var(--wp-weight-medium);
+  --wp-empty-heading-line-height: 40px;
+  --wp-empty-heading-color: var(--wp-color-black);
+  --wp-empty-body-color: #4a4a4a;
+  --wp-empty-actions-gap: 16px;
+  --wp-empty-btn-height: 54px;
+  --wp-empty-btn-padding: 12px 24px;
+  --wp-empty-btn-radius: var(--wp-radius-sm);
+  --wp-empty-btn-size: 18px;
+  --wp-empty-btn-weight: 400;
+  --wp-empty-btn-line-height: 28px;
+  --wp-empty-btn-border-color: var(--wp-color-black);
+  --wp-empty-btn-primary-bg: var(--wp-color-black);
+  --wp-empty-btn-primary-color: var(--wp-color-white);
+  --wp-empty-btn-secondary-color: var(--wp-color-black);
+  --wp-empty-btn-secondary-width: 224px;
+}
+
+/*
+ * Search overlay (desktop, 1280px and up). Source: Figma 7455:26032 (get_metadata only).
+ * Sizes and positions come from metadata and the brief. ESTIMATED means not in either.
+ */
+:root {
+  --wp-so-row-x: 80px;
+  --wp-so-row-y: 32px;
+  --wp-so-row-width: 1280px;
+  --wp-so-row-height: 48px;
+  --wp-so-gap: 32px;                    /* row bottom y=80 to suggestions y=112 */
+  --wp-so-suggestions-height: 510px;
+  --wp-so-bottom: 40px;                 /* 112 + 510 + 40 = 662 */
+  --wp-so-left-col: 291px;
+  --wp-so-panel-x: 484px;               /* absolute x; 404px inside the container */
+  --wp-so-panel-width: 876px;
+
+  --wp-so-field-bg: rgba(211, 160, 163, 0.29);
+  --wp-so-field-radius: 68px;
+  --wp-so-field-icon-x: 20px;
+  --wp-so-field-icon-size: 24px;
+  --wp-so-close-width: 92px;
+  --wp-so-close-gap: 20px;              /* field 1168 + 20 = close at x 1188 */
+  --wp-so-text-warm: #6f625e;           /* not --wp-color-warm-gray-600 (#91837e), a different colour */
+  --wp-so-count-size: 20px;
+  --wp-so-count-weight: 500;
+  --wp-so-count-line-height: 28px;
+
+  --wp-so-item-gap: 20px;               /* 28px row, 48px pitch */
+  --wp-so-group-gap: 24px;
+  --wp-so-heading-gap: 16px;
+  --wp-so-first-heading-gap: 24px;      /* first list starts at y=50 */
+  --wp-so-panel-heading-height: 39px;   /* 26 text + 12 padding + 1 border (border ESTIMATED) */
+
+  --wp-so-backdrop: rgba(0, 0, 0, 0.4);                 /* ESTIMATED */
+  --wp-so-shadow: 0 16px 32px rgba(16, 24, 40, 0.08);   /* ESTIMATED */
+  --wp-so-bg: var(--wp-color-white);                    /* ESTIMATED */
+  --wp-so-panel-border: var(--wp-color-text-gray-3);    /* ESTIMATED */
+  --wp-so-z: 900;                                       /* ESTIMATED; above sections (<=4) and the header group (4), below the cart drawer (1000) */
+  --wp-so-top: 107px;                                   /* fallback; wp-search-overlay.js sets the real header bottom */
+  --wp-so-sheet-height: 662px;                          /* Figma 7455:25981: 107 to 769 */
+  --wp-so-panel-padding: 8px 20px 20px;                 /* ESTIMATED from the screenshot (cards start 20px in, heading 8px down) */
+  --wp-so-panel-pad-x: 20px;
+  --wp-so-panel-radius: 20px;                           /* ESTIMATED from the screenshot */
+}
+
+/*
+ * Search overlay product cards (desktop). Source: Figma 7455:26086 (card) and 7455:26161 (See all link).
+ * ESTIMATED means not in either node.
+ */
+:root {
+  --wp-so-card-width: 250px;
+  --wp-so-card-image-height: 315px;
+  --wp-so-card-gap: 12px;               /* between cards, pitch 262 */
+  --wp-so-card-stack-gap: 12px;         /* image to info row */
+  --wp-so-card-radius: var(--wp-radius-08);
+  --wp-so-chip-bg: var(--wp-color-chip-new);
+  --wp-so-chip-height: 18px;
+  --wp-so-chip-padding: 4px 8px;
+  --wp-so-chip-offset: 8px;
+  --wp-so-name-left: 10px;
+  --wp-so-name-bottom: 10px;            /* Figma: bottom 36 + translate-y 100% of a 26 line = 10 from the image bottom */
+  --wp-so-name-width: 187px;
+  --wp-so-name-gradient: linear-gradient(to bottom, #ffffff, #eaddd4);
+  --wp-so-info-padding: 2px 4px 2px 2px;
+  --wp-so-info-gap: 8px;
+  --wp-so-info-radius: 8px;
+  --wp-so-info-blur: 6.7px;
+  --wp-so-info-content-width: 190px;
+  --wp-so-tile-size: 40px;
+  --wp-so-tile-icon-size: 20px;
+  --wp-so-meta-size: 14px;
+  --wp-so-meta-line-height: 22px;
+  --wp-so-price-size: 18px;
+  --wp-so-price-line-height: 28px;
+  --wp-so-cards-top: 16px;              /* ESTIMATED, panel heading to cards */
+  --wp-so-see-all-top: 28px;            /* ESTIMATED, cards to link (screenshot ~33; 28 keeps the panel at 510) */
+  --wp-so-see-all-size: 16px;
+  --wp-so-see-all-line-height: 26px;
+}
+
+/*
+ * Mobile empty state (375px). Source: Figma 7452:10713 (search no-results card, 343 wide).
+ * Band padding 48 (vertical) and 16 side come from the brief metadata. Colors reuse the desktop empty-state tokens.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-empty-band-padding: 48px 16px;
+    --wp-m-empty-card-width: 343px;
+    --wp-m-empty-card-padding: 32px 12px;
+    --wp-m-empty-card-gap: 32px;
+    --wp-m-empty-text-gap: 16px;
+    --wp-m-empty-heading-size: 24px;
+    --wp-m-empty-heading-line-height: 32px;
+    --wp-m-empty-body-size: 16px;
+    --wp-m-empty-body-line-height: 28px;
+    --wp-m-empty-actions-gap: 16px;
+    --wp-m-empty-btn-primary-height: 52px;
+    --wp-m-empty-btn-secondary-height: 54px;
+  }
+}
+
+/* Search overlay: card link hover + quick-add states (not in Figma) */
+:root {
+  --wp-so-hover-scale: 1.03;
+  --wp-so-hover-opacity: 0.7;
+  --wp-so-hover-transition: 0.2s ease;
+  --wp-so-disabled-opacity: 0.4;
+  --wp-so-added-bg: rgba(166, 74, 76, 0.9);   /* dark pink, Added tick */
+  --wp-so-error-bg: rgba(63, 62, 62, 0.9);    /* gray, error "!" */
+}
+
+/* Search overlay, mobile (below 750px). Figma 7455:26250 (pill 7455:26300, group 7455:26313, card 7455:26351) */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-so-pad-x: 16px;
+    --wp-m-so-pad-bottom: 24px;            /* ESTIMATED */
+    --wp-m-so-pill-top: 24px;
+    --wp-m-so-pill-bottom: 28px;           /* pill bottom y=68 to suggestions y=96 */
+    --wp-m-so-pill-height: 44px;
+    --wp-m-so-pill-pad-x: 16px;
+    --wp-m-so-pill-pad-y: 12px;
+    --wp-m-so-icon-size: 20px;
+    --wp-m-so-close-size: 32px;
+    --wp-m-so-input-size: 16px;            /* Figma 14/22; 16 stops iOS zooming the page on focus */
+    --wp-m-so-input-line-height: 26px;
+    --wp-m-so-heading-size: 18px;          /* Montserrat Medium 18/26 */
+    --wp-m-so-heading-line-height: 26px;
+    --wp-m-so-heading-weight: 500;
+    --wp-m-so-heading-gap: 16px;
+    --wp-m-so-item-size: 18px;             /* Poppins Medium 18/28, #6f625e */
+    --wp-m-so-item-line-height: 28px;
+    --wp-m-so-item-weight: 500;
+    --wp-m-so-item-gap: 20px;
+    --wp-m-so-group-gap: 24px;             /* ESTIMATED: Figma groups (334) do not fit y 96 to 418 */
+    --wp-m-so-layout-gap: 24px;            /* ESTIMATED */
+    --wp-m-so-panel-padding: 20px;         /* inner 303 */
+    --wp-m-so-card-gap: 32px;              /* pitch 405 = card 373 + 32 */
+  }
+}
+
+/*
+ * Mobile search results, part A (375px). Source: Figma 7453:18526 (heading), 7458:26750 (chips),
+ * 7458:26774 (sort), 7508:15864 (card, 169 wide), 7453:18854 (show more).
+ * ESTIMATED = not in the fetched nodes. Heading type, subtitle, tag type and show-more button reuse existing tokens.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-search-pad-x: 16px;
+    --wp-m-search-header-gap: 12px;
+    --wp-m-search-eyebrow-color: var(--wp-color-gray);   /* ESTIMATED: eyebrow node not fetched (14 high = 12/14 tag type) */
+
+    /* chips card (7458:26750) */
+    --wp-m-search-filters-padding: 16px;
+    --wp-m-search-filters-border-color: #f5ebe2;
+    --wp-m-search-filters-gap: 9px 7px;                  /* row gap 9, column gap 7 */
+    --wp-m-search-label-width: 50px;
+    --wp-m-search-chip-padding: 6px 13px;                /* chip height 34 */
+    --wp-m-search-bar-gap: 16px;                         /* ESTIMATED: chips card to sort */
+
+    /* sort trigger (7458:26774) */
+    --wp-m-search-sort-height: 38px;
+    --wp-m-search-sort-padding: 8px 16px;
+
+    /* grid + card (7508:15864) */
+    --wp-m-search-columns: 2;
+    --wp-m-search-col-gap: 8px;
+    --wp-m-search-row-gap: 24px;
+    --wp-m-search-card-padding: 8px;
+    --wp-m-search-card-gap: 21px;
+    --wp-m-search-card-top-gap: 13px;
+    --wp-m-search-image-height: 161px;
+    --wp-m-search-chip-inset: 8px;
+    --wp-m-search-meta-gap: 6px;
+    --wp-m-search-swatch-gap: 5px;
+    --wp-m-search-swatch-border-color: #b5b5b5;
+    --wp-m-search-rating-color: var(--wp-color-gray);
+    --wp-m-search-price-size: 20px;
+    --wp-m-search-price-line-height: 28px;
+    --wp-m-search-price-weight: 500;
+    --wp-m-search-price-color: #1a1a1a;
+    --wp-m-search-price-gap: 6px;
+    --wp-m-search-price-compare-opacity: 0.49;
+    --wp-m-search-cart-size: 12px;
+    --wp-m-search-cart-line-height: 14px;
+    --wp-m-search-cart-weight: 400;
+    --wp-m-search-cart-padding: 15px 24px;
+  }
+}
+
+/*
+ * Mobile search results, part B (375px): guides + collections.
+ * Source: Figma 7453:18856 (guides heading), 7453:18858 (guide card), 7453:18884 (collections heading), 7453:18886 (collection card).
+ * Heading to cards gap, section top/bottom padding: not fetched, desktop values stay.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-h1-size: 36px;                       /* Mobile/Heading/H1, Montserrat 500 */
+    --wp-m-h1-line-height: 46px;
+    --wp-m-search-b-pad-x: 16px;                /* cards 343 wide */
+    --wp-m-search-b-card-gap: 24px;
+
+    /* guide card */
+    --wp-m-guides-card-radius: 12px 12px 8px 8px;
+    --wp-m-guides-media-radius: 12px 12px 2px 2px;
+    --wp-m-guides-media-ratio: 343 / 360;
+    --wp-m-guides-media-bg: #ede7e4;            /* colors/gray/300 */
+    --wp-m-guides-media-body-gap: 12px;
+    --wp-m-guides-body-padding: 0 16px 16px;
+    --wp-m-guides-title-lines: 3;
+    --wp-m-guides-desc-lines: 3;
+    --wp-m-guides-link-height: 54px;
+    --wp-m-guides-link-padding: 12px 24px;
+    --wp-m-guides-link-size: 18px;
+    --wp-m-guides-link-line-height: 28px;
+
+    /* collection card */
+    --wp-m-collections-card-gap: 12px;
+    --wp-m-collections-thumb-size: 80px;
+    --wp-m-collections-title-size: 18px;        /* Mobile/Heading/H5 SemiBold */
+    --wp-m-collections-title-line-height: 26px;
+    --wp-m-collections-title-weight: var(--wp-weight-semibold);
+    --wp-m-collections-link-size: 14px;
+    --wp-m-collections-link-line-height: 22px;
+  }
+}
+
+/* Mobile search card: price row wrap fallback (Figma 7508:15864 has one line; long prices need a wrap) */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-search-price-row-gap: 2px;
+  }
+}
+
+/*
+ * Mobile NEW IN hero. Source: Figma node 7492:8300 (375 x 584).
+ * Photo box 381.08 x 683 centred on the hero; Figma crop = 200.08% wide, left -55.28% of the box.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-newin-hero-padding: 48px 16px;
+    --wp-m-newin-panel-padding: 12px;
+    --wp-m-newin-panel-gap: 12px;
+    --wp-m-newin-bg-width: 381.08px;
+    --wp-m-newin-bg-height: 683px;
+    --wp-m-newin-bg-position: 55.28% 50%;
+    --wp-m-newin-wash-angle: 99.73016325292069deg;
+    --wp-m-newin-title-size: 28px;               /* Mobile/Heading/H2 */
+    --wp-m-newin-title-line-height: 36px;
+    --wp-m-newin-text-gap: 8px;
+    --wp-m-newin-stats-padding: 12px 16px;
+    --wp-m-newin-stats-gap: 12px;
+    --wp-m-newin-stat-gap: 16px;
+    --wp-m-newin-stat-text-gap: 8px;
+    --wp-m-newin-stat-text-gap-last: 12px;       /* Figma 7479:7347 */
+    --wp-m-newin-stat-icon-size: 32px;
+    --wp-m-newin-stat-icon-radius: 5.565px;
+    --wp-m-newin-stat-icon-scale: 0.6957;        /* 16.696 / 24.0003, same artwork as desktop */
+    --wp-m-newin-stat-label-size: 12px;          /* Mobile/Heading/Eyebrow */
+    --wp-m-newin-stat-label-line-height: 20px;
+    --wp-m-newin-btn-gap: 20px;
+    --wp-m-newin-btn-width: 305px;
+    --wp-m-newin-btn-size: 16px;
+    --wp-m-newin-btn-line-height: 26px;
+  }
+}
+
+/* SALE page mobile (375px): hero 7547:5291, chips 7547:5334, reasons banner 7547:5349.
+ * Hero reuses the NEW IN mobile block (--wp-m-newin-*); only the differences are here.
+ * Hero photo box 377 x 620, centre -1px; Figma crop 198.5% wide, left -54.84%, top -5.35%,
+ * so object-position is derived (55.67% 13.7%), approximate like the NEW IN hero.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-sale-hero-min-height: 620px;
+    --wp-m-sale-hero-padding: 44px 16px 63px;
+    --wp-m-sale-hero-bg-width: 377px;
+    --wp-m-sale-hero-bg-height: 620px;
+    --wp-m-sale-hero-bg-left: calc(50% - 1px);
+    --wp-m-sale-hero-bg-position: 55.67% 13.7%;
+    --wp-m-sale-hero-wash-angle: 100.58514530564857deg;
+    --wp-m-sale-hero-crumb-size: 14px;            /* Mobile/Mobile/Extra Small */
+    --wp-m-sale-hero-crumb-line-height: 22px;
+    --wp-m-sale-hero-title-line-height: 39px;
+    --wp-m-sale-hero-stats-gap: 24px;
+    --wp-m-sale-chips-label-pad-right: 8px;
+    --wp-m-sale-banner-margin: 0 16px;
+    --wp-m-sale-banner-radius: 16px;
+    --wp-m-sale-banner-padding: 98px 16px 24px;
+    --wp-m-sale-banner-gap: 19px;
+    --wp-m-sale-banner-card-padding: 16px;
+    --wp-m-sale-banner-sig-width: 141px;
+    --wp-m-sale-banner-sig-height: 54px;
+    --wp-m-sale-banner-sig-top: 24px;
+    --wp-m-sale-banner-photo-left: -141.44%;
+    --wp-m-sale-banner-photo-top: -2.62%;
+    --wp-m-sale-banner-photo-width: 454.86%;
+    --wp-m-sale-banner-photo-height: 109.21%;
+  }
+}
+
+/* SALE mobile (Figma 7547:5381 card, 7547:5530 explainer) */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-sale-card-gap: 20px;
+    --wp-m-sale-card-media-gap: 13px;
+    --wp-m-sale-card-media-height: 327px;
+    --wp-m-sale-card-image-height: 361px;
+    --wp-m-sale-card-image-top: -17px;
+    --wp-m-sale-explainer-padding: 48px 16px;
+    --wp-m-sale-explainer-label-gap: 12px;
+    --wp-m-sale-explainer-intro-gap: 12px;
+    --wp-m-sale-explainer-intro-margin: 16px;
+    --wp-m-sale-explainer-cards-gap: 12px;
+    --wp-m-sale-explainer-card-min-height: 262px;
+    --wp-m-sale-explainer-card-gap: 24px;
+  }
+}
+
+/* KRISTI'S PICKS mobile (Figma 7546:33702 hero, 7546:33717 card) */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-picks-hero-bg-left: -2px;
+    --wp-m-picks-hero-wash-angle: 98.49201964503334deg;
+    --wp-m-picks-hero-bg-top: -4.28%;
+    --wp-m-picks-hero-bg-left-pct: -54.84%;
+    --wp-m-picks-hero-bg-width: 198.5%;
+    --wp-m-picks-hero-bg-height: 111.13%;
+    --wp-m-picks-hero-margin: 23px 16px 0;
+    --wp-m-picks-hero-panel-padding: 12px;
+    --wp-m-picks-hero-panel-gap: 12px;
+    --wp-m-picks-hero-copy-gap: 24px;
+    --wp-m-picks-hero-text-gap: 8px;
+    --wp-m-picks-hero-buttons-gap: 16px;
+    --wp-m-picks-hero-solid-height: 56px;
+    --wp-m-picks-hero-photo-width: 307px;
+    --wp-m-picks-hero-photo-height: 327px;
+    --wp-m-picks-hero-photo-margin: -26px 0 0 32px;
+    --wp-m-picks-list-padding: 0 16px;
+    --wp-m-picks-card-padding: 16px;
+    --wp-m-picks-card-gap: 25px;
+    --wp-m-picks-body-gap: 20px;
+    --wp-m-picks-side-gap: 16px;
+    --wp-m-picks-name-size: 24px;
+    --wp-m-picks-name-line-height: 32px;
+    --wp-m-picks-btn-height: 52px;
+  }
+}
+
+/* Sale listing (desktop) — Figma 7547:4684 (frame), 7547:4733 (card). sections/sale-listing.liquid */
+:root {
+  --wp-sale-listing-pad: 80px;                  /* section top / bottom (schema range overrides) */
+  --wp-sale-listing-block-gap: 32px;            /* chips -> banner -> grid (Figma y 74/106, 522/554) */
+  --wp-sale-listing-col-gap: 20px;
+  --wp-sale-listing-row-gap: 32px;
+  --wp-sale-listing-more-gap: 40px;             /* grid -> Show more */
+  --wp-sale-listing-chips-padding: 19px;        /* + 1px ring = 20, row 74 high */
+  --wp-sale-listing-chips-row-gap: 12px;        /* label (155) -> first chip at x 167 */
+  --wp-sale-listing-chip-padding: 5px 12px;     /* + 1px border = 34 high */
+  --wp-sale-listing-label-color: #8c8c8c;
+
+  --wp-sale-card-gap: 20px;                     /* info -> button */
+  --wp-sale-card-top-gap: 12px;                 /* photo -> info */
+  --wp-sale-card-info-gap: 24px;                /* meta -> price */
+  --wp-sale-card-meta-gap: 8px;
+  --wp-sale-card-image-height: 380px;
+  --wp-sale-card-radius: 4px;
+  --wp-sale-card-inset: 16px;                   /* heart top/right, chip left/bottom */
+  --wp-sale-card-heart-size: 40px;
+  --wp-sale-card-chip-height: 24px;
+  --wp-sale-card-chip-padding: 5.333px 10.667px;
+  --wp-sale-card-chip-radius: 49px;
+  --wp-sale-card-chip-size: 16px;
+  --wp-sale-card-chip-line-height: 18.667px;
+  --wp-sale-card-chip-sold-out-bg: #f97066;     /* colors/error/400 */
+  --wp-sale-card-star-size: 15px;
+  --wp-sale-card-star-gap: 2.5px;
+  --wp-sale-card-name-size: 24px;
+  --wp-sale-card-name-line-height: 32px;
+  --wp-sale-card-swatch-size: 40px;
+  --wp-sale-card-price-gap: 6px;
+  --wp-sale-card-price-size: 24px;
+  --wp-sale-card-price-line-height: 32px;
+  --wp-sale-card-compare-size: 20px;
+  --wp-sale-card-compare-line-height: 28px;
+  --wp-sale-card-btn-height: 54px;
+  --wp-sale-card-btn-padding: 12px 24px;
+  --wp-sale-card-btn-size: 18px;
+  --wp-sale-card-btn-line-height: 28px;
+  --wp-sale-card-btn-icon-size: 20px;
+}
+
+/* Find My Wig quiz (desktop). Source: Figma 7660:16978 (selected card, radius/08), 7660:16905
+ * (default card, radius/16 — new token, did not exist). Colors/typography reuse existing tokens.
+ */
+:root {
+  --wp-radius-16: 16px;
+}
+
+/* Cart recommendation button hover (not in Figma) */
+:root {
+  --wp-cart-rec-btn-hover-bg: var(--wp-color-black);
+  --wp-cart-rec-btn-hover-color: var(--wp-color-white);
+  --wp-cart-rec-btn-transition: 0.2s;
+}
+
+/* Guide steps section (Figma 7368:103, desktop) */
+:root {
+  --wp-steps-padding: 80px 40px;
+  --wp-steps-max-width: 1360px;
+  --wp-steps-head-gap: 16px;              /* chip -> heading -> description */
+  --wp-steps-head-to-cards: 56px;
+  --wp-steps-desc-width: 935px;
+  --wp-steps-chip-bg: var(--wp-color-chip-new);   /* #f79510 */
+  --wp-steps-chip-padding: 6px 12px;
+  --wp-steps-chip-radius: 16px;
+  --wp-steps-card-width: 438px;
+  --wp-steps-card-gap: 22px;              /* Figma: cards at x 41 / 501 / 961, 3 x 438 + 2 x 22 = 1358, centered */
+  --wp-steps-card-radius: var(--wp-radius-card-lg); /* 12px */
+  --wp-steps-media-ratio: 438 / 382;
+  --wp-steps-body-bg: #f5ebe2;
+  --wp-steps-body-min-height: 208px;
+  --wp-steps-body-padding: 24px 12px 16px;
+  --wp-steps-body-gap: 20px;              /* chip -> title group */
+  --wp-steps-title-gap: 12px;             /* title -> text */
+  --wp-steps-text-size: 16px;             /* Mobile/Small style, used on desktop in Figma */
+  --wp-steps-text-line-height: 26px;
+  --wp-steps-placeholder-color: #a8a29e;  /* same as search guides no-image box */
+  --wp-steps-placeholder-gap: 8px;
+  --wp-steps-placeholder-icon: 48px;
+  --wp-steps-scroll-offset: var(--header-height, 120px); /* not in Figma: keeps the anchor below the sticky header */
+}
+
+/* Guide size cards section, "What Your Number Means" (Figma 7370:187, desktop) */
+:root {
+  --wp-gsc-width: 1440px;
+  --wp-gsc-height: 760px;
+  --wp-gsc-bg: #f7f1eb;
+  --wp-gsc-arc-color: #f0e4da;
+  --wp-gsc-arc-size: 1300px;
+  --wp-gsc-arc-left: 430px;
+  --wp-gsc-arc-top: -270px;
+  --wp-gsc-photo-width: 290px;              /* x 1150 */
+  --wp-gsc-fade-right: 120.6px;             /* Figma 7370:190 x 1142 (8 before photo), 1440 - 1142 - 177.4 */
+  --wp-gsc-fade-width: 177.4px;
+  --wp-gsc-fade: linear-gradient(to right, #f0e4da, rgba(240, 228, 218, 0));
+  --wp-gsc-padding: 120px 0 120px 80px;
+  --wp-gsc-content-gap: 48px;
+  --wp-gsc-intro-width: 400px;
+  --wp-gsc-content-height: 520px;
+  --wp-gsc-heading-color: #2b2324;
+  --wp-gsc-heading-size: 56px;
+  --wp-gsc-heading-line-height: 64px;
+  --wp-gsc-body-size: 16px;
+  --wp-gsc-body-line-height: 26px;
+  --wp-gsc-intro-top: 24px;                 /* spacer before heading */
+  --wp-gsc-heading-to-body: 24px;
+  --wp-gsc-body-to-tip: 44px;
+  --wp-gsc-tip-bg: #f1e5e1;
+  --wp-gsc-tip-radius: 12px;
+  --wp-gsc-tip-padding: 24px;
+  --wp-gsc-tip-gap: 20px;
+  --wp-gsc-tip-icon: 36px;
+  --wp-gsc-tip-divider: #d9c4bf;
+  --wp-gsc-tip-divider-height: 52px;
+  --wp-gsc-tip-text-gap: 6px;
+  --wp-gsc-tip-title-size: 15px;
+  --wp-gsc-tip-title-line-height: 22.5px;   /* Figma "normal" for Poppins 15 (box 23) */
+  --wp-gsc-tip-body-size: 13px;
+  --wp-gsc-tip-body-line-height: 20px;
+  --wp-gsc-text-dark: #2b2324;
+  --wp-gsc-text-muted: #5e5354;
+  --wp-gsc-card-width: 236px;
+  --wp-gsc-card-gap: 14px;
+  --wp-gsc-card-bg: #fbf8f4;
+  --wp-gsc-card-border: #eadfd7;
+  --wp-gsc-card-radius: 16px;
+  --wp-gsc-card-padding: 27px 19px;         /* Figma 28/20 measured from the outer edge, 1px inside stroke */
+  --wp-gsc-card-shadow: 0 8px 12px 0 rgba(122, 77, 64, 0.06);
+  --wp-gsc-icon-bg: #f3e5e2;
+  --wp-gsc-icon-circle: 88px;
+  --wp-gsc-icon-size: 52px;
+  --wp-gsc-title-size: 24px;
+  --wp-gsc-title-line-height: 32px;
+  --wp-gsc-sublabel-size: 15px;
+  --wp-gsc-sublabel-line-height: 22.5px;    /* Figma "normal" */
+  --wp-gsc-count-size: 28px;
+  --wp-gsc-count-line-height: 38px;
+  --wp-gsc-count-gap: 8px;
+  --wp-gsc-styles-size: 19px;
+  --wp-gsc-styles-line-height: 28.5px;      /* Figma "normal" */
+  --wp-gsc-avatars-width: 176px;
+  --wp-gsc-avatar-size: 64px;
+  --wp-gsc-avatar-overlap: -8px;            /* circles at x 0 / 56 / 112 */
+  --wp-gsc-avatar-ring: 3px;                /* outside stroke #fbf8f4 */
+  --wp-gsc-advice-size: 15px;
+  --wp-gsc-advice-line-height: 24px;
+  --wp-gsc-space-icon-title: 20px;
+  --wp-gsc-space-title-sub: 6px;
+  --wp-gsc-space-divider: 22px;             /* above and below the divider */
+  --wp-gsc-space-count-avatars: 20px;
+  --wp-gsc-space-avatars-advice: 24px;
+}
+
+/* ------------------------------------------------------------
+   Guide cap table section (Figma 7368:202) - desktop
+   ------------------------------------------------------------ */
+:root {
+  --wp-gct-pad-y: 86px;                       /* panel y=86, 1026 - 86 - 854 = 86 */
+  --wp-gct-pad-x: 40px;
+  --wp-gct-panel-width: 1360px;
+  --wp-gct-panel-pad-y: 56px;
+  --wp-gct-panel-pad-x: 32px;
+  --wp-gct-panel-gap: 56px;                   /* header -> table */
+  --wp-gct-panel-radius: 32px;
+  --wp-gct-panel-bg: rgba(255, 255, 255, 0.4);
+  --wp-gct-panel-blur: 30.25px;
+  --wp-gct-panel-bg-fallback: rgba(150, 150, 150, 0.82); /* ESTIMATED: no backdrop-filter */
+  --wp-gct-header-gap: 16px;
+  --wp-gct-heading-width: 798px;
+  --wp-gct-color-title: #ffffff;
+  --wp-gct-color-col-name: #dfdfdf;
+  --wp-gct-color-text: #f6f5f1;               /* Brand Color/Cream in Figma */
+  --wp-gct-font-cell: "Neue Haas Grotesk Display Pro", "Helvetica Neue", Helvetica, Arial, sans-serif; /* not in theme fonts */
+  --wp-gct-col-label: 456px;                  /* 389 label + 67 gap */
+  --wp-gct-col-data: 214px;                   /* 198 cell + 16 gap */
+  --wp-gct-col-last: 198px;
+  --wp-gct-row-gap: 29px;
+  --wp-gct-icon-size: 47px;
+}
+
+/* ------------------------------------------------------------
+   Guide tips section, "Three things that are not cap size" (Figma 7368:332) - desktop
+   ------------------------------------------------------------ */
+:root {
+  --wp-gtips-bg: #1a1a1a;                     /* sampled from the Figma screenshot */
+  --wp-gtips-pad: 80px 40px;
+  --wp-gtips-max-width: 1360px;
+  --wp-gtips-head-gap: 12px;                  /* chip -> heading */
+  --wp-gtips-head-to-cards: 48px;
+  --wp-gtips-chip-bg: var(--wp-color-chip-new); /* #f79510 */
+  --wp-gtips-chip-padding: 6px 12px;
+  --wp-gtips-chip-radius: 16px;
+  --wp-gtips-card-gap: 24px;                  /* 3 x 437.33 + 2 x 24 = 1360 */
+  --wp-gtips-card-height: 499px;
+  --wp-gtips-frame-bg: #b3b3b3;
+  --wp-gtips-glass-bg: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(102, 102, 102, 0.5));
+  --wp-gtips-glass-blur: 21px;                /* fitted to the Figma export, not a Figma value */
+  --wp-gtips-glass-bg-fallback: rgba(56, 52, 52, 0.88); /* ESTIMATED: no backdrop-filter */
+  --wp-gtips-glass-padding: 20px 16px;
+  --wp-gtips-glass-gap: 16px;                 /* tag -> text group */
+  --wp-gtips-text-gap: 8px;                   /* title -> body */
+  --wp-gtips-tag-bg: var(--wp-color-pink);    /* #bc696b */
+  --wp-gtips-tag-height: 32px;
+  --wp-gtips-tag-padding: 10px;
+}
+
+/* ---------- Reviews list (Figma 7664:17841), desktop ---------- */
+:root {
+  --wp-color-charcoal: #36393c;               /* Primary/Charcoal */
+  --wp-rl-ink: #000001;                       /* Figma near-black text + bar fill */
+  --wp-rl-text-muted: #4a4a4a;                /* filter label + items */
+  --wp-rl-track: rgba(0, 0, 1, 0.1);          /* distribution bar track */
+  --wp-rl-star-empty: rgba(0, 0, 1, 0.1);     /* unfilled star part (not in Figma; track colour reused) */
+  --wp-rl-section-padding-y: 80px;
+  --wp-rl-section-padding-x: 80px;
+  --wp-rl-container-width: 1280px;
+  --wp-rl-sidebar-width: 348px;
+  --wp-rl-main-width: 849px;
+  /* Right column: sort chips + review cards (7664:17914, 7664:17932, 7664:17958, 7664:18090) */
+  --wp-rl-sort-label: #8c8c8c;                /* SORT label */
+  --wp-rl-chip-text: #1a1a1a;                 /* inactive chip text */
+  --wp-rl-reply-bg: linear-gradient(to right, #cd8080 57.386%, rgba(205, 128, 128, 0)); /* Kristi reply box */
+  --wp-rl-card-gap: 20px;                     /* card grid column + row gap */
+}
+
+/* ---------- Reviews "Four rules" (Figma 7664:18093), desktop ---------- */
+:root {
+  --wp-rr-bg: #f5ece4;                        /* section background */
+  --wp-rr-section-padding-y: 80px;
+  --wp-rr-section-padding-x: 40px;
+  --wp-rr-container-width: 1360px;
+  --wp-rr-heading-gap: 56px;                  /* heading -> cards */
+  --wp-rr-card-gap: 24px;
+  --wp-rr-card-radius: 10px;
+  --wp-rr-card-padding-y: 24px;               /* spacing/24 */
+  --wp-rr-card-padding-x: 16px;               /* spacing/16 */
+  --wp-rr-card-inner-gap: 20px;               /* icon -> text */
+  --wp-rr-text-gap: 4px;                      /* title -> text */
+  --wp-rr-icon-size: 84px;
+}
+
+/* MEASURE & CAP GUIDE mobile (Figma 7732:12648 hero, 7732:12668 steps) */
+@media (max-width: 749px) {
+  :root {
+    /* hero */
+    --wp-m-ghero-padding: 32px 16px 48px;
+    --wp-m-ghero-gap: 30px;                    /* content -> media */
+    --wp-m-ghero-title-size: 32px;             /* Mobile/Heading/Page Title */
+    --wp-m-ghero-title-line-height: 40px;
+    --wp-m-ghero-stat-number-size: 28px;       /* Mobile/Heading/H2 */
+    --wp-m-ghero-stat-number-line-height: 36px;
+    --wp-m-ghero-stat-1-width: 80px;
+    --wp-m-ghero-stat-2-width: 104px;
+    --wp-m-ghero-stat-3-width: 96px;
+    --wp-m-ghero-media-height: 260px;
+    /* steps */
+    --wp-m-steps-padding: 48px 16px;
+    --wp-m-steps-title-size: 36px;             /* Mobile/Heading/H1 */
+    --wp-m-steps-title-line-height: 46px;
+    --wp-m-steps-card-gap: 20px;
+    --wp-m-steps-media-height: 300px;
+    --wp-m-steps-body-padding: 24px 16px;
+    --wp-m-steps-body-gap: 16px;               /* chip -> title group */
+    /* size cards (Figma 7732:12703, 375 x 1206; card 7732:12718) */
+    --wp-m-gsc-padding: 48px 16px 254px;       /* cards end y 952, frame 1206 */
+    --wp-m-gsc-gap: 24px;                      /* heading / body / tip / cards */
+    --wp-m-gsc-heading-size: 36px;             /* Mobile/Heading/H1 */
+    --wp-m-gsc-heading-line-height: 46px;
+    --wp-m-gsc-tip-padding: 20px 16px;
+    --wp-m-gsc-tip-gap: 16px;
+    --wp-m-gsc-tip-title-size: 16px;           /* Mobile/Body/Small/Medium */
+    --wp-m-gsc-tip-title-line-height: 26px;
+    --wp-m-gsc-small-size: 14px;               /* tip body, sublabel, advice */
+    --wp-m-gsc-small-line-height: 22px;
+    --wp-m-gsc-styles-size: 16px;
+    --wp-m-gsc-styles-line-height: 26px;
+    --wp-m-gsc-card-gap: 12px;
+    --wp-m-gsc-photo-left: -15.88px;
+    --wp-m-gsc-photo-bottom: -16.122px;        /* top y 886 + 336.122 = 1222 vs 1206 */
+    --wp-m-gsc-photo-width: calc(100% + 36.75px); /* 411.75 at 375; keeps the right overhang at 390/414 */
+    --wp-m-gsc-photo-height: 336.122px;
+    --wp-m-gsc-photo-radius: 16px;
+    --wp-m-gsc-fade-bottom: 144.194px;         /* fade top y 886 = photo top */
+    --wp-m-gsc-fade-height: 175.806px;
+    --wp-m-gsc-fade: linear-gradient(to bottom, #f0e4da, rgba(240, 228, 218, 0));
+    /* cap table (Figma 7732:12721, 375 x 934; table 7732:12726) */
+    --wp-m-gct-padding: 48px 16px;
+    --wp-m-gct-panel-padding: 32px 12px 24px;
+    --wp-m-gct-panel-gap: 24px;                /* label / heading / table / swipe text */
+    --wp-m-gct-panel-radius: 24px;
+    --wp-m-gct-label-size: 12px;               /* Mobile/Heading/Eyebrow Heading */
+    --wp-m-gct-label-line-height: 20px;
+    --wp-m-gct-heading-size: 36px;             /* Mobile/Heading/H1 */
+    --wp-m-gct-heading-line-height: 46px;
+    --wp-m-gct-label-col: 76px;                /* sticky row labels */
+    --wp-m-gct-col: 112px;
+    --wp-m-gct-col-gap: 6px;
+    --wp-m-gct-col-bg: rgba(255, 255, 255, 0.16);
+    --wp-m-gct-col-radius: 14px;
+    --wp-m-gct-line: rgba(255, 255, 255, 0.18);
+    --wp-m-gct-head-padding: 14px 8px 10px;
+    --wp-m-gct-head-gap: 6px;                  /* icon -> name */
+    --wp-m-gct-icon-size: 36px;
+    --wp-m-gct-name-size: 18px;                /* Mobile/Heading/H5 SemiBold */
+    --wp-m-gct-name-line-height: 26px;
+    --wp-m-gct-cell-padding: 10px 8px;
+    --wp-m-gct-row-label-padding: 10px 8px 10px 4px;
+    --wp-m-gct-row-label-size: 12px;           /* Mobile/Body/Tags+Labels, opacity .75 */
+    --wp-m-gct-row-label-line-height: 14px;
+    --wp-m-gct-row-label-color: rgba(246, 245, 241, 0.75);
+    --wp-m-gct-cell-size: 14px;                /* Mobile/Body/Extra Small */
+    --wp-m-gct-cell-line-height: 22px;
+    --wp-m-gct-row-head: 119px;                /* row heights (min, line inside) */
+    --wp-m-gct-row-1: 109px;
+    --wp-m-gct-row-2: 65px;
+    --wp-m-gct-row-3: 65px;
+    --wp-m-gct-row-4: 87px;
+    --wp-m-gct-row-5: 43px;
+    --wp-m-gct-row-6: 42px;
+    --wp-m-gct-hint-color: rgba(255, 255, 255, 0.7);
+    /* ESTIMATED: panel tone behind the label column, sampled from the Figma render (table top -> bottom) */
+    --wp-m-gct-sticky-cover: linear-gradient(to bottom, #949493, #a4a4a4);
+    --wp-m-gct-table-height: 530px;
+    /* tips (Figma 7732:12819, 375 x 1642; card 7732:12828) */
+    --wp-m-gtips-pad: 48px 16px;
+    --wp-m-gtips-head-to-cards: 56px;
+    --wp-m-gtips-title-size: 36px;             /* Mobile/Heading/H1 (Medium) */
+    --wp-m-gtips-title-line-height: 46px;
+    --wp-m-gtips-card-gap: 20px;
+    --wp-m-gtips-card-height: 440px;           /* 343 x 440, photo fills the card */
+    --wp-m-gtips-glass-min-height-3: 232px;    /* Figma card 3: 3 text lines + 2 empty 22px lines */
+    --wp-m-gtips-tag-size: 12px;               /* Mobile/Body/Tags+Labels */
+    --wp-m-gtips-tag-line-height: 14px;
+    --wp-m-gtips-card-title-size: 18px;        /* Mobile/Heading/H5 SemiBold */
+    --wp-m-gtips-card-title-line-height: 26px;
+    --wp-m-gtips-body-size: 14px;              /* Mobile/Body/Extra Small */
+    --wp-m-gtips-body-line-height: 22px;
+  }
+}
+
+/* REVIEWS page mobile (375px): hero 7732:14919 (375 x 728).
+ * Hero reuses the NEW IN + Sale mobile blocks; only the Reviews differences are here.
+ * Photo fills the hero with the desktop crop percentages (same asset), so no derived object-position.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-rv-hero-padding: 24px 16px 32px;
+    --wp-m-rv-hero-wash-angle: 98.99577324801479deg;
+    --wp-m-rv-hero-panel-padding: 16px 16px 24px;
+    --wp-m-rv-hero-panel-gap: 16px;
+    --wp-m-rv-hero-title-size: 32px;             /* Mobile/Heading/Page Title */
+    --wp-m-rv-hero-title-line-height: 40px;
+    --wp-m-rv-hero-section-gap: 24px;            /* text -> stats, stats -> button */
+    --wp-m-rv-hero-stats-padding: 20px 16px;
+    --wp-m-rv-hero-stat-icon-size: 46px;
+    --wp-m-rv-hero-stat-icon-radius: 8px;
+    --wp-m-rv-hero-stat-text-height: 92px;
+    --wp-m-rv-hero-stat-label-size: 14px;        /* Mobile/Body/Extra Small */
+    --wp-m-rv-hero-stat-label-line-height: 22px;
+    --wp-m-rv-hero-btn-height: 74px;
+    --wp-m-rv-hero-btn-size: 18px;               /* Desktop/Body/Medium/Regular */
+    --wp-m-rv-hero-btn-line-height: 28px;
+  }
+}
+
+/* Reviews list mobile (sections/reviews-list.liquid), Figma 7732:14971 / 15024 / 15035 / 15053 /
+ * 15079 / 15211. Values not in the given nodes are marked (assumed). */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-rl-section-padding: 40px 16px;        /* top 40 from metadata; bottom 40 assumed */
+    --wp-m-rl-column-gap: 32px;                  /* sidebar -> sort row (assumed, desktop main gap) */
+    --wp-m-rl-summary-gap: 24px;                 /* heading -> rating block */
+    --wp-m-rl-rating-line-height: 36px;          /* Mobile/Heading/H2 28/36 */
+    --wp-m-rl-rating-text-box: 29.561px;
+    --wp-m-rl-trigger-padding: 11px 15px;        /* Figma 12/16 incl 1 px border */
+    --wp-m-rl-sort-gap: 9px 7px;                 /* row / column */
+    --wp-m-rl-sort-label-width: 50px;
+    --wp-m-rl-sort-label: #91837e;               /* colors/gray/600 */
+    --wp-m-rl-chip-text: #241f1e;                /* colors/gray/950 */
+    --wp-m-rl-avatar: 56px;
+    --wp-m-rl-photo-ratio: 228 / 240;            /* 143.5 x 151 at 343 */
+    --wp-m-rl-more-height: 47px;
+  }
+}
+
+/* Reviews rules mobile (sections/reviews-rules.liquid), Figma 7732:15214. Bg, card radius / padding,
+ * icon, inner gaps reuse the desktop --wp-rr-* tokens (same values in mobile Figma). */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-rr-section-padding: 48px 16px;
+    --wp-m-rr-heading-gap: 32px;                 /* heading -> cards */
+    --wp-m-rr-card-gap: 16px;                    /* cards stacked */
+    --wp-m-rr-heading-size: 36px;                /* Mobile/Heading/H1 */
+    --wp-m-rr-heading-line-height: 46px;
+    --wp-m-rr-title-size: 18px;                  /* Mobile/Heading/H5 (Montserrat) */
+    --wp-m-rr-title-line-height: 26px;
+    --wp-m-rr-text-size: 16px;                   /* Mobile/Body/Small/Small */
+    --wp-m-rr-text-line-height: 26px;
+  }
+}
+
+/* Mobile nav drawer, Stage 1 (sections/wp-mobile-drawer.liquid, assets/wp-mobile-drawer.js).
+ * Figma hf0beCVyuHCECkNQfaOm2q, node 7799:4 (Main menu). One get_design_context each on
+ * 7799:5 (header), 7799:17 (nav item), 7799:11 (search), 7799:57 (Pre-Order), 7799:59
+ * (Account), 7799:65 (Live card), 7799:72 (App badges). Mobile only (max-width: 749px);
+ * 750px+ keeps the existing header/aria-mnav drawer untouched. */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-mdrawer-z: 1100;
+    --wp-m-mdrawer-motion-duration: 200ms;
+    --wp-m-mdrawer-overlay-bg: rgba(0, 0, 0, 0.4); /* not in Figma (dialog-only frames); matches the search overlay's own estimated backdrop */
+    --wp-m-mdrawer-border: var(--wp-color-cream);  /* #eaddd4 */
+    --wp-m-mdrawer-body-pad: 16px;                 /* gaps between header/search/list/preorder/account/live-card/badges are estimated at 16px (page gutter) -- not given per-node, flag for confirmation */
+
+    /* 2026-11-06: was never defined, so the drawer header had 0 padding and the logo and
+       close button sat flush against the screen edges. Horizontal gutter only (16px, same
+       as the body) so the header heights stay as built. */
+    --wp-m-mdrawer-header-pad: 0 16px;
+
+    --wp-m-mdrawer-logo-h: 32px;
+
+    --wp-m-mdrawer-close-size: 36px;
+    --wp-m-mdrawer-close-bg: #fbf5f5;              /* Secondary/Blush */
+    --wp-m-mdrawer-close-icon: 20px;
+
+    --wp-m-mdrawer-rose: #cd8080;                  /* Secondary/Rose */
+    --wp-m-mdrawer-rose-8: rgba(205, 128, 128, 0.08);
+
+    --wp-m-mdrawer-search-radius: 130px;
+    --wp-m-mdrawer-search-pad: 6px 10px 6px 12px;
+    --wp-m-mdrawer-search-size: 14px;
+    --wp-m-mdrawer-search-line: 22px;
+    --wp-m-mdrawer-search-color: rgba(7, 6, 6, 0.46);
+    --wp-m-mdrawer-search-icon: 16px;
+
+    --wp-m-mdrawer-row-height: 56px;
+    --wp-m-mdrawer-row-label-size: 16px;
+    --wp-m-mdrawer-row-label-line: 26px;
+    --wp-m-mdrawer-row-chevron: 20px;
+    --wp-m-mdrawer-live-dot: 6px;
+
+    --wp-m-mdrawer-badge-bg: var(--wp-color-chip-new); /* #f79510 */
+    --wp-m-mdrawer-badge-pad: 2px 6px;
+    --wp-m-mdrawer-badge-radius: 8px;
+    --wp-m-mdrawer-badge-size: 10px;
+    --wp-m-mdrawer-badge-line: 16px;
+
+    --wp-m-mdrawer-preorder-bg: var(--wp-color-dark-pink);
+    --wp-m-mdrawer-preorder-pad: 14px 16px;
+    --wp-m-mdrawer-preorder-radius: var(--wp-radius-sm);
+    --wp-m-mdrawer-preorder-size: 12px;
+    --wp-m-mdrawer-preorder-line: 14px;
+
+    --wp-m-mdrawer-account-icon-size: 36px;
+    --wp-m-mdrawer-account-icon-inner: 16px;
+    --wp-m-mdrawer-account-gap: 12px;
+    --wp-m-mdrawer-account-size: 14px;
+    --wp-m-mdrawer-account-line: 22px;
+
+    --wp-m-mdrawer-live-card-bg: var(--wp-color-dark-pink);
+    --wp-m-mdrawer-live-card-radius: 8px;
+    --wp-m-mdrawer-live-card-pad: 16px;
+    --wp-m-mdrawer-live-card-gap: 8px;
+    --wp-m-mdrawer-live-eyebrow-size: 12px;
+    --wp-m-mdrawer-live-eyebrow-line: 20px;
+    --wp-m-mdrawer-live-title-size: 18px;
+    --wp-m-mdrawer-live-title-line: 26px;
+    --wp-m-mdrawer-live-body-size: 14px;
+    --wp-m-mdrawer-live-body-line: 22px;
+    --wp-m-mdrawer-live-btn-pad: 10px 16px;
+    --wp-m-mdrawer-live-btn-gap: 8px;
+    --wp-m-mdrawer-live-btn-dot: 10px;
+    --wp-m-mdrawer-live-btn-size: 12px;
+    --wp-m-mdrawer-live-btn-line: 14px;
+
+    --wp-m-mdrawer-badge-row-gap: 8px;
+    --wp-m-mdrawer-badge-item-pad: 1px 6px 1px 2px;
+    --wp-m-mdrawer-badge-item-radius: 2px;
+    --wp-m-mdrawer-badge-item-gap: 4px;
+    --wp-m-mdrawer-badge-icon: 16px;
+    --wp-m-mdrawer-badge-text-size: 12px;
+    --wp-m-mdrawer-badge-text-line: 14px;
+
+    /* Stage 2: Shop panel. Figma 7799:103 (accordion header), 7799:108 (cap item),
+     * 7799:145 (featured card). group_2/3/4 icons and the featured heading/icon are NOT
+     * individually fetched (only the Cap Construction group header was in-scope) -- those
+     * are plain image_picker settings with no default, flagged in PROGRESS.md. */
+    --wp-m-mdrawer-group-pad: 16px 0;
+    --wp-m-mdrawer-group-icon: 24px;
+    --wp-m-mdrawer-group-title-size: 14px;
+    --wp-m-mdrawer-group-title-line: 22px;
+    --wp-m-mdrawer-group-chevron: 20px;
+    --wp-m-mdrawer-group-gap: 8px;
+
+    --wp-m-mdrawer-cap-photo: 48px;
+    --wp-m-mdrawer-cap-row-pitch: 48px;          /* the photo; + 12 gap = Figma 7799:91 60px row pitch */
+    --wp-m-mdrawer-cap-gap: 12px;
+    --wp-m-mdrawer-cap-label-color: #3f3e3e;      /* Primary/Gray */
+    --wp-m-mdrawer-cap-label-size: 16px;
+    --wp-m-mdrawer-cap-label-line: 26px;
+
+    --wp-m-mdrawer-plain-link-pad: 11px 0;        /* 11 + 26 + 11 = Figma 7809:18 48px link pitch */
+
+    --wp-m-mdrawer-featured-gap: 16px;
+    --wp-m-mdrawer-promo-gap: 12px;               /* 343 = 165.5 * 2 + 12 */
+    --wp-m-mdrawer-promo-radius: 8px;
+    --wp-m-mdrawer-promo-chip-bg-amber: #f79510;
+    --wp-m-mdrawer-promo-chip-bg-white: var(--wp-color-white);
+    --wp-m-mdrawer-promo-chip-pad: 4px 8px;
+    --wp-m-mdrawer-promo-chip-radius: 8px;
+    --wp-m-mdrawer-promo-chip-size: 12px;
+    --wp-m-mdrawer-promo-chip-line: 14px;
+    --wp-m-mdrawer-promo-cta-bg: var(--wp-color-dark-pink);
+    --wp-m-mdrawer-promo-cta-height: 36px;
+    --wp-m-mdrawer-promo-cta-size: 20px;
+    --wp-m-mdrawer-promo-cta-line: 28px;
+
+    /* Stage 3: Start Here (product carousel) + Live (video card). Figma 7809:140 (sub
+     * link), 7809:177 (product card), 7809:399 (live video). */
+    --wp-m-mdrawer-sublink-pad: 12px 0;
+
+    --wp-m-mdrawer-carousel-gap: 12px;
+    --wp-m-mdrawer-product-card-w: 250px;
+    --wp-m-mdrawer-product-photo-h: 315px;
+    --wp-m-mdrawer-product-title-size: 16px;
+    --wp-m-mdrawer-product-title-line: 26px;
+    --wp-m-mdrawer-product-bar-border: var(--wp-color-black);
+    --wp-m-mdrawer-product-bar-bg: rgba(255, 255, 255, 0.6); /* backdrop-blur 6.7px given, exact bg opacity not given -- flag */
+    --wp-m-mdrawer-product-bar-pad: 2px 4px 2px 2px;
+    --wp-m-mdrawer-product-bar-gap: 8px;
+    --wp-m-mdrawer-product-thumb: 40px;
+    --wp-m-mdrawer-product-type-size: 14px;
+    --wp-m-mdrawer-product-type-line: 22px;
+    --wp-m-mdrawer-product-price-size: 18px;
+    --wp-m-mdrawer-product-price-line: 28px;
+
+    --wp-m-mdrawer-video-heading-size: 14px;       /* Figma 7809:233: Poppins Medium 14/22 #a64a4c */
+    --wp-m-mdrawer-video-heading-line: 22px;
+    --wp-m-mdrawer-video-heading-color: #a64a4c;
+    --wp-m-mdrawer-video-h: 300px;
+    --wp-m-mdrawer-video-radius: 10px;            /* Figma 7809:233 */
+    --wp-m-mdrawer-video-play: 48px;
+
+    /* Stage 4: Community (photo strip, sisterhood card) + Dailey Deals (promo card,
+     * reuses the Stage-3 product carousel). Figma 7810:9573 (photo strip), 7809:553
+     * (outline button), 7809:18697 (sisterhood card), 7809:703 (promo card). */
+    --wp-m-mdrawer-photo-strip-gap: 8px;
+    --wp-m-mdrawer-photo-strip-ratio: 105 / 142;
+    --wp-m-mdrawer-photo-strip-bg: var(--wp-color-cream);
+    --wp-m-mdrawer-photo-strip-inset: 4px;
+
+    --wp-m-mdrawer-outline-btn-pad: 12px 24px;
+    --wp-m-mdrawer-outline-btn-size: 18px;
+    --wp-m-mdrawer-outline-btn-line: 28px;
+
+    --wp-m-mdrawer-glass-blur: 50px;
+    --wp-m-mdrawer-glass-bg: rgba(255, 255, 255, 0.13);
+    --wp-m-mdrawer-glass-border: var(--wp-color-white);
+    --wp-m-mdrawer-glass-radius: 4px;
+
+    --wp-m-mdrawer-sisterhood-card-pad: 16px;
+    --wp-m-mdrawer-sisterhood-card-radius: 8px;
+    --wp-m-mdrawer-sisterhood-gradient: linear-gradient(to bottom, var(--wp-color-white), var(--wp-color-cream));
+    --wp-m-mdrawer-sisterhood-panel-pad: 21px;
+    --wp-m-mdrawer-sisterhood-gap: 24px;          /* content was `justify-between` in a fixed 410px box; not a fetched gap value, flagged */
+    --wp-m-mdrawer-sisterhood-title-color: #1a1a1a;
+    --wp-m-mdrawer-sisterhood-title-size: 24px;
+    --wp-m-mdrawer-sisterhood-title-line: 32px;
+    --wp-m-mdrawer-sisterhood-copy-size: 20px;
+    --wp-m-mdrawer-sisterhood-copy-line: 28px;
+    --wp-m-mdrawer-sisterhood-signature-w: 249px;
+
+    --wp-m-mdrawer-dark-btn-bg: var(--wp-color-black);
+    --wp-m-mdrawer-dark-btn-pad: 12px 24px;
+    --wp-m-mdrawer-dark-btn-size: 18px;
+    --wp-m-mdrawer-dark-btn-line: 28px;
+
+    --wp-m-mdrawer-promo-banner-h: 380px;
+    --wp-m-mdrawer-promo-banner-radius: 20px;
+    --wp-m-mdrawer-promo-banner-panel-pad: 13px;
+    --wp-m-mdrawer-promo-banner-gap: 24px;
+    --wp-m-mdrawer-promo-banner-title-size: 18px;
+    --wp-m-mdrawer-promo-banner-title-line: 28px;
+    --wp-m-mdrawer-promo-banner-copy-size: 14px;
+    --wp-m-mdrawer-promo-banner-copy-line: 22px;
+
+    /* Closed header (<=749px) hamburger restyle, applied in sections/wp-mobile-drawer.liquid's
+     * own {% style %} to sections/header.liquid's existing ".aria-header__menu-toggle" (not
+     * edited). Values ARE the same ones ".aria-header__icon-btn" (wishlist/cart) already computes
+     * in assets/section-aria-header.css below 1280px -- reused via the same --it-rgb variable
+     * (assets/style.css :root), not re-hardcoded. Design assumption, not a fetched node: the
+     * closed header itself is not in this task's Figma node list, so this matches the SIBLING
+     * icons already on the page rather than inventing a new look. No hover/focus-visible override
+     * is added either -- .aria-header__icon-btn itself has none beyond the browser default
+     * focus ring, so there is nothing distinct to reuse. */
+    --wp-m-header-hamburger-size: 32px;            /* Figma Home mobile 7238:5130 */
+    --wp-m-header-hamburger-radius: 100%;
+    --wp-m-header-hamburger-bg: rgba(205, 128, 128, 0.08);
+    --wp-m-header-hamburger-color: #cd8080;
+    --wp-m-header-hamburger-icon-size: 16px;
+  }
+}
+
+/* FIND MY WIG quiz, mobile (375/390/414px). Figma hf0beCVyuHCECkNQfaOm2q, node 7894:1150
+ * (Quiz Mobile), 7894:1205 (Recommended Mobile / results carousel). Desktop values for this
+ * section live inline in sections/find-my-wig.liquid's own {% style %} block (not
+ * centralized here) — only the NEW mobile-only values are appended below. */
+@media (max-width: 749px) {
+  :root {
+    /* Quiz wrapper — spec-provided values (not a Figma fetch this session): bg #FBF5F5,
+     * padding 24 16, 24px gap between the progress/question/options/actions/privacy blocks. */
+    --wp-m-fmw-wrapper-bg: #FBF5F5;
+    --wp-m-fmw-wrapper-pad-bottom: 24px;
+    --wp-m-fmw-section-gap: 24px;
+
+    /* Progress — Figma 7894:1154. Meta row (step | skip) stays above the bar; "time left"
+     * text moves BELOW the bar on mobile (desktop keeps it inline next to Skip) — a CSS
+     * grid-area reorder only, no DOM change. */
+    --wp-m-fmw-progress-gap: 12px;                   /* flex-col gap: meta / bar / time */
+    --wp-m-fmw-progress-track-h: 8px;                /* Figma Bar: 8px (desktop: 14px) */
+    --wp-m-fmw-progress-count-size: 14px;            /* Mobile/Body/Extra Small/Medium ALL CAP */
+    --wp-m-fmw-progress-count-line-height: 22px;
+    --wp-m-fmw-progress-skip-size: 14px;             /* Mobile/Body/Extra Small/Mobile */
+    --wp-m-fmw-progress-skip-line-height: 22px;
+    --wp-m-fmw-progress-time-size: 14px;             /* Mobile/Body/Extra Small/Mobile, gray */
+    --wp-m-fmw-progress-time-line-height: 22px;
+
+    /* Question heading/subheading — Figma 7894:1161 */
+    --wp-m-fmw-heading-size: 28px;                   /* Mobile/Heading/H2, Montserrat Medium */
+    --wp-m-fmw-heading-line-height: 36px;
+    --wp-m-fmw-heading-gap: 8px;                     /* heading -> subheading */
+    --wp-m-fmw-subheading-size: 14px;                /* Mobile/Body/Extra Small/Mobile */
+    --wp-m-fmw-subheading-line-height: 22px;
+
+    /* Option cards — Figma 7894:1537 (selected), 7894:1544 (default). 1 column, stacked,
+     * full width. The Figma mock's 114px cap-interior image column is NOT built here — no
+     * per-option image field exists in this section's schema (same gap already flagged for
+     * desktop in PROGRESS.md's Stage 1 entry, carried over). Selected state on mobile is
+     * BORDER COLOR ONLY per the fetched node (no inner radio dot) — differs from desktop's
+     * filled dot; flagged in PROGRESS.md rather than assumed. */
+    --wp-m-fmw-options-gap: 12px;                    /* decision — Options container itself
+                                                         (7894:1164) was outside this task's
+                                                         approved get_design_context list */
+    --wp-m-fmw-option-radius: var(--wp-radius-04);   /* 4px (desktop: 16px) */
+    --wp-m-fmw-option-pad: 12px;
+    --wp-m-fmw-option-content-gap: 8px;              /* radio -> text */
+    --wp-m-fmw-option-text-gap: 4px;                 /* title -> description */
+    --wp-m-fmw-option-radio-size: 20px;              /* desktop: 36px */
+    --wp-m-fmw-option-title-size: var(--wp-body-small-size);            /* 16px */
+    --wp-m-fmw-option-title-line-height: var(--wp-body-small-line-height); /* 26px */
+    --wp-m-fmw-option-desc-size: var(--wp-body-xs-size);                /* 14px */
+    --wp-m-fmw-option-desc-line-height: var(--wp-body-xs-line-height);  /* 22px */
+
+    /* Actions — Figma 7894:1196 (primary, filled black) stacked ABOVE 7894:1198 (secondary,
+     * outlined BACK) — reverse of the Back-then-Next DOM order; done with
+     * flex-direction: column-reverse only, no markup change. Heights are this task's own
+     * manual Figma measurement (52 / 54px); the 8px gap is the brief's pre-approved design
+     * decision, not independently fetched — the Actions container node (7894:1195) was
+     * outside this task's approved get_design_context list, only its two child buttons were
+     * fetched. */
+    --wp-m-fmw-actions-gap: 8px;
+    --wp-m-fmw-btn-primary-h: 52px;
+    --wp-m-fmw-btn-secondary-h: 54px;
+
+    /* Privacy note — Figma 7894:1200. Left-aligned (desktop: centered), smaller icon; same
+     * find-my-wig-privacy-lock.svg asset reused, not re-downloaded. */
+    --wp-m-fmw-privacy-gap: 8px;
+    --wp-m-fmw-privacy-pad-top: 8px;
+    --wp-m-fmw-privacy-icon-size: 18px;              /* desktop: 22px */
+
+    /* Results carousel — Figma 7894:1206 (metadata + screenshot only; this task's scope did
+     * not approve a get_design_context call on any Results/Recommended node). Horizontal
+     * scroll-snap, all <= 6 matches shown (not just 3), "SEE ALL SIX" hidden on mobile. */
+    --wp-m-fmw-carousel-card-w: 280px;
+    --wp-m-fmw-carousel-gap: 16px;
+    --wp-m-fmw-carousel-inset: 16px;                 /* left gutter, card 1 = page padding */
+    --wp-m-fmw-results-actions-gap: 12px;            /* ESTIMATED — the Results stage has never
+                                                         had an approved Figma node, desktop
+                                                         included (see this section's own
+                                                         desktop CSS comment) */
+  }
+}
+
+/*
+ * Shipping & Returns page (desktop). Source: Figma hf0beCVyuHCECkNQfaOm2q, node 7899:363
+ * (hero 7899:441, short version 7899:452, policy body 7900:475, trust row 7900:527).
+ * Values as-is from PROGRESS.md's Stage 1 spec table. Desktop only — mobile out of scope.
+ */
+:root {
+  /* New shared type tokens (did not exist before this page) */
+  --wp-h2-size: 48px;
+  --wp-h2-line-height: 56px;
+  --wp-h6-size: 18px;
+  --wp-h6-line-height: 26px;
+  --wp-eyebrow-size: 14px;
+  --wp-eyebrow-line-height: 22px;
+  --wp-eyebrow-weight: 500;
+
+  /* New shared colour / spacing tokens */
+  --wp-color-blush: #fbf5f5;        /* Secondary-Blush, desktop scope (existed only as a mobile var) */
+  --wp-space-48: 48px;
+  --wp-space-64: 64px;
+  --wp-space-70: 70px;
+  --wp-space-80: 80px;
+
+  /* Page-specific gradients */
+  --wp-sr-hero-gradient: linear-gradient(180deg, var(--wp-color-white) 0%, var(--wp-color-cream) 100%);
+  --wp-sr-shortver-gradient: linear-gradient(180deg, #bc696b 0%, #ffbabc 100%);
+
+  /* Hero (7899:441) */
+  --wp-sr-hero-padding: 40px 80px 64px;
+  --wp-sr-hero-gap: 40px;
+  --wp-sr-hero-text-gap: 16px;
+  --wp-sr-hero-crumb-gap: 8px;
+  --wp-sr-hero-crumb-color: #3f3e3e;
+  --wp-sr-hero-width: 783px;
+
+  /* The short version (7899:452) */
+  --wp-sr-shortver-padding: 80px 40px;
+  --wp-sr-shortver-gap: 32px;
+  --wp-sr-shortver-panel-padding: 48px;
+  --wp-sr-shortver-panel-gap: 32px;
+  --wp-sr-shortver-heading-gap: 8px;
+  --wp-sr-shortver-grid-gap: 24px;
+  --wp-sr-card-padding: 24px;
+  --wp-sr-card-gap: 16px;
+  --wp-sr-card-icon-size: 40px;
+
+  /* Policy body (7900:475) */
+  --wp-sr-body-padding: 80px;
+  --wp-sr-body-gap: 80px;
+  --wp-sr-sidebar-width: 296px;
+  --wp-sr-sidebar-gap: 32px;
+  --wp-sr-nav-item-padding: 12px 16px;
+  --wp-sr-nav-active-bg: var(--wp-color-blush);
+  --wp-sr-nav-inactive-border: var(--wp-color-btn-ghost-border); /* #dddddd */
+  --wp-sr-ask-padding: 24px 32px;
+  --wp-sr-ask-gap: 16px;
+  --wp-sr-article-width: 904px;
+  --wp-sr-article-gap: 48px;
+  --wp-sr-callout-padding: 32px;
+  --wp-sr-accordion-padding: 24px;
+
+  /* Trust row (7900:527) */
+  --wp-sr-trust-padding: 80px;
+  --wp-sr-trust-gap: 70px;
+  --wp-sr-trust-icon-gap: 16px;
+  --wp-sr-trust-text-gap: 8px;
+  --wp-sr-trust-icon-size: 64px;
+  --wp-sr-trust-border: #dddddd;
+}
+
+/*
+ * Contact page (desktop). Source: Figma hf0beCVyuHCECkNQfaOm2q, node 7926:26008
+ * (hero 7926:26010, body 7926:26021 — self-serve 7926:26022 + contact options
+ * 7926:26037). Trust row reuses the existing cart-trust-strip tokens/section as-is.
+ * Values as-is from PROGRESS.md's Stage 1 spec table. Desktop only — mobile out of scope.
+ */
+:root {
+  /* New shared colour token (3rd use of this placeholder grey, promoted per spec table) */
+  --wp-color-gray-500: #8c8c8c;
+
+  /* Hero (7926:26010) */
+  --wp-contact-hero-gradient: linear-gradient(180deg, var(--wp-color-white) 0%, var(--wp-color-cream) 100%);
+  --wp-contact-hero-padding: 40px 80px 64px;
+  --wp-contact-hero-gap: 40px;
+  --wp-contact-hero-crumb-gap: 8px;
+  --wp-contact-hero-crumb-color: var(--wp-color-gray);
+  --wp-contact-hero-width: 728px;
+  --wp-contact-hero-photo-width: 328px;
+
+  /* Body (7926:26021) */
+  --wp-contact-body-padding: 80px;
+  --wp-contact-body-gap: 64px;
+
+  /* Self-serve column (7926:26022) */
+  --wp-contact-selfserve-width: 656px;
+  --wp-contact-selfserve-gap: 32px;
+  --wp-contact-turnup-height: 248px;
+  --wp-contact-turnup-gradient: linear-gradient(180deg, #bc696b 0%, #ffbabc 100%);
+  --wp-contact-turnup-photo-width: 220px;
+
+  /* Contact options column (7926:26037) */
+  --wp-contact-options-width: 560px;
+  --wp-contact-input-height: 56px;
+  --wp-contact-input-padding: 20px 16px;
+  --wp-contact-textarea-height: 140px;
+  --wp-contact-btn-padding: 12px 24px;
+}
+
+/* Shipping & Returns hero, mobile (375px). Figma hf0beCVyuHCECkNQfaOm2q, node 7987:677
+ * (Breadcrumb 7987:678, Hero text 7987:684). Colors/weights/families reuse desktop tokens
+ * (--wp-color-*, --wp-font-heading/body) — only sizes, line-heights, gap and padding differ.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-sr-hero-padding: 24px 16px 40px;
+    --wp-m-sr-hero-text-gap: 12px;                  /* Hero text: eyebrow/title/intro stack */
+    --wp-m-sr-hero-eyebrow-size: 12px;              /* Mobile/Heading/Eyebrow Heading */
+    --wp-m-sr-hero-eyebrow-line-height: 20px;
+    --wp-m-sr-hero-title-size: 32px;                /* Mobile/Heading/Page Title */
+    --wp-m-sr-hero-title-line-height: 40px;
+    --wp-m-sr-hero-text-size: 16px;                 /* Mobile/Body/Small/Small */
+    --wp-m-sr-hero-text-line-height: 26px;
+  }
+}
+
+/* Contact hero, mobile (375px). Figma hf0beCVyuHCECkNQfaOm2q, node 7995:734
+ * (Breadcrumb 7995:735, Hero text 7995:741), photo bleed frame 7996:3459 (391x368,
+ * x:-4 y:235 within the 375-wide frame). Colors/weights/families reuse desktop tokens —
+ * only sizes, line-heights, gap and padding differ. Photo kept in normal flow
+ * (position: static), bled past both edges with negative margins instead of Figma's
+ * absolute positioning, to avoid needing a fixed min-height on the section.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-contact-hero-padding: 24px 16px 0;
+    --wp-m-contact-hero-text-gap: 12px;
+    --wp-m-contact-hero-title-size: 32px;           /* Mobile/Heading/Page Title */
+    --wp-m-contact-hero-title-line-height: 40px;
+    --wp-m-contact-hero-text-size: 16px;             /* Mobile/Body/Small/Small */
+    --wp-m-contact-hero-text-line-height: 26px;
+    --wp-m-contact-hero-photo-width: 391px;
+    --wp-m-contact-hero-photo-height: 368px;
+    --wp-m-contact-hero-photo-margin-top: -7px;      /* 24px gap - 7px = Figma's 17px */
+    --wp-m-contact-hero-photo-margin-left: -20px;
+    --wp-m-contact-hero-photo-margin-right: -28px;
+  }
+}
+
+/* Shipping & Returns, the short version, mobile (375px). Figma hf0beCVyuHCECkNQfaOm2q, node 7987:701
+ * (Panel 7987:702, Heading 7987:703, Grid 7987:706, Policy / Summary Card 7987:708-714).
+ * Section/panel/card background, radius and border match desktop (--wp-sr-shortver-gradient,
+ * --wp-radius-04, no border) — only padding, gaps, eyebrow size/line-height and title
+ * size/line-height differ; card gap/icon-size/title/text reuse desktop tokens unchanged.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-sr-shortver-padding: 40px 16px;
+    --wp-m-sr-panel-padding: 24px 16px;
+    --wp-m-sr-panel-gap: 24px;
+    --wp-m-sr-grid-gap: 12px;
+    --wp-m-sr-eyebrow-size: 12px;              /* Mobile/Heading/Eyebrow Heading */
+    --wp-m-sr-eyebrow-line-height: 20px;
+    --wp-m-sr-title-size: 28px;                /* Mobile/Heading/H2 */
+    --wp-m-sr-title-line-height: 36px;
+    --wp-m-sr-card-padding: 16px;
+  }
+}
+
+/* Shipping & Returns, policy body, mobile (375px). Figma hf0beCVyuHCECkNQfaOm2q, node 7987:751
+ * (Article 7987:752, sections 7987:753-776, Rather ask a person 7987:782) and node 7987:688
+ * (Help topics chips, same 6 links as the existing sidebar nav blocks — restyled as pills in
+ * sections/section-shipping-returns-policy.css, no new markup/blocks).
+ * Callout background/border, accordion border/radius/padding and chip border/font reuse
+ * existing desktop tokens unchanged (values matched Figma exactly) — only sizes below differ.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-sr-policy-body-padding: 40px 16px;
+    --wp-m-sr-policy-article-gap: 32px;
+    --wp-m-sr-policy-section-gap: 12px;
+    --wp-m-sr-policy-callout-padding: 20px;
+    --wp-m-sr-policy-heading-size: 24px;          /* Mobile/Heading/H3 */
+    --wp-m-sr-policy-heading-line-height: 32px;
+    --wp-m-sr-policy-accordion-title-size: 18px;  /* Mobile/Heading/H5 */
+    --wp-m-sr-policy-accordion-title-line-height: 26px;
+    --wp-m-sr-policy-ask-padding: 24px 20px;
+    --wp-m-sr-policy-ask-eyebrow-size: 12px;      /* Mobile/Heading/Eyebrow Heading */
+    --wp-m-sr-policy-ask-eyebrow-line-height: 20px;
+    --wp-m-sr-policy-ask-btn-padding: 12px 24px;
+    --wp-m-sr-policy-ask-btn-font-size: 18px;
+    --wp-m-sr-policy-ask-btn-line-height: 28px;
+    --wp-m-sr-policy-chip-radius: 20px;
+  }
+}
+
+/* Shipping & Returns, trust row, mobile (375px). Figma hf0beCVyuHCECkNQfaOm2q, node 7987:786
+ * (Benefits · Mobile, 2x2 grid). Icon artwork, icon-gap (--wp-sr-trust-icon-gap, 16px),
+ * text-gap (--wp-sr-trust-text-gap, 8px) and description type (--wp-body-xs-*, 14/400/22)
+ * match the desktop tokens exactly — not overridden. Only section padding, grid gaps, item
+ * width, icon size and title size/line-height differ.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-sr-trust-padding: 40px 16px;
+    --wp-m-sr-trust-row-gap: 32px;
+    --wp-m-sr-trust-col-gap: 16px;
+    --wp-m-sr-trust-item-width: 163.5px;
+    --wp-m-sr-trust-icon-size: 48px;
+    --wp-m-sr-trust-title-size: 18px;            /* Mobile/Heading/H5 */
+    --wp-m-sr-trust-title-line-height: 26px;
+  }
+}
+
+/* Contact body, mobile (375px). Figma hf0beCVyuHCECkNQfaOm2q, node 7995:746
+ * (Self-serve · Mobile — Heading 7995:748, FAQ list 7995:751, "Or just turn up" 7995:756)
+ * and node 7995:783 (Contact options · Mobile — Form 7995:784, Other ways 7995:799).
+ * Three new shared mobile type sizes (not on desktop, reused across all three blocks
+ * below): Mobile/Heading/Eyebrow Heading (12/20/500), Mobile/Heading/H3 (24/32/500),
+ * Mobile/Heading/H5 (18/26/500). Everything else composes from existing --wp-space-*,
+ * --wp-color-*, --wp-body-*, --wp-font-* and --wp-radius-04 tokens directly in the CSS —
+ * values match the desktop ones already, only the combinations differ.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-contact-body-eyebrow-size: 12px;
+    --wp-m-contact-body-eyebrow-line-height: 20px;
+    --wp-m-contact-body-h3-size: 24px;
+    --wp-m-contact-body-h3-line-height: 32px;
+    --wp-m-contact-body-h5-size: 18px;
+    --wp-m-contact-body-h5-line-height: 26px;
+  }
+}
+
+/* Contact page trust strip override (.wp-trust-strip--figma-compact), mobile (375px).
+ * Figma hf0beCVyuHCECkNQfaOm2q, node 7995:826 (Benefits · Mobile, 2x2 grid).
+ * Scoped to the contact-trust section instance only (templates/page.contact.json) —
+ * shared .wp-trust-strip defaults (cart/search/reviews/sale/about pages) are untouched.
+ * Icon-text gap (--wp-m-trust-item-gap, 16px), text gap (--wp-m-trust-text-gap, 8px) and
+ * description type (--wp-m-trust-desc-*, 14/22) already match this Figma node — not overridden.
+ */
+@media (max-width: 749px) {
+  :root {
+    --wp-m-trust-compact-padding: 40px 16px;
+    --wp-m-trust-compact-col-gap: 16px;
+    --wp-m-trust-compact-row-gap: 32px;
+    --wp-m-trust-compact-icon-size: 48px;
+    --wp-m-trust-compact-heading-size: 18px;
+    --wp-m-trust-compact-heading-line-height: 26px;
+  }
+}

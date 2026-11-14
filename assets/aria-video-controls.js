@@ -159,4 +159,23 @@
   document.addEventListener('shopify:section:load', function (event) {
     scan(event.target);
   });
+
+  /* A <deferred-media> video (see aria-real-customers-slide.liquid) is inserted into the
+     live DOM well after this initial scan, on a shopper's click rather than any event this
+     script already listens for -- so without this, it would never join the manager: no
+     custom play/sound buttons, no single-audio rule, nothing. `register()` is idempotent
+     and this only inspects newly added nodes, so it is cheap to leave running for the life
+     of the page rather than tearing it down after first use. */
+  var lateVideoObserver = new MutationObserver(function (mutations) {
+    for (var i = 0; i < mutations.length; i++) {
+      var added = mutations[i].addedNodes;
+      for (var j = 0; j < added.length; j++) {
+        var node = added[j];
+        if (node.nodeType !== 1) continue;
+        if (node.matches && node.matches(VIDEO)) register(node);
+        if (node.querySelectorAll) scan(node);
+      }
+    }
+  });
+  lateVideoObserver.observe(document.body, { childList: true, subtree: true });
 })();

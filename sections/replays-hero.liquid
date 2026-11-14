@@ -1,0 +1,225 @@
+{%- comment -%}
+  Wig Party — Replays page hero. Figma internal file, node 6849:8511 (1440 x 442).
+
+  A full-width photo under a diagonal grey wash, with a frosted panel holding the breadcrumb,
+  title, intro and BROWSE BY STYLE on the left and a stats box (one `stat` block each: icon
+  tile, figure, label) on the right. A stat's figure can come live from LiveMeUp (how many
+  replays there are, how many shows are coming up, the date of the latest one) instead of
+  being typed (assets/aria-livemeup.js). Styles in assets/section-aria-replays-hero.css.
+{%- endcomment -%}
+
+{{ 'section-aria-replays-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign crumb_current = section.settings.crumb_current | default: page.title | default: 'Replays'
+  assign live_stats = section.blocks | where: 'type', 'stat' | map: 'settings' | map: 'source' | join: ','
+  assign uses_livemeup = false
+  if live_stats contains 'replay_count' or live_stats contains 'upcoming_count' or live_stats contains 'latest_replay'
+    assign uses_livemeup = true
+  endif
+-%}
+{%- if uses_livemeup -%}
+  {%- render 'aria-livemeup' -%}
+{%- endif -%}
+
+<div class="aria-replays-hero"{% if uses_livemeup %} data-lmu-root{% endif %}>
+  <div class="aria-replays-hero__bg" aria-hidden="true">
+    {%- if section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 2880
+        | image_tag: widths: '1440,2160,2880', sizes: '100vw', alt: '', loading: 'eager'
+      }}
+    {%- else -%}
+      <img class="aria-replays-hero__bg-default" src="{{ 'wp-replays-hero.jpg' | asset_url }}" alt="" width="531" height="606">
+    {%- endif -%}
+  </div>
+
+  <div class="aria-replays-hero__panel">
+    {%- comment -%}
+      Breadcrumb: Figma sets it as one string with two spaces either side of each slash; the
+      separators carry those spaces literally.
+    {%- endcomment -%}
+    <nav class="aria-replays-hero__crumbs" aria-label="{{ 'aria_theme.live.breadcrumb' | t }}">
+      <ol class="aria-replays-hero__crumb-list">
+        <li><a class="aria-replays-hero__crumb" href="{{ routes.root_url }}">{{ 'aria_theme.pdp.home' | t }}</a></li>
+        {%- if section.settings.crumb_parent != blank -%}
+          <li>
+            <span class="aria-replays-hero__crumb-sep" aria-hidden="true">  /  </span>
+            {%- if section.settings.crumb_parent_url != blank -%}
+              <a class="aria-replays-hero__crumb" href="{{ section.settings.crumb_parent_url }}">{{ section.settings.crumb_parent }}</a>
+            {%- else -%}
+              <span class="aria-replays-hero__crumb">{{ section.settings.crumb_parent }}</span>
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+        <li>
+          <span class="aria-replays-hero__crumb-sep" aria-hidden="true">  /  </span>
+          <span class="aria-replays-hero__crumb" aria-current="page">{{ crumb_current }}</span>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="aria-replays-hero__row">
+      <div class="aria-replays-hero__copy">
+        <div class="aria-replays-hero__text-group">
+          {%- if section.settings.heading != blank -%}
+            <h1 class="aria-replays-hero__title">{{ section.settings.heading }}</h1>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <p class="aria-replays-hero__text">{{ section.settings.text }}</p>
+          {%- endif -%}
+        </div>
+        {%- if section.settings.button_label != blank -%}
+          <a class="aria-replays-hero__button" href="{{ section.settings.button_url | default: '#' }}">
+            {{- section.settings.button_label -}}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if section.blocks.size > 0 -%}
+        <ul class="aria-replays-hero__stats" role="list">
+          {%- for block in section.blocks -%}
+            <li class="aria-replays-hero__stat" {{ block.shopify_attributes }}>
+              {%- if block.settings.icon != blank -%}
+                <span class="aria-replays-hero__icon aria-replays-hero__icon--{{ block.settings.icon }}" aria-hidden="true">
+                  {{- 'wp-replays-icon-' | append: block.settings.icon | append: '.svg' | inline_asset_content -}}
+                </span>
+              {%- endif -%}
+              <span class="aria-replays-hero__stat-text">
+                {%- if block.settings.source == 'custom' or block.settings.source == blank -%}
+                  <span class="aria-replays-hero__value">{{ block.settings.value }}</span>
+                {%- else -%}
+                  {%- comment -%} Filled from LiveMeUp; the typed figure only shows if the feed is unavailable. {%- endcomment -%}
+                  <span class="aria-replays-hero__value" data-lmu-stat="{{ block.settings.source }}">
+                    {{- block.settings.value | default: '—' -}}
+                  </span>
+                {%- endif -%}
+                <span class="aria-replays-hero__label">{{ block.settings.label }}</span>
+              </span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-replays-hero.name",
+  "tag": "section",
+  "class": "aria-replays-hero-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.aria-replays-hero.settings.image.label",
+      "info": "t:sections.aria-replays-hero.settings.image.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-replays-hero.settings.crumbs_header.content"
+    },
+    {
+      "type": "text",
+      "id": "crumb_parent",
+      "default": "Live",
+      "label": "t:sections.aria-replays-hero.settings.crumb_parent.label"
+    },
+    {
+      "type": "url",
+      "id": "crumb_parent_url",
+      "label": "t:sections.aria-replays-hero.settings.crumb_parent_url.label"
+    },
+    {
+      "type": "text",
+      "id": "crumb_current",
+      "label": "t:sections.aria-replays-hero.settings.crumb_current.label",
+      "info": "t:sections.aria-replays-hero.settings.crumb_current.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-replays-hero.settings.copy_header.content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Every Live, kept, and searchable by style",
+      "label": "t:sections.aria-replays-hero.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Nothing expires here. If Kristi has ever worn the wig you are looking at, the clip of her wearing it is on its product page and in here — timestamped, so you do not scrub through an hour to find eleven minutes.",
+      "label": "t:sections.aria-replays-hero.settings.text.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "BROWSE BY STYLE",
+      "label": "t:sections.aria-replays-hero.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-replays-hero.settings.button_url.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "t:sections.aria-replays-hero.blocks.stat.name",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.aria-replays-hero.blocks.stat.settings.icon.label",
+          "options": [
+            { "value": "replays", "label": "t:sections.aria-replays-hero.blocks.stat.settings.icon.options__replays.label" },
+            { "value": "styles", "label": "t:sections.aria-replays-hero.blocks.stat.settings.icon.options__styles.label" },
+            { "value": "never", "label": "t:sections.aria-replays-hero.blocks.stat.settings.icon.options__never.label" }
+          ],
+          "default": "replays"
+        },
+        {
+          "type": "select",
+          "id": "source",
+          "label": "t:sections.aria-replays-hero.blocks.stat.settings.source.label",
+          "options": [
+            { "value": "custom", "label": "t:sections.aria-replays-hero.blocks.stat.settings.source.options__custom.label" },
+            { "value": "replay_count", "label": "t:sections.aria-replays-hero.blocks.stat.settings.source.options__replay_count.label" },
+            { "value": "upcoming_count", "label": "t:sections.aria-replays-hero.blocks.stat.settings.source.options__upcoming_count.label" },
+            { "value": "latest_replay", "label": "t:sections.aria-replays-hero.blocks.stat.settings.source.options__latest_replay.label" }
+          ],
+          "default": "custom"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "default": "Never",
+          "label": "t:sections.aria-replays-hero.blocks.stat.settings.value.label",
+          "info": "t:sections.aria-replays-hero.blocks.stat.settings.value.info"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "replays",
+          "label": "t:sections.aria-replays-hero.blocks.stat.settings.label.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-replays-hero.presets.name",
+      "blocks": [
+        { "type": "stat", "settings": { "icon": "replays", "source": "replay_count", "value": "", "label": "replays" } },
+        { "type": "stat", "settings": { "icon": "styles", "source": "latest_replay", "value": "", "label": "latest show" } },
+        { "type": "stat", "settings": { "icon": "never", "source": "custom", "value": "Never", "label": "expires" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

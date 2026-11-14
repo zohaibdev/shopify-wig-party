@@ -1,0 +1,38 @@
+{%- comment -%}
+  Wig Party — the mobile drawer's built-in 24px heading icon (Figma Mobile / Menu frames 7799:91,
+  7809:18, 7809:233, 7809:404, 7809:569), used when a heading has no uploaded icon.
+  Accepts:
+  - panel: the panel block type (panel_shop, panel_start, panel_live, panel_community, panel_deals)
+  - slot: the accordion group number (1–4), or 'featured' for the heading above the cards/photos
+{%- endcomment -%}
+{%- liquid
+  assign slot_s = slot | append: ''
+  assign file = 'wp-mdrawer-icon-stack-star.svg'
+  case panel
+    when 'panel_shop'
+      if slot_s == '1'
+        assign file = 'wp-mobile-drawer-cap-construction-icon.svg'
+      elsif slot_s == 'featured'
+        assign file = 'wp-mdrawer-icon-best-seller.svg'
+      endif
+    when 'panel_start'
+      if slot_s == '2'
+        assign file = 'wp-mdrawer-icon-paint-board.svg'
+      elsif slot_s == 'featured'
+        assign file = 'wp-mdrawer-icon-gold-sell.svg'
+      endif
+    when 'panel_live'
+      if slot_s == '2'
+        assign file = 'wp-mdrawer-icon-calendar.svg'
+      endif
+    when 'panel_community'
+      if slot_s == 'featured'
+        assign file = 'wp-mdrawer-icon-calendar.svg'
+      endif
+    when 'panel_deals'
+      if slot_s == 'featured'
+        assign file = 'wp-mdrawer-icon-gold-sell.svg'
+      endif
+  endcase
+-%}
+<img src="{{ file | asset_url }}" alt="" width="24" height="24">

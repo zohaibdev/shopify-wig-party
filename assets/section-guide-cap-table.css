@@ -1,0 +1,394 @@
+/* Guide cap table (Figma 7368:202), desktop. Tokens: design-tokens.css (--wp-gct-*). */
+
+.wp-gct {
+  position: relative;
+  overflow: hidden;
+  padding: var(--wp-gct-pad-y) var(--wp-gct-pad-x);
+}
+
+.wp-gct__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Glass panel: 1360x854, padding 56/32, radius 32, fill white 40%, backdrop blur 30.25 */
+.wp-gct__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-gct-panel-gap);
+  box-sizing: border-box;
+  max-width: var(--wp-gct-panel-width);
+  margin: 0 auto;
+  padding: var(--wp-gct-panel-pad-y) var(--wp-gct-panel-pad-x);
+  border-radius: var(--wp-gct-panel-radius);
+  background: var(--wp-gct-panel-bg);
+  -webkit-backdrop-filter: blur(var(--wp-gct-panel-blur));
+  backdrop-filter: blur(var(--wp-gct-panel-blur));
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .wp-gct__panel {
+    background: var(--wp-gct-panel-bg-fallback);
+  }
+}
+
+/* Header 7368:205 */
+.wp-gct__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-gct-header-gap);
+  width: 100%;
+}
+
+.wp-gct__label {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16.5px;
+  letter-spacing: 1.76px;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--wp-gct-color-title);
+}
+
+.wp-gct__heading {
+  width: 100%;
+  max-width: var(--wp-gct-heading-width);
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--wp-gct-color-title);
+}
+
+/* Table 7368:209: 1296 wide. Column grid follows the body rows:
+   label 389 + gap 67, then cells 198 with 16 gap (gap kept as right padding). */
+.wp-gct__table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+}
+
+.wp-gct__col-label {
+  width: var(--wp-gct-col-label);
+}
+
+.wp-gct__col-data {
+  width: var(--wp-gct-col-data);
+}
+
+.wp-gct__col-data:last-child {
+  width: var(--wp-gct-col-last);
+}
+
+.wp-gct__table th,
+.wp-gct__table td {
+  border: 0;
+  background: none;
+  cursor: default;
+}
+
+/* Column head row: 103 high (10 + icon 47 + 8 + name 28 + 10) */
+.wp-gct__corner {
+  padding: 0;
+}
+
+.wp-gct__col-head {
+  padding: 10px;
+  vertical-align: top;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Figma head boxes: x 456 / 670 / 883 / 1095, widths 198 / 197 / 196 / 197 */
+.wp-gct__col-head:nth-child(2) {
+  padding-right: 26px;
+}
+
+.wp-gct__col-head:nth-child(3) {
+  padding-right: 27px;
+}
+
+.wp-gct__col-head:nth-child(4) {
+  padding-left: 9px;
+  padding-right: 29px;
+}
+
+.wp-gct__col-head:nth-child(5) {
+  padding-left: 7px;
+  padding-right: 14px;
+}
+
+/* Icon frame 47x47, vector group inset left 9.38% / right 7.81% */
+.wp-gct__icon {
+  display: block;
+  box-sizing: border-box;
+  width: var(--wp-gct-icon-size);
+  height: var(--wp-gct-icon-size);
+  margin: 0 auto 8px;
+  padding: 0 3.67px 0 4.41px;
+  overflow: hidden;
+}
+
+.wp-gct__icon img {
+  display: block;
+  width: 38.92px;
+  height: 47px;
+  object-fit: contain;
+}
+
+.wp-gct__col-name {
+  display: block;
+  font-family: var(--wp-font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--wp-gct-color-col-name);
+}
+
+/* Body rows: 29 gap above each row is folded into the top padding (8 + 29) */
+.wp-gct__row-label {
+  padding: calc(var(--wp-gct-row-gap) + 8px) 24px 8px;
+  vertical-align: middle;
+  text-align: left;
+  white-space: nowrap;
+  font-family: var(--wp-font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--wp-gct-color-text);
+}
+
+.wp-gct__cell {
+  padding: calc(var(--wp-gct-row-gap) + 8px) 32px 8px 16px;
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--wp-gct-font-cell);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 32px;
+  letter-spacing: 0;
+  color: var(--wp-gct-color-text);
+}
+
+.wp-gct__cell:last-child {
+  padding-right: 16px;
+}
+
+/* Column 1 emphasis: Figma uses Poppins Medium here, Neue Haas Roman in columns 2-4 */
+.wp-gct__cell--primary {
+  font-family: var(--wp-font-body);
+  font-weight: 500;
+}
+
+/* Row 1 "What it is": all cells Poppins Medium, wrapping text (row 80 high).
+   Figma cells sit at 440 / 654 (214 wide) / 884 / 1098: first two are 16px left of the grid. */
+.wp-gct__row--lead .wp-gct__cell {
+  font-family: var(--wp-font-body);
+  font-weight: 500;
+  white-space: normal;
+}
+
+.wp-gct__row--lead .wp-gct__cell--primary {
+  position: relative;
+  left: -16px;
+  white-space: nowrap;
+}
+
+.wp-gct__row--lead .wp-gct__cell:nth-child(3) {
+  padding-left: 0;
+}
+
+
+/* Mobile cards markup is hidden on desktop (desktop keeps the <table>). */
+@media (min-width: 750px) {
+  .wp-cap-cards {
+    display: none;
+  }
+}
+
+/*
+ * Mobile (Figma 7732:13044, 375 x 1614; panel 7732:13046, card 7732:13049).
+ * Table hidden, 4 stacked cards instead. Shared tokens: --wp-m-gct-* in design-tokens.css.
+ * Card-only values are local below (this task was limited to section files): move to design-tokens.css on approval.
+ */
+@media (max-width: 749px) {
+  .wp-gct {
+    --wp-m-gct-cards-panel-padding: 32px 16px 24px;
+    --wp-m-gct-card-gap: 24px;                  /* card to card */
+    --wp-m-gct-card-padding: 16px;
+    --wp-m-gct-card-radius: 16px;
+    --wp-m-gct-card-inner-gap: 12px;            /* head / divider / rows */
+    --wp-m-gct-card-head-gap: 12px;             /* icon -> name */
+    --wp-m-gct-card-divider: rgba(255, 255, 255, 0.25);
+    --wp-m-gct-card-name-size: 20px;            /* Mobile/Heading/H4 */
+    --wp-m-gct-card-name-line-height: 28px;
+    --wp-m-gct-card-row-gap: 16px;              /* label -> value */
+    --wp-m-gct-card-label-opacity: 0.8;
+    padding: var(--wp-m-gct-padding);
+  }
+
+  /* Default asset only: mobile Figma crop + overlays baked into guide-cap-table-bg-mobile.jpg (2x). */
+  .wp-gct:has(> .wp-gct__bg[src*='guide-cap-table-bg.jpg']) {
+    background: url('guide-cap-table-bg-mobile.jpg') center / cover no-repeat;
+  }
+
+  .wp-gct__bg[src*='guide-cap-table-bg.jpg'] {
+    display: none;
+  }
+
+  /* Glass panel: 343 wide, 32/16/24, gap 24, radius 24 (fill, blur and fallback from the desktop rule) */
+  .wp-gct__panel {
+    gap: var(--wp-m-gct-panel-gap);
+    max-width: none;
+    padding: var(--wp-m-gct-cards-panel-padding);
+    border-radius: var(--wp-m-gct-panel-radius);
+    overflow: hidden;
+  }
+
+  .wp-gct__header {
+    gap: var(--wp-m-gct-panel-gap);
+  }
+
+  .wp-gct__label {
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-m-gct-label-size);
+    font-weight: 500;
+    line-height: var(--wp-m-gct-label-line-height);
+    letter-spacing: 0;
+  }
+
+  .wp-gct__heading {
+    max-width: none;
+    font-size: var(--wp-m-gct-heading-size);
+    line-height: var(--wp-m-gct-heading-line-height);
+  }
+
+  .wp-gct__table {
+    display: none;
+  }
+
+  .wp-cap-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-m-gct-card-gap);
+    width: 100%;
+  }
+
+  /* Card 311 wide: fill white 16%, radius 16, padding 16, children 12 apart */
+  .wp-cap-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-m-gct-card-inner-gap);
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--wp-m-gct-card-padding);
+    border-radius: var(--wp-m-gct-card-radius);
+    background: var(--wp-m-gct-col-bg);
+    overflow: hidden;
+    cursor: default;
+  }
+
+  /* Head 36 high + 1px divider below it (divider sits 12 under the head, rows 12 under the divider) */
+  .wp-cap-card__head {
+    display: flex;
+    align-items: center;
+    gap: var(--wp-m-gct-card-head-gap);
+    padding-bottom: var(--wp-m-gct-card-inner-gap);
+    border-bottom: 1px solid var(--wp-m-gct-card-divider);
+  }
+
+  /* Icon frame 36x36, vector group inset left 9.38% / right 7.81% */
+  .wp-cap-card__icon {
+    flex: 0 0 auto;
+    display: block;
+    box-sizing: border-box;
+    width: var(--wp-m-gct-icon-size);
+    height: var(--wp-m-gct-icon-size);
+    padding: 0 2.81px 0 3.377px;
+    overflow: hidden;
+  }
+
+  .wp-cap-card__icon img {
+    display: block;
+    width: 29.8125px;
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .wp-cap-card__name {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-m-gct-card-name-size);
+    font-weight: 500;
+    line-height: var(--wp-m-gct-card-name-line-height);
+    letter-spacing: 0;
+    text-align: left;
+    overflow-wrap: break-word;
+    color: var(--wp-gct-color-title);
+  }
+
+  .wp-cap-card__rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-m-gct-card-inner-gap);
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Row: label left (nowrap), value fills the rest, right aligned, wraps */
+  .wp-cap-card__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wp-m-gct-card-row-gap);
+    font-size: var(--wp-m-gct-cell-size);
+    line-height: var(--wp-m-gct-cell-line-height);
+    letter-spacing: 0;
+    color: var(--wp-gct-color-text);
+  }
+
+  .wp-cap-card__label {
+    flex: 0 0 auto;
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-weight: 500;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: var(--wp-m-gct-card-label-opacity);
+  }
+
+  .wp-cap-card__value {
+    flex: 1 1 0;
+    min-width: 1px;
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-weight: 400;
+    text-align: right;
+    overflow-wrap: break-word;
+  }
+}

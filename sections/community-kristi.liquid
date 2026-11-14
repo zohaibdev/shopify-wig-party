@@ -1,0 +1,217 @@
+{%- comment -%}
+  Wig Party — Community page, "From Kristi". Figma internal file, node 6849:22801 (1440 x 615).
+
+  The video card (poster + play through Dawn's <deferred-media>, as on Watch Live) beside a
+  580 column: heading, her quote, an uppercase note and her signature. The poster, play
+  glyph and signature are the files Watch Live and the site already use
+  (wp-live-poster.jpg, wp-pdp-kristi-play.svg, wp-kristi-signature-dark.svg).
+  Styles in assets/section-aria-community-kristi.css.
+{%- endcomment -%}
+
+{{ 'section-aria-community-kristi.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign media_id = 'AriaCommKristi-' | append: section.id
+  assign poster = section.settings.poster
+  if poster == blank and section.settings.video != blank
+    assign poster = section.settings.video.preview_image
+  endif
+  assign has_video = false
+  if section.settings.video != blank or section.settings.video_url != blank
+    assign has_video = true
+  endif
+
+  # -- theme.liquid only font_faces the body regular/bold/italic and the heading base weight;
+  # -- this frame also uses Montserrat 600 and Poppins 500 italic.
+  assign heading_font_semibold = settings.type_header_font | font_modify: 'weight', '600'
+  assign body_font_medium_italic = settings.type_body_font | font_modify: 'weight', '500' | font_modify: 'style', 'italic'
+-%}
+{% style %}
+  {%- if heading_font_semibold -%}{{ heading_font_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if body_font_medium_italic -%}{{ body_font_medium_italic | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-comm-kristi" style="--aria-comm-kristi-bg: {{ section.settings.background_color }};">
+  <div class="aria-comm-kristi__inner">
+    <div class="aria-comm-kristi__card">
+      {%- if section.settings.replay_id != blank -%}
+        {%- comment -%} A real LiveMeUp replay of Kristi's show: opens in the LiveMeUp player on the Replays page. {%- endcomment -%}
+        <div class="aria-comm-kristi__media">
+          <a
+            class="aria-comm-kristi__poster"
+            href="{{ section.settings.replay_page | default: '/pages/replays' }}?autoplay-live-shopping-be={{ section.settings.replay_id | url_encode }}"
+            aria-label="{{ section.settings.play_label | escape }}"
+          >
+            {%- if section.settings.replay_cover_url != blank -%}
+              <img src="{{ section.settings.replay_cover_url | escape }}" alt="" width="982" height="695" loading="lazy" style="object-fit: cover;">
+            {%- else -%}
+              <img src="{{ 'wp-live-poster.jpg' | asset_url }}" alt="" width="982" height="695" loading="lazy">
+            {%- endif -%}
+            <span class="aria-comm-kristi__play" aria-hidden="true">
+              {{- 'wp-pdp-kristi-play.svg' | inline_asset_content -}}
+            </span>
+          </a>
+        </div>
+      {%- else -%}
+      <deferred-media class="aria-comm-kristi__media" data-media-id="{{ media_id }}">
+        <button
+          id="Deferred-Poster-{{ media_id }}"
+          class="aria-comm-kristi__poster"
+          type="button"
+          aria-label="{{ section.settings.play_label | escape }}"
+          {% unless has_video %}disabled{% endunless %}
+        >
+          {%- if poster != blank -%}
+            {{
+              poster
+              | image_url: width: 1422
+              | image_tag: widths: '711,1066,1422', sizes: '(min-width: 1440px) 711px, 50vw', alt: '', loading: 'lazy'
+            }}
+          {%- else -%}
+            <img src="{{ 'wp-live-poster.jpg' | asset_url }}" alt="" width="982" height="695" loading="lazy">
+          {%- endif -%}
+          {%- if has_video -%}
+            <span class="aria-comm-kristi__play" aria-hidden="true">
+              {{- 'wp-pdp-kristi-play.svg' | inline_asset_content -}}
+            </span>
+          {%- endif -%}
+        </button>
+        {%- if has_video -%}
+          <template>
+            {%- if section.settings.video != blank -%}
+              {{ section.settings.video | video_tag: image_size: '1422x', autoplay: true, loop: false, controls: true }}
+            {%- elsif section.settings.video_url.type == 'youtube' -%}
+              <iframe
+                src="https://www.youtube.com/embed/{{ section.settings.video_url.id }}?enablejsapi=1&autoplay=1"
+                class="js-youtube"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+                title="{{ section.settings.play_label | escape }}"
+              ></iframe>
+            {%- else -%}
+              <iframe
+                src="https://player.vimeo.com/video/{{ section.settings.video_url.id }}?autoplay=1"
+                class="js-vimeo"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+                title="{{ section.settings.play_label | escape }}"
+              ></iframe>
+            {%- endif -%}
+          </template>
+        {%- endif -%}
+      </deferred-media>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-comm-kristi__copy">
+      <div class="aria-comm-kristi__text-group">
+        <div class="aria-comm-kristi__quote-group">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="aria-comm-kristi__title">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.quote != blank -%}
+            <p class="aria-comm-kristi__quote">{{ section.settings.quote | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+        {%- if section.settings.note != blank -%}
+          <p class="aria-comm-kristi__note">{{ section.settings.note | escape | newline_to_br }}</p>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_signature -%}
+        <span class="aria-comm-kristi__signature" aria-hidden="true">
+          {{- 'wp-kristi-signature-dark.svg' | inline_asset_content -}}
+        </span>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-community-kristi.name",
+  "tag": "section",
+  "class": "aria-comm-kristi-section",
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-community-kristi.settings.background_color.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "FROM KRISTI",
+      "label": "t:sections.aria-community-kristi.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "default": "“It really needs to be more about community. I don’t call my customers customers —\nI’ve created a buying community. We are not trying to impress people. We are trying to\nmake them exhale.”",
+      "label": "t:sections.aria-community-kristi.settings.quote.label",
+      "info": "t:sections.aria-community-kristi.settings.quote.info"
+    },
+    {
+      "type": "textarea",
+      "id": "note",
+      "default": "Nobody in this group has to buy anything. A lot of people\nwere in it for a year before they did.",
+      "label": "t:sections.aria-community-kristi.settings.note.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_signature",
+      "default": true,
+      "label": "t:sections.aria-community-kristi.settings.show_signature.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-community-kristi.settings.video_header.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "t:sections.aria-community-kristi.settings.poster.label",
+      "info": "t:sections.aria-community-kristi.settings.poster.info"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.aria-community-kristi.settings.video.label"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "accept": ["youtube", "vimeo"],
+      "label": "t:sections.aria-community-kristi.settings.video_url.label"
+    },
+    {
+      "type": "text",
+      "id": "replay_id",
+      "label": "LiveMeUp replay ID",
+      "info": "When set, the card opens this LiveMeUp replay of Kristi on the Replays page instead of the video above."
+    },
+    {
+      "type": "text",
+      "id": "replay_cover_url",
+      "label": "LiveMeUp replay cover image URL"
+    },
+    {
+      "type": "text",
+      "id": "replay_page",
+      "default": "/pages/replays",
+      "label": "Page that plays the replay"
+    },
+    {
+      "type": "text",
+      "id": "play_label",
+      "default": "Play Kristi's message",
+      "label": "t:sections.aria-community-kristi.settings.play_label.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-community-kristi.presets.name"
+    }
+  ]
+}
+{% endschema %}

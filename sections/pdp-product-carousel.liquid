@@ -1,0 +1,390 @@
+{%- comment -%}
+  Wig Party — PDP product carousel.
+
+  One component, two placements in the design:
+    • Figma 6356:554  "What people buy alongside …" — 1360 column, cream ground,
+                       products from the Product Recommendations API.
+    • Figma 6356:1125 "Suggested by Kristi"        — centred 1280 column, white ground,
+                       products from a merchant-curated collection.
+  Both are this section with different settings, so the markup below is written once.
+
+  Cards are the shared `aria-product-card` snippet, unchanged — its stylesheet already
+  encodes the design, including the hover state the Figma frames show on their third card.
+  Motion is the shared `aria-product-carousel.js` driver via its data-attribute contract.
+
+  When `source` is "recently_viewed" the products are the shopper's own last-viewed products
+  (assets/aria-recently-viewed.js). The page cannot know them server-side, so the carousel
+  ships inside a <template> and the script fills it with cards rendered by
+  sections/aria-recently-viewed-cards.liquid; with nothing viewed yet the section stays hidden.
+
+  When `source` is "recommendations" the carousel is wrapped in `product-recommendations`
+  (defined in global.js), which fetches this same section by `section_id` and replaces its
+  own innerHTML — so everything result-dependent, heading included, lives inside it. The
+  open and close tags are emitted conditionally around one copy of the markup rather than
+  duplicating the carousel per branch.
+{%- endcomment -%}
+
+{{ 'section-aria-pdp-product-carousel.css' | asset_url | stylesheet_tag }}
+{{ 'component-aria-product-card.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-product-carousel.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  # -- The product this carousel is about: the page's own product on a PDP, otherwise the
+  # -- section's `product` setting (the home page placement has no page product, so it
+  # -- names one — e.g. Armani — for both the recommendations and [product_short]).
+  assign rec_product = product
+  if rec_product == blank
+    assign rec_product = section.settings.product
+  endif
+
+  assign is_recommendations = false
+  if section.settings.source == 'recommendations'
+    assign is_recommendations = true
+  endif
+  assign is_recently_viewed = false
+  if section.settings.source == 'recently_viewed'
+    assign is_recently_viewed = true
+  endif
+
+  # -- Resolve the product list for the curated source. The recommendations source fills
+  # -- itself in from the API render, where the `recommendations` object is populated.
+  if is_recommendations
+    assign carousel_products = recommendations.products
+    assign has_products = false
+    if recommendations.performed and recommendations.products_count > 0
+      assign has_products = true
+    endif
+  elsif is_recently_viewed
+    # -- Filled in the browser; the empty-state fallback below never applies.
+    assign carousel_products = blank
+    assign has_products = true
+  else
+    assign carousel_products = section.settings.collection.products
+    assign has_products = false
+    if carousel_products.size > 0
+      assign has_products = true
+    endif
+  endif
+
+  # ==========================================================================
+  # EMPTY-STATE FALLBACK
+  #
+  # With nothing to show, the whole block — heading included — is skipped, which is
+  # correct for a live store but makes the section invisible while it is being set up:
+  # an unpublished collection, a wrong handle, or a product the recommendations API has
+  # no data for all produce a blank page with no clue as to why.
+  #
+  # With `show_fallback` on, any products in the store stand in so the section renders
+  # and can be reviewed. Turn it off before launch — otherwise a genuinely empty
+  # recommendation set silently shows unrelated products.
+  #
+  # The recommendations branch waits for `recommendations.performed`. On the first page
+  # render the fetch has not run yet, so the section is meant to be blank; filling it
+  # then would flash placeholder cards that the API response immediately replaces. The
+  # fallback only applies once the fetch has come back genuinely empty.
+  # ==========================================================================
+  if section.settings.show_fallback and has_products == false and is_recently_viewed == false
+    assign fallback_ready = true
+    if is_recommendations and recommendations.performed == false
+      assign fallback_ready = false
+    endif
+
+    if fallback_ready
+      assign carousel_products = collections.all.products
+      if carousel_products.size > 0
+        assign has_products = true
+      endif
+    endif
+  endif
+
+  # -- [product_short] is snippets/aria-product-short-name.liquid — see that file for why
+  # -- a bare split on the title's first "|" segment is not enough on its own.
+  capture product_short
+    render 'aria-product-short-name', product: rec_product
+  endcapture
+  assign product_short = product_short | strip
+  assign heading = section.settings.heading | replace: '[product_short]', product_short
+
+  assign modifier = ''
+  if section.settings.container == 'narrow'
+    assign modifier = ' aria-pcar--narrow'
+  endif
+
+  # -- Mobile slide geometry is only verified against Figma for the "wide" placement
+  # -- ("What people buy alongside …", node 6441:3765 in the internal file): 2 cards of
+  # -- 169px on an 8px gap. The narrow ("Suggested by Kristi") placement has no mobile
+  # -- frame to measure yet, so it keeps its existing 1.15/12 values rather than
+  # -- inheriting an unverified guess.
+  assign slides_mobile = '1.15'
+  assign space_between_mobile = ''
+  if section.settings.container != 'narrow'
+    # -- Solving n*169 + (n-1)*8 = 343 (this frame's own 169px card in the 343px column
+    # -- at an 8px gap) gives 1.98, not 2 (which produced a 167.5px card).
+    assign slides_mobile = '1.98'
+    assign space_between_mobile = '8'
+  endif
+-%}
+
+<section
+  class="aria-pcar{{ modifier }}"
+  style="--aria-pcar-bg: {{ section.settings.background_color }};"
+  {% if is_recently_viewed %}
+    hidden
+  {% endif %}
+>
+  <div class="aria-pcar__inner">
+    {%- if is_recently_viewed -%}
+      <aria-recently-viewed
+        data-url="{{ routes.search_url }}?type=product&section_id=aria-recently-viewed-cards&q="
+        data-limit="{{ section.settings.products_to_show }}"
+        data-exclude="{{ product.handle }}"
+      >
+      <template>
+    {%- endif -%}
+    {%- if is_recommendations -%}
+      <product-recommendations
+        class="aria-pcar__recs"
+       data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ rec_product.id }}&limit={{ section.settings.products_to_show }}&intent={{ section.settings.intent }}"      
+       data-section-id="{{ section.id }}"
+      data-product-id="{{ rec_product.id }}"
+      >
+    {%- endif -%}
+
+    {%- if has_products -%}
+      {%- if heading != blank -%}
+        <h2 class="aria-pcar__heading">{{ heading }}</h2>
+      {%- endif -%}
+
+      {%- comment -%}
+        Attributes stay on their own lines: a whitespace-trimming Liquid comment between
+        them welds attribute names together and silently stops Swiper initialising
+        (documented in best-sellers.liquid).
+      {%- endcomment -%}
+      <div
+        class="aria-pcar__carousel"
+        data-aria-product-carousel
+        data-slides-mobile="{{ slides_mobile }}"
+        data-slides-sm="2.1"
+        data-slides-md="3.2"
+        data-slides-desktop="{{ section.settings.slides_desktop }}"
+        data-space-between="12"
+        {% if space_between_mobile != blank %}
+          data-space-between-mobile="{{ space_between_mobile }}"
+        {% endif %}
+      >
+        <div class="swiper aria-pcar__swiper" data-aria-carousel-swiper>
+          <div class="swiper-wrapper">
+            {%- unless is_recently_viewed -%}
+              {%- for carousel_product in carousel_products limit: section.settings.products_to_show -%}
+                <div class="swiper-slide aria-pcar__slide">
+                  {%- render 'aria-product-card',
+                    product: carousel_product,
+                    feature_tag_metafield: section.settings.feature_tag_metafield,
+                    section_id: section.id,
+                    hide_vendor: section.settings.hide_supplier
+                  -%}
+                </div>
+              {%- endfor -%}
+            {%- endunless -%}
+          </div>
+        </div>
+
+        <div class="aria-pcar__controls" data-aria-carousel-controls>
+          {%- comment -%}
+            Dawn's base.css hides empty elements (`:empty { display: none }`), hence the
+            aria-hidden spans inside these decorative bars.
+          {%- endcomment -%}
+          <div class="aria-pcar__progress">
+            <div class="aria-pcar__progress-track"><span aria-hidden="true"></span></div>
+            <div class="aria-pcar__progress-fill" data-aria-carousel-progress>
+              <span aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="aria-pcar__nav">
+            <button
+              type="button"
+              class="aria-pcar__prev"
+              data-aria-carousel-prev
+              aria-label="{{ 'aria_theme.carousel.previous' | t }}"
+            >
+              <span class="aria-pcar__icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+            <button
+              type="button"
+              class="aria-pcar__next"
+              data-aria-carousel-next
+              aria-label="{{ 'aria_theme.carousel.next' | t }}"
+            >
+              <span class="aria-pcar__icon">
+                {{- 'wp-pdp-shade-arrow.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if is_recommendations -%}
+      </product-recommendations>
+    {%- endif -%}
+    {%- if is_recently_viewed -%}
+      </template>
+      </aria-recently-viewed>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- if is_recently_viewed -%}
+  <script src="{{ 'aria-recently-viewed.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if is_recommendations -%}
+  {%- comment -%}
+    aria-product-carousel.js binds on DOMContentLoaded and on `shopify:section:load`; it
+    does not watch for arbitrary DOM insertion. Because the recommendations arrive
+    asynchronously, the carousel would otherwise never be initialised. Re-dispatching the
+    theme editor's own event once, when the content lands, hands the new markup to the
+    shared driver rather than duplicating any of its logic here.
+  {%- endcomment -%}
+  <script>
+    (function () {
+      var host = document.currentScript.previousElementSibling;
+      if (!host) return;
+      var recs = host.querySelector('product-recommendations');
+      if (!recs) return;
+
+      var observer = new MutationObserver(function () {
+        if (!recs.querySelector('[data-aria-product-carousel]')) return;
+        observer.disconnect();
+        // Dispatched ON the recommendations element so it bubbles to the driver's document
+        // listener with `event.target` set to the subtree holding the new carousel.
+        recs.dispatchEvent(new CustomEvent('shopify:section:load', { bubbles: true }));
+      });
+
+      observer.observe(recs, { childList: true });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.aria-pdp-product-carousel.name",
+  "tag": "section",
+  "class": "aria-pcar-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "What people buy alongside [product_short]",
+      "label": "t:sections.aria-pdp-product-carousel.settings.heading.label",
+      "info": "t:sections.aria-pdp-product-carousel.settings.heading.info"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product (pages without one)",
+      "info": "Used only where the page has no product of its own, such as the home page: the recommendations and [product_short] in the heading come from this product. Product pages always use their own product."
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_supplier",
+      "default": false,
+      "label": "Hide supplier name in product titles",
+      "info": "Strips the names listed under Theme settings > Supplier branding from the card titles, as the other home page carousels do."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-product-carousel.settings.source_header.content"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "options": [
+        { "value": "recommendations", "label": "t:sections.aria-pdp-product-carousel.settings.source.options__1.label" },
+        { "value": "collection", "label": "t:sections.aria-pdp-product-carousel.settings.source.options__2.label" },
+        { "value": "recently_viewed", "label": "t:sections.aria-pdp-product-carousel.settings.source.options__3.label" }
+      ],
+      "default": "recommendations",
+      "label": "t:sections.aria-pdp-product-carousel.settings.source.label"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.aria-pdp-product-carousel.settings.collection.label",
+      "info": "t:sections.aria-pdp-product-carousel.settings.collection.info"
+    },
+    {
+      "type": "select",
+      "id": "intent",
+      "options": [
+        { "value": "related", "label": "t:sections.aria-pdp-product-carousel.settings.intent.options__1.label" },
+        { "value": "complementary", "label": "t:sections.aria-pdp-product-carousel.settings.intent.options__2.label" }
+      ],
+      "default": "related",
+      "label": "t:sections.aria-pdp-product-carousel.settings.intent.label",
+      "info": "t:sections.aria-pdp-product-carousel.settings.intent.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_fallback",
+      "default": true,
+      "label": "Show any products when empty",
+      "info": "Keeps the section visible while it is being set up, by standing in products from the store when the source returns none. Turn this off before launch."
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 8,
+      "label": "t:sections.aria-pdp-product-carousel.settings.products_to_show.label"
+    },
+    {
+      "type": "text",
+      "id": "feature_tag_metafield",
+      "default": "custom.feature_tags",
+      "label": "t:sections.aria-pdp-product-carousel.settings.feature_tag_metafield.label",
+      "info": "t:sections.aria-pdp-product-carousel.settings.feature_tag_metafield.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-product-carousel.settings.layout_header.content"
+    },
+    {
+      "type": "select",
+      "id": "container",
+      "options": [
+        { "value": "wide", "label": "t:sections.aria-pdp-product-carousel.settings.container.options__1.label" },
+        { "value": "narrow", "label": "t:sections.aria-pdp-product-carousel.settings.container.options__2.label" }
+      ],
+      "default": "wide",
+      "label": "t:sections.aria-pdp-product-carousel.settings.container.label",
+      "info": "t:sections.aria-pdp-product-carousel.settings.container.info"
+    },
+    {
+      "type": "select",
+      "id": "slides_desktop",
+      "options": [
+        { "value": "4", "label": "t:sections.aria-pdp-product-carousel.settings.slides_desktop.options__1.label" },
+        { "value": "auto", "label": "t:sections.aria-pdp-product-carousel.settings.slides_desktop.options__2.label" }
+      ],
+      "default": "4",
+      "label": "t:sections.aria-pdp-product-carousel.settings.slides_desktop.label"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#f5ebe2",
+      "label": "t:sections.aria-pdp-product-carousel.settings.background_color.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-pdp-product-carousel.presets.name"
+    }
+  ]
+}
+{% endschema %}

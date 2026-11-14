@@ -1,0 +1,58 @@
+{%- comment -%}
+  Wig Party — derives the "short style name" used wherever a heading or breadcrumb needs
+  just the product's style name rather than its full pipe-delimited title.
+
+  This store's titles are usually "Style | Belle Tress | Collection | Status" (the first
+  pipe segment is already just the style name), but the "Lux V HT Collection" family
+  writes the construction type directly into that segment instead — "Armani Hand-Tied
+  Wig", "Stella Wig" — so a bare split on "|" left headings reading "Armani Hand-Tied
+  Wig, in all ten shades" instead of the design's "Armani, in all ten shades".
+
+  This strips a trailing " Hand-Tied Wig" or " Wig", checked as an exact tail slice (not a
+  blanket substring removal), so a hypothetical style genuinely containing the word "wig"
+  mid-name is not mangled. It cannot normalise every title in this catalogue — a handful
+  (e.g. "Belle Tress Pandora Wig") prefix the vendor onto the name instead of using it as
+  its own pipe segment, which is a data-entry inconsistency in those titles, not something
+  a naming heuristic can resolve.
+
+  `wigparty.short_name` overrides this outright for any product where it still gets the
+  wrong answer — set it once and every section that renders [product_short] picks it up.
+
+  Param: product (required).
+{%- endcomment -%}
+{%- liquid
+  assign short_name = product.metafields.wigparty.short_name.value
+  if short_name == blank
+    assign short_name = product.title | split: '|' | first | strip
+
+    # -- `slice` only accepts a literal negative start, not `-variable` (that is a unary
+    # -- minus applied to a variable reference, which Liquid's parser rejects) — so the
+    # -- negative offset has to be computed into its own variable first.
+    assign short_len = short_name | size
+    assign suffix_ht = ' Hand-Tied Wig'
+    assign suffix_ht_len = suffix_ht | size
+    if short_len > suffix_ht_len
+      assign neg_ht_len = 0 | minus: suffix_ht_len
+      assign tail_ht = short_name | slice: neg_ht_len, suffix_ht_len
+      if tail_ht == suffix_ht
+        assign keep_len = short_len | minus: suffix_ht_len
+        assign short_name = short_name | slice: 0, keep_len
+      endif
+    endif
+
+    assign short_len = short_name | size
+    assign suffix_wig = ' Wig'
+    assign suffix_wig_len = suffix_wig | size
+    if short_len > suffix_wig_len
+      assign neg_wig_len = 0 | minus: suffix_wig_len
+      assign tail_wig = short_name | slice: neg_wig_len, suffix_wig_len
+      if tail_wig == suffix_wig
+        assign keep_len = short_len | minus: suffix_wig_len
+        assign short_name = short_name | slice: 0, keep_len
+      endif
+    endif
+
+    assign short_name = short_name | strip
+  endif
+-%}
+{{- short_name -}}

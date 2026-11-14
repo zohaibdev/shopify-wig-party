@@ -1,0 +1,30 @@
+{%- comment -%}
+  Wig Party — cards for the "recently viewed" carousel (pdp-product-carousel with source
+  "Recently viewed by the shopper"). Not placed in any template: assets/aria-recently-viewed.js
+  requests it through the Section Rendering API on the search page,
+    /search?type=product&section_id=aria-recently-viewed-cards&q=handle-a,handle-b
+  because the search terms are the one request value Liquid can read. Each handle is looked
+  up with `all_products` (Shopify caps that at 20 lookups per page; the script sends at
+  most 12). Unknown, unpublished or deleted handles render nothing.
+{%- endcomment -%}
+{%- assign rv_handles = search.terms | split: ',' -%}
+{%- for rv_handle in rv_handles limit: 12 -%}
+  {%- assign rv_product = all_products[rv_handle] -%}
+  {%- if rv_product != blank -%}
+    <div class="swiper-slide aria-pcar__slide" data-handle="{{ rv_product.handle }}">
+      {%- render 'aria-product-card',
+        product: rv_product,
+        feature_tag_metafield: 'custom.feature_tags',
+        section_id: 'recently-viewed',
+        hide_vendor: false
+      -%}
+    </div>
+  {%- endif -%}
+{%- endfor -%}
+
+{% schema %}
+{
+  "name": "Recently viewed cards",
+  "settings": []
+}
+{% endschema %}

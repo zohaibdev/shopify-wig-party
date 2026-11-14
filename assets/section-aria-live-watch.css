@@ -1,0 +1,893 @@
+/* Wig Party — Watch Live, first section (sections/live-watch.liquid), Figma 6849:21153.
+ *
+ * Desktop geometry (px, Figma, 1440 artboard):
+ *   breadcrumb bar  px-40 py-16, Poppins 14/22 #3F3E3E; 20 down to the grid
+ *   grid            1360 wide, 739 | 35 | 586; the columns stretch to the taller (796)
+ *   stream card     739 x 535, white, 1px #BC696B, r-4; the 711 x 503 video (r-8) sits 14 in
+ *                   from the card's left edge and 14 down, leaving 18 below
+ *   show copy       34 below the card, px-16 pb-32: badge, 12, title + blurb 8 apart
+ *   showing now     black, pb-16: 64 title bar, 17, rows (78, 12 apart), 27, the 52 button,
+ *                   24, the note
+ *   ask kristi      #BC696B -> #FFBABC, px-18 py-20
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-live,
+.aria-live *,
+.aria-live *::before,
+.aria-live *::after {
+  box-sizing: border-box;
+}
+
+.aria-live {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: var(--aria-live-bg, #f5ebe2);
+  color: var(--black, #000);
+}
+
+/* ---------- Breadcrumb (6849:21154) ---------- */
+
+.aria-live__crumbs {
+  width: 100%;
+  padding: 16px 40px;
+}
+
+/* Flex so the markup's own whitespace drops out; the separators' spaces are kept. */
+.aria-live__crumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: var(--container, 1360px);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-live__crumb-list li {
+  display: flex;
+}
+
+.aria-live__crumb-link,
+.aria-live__crumb-sep,
+.aria-live__crumb-current {
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-live__crumb-sep {
+  white-space: pre;
+}
+
+.aria-live__crumb-sep--mob {
+  display: none;
+}
+
+.aria-live__crumb-link {
+  text-decoration: none;
+}
+
+a.aria-live__crumb-link:hover,
+a.aria-live__crumb-link:focus-visible {
+  color: var(--py, #a64a4c);
+  text-decoration: underline;
+}
+
+/* ---------- Grid (6849:21156) ---------- */
+
+.aria-live__grid {
+  display: grid;
+  grid-template-columns: 739fr 586fr;
+  column-gap: 35px;
+  align-items: stretch;
+  width: 100%;
+  max-width: calc(var(--container, 1360px) + 80px);
+  padding-inline: 40px;
+}
+
+/* ---------- Left: stream + copy (6849:21157) ---------- */
+
+.aria-live__main {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  min-width: 0;
+  background: var(--white, #fff);
+}
+
+/* 1px ring, then 13 / 13 / 17 to the video (Figma's 12 + 1 for the inset video). */
+.aria-live__card {
+  padding: 13px 13px 17px;
+  border: 1px solid var(--qi, #bc696b);
+  border-radius: 4px;
+  background: var(--white, #fff);
+}
+
+.aria-live__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 711 / 503;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+
+.aria-live__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.aria-live__poster:disabled {
+  cursor: default;
+}
+
+.aria-live__poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Figma's 20% black wash over the still. */
+.aria-live__poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* 70px frosted disc, centred 0.5 right and 36.5 below the middle. */
+.aria-live__play {
+  position: absolute;
+  z-index: 1;
+  top: calc(50% + 36.5px);
+  left: calc(50% + 0.5px);
+  display: block;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(192, 192, 192, 0.5);
+  backdrop-filter: blur(16.7px);
+  -webkit-backdrop-filter: blur(16.7px);
+  color: var(--white, #fff);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.2s ease;
+}
+
+.aria-live__play svg {
+  display: block;
+  width: 70px;
+  height: 70px;
+}
+
+.aria-live__poster:hover .aria-live__play,
+.aria-live__poster:focus-visible .aria-live__play {
+  background: rgba(192, 192, 192, 0.7);
+}
+
+/* Once playing, the player replaces the still; the pills stay on top of it. */
+.aria-live__media[loaded] .aria-live__poster {
+  display: none;
+}
+
+.aria-live__media > div,
+.aria-live__media iframe,
+.aria-live__media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* LIVE NOW: white pill at 24, 21; px-12 py-5, 11px #BC696B dot 8 from Helvetica Bold
+   12/22 uppercase #111. */
+.aria-live__live {
+  position: absolute;
+  z-index: 2;
+  top: 21px;
+  left: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 30px;
+  background: var(--white, #fff);
+  font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #111;
+  pointer-events: none;
+}
+
+.aria-live__live-dot {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--qi, #bc696b);
+}
+
+/* WATCHING: 20% black frosted pill, px-16 py-8, 16px eye 5 from Poppins 12/20 white.
+   Figma places it at x 541, y 445 of the 711 x 503 video: 22 up from the bottom and, for
+   the design's 153-wide pill, 17 in from the right, so a longer count grows leftwards. */
+.aria-live__watching {
+  position: absolute;
+  z-index: 2;
+  right: 17px;
+  bottom: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 40px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(37.35px);
+  -webkit-backdrop-filter: blur(37.35px);
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.aria-live__watching-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.aria-live__watching-icon svg {
+  display: block;
+  width: 16px;
+  height: 10.6631px;
+}
+
+/* Show copy (6849:21180). */
+.aria-live__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0 16px 32px;
+}
+
+/* #F79510 pill, px-12 py-6, r-16, Poppins 12/14 uppercase black. */
+.aria-live__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #f79510;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--black, #000);
+}
+
+.aria-live__copy-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Montserrat SemiBold 32/40 black. */
+.aria-live__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+/* Poppins 16/24 #4A4A4A. */
+.aria-live__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #4a4a4a;
+}
+
+/* ---------- Right: showing now (6849:21186) ---------- */
+
+.aria-live__side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.aria-live__showing {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 16px;
+  background: var(--black, #000);
+}
+
+/* 64-tall bar, p-16, Montserrat Medium 20/32 white, centred. The 17 below it is added
+   to the list (the 24 gap covers the note). */
+.aria-live__showing-title {
+  margin: 0;
+  padding: 16px;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--white, #fff);
+}
+
+.aria-live__showing-body {
+  display: flex;
+  flex-direction: column;
+  gap: 27px;
+  margin-top: -7px;
+  padding-inline: 16px;
+}
+
+.aria-live__items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-live__items:empty {
+  display: none;
+}
+
+/* Row: white, pl-12 pr-16 py-12, 52px thumb then a 14px-indented two-line column. */
+.aria-live__item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px 12px 12px;
+  background: var(--white, #fff);
+}
+
+.aria-live__thumb {
+  flex: none;
+  display: block;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.aria-live__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.aria-live__item-info {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-left: 14px;
+}
+
+.aria-live__item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Name Montserrat Medium 14/20 #1A1A1A; price Poppins SemiBold 14/20 #1A1A1A. */
+.aria-live__item-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-heading-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.aria-live__item-name:hover,
+.aria-live__item-name:focus-visible {
+  text-decoration: underline;
+}
+
+.aria-live__item-price {
+  flex: none;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-align: right;
+  color: #1a1a1a;
+}
+
+/* Poppins 14/20 #8C8C8C. */
+.aria-live__item-note {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: #8c8c8c;
+}
+
+/* Add: #A64A4C pill, px-16, 26 tall, Poppins 11.5/17.25 white. */
+.aria-live__add {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 4px 16px;
+  border: 0;
+  border-radius: 40px;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 17.25px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Add everything: #A64A4C, px-24 py-12, 52 tall, Poppins 18/28 uppercase white. */
+.aria-live__add-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 0;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-live__add:hover,
+.aria-live__add:focus-visible,
+.aria-live__add-all:hover,
+.aria-live__add-all:focus-visible {
+  background: #8d3b3d;
+}
+
+.aria-live__add:disabled,
+.aria-live__add-all:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.aria-live__add[aria-busy='true'],
+.aria-live__add-all[aria-busy='true'] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Poppins 16/24 #D8D8D8, centred in the 554 column. */
+.aria-live__showing-note {
+  margin: 0;
+  padding-inline: 16px;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-align: center;
+  color: #d8d8d8;
+}
+
+/* ---------- Ask Kristi (6849:21234) ---------- */
+
+.aria-live__ask {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 18px;
+  background: linear-gradient(180deg, var(--qi, #bc696b) 0%, #ffbabc 100%);
+}
+
+.aria-live__ask-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+}
+
+.aria-live__ask-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aria-live__ask-avatar {
+  flex: none;
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* Montserrat Medium 20/28 white. */
+.aria-live__ask-title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+/* White field, px-16 py-10, Poppins 16/24; placeholder #8E8E8E. */
+.aria-live__ask-input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--white, #fff);
+  box-shadow: none;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.aria-live__ask-input::placeholder {
+  color: #8e8e8e;
+  opacity: 1;
+}
+
+.aria-live__ask-input:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 0;
+}
+
+/* Guest-only row (not in the Figma default state): email + send, same field style. */
+.aria-live__ask-email {
+  display: flex;
+  gap: 8px;
+  margin-top: -8px;
+}
+
+.aria-live__ask-email[hidden] {
+  display: none;
+}
+
+.aria-live__ask-send {
+  flex: none;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 0;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 24px;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  cursor: pointer;
+}
+
+.aria-live__ask-status {
+  margin: -4px 0 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--white, #fff);
+}
+
+.aria-live__ask-status--error {
+  color: #6b1416;
+}
+
+/* Poppins 16/24 #3D3D3D; Figma's box is 554, 4 wider than the padded column. */
+.aria-live__ask-note {
+  width: calc(100% + 4px);
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #3d3d3d;
+}
+
+/* ---------- Below desktop: stack (no Figma frame yet) ---------- */
+
+@media screen and (max-width: 989px) {
+  .aria-live__crumbs {
+    padding-inline: 24px;
+  }
+
+  .aria-live__grid {
+    grid-template-columns: 1fr;
+    row-gap: 24px;
+    padding-inline: 24px;
+  }
+}
+
+/* ---------- Mobile (Figma 6849:21654 crumbs, 6849:21657 stream, 6849:21677 side) ----------
+ * 375 artboard: a 34-tall crumb bar, then the column p-16 (48 below): the white r-20 card
+ * (278 stream frame, 16, show copy), 48, then the black "showing now" block and the
+ * Ask Kristi box, 343 wide. Desktop (990+) and the 750-989 stack are untouched.
+ */
+@media screen and (max-width: 749px) {
+  .aria-live {
+    gap: 0;
+  }
+
+  /* px-12 py-8, Poppins 11.5/17.25 #3F3E3E; the page you are on in Bold. */
+  .aria-live__crumbs {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 8px 12px;
+  }
+
+  .aria-live__crumb-list {
+    margin: 0;
+  }
+
+  .aria-live__crumb-link,
+  .aria-live__crumb-sep,
+  .aria-live__crumb-current {
+    font-size: 11.5px;
+    line-height: 17.25px;
+  }
+
+  .aria-live__crumb-current {
+    font-weight: 700;
+  }
+
+  .aria-live__crumb-sep--desk {
+    display: none;
+  }
+
+  .aria-live__crumb-sep--mob {
+    display: block;
+  }
+
+  .aria-live__grid {
+    row-gap: 48px;
+    padding: 16px 16px 48px;
+  }
+
+  /* ---- Stream + copy (6849:21658) ---- */
+
+  .aria-live__main {
+    gap: 16px;
+    overflow: hidden;
+    border-radius: 20px;
+  }
+
+  /* 1px ring, r-16, the video 8 in from every edge (7 + the ring). */
+  .aria-live__card {
+    padding: 7px;
+    border-radius: 16px;
+  }
+
+  .aria-live__media {
+    aspect-ratio: 327 / 262;
+    border-radius: 12px;
+  }
+
+  /* The desktop disc at 32 (blur scaled to match), centred 4.5 left of the middle. */
+  .aria-live__play {
+    top: 50%;
+    left: calc(50% - 4.5px);
+    width: 32px;
+    height: 32px;
+    backdrop-filter: blur(7.63px);
+    -webkit-backdrop-filter: blur(7.63px);
+  }
+
+  .aria-live__play svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .aria-live__live {
+    top: 10px;
+    left: 6px;
+  }
+
+  .aria-live__watching {
+    right: 12.91px;
+    bottom: 13px;
+  }
+
+  .aria-live__copy {
+    padding: 0 16px 20px;
+  }
+
+  /* ---- Showing now (6849:21679) ---- */
+
+  /* The title bar and the list sit flush (no 24 between them); 24 on to the note. */
+  .aria-live__showing-title {
+    font-size: 16px;
+    line-height: 32px;
+  }
+
+  .aria-live__showing-body {
+    gap: 24px;
+    margin-top: -24px;
+    padding-inline: 12px;
+  }
+
+  .aria-live__items {
+    gap: 8px;
+  }
+
+  /* Row: px-9 py-8, 12 from the thumb, the two lines 4 apart. */
+  .aria-live__item {
+    padding: 8px 9px;
+  }
+
+  .aria-live__item-info {
+    gap: 4px;
+    padding-left: 12px;
+  }
+
+  .aria-live__item-note {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  /* Figma keeps the label on one line: it is wider than the padded box, so it runs into the
+     24px side padding but still fits inside the 319 button. */
+  .aria-live__add-all {
+    padding-inline: 0;
+    white-space: nowrap;
+  }
+
+  .aria-live__showing-note {
+    padding-inline: 0;
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  /* ---- Ask Kristi (6849:21727) ---- */
+
+  .aria-live__ask {
+    padding: 20px 16px;
+  }
+
+  .aria-live__ask-form {
+    gap: 12px;
+  }
+
+  .aria-live__ask-title {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .aria-live__ask-input {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .aria-live__ask-note {
+    width: 100%;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+/* ---------- LiveMeUp feed (assets/aria-livemeup.js) ---------- */
+
+/* The card + copy now sit in one wrapper that the feed fills; it keeps the column's
+   34 (mobile 16) between them. */
+.aria-live__featured {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+/* Countdown / LATEST REPLAY use the LIVE NOW pill without its dot. */
+.aria-live__live--soon {
+  gap: 0;
+}
+
+.aria-live__thumb {
+  position: relative;
+}
+
+/* LiveMeUp descriptions can run long; the column keeps to four lines. */
+.aria-live__text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.aria-live__add-all[hidden] {
+  display: none;
+}
+
+@media screen and (max-width: 749px) {
+  .aria-live__featured {
+    gap: 16px;
+  }
+}
+
+/* Breadcrumb, QA pass 2026-10-29: Figma's crumbs are Poppins 12/14 uppercase ("HOME / WATCH
+   LIVE"), the page you are on in Bold — the same as the New In and Replays heroes. */
+@media screen and (min-width: 750px) {
+  .aria-live__crumb-link,
+  .aria-live__crumb-sep,
+  .aria-live__crumb-current {
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+  }
+
+  .aria-live__crumb-current {
+    font-weight: 700;
+  }
+}

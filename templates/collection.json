@@ -8,38 +8,329 @@
  * ------------------------------------------------------------
  */
 {
-  "sections": {
-    "banner": {
-      "type": "main-collection-banner",
-      "settings": {
-        "show_collection_description": true,
-        "show_collection_image": false,
-        "color_scheme": "scheme-1"
-      }
-    },
-    "product-grid": {
-      "type": "main-collection-product-grid",
-      "settings": {
-        "products_per_page": 16,
-        "columns_desktop": 4,
-        "color_scheme": "scheme-1",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": false,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "enable_filtering": true,
-        "filter_type": "horizontal",
-        "enable_sorting": true,
-        "columns_mobile": "2",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    }
-  },
-  "order": [
-    "banner",
-    "product-grid"
-  ]
+    "sections":  {
+                     "collection_hero":  {
+                                             "type":  "collection-hero",
+                                             "settings":  {
+
+                                                          }
+                                         },
+                     "results":  {
+                                     "type":  "collection-results",
+                                     "blocks":  {
+                                                    "chip_everything":  {
+                                                                            "type":  "chip",
+                                                                            "settings":  {
+                                                                                             "label":  "Everything",
+                                                                                             "filter":  "",
+                                                                                             "link":  ""
+                                                                                         }
+                                                                        },
+                                                    "chip_shelf":  {
+                                                                       "type":  "chip",
+                                                                       "settings":  {
+                                                                                        "label":  "On our shelf",
+                                                                                        "filter":  "af_stock=on-our-shelf",
+                                                                                        "link":  ""
+                                                                                    }
+                                                                   },
+                                                    "chip_handtied":  {
+                                                                          "type":  "chip",
+                                                                          "settings":  {
+                                                                                           "label":  "Hand-tied",
+                                                                                           "filter":  "af_cap-construction=hand-tied",
+                                                                                           "link":  ""
+                                                                                       }
+                                                                      },
+                                                    "chip_under300":  {
+                                                                          "type":  "chip",
+                                                                          "settings":  {
+                                                                                           "label":  "Under $300",
+                                                                                           "filter":  "filter.v.price.lte=300",
+                                                                                           "link":  ""
+                                                                                       }
+                                                                      },
+                                                    "chip_rooted":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Rooted",
+                                                                                         "filter":  "af_colour-family=rooted",
+                                                                                         "link":  ""
+                                                                                     }
+                                                                    },
+                                                    "tf_cap":  {
+                                                                   "type":  "theme_filter",
+                                                                   "settings":  {
+                                                                                    "title":  "Cap construction",
+                                                                                    "source":  "type",
+                                                                                    "options":  "Hand-tied = hand tied\nExtended lace front = extended lace front, creative lace front\nFull mono = full mono\nMono topper = center mono\nStandard wefted = wefted",
+                                                                                    "note":  ""
+                                                                                }
+                                                               },
+                                                    "tf_size":  {
+                                                                    "type":  "theme_filter",
+                                                                    "settings":  {
+                                                                                     "title":  "Cap size",
+                                                                                     "source":  "capsize",
+                                                                                     "options":  "Petite · 20½” = petite\nAverage · 21½” = average\nLarge · 22½” = large",
+                                                                                     "note":  ""
+                                                                                 }
+                                                                },
+                                                    "tf_colour":  {
+                                                                      "type":  "theme_filter",
+                                                                      "settings":  {
+                                                                                       "title":  "Colour family",
+                                                                                       "source":  "colour",
+                                                                                       "options":  "Blonde = blonde, butterbeer, champagne, almond, tres leches, biscotti, velvet cr, gilded honey, honey with chai, sugar cookie, milktea, milk tea, mliktea, millktea, beige linen, oatmilk | #d9bf8f\nBrunette = brown, chocolate, jamoca, mocha, cappuccino, truffle, havana, french roast, walnut, pecan, buttered toast, toffee, macadamia, caramel, -blonde | #6b4a35\nRed \u0026 auburn = auburn, sienna, strawberry, strawbwerry, berry, amber, spiced rum, pumpkin | #8e3b2a\nGrey \u0026 silver = gray, grey, silver, oyster, alpine, alpin cream, coconut milk | #b9b7b2\nRooted = re:(^|[\\s-])r($|[\\s-(]) | #8a6e55",
+                                                                                       "note":  ""
+                                                                                   }
+                                                                  },
+                                                    "tf_length":  {
+                                                                      "type":  "theme_filter",
+                                                                      "settings":  {
+                                                                                       "title":  "Length",
+                                                                                       "source":  "tags",
+                                                                                       "options":  "Short · above chin = short, bob, short bob, classic bob, inverted bob, wavy bob, pixie, -long\nMid · to shoulder = shoulder length, lob, mid length, medium length\nLong · past shoulder = long",
+                                                                                       "note":  ""
+                                                                                   }
+                                                                  },
+                                                    "tf_collection":  {
+                                                                          "type":  "theme_filter",
+                                                                          "settings":  {
+                                                                                           "title":  "Collection",
+                                                                                           "source":  "title",
+                                                                                           "options":  "Lux V = lux v\nLux SE = lux se\nCafé extended = cafe e, café e\nCafé hand-tied = cafe ht, café ht\nCity = city collection\nIcon = icons collection\nBloom = bloom collection\nLux = lux collection, lux ht collection\nConfidence = confidence collection",
+                                                                                           "note":  ""
+                                                                                       }
+                                                                      },
+                                                    "tf_stock":  {
+                                                                     "type":  "theme_filter",
+                                                                     "settings":  {
+                                                                                      "title":  "Stock",
+                                                                                      "source":  "tags",
+                                                                                      "options":  "On our shelf = in stock",
+                                                                                      "note":  ""
+                                                                                  }
+                                                                 },
+                                                    "chip_new":  {
+                                                                     "type":  "chip",
+                                                                     "settings":  {
+                                                                                      "label":  "New in",
+                                                                                      "filter":  "sort_by=created-descending",
+                                                                                      "link":  ""
+                                                                                  }
+                                                                 },
+                                                    "chip_sale":  {
+                                                                      "type":  "chip",
+                                                                      "settings":  {
+                                                                                       "label":  "Sale",
+                                                                                       "filter":  "af_status=sale",
+                                                                                       "link":  ""
+                                                                                   }
+                                                                  },
+                                                    "tf_status":  {
+                                                                      "type":  "theme_filter",
+                                                                      "settings":  {
+                                                                                       "title":  "Status",
+                                                                                       "source":  "tags",
+                                                                                       "options":  "Sale = clearance, daileydeals, discount",
+                                                                                       "note":  ""
+                                                                                   }
+                                                                  }
+                                                },
+                                     "block_order":  [
+                                                         "chip_everything",
+                                                         "chip_shelf",
+                                                         "chip_handtied",
+                                                         "chip_under300",
+                                                         "chip_rooted",
+                                                         "chip_new",
+                                                         "chip_sale",
+                                                         "tf_cap",
+                                                         "tf_size",
+                                                         "tf_colour",
+                                                         "tf_length",
+                                                         "tf_collection",
+                                                         "tf_status",
+                                                         "tf_stock"
+                                                     ],
+                                     "settings":  {
+                                                      "note_filter":  "Cap construction",
+                                                      "note_text":  "",
+                                                      "default_sort":  "best-selling"
+                                                  }
+                                 },
+                     "filter_guard":  {
+                                          "type":  "collection-filter-guard",
+                                          "settings":  {
+
+                                                       }
+                                      },
+                     "trust_badges":  {
+                                          "type":  "trust-badges",
+                                          "blocks":  {
+                                                         "trust-approved-1":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Tried on Live by Kristi",
+                                                                                                   "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                   "default_icon":  "wp-trust-wear-share"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-2":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Processed in 1 to 3 business days",
+                                                                                                   "description":  "",
+                                                                                                   "default_icon":  "cart-trust-packaging-icon"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-3":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Tracking within 24 to 48 hours",
+                                                                                                   "description":  "",
+                                                                                                   "default_icon":  "wp-trust-free-shipping"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-4":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "All sales final, ask us first",
+                                                                                                   "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                   "default_icon":  "cart-trust-consult-icon"
+                                                                                               }
+                                                                              }
+                                                     },
+                                          "block_order":  [
+                                                              "trust-approved-1",
+                                                              "trust-approved-2",
+                                                              "trust-approved-3",
+                                                              "trust-approved-4"
+                                                          ],
+                                          "settings":  {
+                                                           "background_color":  "#ffffff"
+                                                       }
+                                      },
+                     "new_trending":  {
+                                          "type":  "new-trending",
+                                          "blocks":  {
+                                                         "nt-1":  {
+                                                                      "type":  "product",
+                                                                      "settings":  {
+                                                                                       "product":  "city-collection-alicante-belle-tress-wig-in-stock"
+                                                                                   }
+                                                                  },
+                                                         "nt-2":  {
+                                                                      "type":  "product",
+                                                                      "settings":  {
+                                                                                       "product":  "amarettoe"
+                                                                                   }
+                                                                  },
+                                                         "nt-3":  {
+                                                                      "type":  "product",
+                                                                      "settings":  {
+                                                                                       "product":  "lux-se-ht-ami-belle-tress-wig-in-stock"
+                                                                                   }
+                                                                  },
+                                                         "nt-4":  {
+                                                                      "type":  "product",
+                                                                      "settings":  {
+                                                                                       "product":  "belle-tress-adriana-wig-hand-tied-lux-se-collection-preorder-copy"
+                                                                                   }
+                                                                  },
+                                                         "nt-5":  {
+                                                                      "type":  "product",
+                                                                      "settings":  {
+                                                                                       "product":  "alicante-new-spanish-city-collection"
+                                                                                   }
+                                                                  }
+                                                     },
+                                          "block_order":  [
+                                                              "nt-1",
+                                                              "nt-2",
+                                                              "nt-3",
+                                                              "nt-4",
+                                                              "nt-5"
+                                                          ],
+                                          "settings":  {
+                                                           "heading":  "New and trending",
+                                                           "show_navigation":  true,
+                                                           "background_gradient_start":  "#ffffff",
+                                                           "background_gradient_end":  "#eaddd4",
+                                                           "feature_tag_metafield":  "custom.feature_tags"
+                                                       }
+                                      },
+                     "instagram_feed":  {
+                                            "type":  "instagram-feed",
+                                            "blocks":  {
+                                                           "ig-1":  {
+                                                                        "type":  "post",
+                                                                        "settings":  {
+                                                                                         "image":  "shopify://shop_images/1_af33c142-389a-4934-bb10-f0ff5ad9a761.png",
+                                                                                         "product":  "city-collection-alicante-belle-tress-wig-in-stock",
+                                                                                         "link":  "",
+                                                                                         "caption":  ""
+                                                                                     }
+                                                                    },
+                                                           "ig-2":  {
+                                                                        "type":  "post",
+                                                                        "settings":  {
+                                                                                         "image":  "shopify://shop_images/02_d6f70625-8cc7-4fbe-b713-daa32f165f6d.png",
+                                                                                         "product":  "amarettoe",
+                                                                                         "link":  "",
+                                                                                         "caption":  ""
+                                                                                     }
+                                                                    },
+                                                           "ig-3":  {
+                                                                        "type":  "post",
+                                                                        "settings":  {
+                                                                                         "image":  "shopify://shop_images/2_c539a24e-6bdd-43ab-b615-9e29619ab06a.png",
+                                                                                         "product":  "lux-se-ht-ami-belle-tress-wig-in-stock",
+                                                                                         "link":  "",
+                                                                                         "caption":  ""
+                                                                                     }
+                                                                    },
+                                                           "ig-4":  {
+                                                                        "type":  "post",
+                                                                        "settings":  {
+                                                                                         "image":  "shopify://shop_images/4_4723f73f-4512-43e5-857b-f74e7936af25.png",
+                                                                                         "product":  "belle-tress-adriana-wig-hand-tied-lux-se-collection-preorder-copy",
+                                                                                         "link":  "",
+                                                                                         "caption":  ""
+                                                                                     }
+                                                                    },
+                                                           "ig-5":  {
+                                                                        "type":  "post",
+                                                                        "settings":  {
+                                                                                         "image":  "shopify://shop_images/6_29e750e8-f7ab-4eb0-b413-71be57a938be.png",
+                                                                                         "product":  "alicante-new-spanish-city-collection",
+                                                                                         "link":  "",
+                                                                                         "caption":  ""
+                                                                                     }
+                                                                    }
+                                                       },
+                                            "block_order":  [
+                                                                "ig-1",
+                                                                "ig-2",
+                                                                "ig-3",
+                                                                "ig-4",
+                                                                "ig-5"
+                                                            ],
+                                            "settings":  {
+                                                             "heading":  "@WigParty on Instagram",
+                                                             "subheading":  "Tag #WigParty to be featured",
+                                                             "background_gradient_start":  "#ffffff",
+                                                             "background_gradient_end":  "#eaddd4"
+                                                         }
+                                        }
+                 },
+    "order":  [
+                  "collection_hero",
+                  "filter_guard",
+                  "results",
+                  "trust_badges",
+                  "new_trending",
+                  "instagram_feed"
+              ]
 }

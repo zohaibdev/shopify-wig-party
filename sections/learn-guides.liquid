@@ -1,0 +1,250 @@
+{%- comment -%}
+  Wig Party — Learn page, guides. Figma internal file, node 7605:7704 (1440 x 1057).
+  A "SECTION" chip bar over a cream panel with Kristi's signature and a row of `guide` cards
+  (photo, title, text, button). The chips (`chip` blocks, after a built-in "Everything") filter
+  the cards by their topics; assets/aria-learn-guides.js wires them up.
+  Styles in assets/section-aria-learn-guides.css.
+{%- endcomment -%}
+
+{{ 'section-aria-learn-guides.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-learn-guides.js' | asset_url }}" defer></script>
+
+{%- liquid
+  # -- theme.liquid only font_faces the body regular/bold; the card text is Poppins 500.
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+  assign chip_blocks = section.blocks | where: 'type', 'chip'
+  assign guide_blocks = section.blocks | where: 'type', 'guide'
+-%}
+{% style %}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<aria-learn-guides class="aria-learn-guides">
+  <div class="aria-learn-guides__inner">
+    {%- if chip_blocks.size > 0 -%}
+      <div class="aria-learn-guides__bar">
+        <div class="aria-learn-guides__filter">
+          {%- if section.settings.filter_label != blank -%}
+            <span class="aria-learn-guides__filter-label" id="LearnGuidesFilter-{{ section.id }}">
+              {{- section.settings.filter_label -}}
+            </span>
+          {%- endif -%}
+          <div
+            class="aria-learn-guides__chips"
+            role="group"
+            {% if section.settings.filter_label != blank %}
+              aria-labelledby="LearnGuidesFilter-{{ section.id }}"
+            {% endif %}
+          >
+            <button type="button" class="aria-learn-guides__chip" data-topic="" aria-pressed="true">
+              {{- section.settings.all_label -}}
+            </button>
+            {%- for block in chip_blocks -%}
+              {%- if block.settings.label != blank -%}
+                <button
+                  type="button"
+                  class="aria-learn-guides__chip"
+                  data-topic="{{ block.settings.label | handleize }}"
+                  aria-pressed="false"
+                  {{ block.shopify_attributes }}
+                >
+                  {{- block.settings.label -}}
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="aria-learn-guides__panel">
+      {%- if section.settings.show_signature -%}
+        <img
+          class="aria-learn-guides__signature"
+          src="{{ 'wp-learn-kristi-signature.svg' | asset_url }}"
+          alt="{{ section.settings.signature_alt | escape }}"
+          width="239"
+          height="92"
+          loading="lazy"
+        >
+      {%- endif -%}
+
+      <ul class="aria-learn-guides__list" role="list">
+        {%- for block in guide_blocks -%}
+          {%- liquid
+            assign topics = ''
+            assign topic_list = block.settings.topics | split: ','
+            for t in topic_list
+              assign t_handle = t | strip | handleize
+              if t_handle != blank
+                assign topics = topics | append: ' ' | append: t_handle
+              endif
+            endfor
+            assign fallback = 'wp-learn-guide-' | append: forloop.index | append: '.jpg'
+          -%}
+          <li
+            class="aria-learn-guides__card{% if block.settings.mobile_bleed %} aria-learn-guides__card--bleed{% endif %}{% unless block.settings.title_breaks_mobile %} aria-learn-guides__card--title-flow{% endunless %}{% unless block.settings.text_breaks_mobile %} aria-learn-guides__card--text-flow{% endunless %}"
+            data-topics="{{ topics | strip }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="aria-learn-guides__media">
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 1100
+                  | image_tag: widths: '366,550,732,1100', sizes: '366px', alt: block.settings.image.alt, loading: 'lazy'
+                }}
+              {%- elsif forloop.index <= 3 -%}
+                <img src="{{ fallback | asset_url }}" alt="" width="732" height="672" loading="lazy">
+              {%- endif -%}
+            </div>
+
+            <div class="aria-learn-guides__text-group">
+              {%- if block.settings.title != blank -%}
+                <h3 class="aria-learn-guides__title">{{ block.settings.title | escape | newline_to_br }}</h3>
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <p class="aria-learn-guides__text">{{ block.settings.text | escape | newline_to_br }}</p>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} No real page means no button (dead links are hidden, never '#'). {%- endcomment -%}
+            {%- if block.settings.button_label != blank and block.settings.button_url != blank -%}
+              <a class="aria-learn-guides__btn" href="{{ block.settings.button_url }}">
+                {{- block.settings.button_label -}}
+              </a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if section.settings.empty_text != blank -%}
+        <p class="aria-learn-guides__empty" hidden>{{ section.settings.empty_text }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</aria-learn-guides>
+
+{% schema %}
+{
+  "name": "t:sections.aria-learn-guides.name",
+  "tag": "section",
+  "class": "aria-learn-guides-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "filter_label",
+      "default": "SECTION",
+      "label": "t:sections.aria-learn-guides.settings.filter_label.label"
+    },
+    {
+      "type": "text",
+      "id": "all_label",
+      "default": "Everything",
+      "label": "t:sections.aria-learn-guides.settings.all_label.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_signature",
+      "default": true,
+      "label": "t:sections.aria-learn-guides.settings.show_signature.label"
+    },
+    {
+      "type": "text",
+      "id": "signature_alt",
+      "default": "Kristi",
+      "label": "t:sections.aria-learn-guides.settings.signature_alt.label"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "default": "Nothing in this section yet.",
+      "label": "t:sections.aria-learn-guides.settings.empty_text.label",
+      "info": "t:sections.aria-learn-guides.settings.empty_text.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "t:sections.aria-learn-guides.blocks.chip.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "default": "Wig 101",
+          "label": "t:sections.aria-learn-guides.blocks.chip.settings.label.label",
+          "info": "t:sections.aria-learn-guides.blocks.chip.settings.label.info"
+        }
+      ]
+    },
+    {
+      "type": "guide",
+      "name": "t:sections.aria-learn-guides.blocks.guide.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.image.label",
+          "info": "t:sections.aria-learn-guides.blocks.guide.settings.image.info"
+        },
+        {
+          "type": "textarea",
+          "id": "title",
+          "default": "Never worn one? Read this first",
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.title.label",
+          "info": "t:sections.aria-learn-guides.blocks.guide.settings.title.info"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.text.label",
+          "info": "t:sections.aria-learn-guides.blocks.guide.settings.text.info"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Start here",
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.button_label.label"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.button_url.label",
+          "info": "t:sections.aria-learn-guides.blocks.guide.settings.button_url.info"
+        },
+        {
+          "type": "text",
+          "id": "topics",
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.topics.label",
+          "info": "t:sections.aria-learn-guides.blocks.guide.settings.topics.info"
+        },
+        {
+          "type": "checkbox",
+          "id": "title_breaks_mobile",
+          "default": false,
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.title_breaks_mobile.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "text_breaks_mobile",
+          "default": false,
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.text_breaks_mobile.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_bleed",
+          "default": false,
+          "label": "t:sections.aria-learn-guides.blocks.guide.settings.mobile_bleed.label",
+          "info": "t:sections.aria-learn-guides.blocks.guide.settings.mobile_bleed.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-learn-guides.presets.name",
+      "blocks": [{ "type": "chip" }, { "type": "guide" }, { "type": "guide" }, { "type": "guide" }]
+    }
+  ]
+}
+{% endschema %}

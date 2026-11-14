@@ -58,7 +58,6 @@
     feeds, so `aria-mega-column` takes the menu's own title as the heading and the literal
     strings below act only as fallbacks while a menu is still missing.
   endcomment
-  assign h_shop_collection = 'header-shop-shop-by-collection'
   assign h_shop_color = 'header-shop-shop-by-color'
   assign h_sh_basics = 'header-start-here-wig-101-the-basics'
   assign h_sh_guides = 'header-start-here-guides-answers'
@@ -85,10 +84,9 @@
   endcomment
   assign ph_shop_style = 'Long & Wavy|Mid-Length Lob|Short Bob|Pixie|Toppers'
   assign ph_shop_style_subs = 'soft, romantic volume|the everyday favorite|chic and easy|light and carefree|Add volume on top'
-  assign ph_shop_collection = 'City|Café Extended|Icons|Kristi Collection|Toppers'
   assign ph_shop_color = 'City|Café Extended|Icons|Kristi Collection|Toppers'
   assign ph_sh_basics = 'How to measure your head|Wig cap construction explained|Washing & care|Color & fit guide'
-  assign ph_sh_guides = 'Color Comparison|Belle Tress catalogs|Belle Tress wig collections|FAQ'
+  assign ph_sh_guides = 'Color Comparison|Wig catalogs|Wig collections|FAQ'
   assign ph_live_catchup = 'Watch past replays|This week’s new styles|How Live shopping works|Join the Facebook group'
   assign ph_live_schedule = 'Mon · New Arrivals|Wed · Dailey Deals|Fri · Community Try-On'
   assign ph_comm_heart = 'Kristi’s story|Our mission|Reviews & testimonials'
@@ -108,6 +106,7 @@
     data-aria-mega
     hidden
   {% endunless %}
+  {% if block.type == 'live_mega_menu' %}data-lmu-root data-lmu-lazy{% endif %}
   style="--aria-mega-gap: {{ gap }}px;"
 >
   <div class="{% if is_mobile %}aria-mnav__mega-inner{% else %}aria-mega__inner{% endif %}">
@@ -121,6 +120,15 @@
           takes a menu PICKER rather than a pasted handle; its thumbnails and subtitles come
           from each linked collection's own image and description.
         {%- endcomment -%}
+        {%- comment -%}
+          ADDED 2026-10-26 — `.aria-mega__group--shop-grid` wraps Shop by Style (dead until
+          style_menu is set), Shop by Collection and the 3 new filter columns below in a 4-up
+          CSS grid (see assets/component-aria-mega-menu.css) that fills the space left of the
+          two promo cards. None of the render calls inside it change; only this wrapper and
+          the 3 new calls after "Shop by Color" are new. Figma node 7169:2908 ("Desktop /
+          Shop").
+        {%- endcomment -%}
+        <div class="aria-mega__group aria-mega__group--shop-grid">
         {%- render 'aria-mega-column',
           col_type: 'style_cards', col_icon: 'mega-style', col_width: 260,
           col_heading: 'Shop by Style',
@@ -129,13 +137,46 @@
           placeholders: placeholders,
           shopify_attributes: block.shopify_attributes -%}
         {%- render 'aria-mega-column',
-          col_type: 'menu_divided', col_icon: 'mega-collection', col_width: 260,
-          col_heading: 'Shop by Collection', col_menu_handle: h_shop_collection,
-          col_placeholders: ph_shop_collection, placeholders: placeholders -%}
-        {%- render 'aria-mega-column',
           col_type: 'menu_divided', col_icon: 'mega-color', col_width: 260,
           col_heading: 'Shop by Color', col_menu_handle: h_shop_color,
           col_placeholders: ph_shop_color, placeholders: placeholders -%}
+        {%- comment -%}
+          UPDATED 2026-10-26 — By Cap Construction / Shop by Collection / Shop by Color / By
+          Size & Length (Figma 7169:2960, 7169:2996, 7169:3033, 7169:3062) now read their
+          items from a Shopify navigation menu picked per column (`cap_menu` /
+          `collection_menu` / `color_menu` / `size_menu`, each a `shop_mega_menu` block
+          setting) instead of per-item settings, so the client manages them from Content >
+          Menus. Fixed left-to-right order per client decision: Cap Construction, Collection,
+          Color, Size & Length. `collection_menu` defaults (header-group.json instance data,
+          since a `link_list` setting has no schema "default") to the existing live handle so
+          its output stays unchanged; the other three default to the 3 new menus made for
+          this. A column hides itself when its menu is missing or empty — see `skip_col` in
+          aria-mega-column.liquid.
+        {%- endcomment -%}
+        {%- render 'aria-mega-column',
+          col_type: 'items_photos',
+          col_heading: block.settings.cap_heading,
+          col_icon_image: block.settings.cap_icon, col_icon_fallback: 'wp-mega-construction-icon.svg',
+          col_menu_handle: block.settings.cap_menu,
+          col_item_prefix: 'cap_item_',
+          col_default_images: 'wp-mega-construction-hand-tied.png|wp-mega-construction-extended-lace.png|wp-mega-construction-full-mono.png|wp-mega-construction-mono-topper.png',
+          block: block -%}
+        {%- render 'aria-mega-column',
+          col_type: 'items_divided',
+          col_heading: block.settings.collection_heading,
+          col_icon_image: block.settings.collection_icon, col_icon: 'mega-collection',
+          col_menu_handle: block.settings.collection_menu -%}
+        {%- render 'aria-mega-column',
+          col_type: 'items_divided',
+          col_heading: block.settings.color_heading,
+          col_icon_image: block.settings.color_icon, col_icon_fallback: 'wp-mega-color-icon.svg',
+          col_menu_handle: block.settings.color_menu -%}
+        {%- render 'aria-mega-column',
+          col_type: 'items_divided',
+          col_heading: block.settings.size_heading,
+          col_icon_image: block.settings.size_icon, col_icon_fallback: 'wp-mega-size-icon.svg',
+          col_menu_handle: block.settings.size_menu -%}
+        </div>
         {%- render 'aria-mega-column',
           col_type: 'promo_card', col_icon: 'mega-bestseller', col_icon_tone: 'qi',
           col_width: 244,
@@ -195,7 +236,7 @@
         {%- endcomment -%}
         {%- render 'aria-mega-column',
           col_type: 'menu_padded', col_icon: 'mega-collection', col_width: 284,
-          col_heading: 'Wig 101 — The Basics', col_menu_handle: h_sh_basics,
+          col_heading: 'Wig 101: The Basics', col_menu_handle: h_sh_basics,
           col_placeholders: ph_sh_basics, placeholders: placeholders,
           shopify_attributes: block.shopify_attributes -%}
         {%- render 'aria-mega-column',
@@ -221,13 +262,21 @@
           col_heading: 'Catch Up', col_menu_handle: h_live_catchup,
           col_placeholders: ph_live_catchup, placeholders: placeholders,
           shopify_attributes: block.shopify_attributes -%}
+        {%- comment -%}
+          The schedule and the media card come from the LiveMeUp app (the shows actually
+          booked, and the one on air / next / latest), loaded the first time the menu opens.
+          The header-live-this-week-s-schedule menu is no longer read.
+        {%- endcomment -%}
+        {%- render 'aria-livemeup' -%}
+        {%- assign lmu_live_url = block.settings.media_button_url | default: '/pages/live' -%}
         {%- render 'aria-mega-column',
-          col_type: 'menu_padded', col_icon: 'mega-calendar', col_width: 376,
-          col_heading: 'This Week’s Schedule', col_menu_handle: h_live_schedule,
-          col_placeholders: ph_live_schedule, placeholders: placeholders -%}
+          col_type: 'lmu_schedule', col_icon: 'mega-calendar', col_width: 376,
+          col_heading: 'This Week’s Schedule', col_count: 4,
+          col_btn_url: lmu_live_url -%}
         {%- render 'aria-mega-column',
           col_type: 'media_card', col_icon: 'mega-live', col_width: 493,
           col_title_tone: 'accent',
+          col_lmu: true,
           col_push: true,
           col_heading: block.settings.media_heading,
           col_image: block.settings.media_image,

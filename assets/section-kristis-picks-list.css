@@ -1,0 +1,297 @@
+/* Wig Party — Kristi's Picks list (sections/kristis-picks-list.liquid), Figma 7546:32832 / row 7546:32833. Desktop only.
+ *
+ * Geometry (px, Figma): container 1360, rows 1360 x 255, gap 24, padding 24, r-16, gradient white -> cream;
+ * image 207 x 207 r-16 (Figma crop h 135.14% is a head-and-shoulders crop; here cover + top center on the portrait), 25 to content; copy column 721 wide, gap 14;
+ * name Montserrat SemiBold 32/40 + chip (#f79510, 18 high, px 8, r 8, Poppins 12/14 upper), 13 apart;
+ * subline Poppins 16/22 #3f3e3e; quote card p-12 r-8, Poppins italic 16/26 #282828;
+ * side column 297 wide: price Montserrat Medium 28/38 #252424 right, buttons 52 high, gap 7, r-2, Poppins 18/28.
+ */
+
+.kp-list,
+.kp-list *,
+.kp-list *::before,
+.kp-list *::after {
+  box-sizing: border-box;
+}
+
+.kp-list {
+  --kp-chip-bg: #f79510;
+  --kp-price: #252424;
+  --kp-quote: #282828;
+  padding: 0 40px;
+  padding-top: var(--kp-pad-top, 80px);
+  padding-bottom: var(--kp-pad-bottom, 0px);
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.kp-list__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+.kp-row {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  height: 255px;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, var(--wp-color-white, #fff), var(--wp-color-cream, #eaddd4));
+}
+
+/* Dawn's div:empty { display: none } would hide the photo box. */
+.kp-row__media:empty {
+  display: block;
+}
+
+.kp-row__media {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 207px;
+  height: 207px;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  background-color: var(--wp-color-gray-25, #f9f7f6);
+  background-image: var(--kp-image, none);
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.kp-row__body {
+  flex: 1 0 0;
+  min-width: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+}
+
+.kp-row__main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 721px;
+}
+
+.kp-row__head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.kp-row__title-line {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.kp-row__name {
+  margin: 0;
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 40px;
+  color: var(--wp-color-black, #000);
+  white-space: nowrap;
+}
+
+.kp-row__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--kp-chip-bg);
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--wp-color-black, #000);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.kp-row__sub {
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--wp-color-gray, #3f3e3e);
+}
+
+.kp-row__quote {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: linear-gradient(to bottom, rgba(219, 176, 177, 0.28) 32.843%, rgba(188, 105, 107, 0) 375.49%);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--kp-quote);
+}
+
+.kp-row__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  align-self: stretch;
+  width: 297px;
+  flex: 0 0 297px;
+}
+
+.kp-row__price {
+  margin: 0;
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 38px;
+  color: var(--kp-price);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.kp-row__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.kp-row__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 12px 24px;
+  border-radius: var(--wp-radius-sm, 2px);
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.kp-row__btn--primary {
+  border: 0;
+  background: var(--wp-color-dark-pink, #a64a4c);
+  color: var(--wp-color-white, #fff);
+}
+
+.kp-row__btn--primary[aria-busy='true'] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.kp-row__btn--primary.is-added {
+  background: var(--wp-color-gray, #3f3e3e);
+}
+
+.kp-row__btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kp-row__btn--secondary {
+  border: 1px solid var(--wp-color-black, #000);
+  background: transparent;
+  color: var(--wp-color-black, #000);
+}
+
+/* Empty collection (no Figma frame): the row card's gradient, centred message and link. */
+.kp-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 48px 24px;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, var(--wp-color-white, #fff), var(--wp-color-cream, #eaddd4));
+  text-align: center;
+}
+
+.kp-list__empty-text {
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.kp-list__empty .kp-row__btn {
+  width: auto;
+  padding: 0 32px;
+}
+
+/* ---------- Mobile (Figma card 7546:33717, 343 x 841) ----------
+ * Cards stacked (gap 24 from the base), p-16, image square (311 at 375, cover, top), 25 to
+ * the content; body gap 20; name 24/32; price left, then buttons 7 apart, full width.
+ */
+@media (max-width: 749px) {
+  .kp-list {
+    padding: var(--wp-m-picks-list-padding);
+    padding-top: var(--kp-pad-top-m, 48px);
+    padding-bottom: var(--kp-pad-bottom-m, 48px);
+  }
+
+  .kp-row {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--wp-m-picks-card-gap);
+    height: auto;
+    padding: var(--wp-m-picks-card-padding);
+  }
+
+  .kp-row__media {
+    width: 100%;
+    height: auto;
+  }
+
+  .kp-row__body {
+    flex: none;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    align-self: auto;
+    gap: var(--wp-m-picks-body-gap);
+    min-width: 0;
+  }
+
+  .kp-row__main {
+    width: 100%;
+  }
+
+  .kp-row__title-line {
+    flex-wrap: wrap;
+  }
+
+  .kp-row__name {
+    font-size: var(--wp-m-picks-name-size);
+    line-height: var(--wp-m-picks-name-line-height);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .kp-row__side {
+    flex: none;
+    align-items: flex-start;
+    justify-content: flex-start;
+    align-self: auto;
+    gap: var(--wp-m-picks-side-gap);
+    width: 100%;
+  }
+
+  .kp-row__btn {
+    height: auto;
+    min-height: var(--wp-m-picks-btn-height);
+    white-space: normal;
+  }
+}

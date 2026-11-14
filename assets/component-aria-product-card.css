@@ -9,6 +9,14 @@
    gradient. (The superseded dark variant used a white panel with 16px padding.) */
 .aria-product-card {
   width: 100%;
+  /* Fills whatever height its slide wrapper resolves to (a Swiper slide stretched to the
+     row's tallest sibling, per each section's own `.____slide` rule) so two adjacent cards
+     with different amounts of content — a swatch row present on one and not the other, a
+     one-line vs two-line title — still end the same height, with `margin-top: auto` on
+     `.aria-product-card__actions` below absorbing the difference. Against any non-stretched
+     ancestor (an undefined-height parent) a percentage height simply resolves to `auto`, so
+     this is a no-op there — safe for every current and future consumer of this card. */
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -224,6 +232,12 @@
   align-items: center;
   gap: 0;
   flex-wrap: wrap;
+  /* Reserves the same 22px (one swatch button's own height) whether or not this product
+     actually has a colour option — this row now always renders (see
+     aria-product-card.liquid), carrying an aria-hidden spacer instead of swatch buttons
+     when it does not, precisely so the price row below always lands at the same position
+     across every card in a row. */
+  min-height: 22px;
 }
 
 .aria-product-card__swatch {
@@ -403,6 +417,11 @@
 }
 
 .aria-product-card__actions {
+  /* Pinned to the bottom of the (now height:100%) card rather than sitting directly under
+     whatever the rating/title/swatches/price stack happens to add up to — the other half
+     of the equal-card-height fix above. Consumes whatever free space the stretch created;
+     a no-op when the card is its own natural content height (nothing to consume). */
+  margin-top: auto;
   display: flex;
   gap: 12px;
 }
@@ -469,6 +488,15 @@
     border-color 0.2s ease;
 }
 
+/* Hidden by default: every call site of this shared quick-add button (mega menu,
+   Instagram feed, the compact card, and this card's own desktop/tablet action row) is
+   icon-only. section-aria-pdp-product-carousel.css shows it for its mobile carousel,
+   where Figma replaces the View Product + icon pair with one full-width "Add to Cart"
+   button carrying a visible label. */
+.aria-product-card__cart-label {
+  display: none;
+}
+
 .aria-product-card__cart-btn .aria-icon {
   width: 22px;
   height: 22px;
@@ -519,3 +547,48 @@
   }
 }
 
+
+/* ---------- Home card type, QA pass 2026-10-29 (Best Sellers, New and trending) ----------
+ * Same card values as the collection grids: title 20/28, price 22/28 #1a1a1a, struck
+ * compare 20/28 #8c8c8c, swatch count Poppins 10/16 #3f3e3e. Desktop and tablet; the
+ * mobile cards keep their own Figma values in each section's stylesheet. */
+@media screen and (min-width: 750px) {
+  .aria-best-sellers .aria-product-card__title,
+  .aria-new-trending .aria-product-card__title {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-best-sellers .aria-product-card__price,
+  .aria-new-trending .aria-product-card__price {
+    line-height: 28px;
+  }
+
+  .aria-best-sellers .aria-product-card__price-current,
+  .aria-new-trending .aria-product-card__price-current {
+    font-size: 22px;
+    line-height: 28px;
+    color: #1a1a1a;
+  }
+
+  .aria-best-sellers .aria-product-card__price-compare,
+  .aria-new-trending .aria-product-card__price-compare {
+    font-size: 20px;
+    line-height: 28px;
+    color: #8c8c8c;
+  }
+
+  .aria-best-sellers .aria-product-card__swatch-more,
+  .aria-new-trending .aria-product-card__swatch-more {
+    font-family: var(--font-body-family);
+    font-size: 10px;
+    line-height: 16px;
+    color: #3f3e3e;
+  }
+
+  .aria-best-sellers .aria-product-card__cart-label,
+  .aria-new-trending .aria-product-card__cart-label {
+    font-weight: 400;
+    text-transform: none;
+  }
+}

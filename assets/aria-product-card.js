@@ -72,6 +72,17 @@
         : null,
       defaultPrice: currentPrice ? currentPrice.textContent : null,
       defaultComparePrice: comparePrice ? comparePrice.textContent : null,
+      /* What assets/aria-discount-price.js prices the row from by default. */
+      defaultPriceAttrs: (function () {
+        var row = query(card, '.aria-product-card__price');
+        return row
+          ? {
+              variantId: row.getAttribute('data-variant-id'),
+              priceValue: row.getAttribute('data-price-value'),
+              compareValue: row.getAttribute('data-compare-value'),
+            }
+          : null;
+      })(),
       /* Whether this card's hidden colours have been revealed. Per card, so expanding
          one product never expands another. */
       expanded: false,
@@ -154,18 +165,118 @@
     var variantInput = query(card, '.aria-product-card__quick-add-form input[name="id"]');
     if (variantInput && variantId) variantInput.value = variantId;
 
-    /* A sold-out product is already disabled by Liquid for every colour; don't fight it. */
-    if (card.classList.contains('aria-product-card--sold-out')) return;
-    var cartButton = query(card, '.aria-product-card__cart-btn');
-    if (!cartButton) return;
-    /* product-form.js honours aria-disabled, so an unpurchasable colour cannot be posted
-       to /cart/add and fail silently behind data-hide-errors. */
-    if (swatch.getAttribute('data-variant-available') === 'false') {
-      cartButton.setAttribute('aria-disabled', 'true');
-    } else {
-      cartButton.removeAttribute('aria-disabled');
-    }
+    /* View product, the title and the image link carry the chosen colour to the PDP. */
+    if (variantId) updateLinks(card, variantId);
+
+    /* The cart icon opens the quick-add pop-up (assets/aria-quick-add-modal.js), where a
+       sold-out shade is shown disabled and another can be picked, so the icon is no longer
+       disabled per colour. A sold-out PRODUCT stays disabled by Liquid. */
   }
+
+  function updateLinks(card, variantId) {
+    card.querySelectorAll('[data-card-link]').forEach(function (link) {
+      var href = link.getAttribute('href');
+      if (!href) return;
+      try {
+        var url = new URL(href, window.location.origin);
+        url.searchParams.set('variant', variantId);
+        link.setAttribute('href', url.pathname + url.search + url.hash);
+      } catch (error) {
+        /* Leave the link as Liquid rendered it. */
+      }
+    });
+  }
+
+  /* ---- Quick-add pop-up -----------------------------------------------------------------
+     The cart icon on a card opens the shade pop-up instead of posting the card's variant
+     straight to the cart. The pop-up's script and stylesheet are loaded once, on demand,
+     from the same asset folder as this file. If they cannot load, the click falls back to
+     the PDP for the selected variant rather than adding a shade the shopper never chose. */
+  var assetBase = (function () {
+    var script = document.currentScript;
+    var src = script && script.src;
+    if (!src) return null;
+    var cut = src.indexOf('aria-product-card.js');
+    return cut === -1 ? null : src.slice(0, cut);
+  })();
+  var quickAddReady = null;
+
+  function loadQuickAdd() {
+    if (window.AriaQuickAdd) return Promise.resolve(window.AriaQuickAdd);
+    if (quickAddReady) return quickAddReady;
+    if (!assetBase) return Promise.reject(new Error('no_asset_base'));
+    quickAddReady = new Promise(function (resolve, reject) {
+      if (!document.querySelector('link[data-aria-quick-add-css]')) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = assetBase + 'component-aria-quick-add.css';
+        link.setAttribute('data-aria-quick-add-css', '');
+        document.head.appendChild(link);
+      }
+      var script = document.createElement('script');
+      script.src = assetBase + 'aria-quick-add-modal.js';
+      script.onload = function () {
+        if (window.AriaQuickAdd) resolve(window.AriaQuickAdd);
+        else reject(new Error('quick_add_missing'));
+      };
+      script.onerror = function () {
+        quickAddReady = null;
+        reject(new Error('quick_add_load'));
+      };
+      document.head.appendChild(script);
+    });
+    return quickAddReady;
+  }
+
+  function cardVariantId(card) {
+    var input = query(card, '.aria-product-card__quick-add-form input[name="id"]');
+    return input ? input.value : '';
+  }
+
+  /* Capture phase, so the click is handled before <product-form> sees a submit. */
+  document.addEventListener(
+    'click',
+    function (event) {
+      var target = event.target;
+      if (!target || !target.closest) return;
+      var button = target.closest('.aria-product-card__cart-btn');
+      if (!button) return;
+      var card = button.closest('.aria-product-card[data-product-handle]');
+      if (!card) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      if (button.getAttribute('aria-disabled') === 'true' || button.disabled) return;
+
+      var options = {
+        handle: card.getAttribute('data-product-handle'),
+        url: card.getAttribute('data-product-url'),
+        title: card.getAttribute('data-product-title'),
+        variantId: cardVariantId(card),
+        trigger: button,
+      };
+      loadQuickAdd()
+        .then(function (api) {
+          api.open(options);
+        })
+        .catch(function () {
+          var url = options.url || '/';
+          window.location.href = url + (url.indexOf('?') === -1 ? '?' : '&') + 'variant=' + options.variantId;
+        });
+    },
+    true
+  );
+
+  /* Warm the pop-up assets once the page has settled, so the first click opens instantly. */
+  function warm() {
+    if (!document.querySelector('.aria-product-card[data-product-handle]')) return;
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1500); };
+    idle(function () {
+      loadQuickAdd().catch(function () {});
+    });
+  }
+  if (document.readyState === 'complete') warm();
+  else window.addEventListener('load', warm, { once: true });
 
   function applyPrice(card, state, swatch) {
     var priceRow = query(card, '.aria-product-card__price');
@@ -187,11 +298,28 @@
       if (!compareEl) {
         compareEl = document.createElement('span');
         compareEl.className = 'aria-product-card__price-compare';
+        compareEl.setAttribute('data-aria-price-compare', '');
         priceRow.appendChild(compareEl);
       }
       compareEl.textContent = compare;
     } else if (compareEl) {
       compareEl.remove();
+    }
+
+    /* Re-price for the new variant's automatic discount, so the card keeps quoting
+       what the cart will charge. */
+    var attrs = hasVariantData
+      ? {
+          variantId: swatch.getAttribute('data-variant-id'),
+          priceValue: swatch.getAttribute('data-variant-price-value'),
+          compareValue: swatch.getAttribute('data-variant-compare-value'),
+        }
+      : state.defaultPriceAttrs;
+    if (attrs && attrs.variantId && attrs.priceValue) {
+      priceRow.setAttribute('data-variant-id', attrs.variantId);
+      priceRow.setAttribute('data-price-value', attrs.priceValue);
+      priceRow.setAttribute('data-compare-value', attrs.compareValue || '0');
+      if (window.AriaDiscountPrice) window.AriaDiscountPrice.apply(priceRow);
     }
   }
 

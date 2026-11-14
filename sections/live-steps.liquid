@@ -1,0 +1,156 @@
+{%- comment -%}
+  Wig Party — Watch Live, "It is less of a commitment than it sounds". Figma internal file,
+  node 6849:21337 (1440 x 747).
+
+  Centred heading + intro, then a horizontal strip of `step` blocks (388-wide photo, the
+  step number on a timeline, title and line). The strip starts on the container's left
+  edge and runs out past the right edge of the page as in Figma; it scrolls sideways
+  (touch, trackpad, or drag with a mouse via assets/aria-live-steps.js). On mobile (Figma
+  6849:21832) the strip becomes a vertical timeline instead.
+{%- endcomment -%}
+
+{{ 'section-aria-live-steps.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-live-steps.js' | asset_url }}" defer="defer"></script>
+
+<div class="aria-live-steps" style="--aria-live-steps-bg: {{ section.settings.background_color }};">
+  <div class="aria-live-steps__inner">
+    {%- if section.settings.heading != blank or section.settings.text != blank -%}
+      <div class="aria-live-steps__head">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-live-steps__title">{{ section.settings.heading | escape | newline_to_br }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="aria-live-steps__text">{{ section.settings.text }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="aria-live-steps__scroller" data-aria-live-steps tabindex="0" aria-label="{{ section.settings.heading | strip_newlines | escape }}">
+        <ol class="aria-live-steps__track" role="list">
+          {%- for block in section.blocks -%}
+            <li class="aria-live-steps__step" {{ block.shopify_attributes }}>
+              <div class="aria-live-steps__media">
+                {%- if block.settings.image != blank -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 1164
+                    | image_tag: widths: '388,776,1164', sizes: '388px', alt: block.settings.image.alt, loading: 'lazy', draggable: 'false'
+                  }}
+                {%- elsif block.settings.fallback != blank -%}
+                  {%- comment -%}
+                    Built-in photos come pre-cropped to each Figma frame: the desktop strip
+                    (388 x 251) and the mobile timeline (258 x 251) frame them differently.
+                  {%- endcomment -%}
+                  <picture>
+                    <source
+                      media="(max-width: 749px)"
+                      srcset="{{ block.settings.fallback | append: '-mobile.jpg' | asset_url }}"
+                      width="516"
+                      height="502"
+                    >
+                    <img
+                      src="{{ block.settings.fallback | append: '.jpg' | asset_url }}"
+                      alt=""
+                      width="388"
+                      height="251"
+                      loading="lazy"
+                      draggable="false"
+                    >
+                  </picture>
+                {%- endif -%}
+              </div>
+              <span class="aria-live-steps__num">{{ forloop.index }}</span>
+              <div class="aria-live-steps__copy">
+                <h3 class="aria-live-steps__name">{{ block.settings.title }}</h3>
+                {%- if block.settings.text != blank -%}
+                  <p class="aria-live-steps__desc">{{ block.settings.text }}</p>
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ol>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-live-steps.name",
+  "tag": "section",
+  "class": "aria-live-steps-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#1A1A1A",
+      "label": "t:sections.aria-live-steps.settings.background_color.label"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "default": "It is less of a commitment\nthan it sounds",
+      "label": "t:sections.aria-live-steps.settings.heading.label",
+      "info": "t:sections.aria-live-steps.settings.heading.info"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "default": "Plenty of people watch for months before they buy anything, and plenty never buy at all. Both are completely fine.",
+      "label": "t:sections.aria-live-steps.settings.text.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "t:sections.aria-live-steps.blocks.step.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-live-steps.blocks.step.settings.image.label",
+          "info": "t:sections.aria-live-steps.blocks.step.settings.image.info"
+        },
+        {
+          "type": "select",
+          "id": "fallback",
+          "label": "t:sections.aria-live-steps.blocks.step.settings.fallback.label",
+          "options": [
+            { "value": "", "label": "t:sections.aria-live-steps.blocks.step.settings.fallback.options__none.label" },
+            { "value": "wp-live-step-1", "label": "t:sections.aria-live-steps.blocks.step.settings.fallback.options__1.label" },
+            { "value": "wp-live-step-2", "label": "t:sections.aria-live-steps.blocks.step.settings.fallback.options__2.label" },
+            { "value": "wp-live-step-3", "label": "t:sections.aria-live-steps.blocks.step.settings.fallback.options__3.label" },
+            { "value": "wp-live-step-4", "label": "t:sections.aria-live-steps.blocks.step.settings.fallback.options__4.label" }
+          ],
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "You do not have to be on camera",
+          "label": "t:sections.aria-live-steps.blocks.step.settings.title.label"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "default": "Ever. Most people just watch.",
+          "label": "t:sections.aria-live-steps.blocks.step.settings.text.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-live-steps.presets.name",
+      "blocks": [
+        { "type": "step", "settings": { "fallback": "wp-live-step-1" } },
+        { "type": "step", "settings": { "fallback": "wp-live-step-2" } },
+        { "type": "step", "settings": { "fallback": "wp-live-step-3" } },
+        { "type": "step", "settings": { "fallback": "wp-live-step-4" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

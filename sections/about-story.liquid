@@ -1,0 +1,137 @@
+{%- comment -%}
+  Wig Party — About Kristi page, story cards. Figma internal file, desktop node 7841:3547
+  (1440 x 759), mobile node 7847:245 (375 x 1500).
+  A pink gradient band holding `card` blocks: a photo, a title, a paragraph and an optional
+  inline link ("Read more"). Each card is Figma's Glass effect, rebuilt as its 20% fill plus a
+  light inner rim. A card without its own photo uses the built-in photo for its position,
+  placed with Figma's own crop.
+  Styles in assets/section-aria-about-story.css.
+{%- endcomment -%}
+
+{{ 'section-aria-about-story.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # -- theme.liquid only font_faces the body regular/bold and the heading base weight;
+  # -- this frame also uses Montserrat Bold and Poppins SemiBold.
+  assign heading_font_bold = settings.type_header_font | font_modify: 'weight', '700'
+  assign body_font_semibold = settings.type_body_font | font_modify: 'weight', '600'
+  assign fallback_files = 'wp-about-story-1.jpg,wp-about-story-2.jpg,wp-colour-tip-4.jpg' | split: ','
+  assign fallback_sizes = '1264x670,511x709,736x1309' | split: ','
+-%}
+{% style %}
+  {%- if heading_font_bold -%}{{ heading_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if body_font_semibold -%}{{ body_font_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-about-story" style="--about-story-bg: {{ section.settings.background_color }};">
+  <div class="aria-about-story__band">
+    <ul class="aria-about-story__cards" role="list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign fallback_index = forloop.index0 | modulo: 3
+          assign fallback_size = fallback_sizes[fallback_index] | split: 'x'
+        -%}
+        <li class="aria-about-story__card" {{ block.shopify_attributes }}>
+          <div class="aria-about-story__media">
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 1200
+                | image_tag: widths: '400,600,800,1200', sizes: '(min-width: 750px) 379px, calc(100vw - 64px)', alt: block.settings.image.alt, loading: 'lazy'
+              }}
+            {%- else -%}
+              <img
+                class="aria-about-story__fallback aria-about-story__fallback--{{ fallback_index | plus: 1 }}"
+                src="{{ fallback_files[fallback_index] | asset_url }}"
+                alt=""
+                width="{{ fallback_size[0] }}"
+                height="{{ fallback_size[1] }}"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </div>
+
+          <div class="aria-about-story__copy">
+            {%- if block.settings.title != blank -%}
+              <h2 class="aria-about-story__title">{{ block.settings.title }}</h2>
+            {%- endif -%}
+            {%- if block.settings.text != blank or block.settings.link_label != blank -%}
+              <p class="aria-about-story__text">
+                {{- block.settings.text | escape | newline_to_br -}}
+                {%- if block.settings.link_label != blank and block.settings.link_url != blank -%}
+                  {%- if block.settings.text != blank -%}{{ ' ' }}{%- endif -%}
+                  <a class="aria-about-story__link" href="{{ block.settings.link_url }}">
+                    {{- block.settings.link_label -}}
+                  </a>
+                {%- endif -%}
+              </p>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-about-story.name",
+  "tag": "section",
+  "class": "aria-about-story-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#FFFFFF",
+      "label": "t:sections.aria-about-story.settings.background_color.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "t:sections.aria-about-story.blocks.card.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-about-story.blocks.card.settings.image.label",
+          "info": "t:sections.aria-about-story.blocks.card.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Why I do it this way",
+          "label": "t:sections.aria-about-story.blocks.card.settings.title.label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.aria-about-story.blocks.card.settings.text.label"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "t:sections.aria-about-story.blocks.card.settings.link_label.label",
+          "info": "t:sections.aria-about-story.blocks.card.settings.link_label.info"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "t:sections.aria-about-story.blocks.card.settings.link_url.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-about-story.presets.name",
+      "blocks": [
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

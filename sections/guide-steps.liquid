@@ -1,0 +1,187 @@
+{%- comment -%}
+  Wig Party — Measure & cap guide: measuring steps. Figma node 7368:103 (1440 x 984, desktop).
+  Header: chip, heading, description (each hidden when empty). Then up to 3 card blocks:
+  image 438 x 382 (empty uses assets/guide-steps-card-N.jpg by card position, 876x764 Figma
+  export; a 4th card would show the gray-25 box), chip, title, text. Nothing is clickable.
+  Wrapper id "measure-steps" is the target of the hero button.
+  Styles in assets/section-guide-steps.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-guide-steps.css' | asset_url | stylesheet_tag }}
+
+<div class="guide-steps" id="measure-steps">
+  <div class="guide-steps__inner">
+    {%- if section.settings.chip != blank
+      or section.settings.heading != blank
+      or section.settings.description != blank
+    -%}
+      <div class="guide-steps__head">
+        {%- if section.settings.chip != blank -%}
+          <span class="guide-steps__chip">{{ section.settings.chip | escape }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank or section.settings.description != blank -%}
+          <div class="guide-steps__head-text">
+            {%- if section.settings.heading != blank -%}
+              <h2 class="guide-steps__title">{{ section.settings.heading | escape }}</h2>
+            {%- endif -%}
+            {%- if section.settings.description != blank -%}
+              <p class="guide-steps__desc">{{ section.settings.description | escape | newline_to_br }}</p>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="guide-steps__cards" role="list">
+        {%- for block in section.blocks -%}
+          <li class="guide-steps__card" {{ block.shopify_attributes }}>
+            <div class="guide-steps__media">
+              {%- if block.settings.image != blank -%}
+                {%- assign img_alt = block.settings.image.alt | default: block.settings.title -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 876
+                  | image_tag: widths: '438,876', sizes: '438px', alt: img_alt, loading: 'lazy', class: 'guide-steps__img'
+                }}
+              {%- elsif forloop.index <= 3 -%}
+                {%- assign fallback_src = 'guide-steps-card-' | append: forloop.index | append: '.jpg' -%}
+                <img
+                  src="{{ fallback_src | asset_url }}"
+                  width="438"
+                  height="382"
+                  alt="{{ block.settings.title | escape }}"
+                  loading="lazy"
+                  class="guide-steps__img"
+                >
+              {%- else -%}
+                <span class="guide-steps__placeholder">
+                  <svg class="guide-steps__placeholder-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                  {%- if section.settings.no_image_text != blank -%}
+                    <span class="guide-steps__placeholder-text">{{ section.settings.no_image_text | escape }}</span>
+                  {%- endif -%}
+                </span>
+              {%- endif -%}
+            </div>
+
+            <div class="guide-steps__body">
+              {%- if block.settings.chip != blank -%}
+                <span class="guide-steps__chip">{{ block.settings.chip | escape }}</span>
+              {%- endif -%}
+              {%- if block.settings.title != blank or block.settings.text != blank -%}
+                <div class="guide-steps__card-text">
+                  {%- if block.settings.title != blank -%}
+                    <h3 class="guide-steps__card-title">{{ block.settings.title | escape }}</h3>
+                  {%- endif -%}
+                  {%- if block.settings.text != blank -%}
+                    <p class="guide-steps__card-desc">{{ block.settings.text | escape | newline_to_br }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Guide steps",
+  "tag": "section",
+  "class": "guide-steps-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "chip",
+      "default": "MEASURING",
+      "label": "Chip"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Around, front to back, ear to ear",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "info": "Optional. Hidden when empty."
+    },
+    {
+      "type": "text",
+      "id": "no_image_text",
+      "default": "No image",
+      "label": "No image text",
+      "info": "Shown in the gray box when a card has no image."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "438 x 382 on desktop. Empty uses the Figma photo."
+        },
+        {
+          "type": "text",
+          "id": "chip",
+          "default": "MEASUREMENT 1",
+          "label": "Chip"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Circumference",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "Around your head, just above the ears and around the nape. Snug, not tight. This is the one that matters.",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Guide steps",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "chip": "MEASUREMENT 1",
+            "title": "Circumference",
+            "text": "Around your head, just above the ears and around the nape. Snug, not tight. This is the one that matters."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "chip": "MEASUREMENT 2",
+            "title": "Front to nape",
+            "text": "From your natural hairline straight over the crown to the nape."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "chip": "MEASUREMENT 3",
+            "title": "Ear to ear",
+            "text": "Over the top of the head, from the top of one ear to the other."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

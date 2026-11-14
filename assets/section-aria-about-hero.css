@@ -1,0 +1,354 @@
+/* Wig Party — About Kristi hero (sections/about-hero.liquid), Figma 7841:3532.
+ *
+ * Desktop geometry (px, Figma, 1440 x 448, clipped, #F5EBE2 under everything):
+ *   background  the full 1440 x 448: the hair photo cropped as Figma does (100.18% wide,
+ *               -0.09% left, 368.49% tall, -100.71% top at 1440, i.e. the photo stretched to
+ *               1442.592 x 1650.823 with its 40.900% line on the box's middle), under a
+ *               134.65deg wash rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602%
+ *   panel       1360 x 384 at 40 / 32: rgba(255,255,255,.13), 50 backdrop blur, 1px white ring
+ *               that counts toward layout, pt-16 px-40 pb-40; 62 between crumbs and body. The
+ *               body overruns the bottom padding by 5, as Figma draws it (the panel is fixed)
+ *   crumbs      Poppins 12/14 uppercase white, "  /  " separators; the current crumb is Bold
+ *               and starts with a Bold space (Figma's run is "  /  " + Bold " About Kristi")
+ *   body        title Montserrat Medium 48/56 white, 12, intro Poppins 16/26 white 710.702
+ *               wide (with Figma's line breaks), 56, two 224 x 54 buttons 16 apart: black, and
+ *               a 1px black outline (Poppins 18/28, px-24 py-12, r-2)
+ *   portrait    464.81 x 462.72 at 949.97 / -45.03 of the panel, over it and clipped by the
+ *               section; the cut-out fills the width from the top (127.58% tall)
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-about-hero,
+.aria-about-hero *,
+.aria-about-hero *::before,
+.aria-about-hero *::after {
+  box-sizing: border-box;
+}
+
+.aria-about-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 32px 40px;
+  background: var(--about-hero-bg, #f5ebe2);
+  /* Light-on-grey text: Chrome's macOS subpixel smoothing reads a weight heavier than Figma. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Background (7841:3534) ---------- */
+
+.aria-about-hero__bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aria-about-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    134.64971909113112deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+.aria-about-hero__bg img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.aria-about-hero__bg img.aria-about-hero__bg-fallback {
+  inset: auto;
+  top: 50%;
+  left: -0.09%;
+  width: 100.18%;
+  height: auto;
+  aspect-ratio: 1442.592 / 1650.823;
+  transform: translateY(-40.9%);
+  object-fit: fill;
+}
+
+/* ---------- Panel (7841:3535) ---------- */
+
+.aria-about-hero__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 62px;
+  max-width: 1360px;
+  min-height: 384px;
+  margin: 0 auto;
+  padding: 16px 40px 40px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+}
+
+.aria-about-hero__crumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+}
+
+/* Figma's separator is "  /  " set in the same run, so it is drawn as preserved text. */
+.aria-about-hero__crumbs-list li + li::before {
+  content: '  /  ';
+  font-weight: 400;
+  white-space: pre;
+}
+
+.aria-about-hero__crumbs-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.aria-about-hero__crumbs-list a:hover,
+.aria-about-hero__crumbs-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.aria-about-hero__crumbs-list [aria-current='page'] {
+  font-weight: 700;
+}
+
+.aria-about-hero__crumb-space {
+  white-space: pre;
+}
+
+.aria-about-hero__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 56px;
+}
+
+.aria-about-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 710.702px;
+  color: var(--white, #fff);
+}
+
+.aria-about-hero__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-about-hero__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+/* Poppins 16/26 lands 1px higher in the browser than in Figma, so it is nudged down without
+   moving any box (as in the colour hero). */
+.aria-about-hero__text {
+  position: relative;
+  top: 1px;
+}
+
+.aria-about-hero__buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.aria-about-hero__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 224px;
+  padding: 12px 24px;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-about-hero__btn:hover,
+.aria-about-hero__btn:focus-visible {
+  background: #2b2b2b;
+}
+
+.aria-about-hero__btn--outline {
+  border: 1px solid var(--black, #000);
+  background: transparent;
+  color: var(--black, #000);
+}
+
+.aria-about-hero__btn--outline:hover,
+.aria-about-hero__btn--outline:focus-visible {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+/* ---------- Portrait (7841:3546) ---------- */
+
+/* Placed from the panel's bottom-right corner (Figma: 46.03 above the panel's top, so 33.69
+   past its bottom, and 54.78 past its right), so it stays there when the panel grows on
+   narrower screens. It sits over the panel as in Figma, but lets clicks through to anything
+   under its transparent part. */
+.aria-about-hero__portrait {
+  position: absolute;
+  z-index: 2;
+  right: -55.78px;
+  bottom: -34.69px;
+  width: 464.81px;
+  height: 462.72px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aria-about-hero__portrait img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+
+/* Figma fixes the panel at 384 and lets the body run 5 into its bottom padding. */
+@media screen and (min-width: 1200px) {
+  .aria-about-hero__panel {
+    height: 384px;
+  }
+}
+
+/* No tablet frame: below 1200 the copy and buttons keep clear of the portrait, so the text
+   wraps sooner and the buttons stack when they no longer fit side by side. */
+@media screen and (min-width: 750px) and (max-width: 1199px) {
+  .aria-about-hero__body {
+    max-width: calc(100% - 370px);
+  }
+
+  .aria-about-hero__buttons {
+    flex-wrap: wrap;
+  }
+
+  .aria-about-hero__text br {
+    display: none;
+  }
+}
+
+/* ---------- Mobile (Figma 7841:4502, 375 x 694) ----------
+ * The background fills the whole 375 x 694 (0.5 left of it): the photo 100.18% wide at
+ * -0.09%, 253.12% tall at -69.18%, under a 99.43deg wash. The panel sits pt-24 px-16 and hugs
+ * its content: p-16 pb-24 (plus the 1px ring), 16 between crumbs and body, title Montserrat
+ * Medium 36/46, 12, intro 16/26, 24, then full-width 54-tall buttons 12 apart. The current crumb
+ * has no Bold leading space here. The portrait (360.43 x 331.31, the cut-out 92.34% wide) starts
+ * 53.58 above the panel's bottom, centred 0.5 left of the middle, and the section ends 240 below
+ * the panel, cutting it off.
+ */
+@media screen and (max-width: 749px) {
+  .aria-about-hero {
+    padding: 24px 16px 240px;
+  }
+
+  .aria-about-hero__bg img.aria-about-hero__bg-fallback {
+    top: -69.18%;
+    left: calc(-0.09% - 0.5px);
+    width: 100.18%;
+    height: 253.12%;
+    aspect-ratio: auto;
+    transform: none;
+  }
+
+  .aria-about-hero__bg::after {
+    background: linear-gradient(
+      99.4287544507904deg,
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .aria-about-hero__panel {
+    gap: 16px;
+    min-height: 0;
+    padding: 16px 16px 24px;
+  }
+
+  .aria-about-hero__crumb-space {
+    display: none;
+  }
+
+  .aria-about-hero__body {
+    gap: 24px;
+    width: 100%;
+  }
+
+  .aria-about-hero__text-group {
+    width: 100%;
+    max-width: none;
+  }
+
+  .aria-about-hero__title {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-about-hero__buttons {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .aria-about-hero__btn {
+    width: 100%;
+    min-height: 54px;
+  }
+
+  .aria-about-hero__portrait {
+    top: calc(100% - 52.58px);
+    right: auto;
+    bottom: auto;
+    left: calc(50% - 166.91px);
+    width: 360.43px;
+    height: 331.31px;
+  }
+
+  .aria-about-hero__portrait img {
+    width: 92.34%;
+  }
+}

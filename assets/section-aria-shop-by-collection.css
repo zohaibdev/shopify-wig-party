@@ -168,3 +168,197 @@
     font-size: 16px;
   }
 }
+/* ------------------------------------------------------------------------------------ *
+ * Mobile carousel — Figma 6576:10134 (375 x 599). Only exists below 750px; the grid
+ * above is hidden there and this row is hidden from 750px up, so tablet and desktop are
+ * untouched.
+ *
+ * Vertical ladder (px, Figma): 48 pad / 92 heading / 12 / 52 subheading / 32 / 215 card
+ * media / 12 / 28 title / 12 / 48 controls / 48 pad = 599.
+ * ------------------------------------------------------------------------------------ */
+.aria-shop-collection__mobile {
+  display: none;
+}
+
+@media screen and (max-width: 749px) {
+  .aria-shop-collection {
+    /* The track runs past the 16px gutter to the viewport edge (Figma's card row is
+       350 wide in a 343 column); the section is what clips it. */
+    overflow: hidden;
+  }
+
+  /* Mobile H1: Montserrat Medium 36/46 #EADDD4 (scheme-3 text). Dawn's heading
+     letter-spacing is reset to Figma's 0. */
+  .aria-shop-collection__heading {
+    font-family: var(--font-heading-family);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 46px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 16/26. */
+  .aria-shop-collection__subheading {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  .aria-shop-collection__grid {
+    display: none;
+  }
+
+  .aria-shop-collection__mobile {
+    display: block;
+    width: 100%;
+  }
+
+  .aria-shop-collection__mobile-swiper {
+    width: auto;
+    margin-right: -16px;
+    overflow: hidden;
+  }
+
+  /* Card (6576:11256): fixed 169 wide, 12px media -> title. */
+  .aria-shop-collection__mobile-slide {
+    width: 169px;
+    height: auto;
+  }
+
+  .aria-shop-collection__mobile .aria-shop-collection__card {
+    width: 100%;
+  }
+
+  /* Media (6576:11257): 169 x 215, radius 4, #463E3E behind the photo. Figma's fill is
+     anchored to the top of the box, so the photo crops from the bottom. */
+  .aria-shop-collection__mobile .aria-shop-collection__image-wrap {
+    width: 169px;
+    height: 215px;
+    aspect-ratio: auto;
+    border-radius: 4px;
+  }
+
+  .aria-shop-collection__mobile .aria-shop-collection__image {
+    object-position: center top;
+  }
+
+  /* Title (6576:11260): Montserrat Medium 20/28 white, centred on the card. */
+  .aria-shop-collection__mobile .aria-shop-collection__title {
+    width: 100%;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  /* Controls (6576:10237): 12px below the cards, 48 tall; the progress bar takes the
+     rest of the row (231 at 375) and the two 48px buttons sit 4px apart. */
+  .aria-shop-collection__mobile-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: 48px;
+    margin-top: 12px;
+  }
+
+  .aria-shop-collection__mobile-controls[hidden] {
+    display: none;
+  }
+
+  .aria-shop-collection__mobile-progress {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 40px;
+    height: 4px;
+  }
+
+  /* Track #BC696B at 30%, fill #A64A4C, both fully rounded. */
+  .aria-shop-collection__mobile-progress-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    background: var(--qi, #bc696b);
+    opacity: 0.3;
+  }
+
+  .aria-shop-collection__mobile-progress-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    min-width: 4px;
+    border-radius: 30px;
+    background: var(--py, #a64a4c);
+    transition: width 0.2s ease;
+  }
+
+  .aria-shop-collection__mobile-nav {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .aria-shop-collection__mobile-prev,
+  .aria-shop-collection__mobile-next {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50px;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  /* Previous: white, 1px #A9AAB5 ring, black arrow. Next: #A64A4C, white arrow. */
+  .aria-shop-collection__mobile-prev {
+    border: 1px solid #a9aab5;
+    background: var(--white, #fff);
+    color: var(--black, #000);
+  }
+
+  .aria-shop-collection__mobile-next {
+    border: 0;
+    background: var(--py, #a64a4c);
+    color: var(--white, #fff);
+  }
+
+  /* Figma draws both buttons at full strength in the resting (first-slide) state, when
+     Previous is already disabled. The shared carousels' 40% fade turned it grey on this
+     black ground, so here a disabled button keeps its look and only stops responding. */
+  .aria-shop-collection__mobile-prev:disabled,
+  .aria-shop-collection__mobile-next:disabled {
+    cursor: default;
+  }
+
+  /* 28px icon box; the arrow asset is the same Figma vector the PDP carousels use,
+     drawn pointing down, so it is turned to face each direction. */
+  .aria-shop-collection__mobile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+  }
+
+  .aria-shop-collection__mobile-icon svg {
+    display: block;
+    width: 13.1667px;
+    height: 19.9622px;
+  }
+
+  .aria-shop-collection__mobile-prev .aria-shop-collection__mobile-icon svg {
+    transform: rotate(90deg);
+  }
+
+  .aria-shop-collection__mobile-next .aria-shop-collection__mobile-icon svg {
+    transform: rotate(-90deg);
+  }
+}

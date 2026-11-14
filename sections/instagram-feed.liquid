@@ -29,6 +29,11 @@
         that 1400 track with an 8px gap yields exactly V4's 384px card:
         (1400 - 8 x 2.59) / 3.59 = 384.2.
 
+        The same derivation gives `data-slides-mobile`: the true mobile frame (Figma
+        internal file hf0beCVyuHCECkNQfaOm2q, node 6441:4377) draws a 282px card in the
+        343px column at an 8px gap. Solving n*282 + (n-1)*8 = 343 for n gives 1.21, not
+        the previous 1.15 (which produced a ~298px card, 16px wider than the frame).
+
         This comment sits ABOVE the tag on purpose. A whitespace-trimming Liquid comment
         placed between two HTML attributes eats the newline and welds them into one name
         (data-aria-product-carouseldata-slides-mobile), which silently stops the shared
@@ -37,7 +42,7 @@
       <div
         class="aria-insta__carousel-wrap"
         data-aria-product-carousel
-        data-slides-mobile="1.15"
+        data-slides-mobile="1.21"
         data-slides-sm="2.1"
         data-slides-md="2.6"
         data-slides-desktop="3.59"
@@ -53,11 +58,56 @@
                 if post_url == blank and post_product != blank
                   assign post_url = post_product.url
                 endif
+
+                # -- Supplier-free title so the homepage never names the supplier.
+                assign post_title = ''
+                if post_product != blank
+                  capture post_title
+                    render 'aria-strip-supplier', text: post_product.title
+                  endcapture
+                endif
               -%}
               <div class="swiper-slide aria-insta__slide" {{ block.shopify_attributes }}>
                 <article class="aria-insta__card">
                   <div class="aria-insta__media">
-                    {%- if block.settings.image != blank -%}
+                    {%- comment -%}
+                      A post is EITHER a video or a photo, chosen per block in the theme
+                      editor. Video wins when both are set, and the photo then becomes the
+                      video's poster — so uploading both is a useful combination (a chosen
+                      still frame) rather than a conflict.
+
+                      It plays like a feed post, not like a player: autoplay, muted, looping,
+                      and deliberately NO `controls`. `muted` is what makes the autoplay
+                      permitted at all — browsers refuse to start an unmuted video without a
+                      gesture — and it also keeps the card silent next to four others doing
+                      the same thing. With no controls to click, the whole tile stays a link
+                      to the product, exactly like a photo post.
+                    {%- endcomment -%}
+                    {%- if block.settings.video != blank -%}
+                      {%- liquid
+                        assign insta_poster = ''
+                        if block.settings.image != blank
+                          assign insta_poster = block.settings.image | image_url: width: 768
+                        elsif block.settings.video.preview_image != blank
+                          assign insta_poster = block.settings.video.preview_image | image_url: width: 768
+                        endif
+                      -%}
+                      <video
+                        class="aria-insta__video"
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        preload="metadata"
+                        {% if insta_poster != blank %}
+                          poster="{{ insta_poster }}"
+                        {% endif %}
+                      >
+                        {%- for source in block.settings.video.sources -%}
+                          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                        {%- endfor -%}
+                      </video>
+                    {%- elsif block.settings.image != blank -%}
                       {{
                         block.settings.image
                         | image_url: width: 768
@@ -73,6 +123,7 @@
                         Falls back to the linked product's own image so a block is never
                         blank just because no lifestyle photo was uploaded.
                       {%- endcomment -%}
+                      {%- capture post_image_alt -%}{%- render 'aria-strip-supplier', text: post_product.featured_image.alt -%}{%- endcapture -%}
                       {{
                         post_product.featured_image
                         | image_url: width: 768
@@ -81,7 +132,7 @@
                           sizes: '(min-width: 990px) 384px, 70vw',
                           widths: '384,576,768',
                           class: 'aria-insta__image',
-                          alt: post_product.featured_image.alt | default: post_product.title
+                          alt: post_image_alt
                       }}
                     {%- else -%}
                       <span class="aria-insta__placeholder">
@@ -92,11 +143,13 @@
                     {%- if post_url != blank -%}
                       <a href="{{ post_url }}" class="aria-insta__media-link">
                         <span class="visually-hidden">
-                          {{- block.settings.caption | default: post_product.title | default: section.settings.heading -}}
+                          {{- block.settings.caption | default: post_title | default: section.settings.heading -}}
                         </span>
                       </a>
                     {%- endif -%}
 
+                    {%- comment -%} Instagram glyph only on a block that links to a real Instagram post. {%- endcomment -%}
+                    {%- if block.settings.link contains 'instagram.com' -%}
                     <span class="aria-insta__glyph" aria-hidden="true">
                       <img
                         src="{{ 'wp-instagram-glyph.svg' | asset_url }}"
@@ -106,6 +159,7 @@
                         loading="lazy"
                       >
                     </span>
+                    {%- endif -%}
                   </div>
 
                   {%- comment -%}
@@ -135,10 +189,23 @@
                       {%- if post_product != blank -%}
                         <div class="aria-insta__meta">
                           <a href="{{ post_product.url }}" class="aria-insta__product-title">
-                            {{- post_product.title -}}
+                            {{- post_title -}}
                           </a>
                           <div class="aria-insta__price-row">
-                            <span class="aria-insta__price">{{ post_product.price | money }}</span>
+                            {%- comment -%}
+                              The quick-add variant's own price (not the product's lowest),
+                              opted in to assets/aria-discount-price.js so it matches the cart.
+                            {%- endcomment -%}
+                            {%- assign post_variant = post_product.selected_or_first_available_variant -%}
+                            <span
+                              class="aria-insta__price"
+                              data-aria-price
+                              data-variant-id="{{ post_variant.id }}"
+                              data-price-value="{{ post_variant.price }}"
+                              data-compare-value="0"
+                            >
+                              {{- post_variant.price | money -}}
+                            </span>
 
                             {%- comment -%}
                               Shared quick-add snippet (one copy of the <product-form>
@@ -171,7 +238,8 @@
                               product: post_product,
                               section_id: section.id,
                               is_sold_out: insta_sold_out,
-                              hard_disable: true
+                              hard_disable: true,
+                              product_name: post_title
                             -%}
                           </div>
                         </div>
@@ -259,6 +327,12 @@
           "id": "image",
           "label": "t:sections.aria-instagram-feed.blocks.post.settings.image.label",
           "info": "t:sections.aria-instagram-feed.blocks.post.settings.image.info"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "t:sections.aria-instagram-feed.blocks.post.settings.video.label",
+          "info": "t:sections.aria-instagram-feed.blocks.post.settings.video.info"
         },
         {
           "type": "product",

@@ -4,8 +4,10 @@
    hover or focus. Only one panel is ever open.
 
    Two things this deliberately does NOT do:
-     - It never calls preventDefault on the trigger. A parent nav item keeps its own URL and
-       stays clickable, so the mega menu is additive rather than a navigation trap.
+     - It never calls preventDefault on the trigger, EXCEPT for parents marked
+       `data-aria-mega-menu-only` (the header's "Items that only open their menu", e.g.
+       Start Here): their click opens the panel instead of following the link. Every
+       other parent keeps its own URL, so the mega menu stays additive.
      - It only binds at the width where the header shows its inline nav (1280px). Below that
        the header uses its drawer and the panels are `display: none`, so nothing here can
        affect the tablet or mobile navigation. */
@@ -107,6 +109,17 @@
     trigger.addEventListener('mouseenter', function () {
       if (isDesktop()) scheduleOpen(panel);
     });
+
+    if (trigger.hasAttribute('data-aria-mega-menu-only')) {
+      trigger.addEventListener('click', function (event) {
+        if (!isDesktop()) return;
+        event.preventDefault();
+        clearTimers();
+        /* Hover has usually opened it already; a click then keeps it open rather than
+           closing it under the pointer. Keyboard / touch clicks on a closed panel open it. */
+        if (current !== panel) open(panel);
+      });
+    }
 
     trigger.addEventListener('mouseleave', function () {
       if (isDesktop()) scheduleClose(panel);

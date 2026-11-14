@@ -1,0 +1,361 @@
+/* Wig Party — Learn guides (sections/learn-guides.liquid), Figma 7605:7704.
+ *
+ * Desktop geometry (px, Figma, 1440 x 1057):
+ *   section   py-80 px-40, no fill; a 1360 column: chip bar, 32, panel
+ *   bar       1360 x 74: white -> #EADDD4 to bottom, 1px #EADDD4 ring (inside), r-8, p-20.
+ *             "SECTION" Poppins 16/26 #8C8C8C + 8, 12, then chips 8 apart: 34 tall, px-13 py-6
+ *             (ring inside), r-96, Poppins 14/22. Active: #A64A4C fill, #EADDD4 ring, white text;
+ *             others: white fill, #3F3E3E ring, #1A1A1A text.
+ *   panel     1360 x 791: white -> #EADDD4 to bottom, r-16, clipped. Kristi's signature 239 x 92
+ *             centred at the top; the card row (3 x 416, 20 apart) centred, 107 from the top,
+ *             40 to the bottom.
+ *   card      416 x 644: rgba(255,255,255,.28), 57.25 backdrop blur (Figma radius 114.5), 1px
+ *             white ring that counts toward layout, p-24 (content at 25), 24 between items:
+ *             photo 366 x 336, text group (title Montserrat Medium 24/32 black, 16, text Poppins
+ *             Medium 16/26 black, both with Figma's hard line breaks), button #A64A4C 366 x 52,
+ *             r-2, Poppins 18/28 white.
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-learn-guides,
+.aria-learn-guides *,
+.aria-learn-guides *::before,
+.aria-learn-guides *::after {
+  box-sizing: border-box;
+}
+
+.aria-learn-guides {
+  display: block;
+  padding: 80px 40px;
+}
+
+.aria-learn-guides__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+/* ---------- Chip bar (7605:7707) ---------- */
+
+.aria-learn-guides__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 19px;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 8px;
+  background: linear-gradient(to bottom, #fff, var(--cream, #eaddd4));
+}
+
+.aria-learn-guides__filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.aria-learn-guides__filter-label {
+  padding-right: 8px;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: #8c8c8c;
+}
+
+.aria-learn-guides__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.aria-learn-guides__chip {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 5px 12px;
+  border: 1px solid #3f3e3e;
+  border-radius: 96px;
+  background: #fff;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-learn-guides__chip:hover {
+  border-color: var(--py, #a64a4c);
+  color: var(--py, #a64a4c);
+}
+
+.aria-learn-guides__chip[aria-pressed='true'] {
+  border-color: var(--cream, #eaddd4);
+  background: var(--py, #a64a4c);
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.aria-learn-guides__chip:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+/* ---------- Panel (7605:7731) ---------- */
+
+.aria-learn-guides__panel {
+  position: relative;
+  min-height: 791px;
+  padding: 107px 36px 40px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(to bottom, #fff, var(--cream, #eaddd4));
+}
+
+.aria-learn-guides__signature {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: block;
+  width: 239px;
+  height: 92px;
+  max-width: none;
+  transform: translateX(-50%);
+}
+
+.aria-learn-guides__list {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Card (7605:7737) ---------- */
+
+.aria-learn-guides__card {
+  display: flex;
+  /* 416 at 1440; narrower desktops shrink the cards rather than wrap the third one. */
+  flex: 0 1 416px;
+  min-width: 300px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+  overflow: hidden;
+  border: 1px solid #fff;
+  background: rgba(255, 255, 255, 0.28);
+  -webkit-backdrop-filter: blur(57.25px);
+  backdrop-filter: blur(57.25px);
+}
+
+.aria-learn-guides__card[hidden] {
+  display: none;
+}
+
+.aria-learn-guides__media {
+  position: relative;
+  width: 100%;
+  height: 336px;
+  overflow: hidden;
+}
+
+.aria-learn-guides__media img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.aria-learn-guides__text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
+  color: var(--black, #000);
+}
+
+.aria-learn-guides__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-learn-guides__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+/* Measured by pixel shift: the card title (Montserrat 24/32) and text (Poppins 16/26) land 1px
+   higher in the browser than in Figma, so both are nudged down without moving any box. */
+.aria-learn-guides__title,
+.aria-learn-guides__text {
+  position: relative;
+  top: 1px;
+}
+
+.aria-learn-guides__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 12px 24px;
+  border-radius: 2px;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+  color: #fff;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease;
+}
+
+.aria-learn-guides__btn:hover,
+.aria-learn-guides__btn:focus-visible {
+  background: #8e3d3f;
+}
+
+/* Below three 300px cards the row wraps (no tablet design). */
+@media screen and (max-width: 1099px) {
+  .aria-learn-guides__list {
+    flex-wrap: wrap;
+  }
+}
+
+.aria-learn-guides__empty {
+  margin: 0;
+  padding: 40px 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 26px;
+  text-align: center;
+  color: #3f3e3e;
+}
+
+/* ---------- Mobile (7605:8112) ----------
+ * 375 x 2150: the section itself carries the white -> #EADDD4 gradient (no panel box), py-48
+ * px-16, 24 between bar, signature and cards.
+ *   bar        343 x 152, p-16 (ring inside), the label and chips wrap in one flow 9 / 7 apart;
+ *              chips 5-8 are r-14 as drawn
+ *   signature  123 x 47, centred
+ *   cards      312 wide (centred), 24 apart: p-16, 24 between items; photo 278 at 680:625;
+ *              title 24/32, text 16/26, button 278 x 52. Card 3 draws its photo at the desktop
+ *              366 x 336, centred and clipped, with no top padding (block setting mobile_bleed).
+ *   Line breaks: each card keeps or drops its desktop breaks per Figma (block settings).
+ */
+@media screen and (max-width: 749px) {
+  .aria-learn-guides {
+    padding: 48px 16px;
+    background: linear-gradient(to bottom, #fff, var(--cream, #eaddd4));
+  }
+
+  .aria-learn-guides__inner {
+    gap: 24px;
+  }
+
+  .aria-learn-guides__bar {
+    align-content: center;
+    gap: 9px 7px;
+    min-height: 152px;
+    padding: 15px;
+  }
+
+  .aria-learn-guides__filter,
+  .aria-learn-guides__chips {
+    display: contents;
+  }
+
+  .aria-learn-guides__chip:nth-child(n + 5) {
+    border-radius: 14px;
+  }
+
+  .aria-learn-guides__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+    border-radius: 0;
+    background: none;
+  }
+
+  .aria-learn-guides__signature {
+    position: static;
+    width: 123px;
+    height: 47px;
+    transform: none;
+  }
+
+  .aria-learn-guides__list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 24px;
+    width: 312px;
+    max-width: 100%;
+  }
+
+  .aria-learn-guides__card {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .aria-learn-guides__media {
+    height: auto;
+    aspect-ratio: 680 / 625;
+  }
+
+  .aria-learn-guides__card--bleed {
+    padding-top: 0;
+  }
+
+  .aria-learn-guides__card--bleed .aria-learn-guides__media {
+    flex: none;
+    width: 366px;
+    height: 336px;
+    aspect-ratio: auto;
+  }
+
+  .aria-learn-guides__card--title-flow .aria-learn-guides__title br,
+  .aria-learn-guides__card--text-flow .aria-learn-guides__text br {
+    display: none;
+  }
+}

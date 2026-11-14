@@ -1,0 +1,301 @@
+/* Wig Party — Find Your Colour, "Three ways to be sure" (sections/colour-ways.liquid).
+ *
+ * Desktop, Figma 7009:5386 (1440 x 956): white, py-80 px-40, 48 from the intro to the cards.
+ *   intro  756 wide, centred, 16 apart: an #F79510 pill (r-16, px-12 py-6, Poppins 12/14
+ *          uppercase black) and the title (Montserrat Medium 56/64 black)
+ *   cards  1360, three 440 cards 20 apart; each #F6EDE5, p-24, 32 apart: a 320-tall white photo
+ *          frame, then 20 apart an #BC696B tag (r-20, px-12 py-8, Poppins 12/14 uppercase white,
+ *          30 tall), then 24 apart the copy (Montserrat Medium 20/28 black title, 8 above
+ *          Poppins 16/26 #3F3E3E text) and a 54-tall button (1px black border inside the box,
+ *          r-2, px-24 py-12, Poppins 18/28 black)
+ *
+ * Mobile, Figma 7009:4997 (375): py-48 px-16 with 32 down to the next section, 32 from the
+ * intro to the cards; title 24/32; cards stacked 20 apart, p-20, photo 218 tall; tag r-40,
+ * px-12 py-6, Poppins 14/24 (36 tall); text 16/24 #4A4A4A; button white with a 1px #CD8080
+ * border, square, Helvetica 16/26 uppercase #CD8080, 56 tall (Figma draws the border inside).
+ *
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-colour-ways,
+.aria-colour-ways *,
+.aria-colour-ways *::before,
+.aria-colour-ways *::after {
+  box-sizing: border-box;
+}
+
+.aria-colour-ways {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding: 80px 40px;
+  background: var(--white, #fff);
+}
+
+/* ---------- Intro (7009:5387) ---------- */
+
+.aria-colour-ways__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 756px;
+  max-width: 100%;
+  text-align: center;
+}
+
+.aria-colour-ways__eyebrow {
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #f79510;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-colour-ways__title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+/* ---------- Cards (7009:5390) ---------- */
+
+.aria-colour-ways__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  width: 1360px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-colour-ways__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  min-width: 0;
+  padding: 24px;
+  background: #f6ede5;
+}
+
+.aria-colour-ways__media {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-colour-ways__media img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's framing of the built-in photos (percentages of the photo frame). Photo 3 fills
+   the frame (cover), as uploaded photos do. */
+.aria-colour-ways__media--crop-1 img {
+  top: -8.99%;
+  height: 155.09%;
+  object-fit: fill;
+}
+
+.aria-colour-ways__media--crop-2 img {
+  left: -0.09%;
+  width: 100.18%;
+  height: 129.38%;
+  object-fit: fill;
+}
+
+.aria-colour-ways__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+}
+
+.aria-colour-ways__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #bc696b;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  /* White text renders heavier than Figma without this (as in the colour hero). */
+  -webkit-font-smoothing: antialiased;
+}
+
+.aria-colour-ways__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
+}
+
+.aria-colour-ways__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.aria-colour-ways__card-title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-colour-ways__card-text {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+  /* Measured against the Figma render: Poppins sets this run 1px higher than Figma does
+     (same nudge as the hero and naming sections on this page). */
+  position: relative;
+  top: 1px;
+}
+
+.aria-colour-ways__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 24px;
+  border: 1px solid var(--black, #000);
+  border-radius: 2px;
+  background: transparent;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--black, #000);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-colour-ways__btn:hover {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+/* Not in the design: between 750 and 989 three columns are too narrow for the buttons, so
+   the desktop card stacks, centred, at its own 440 width. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .aria-colour-ways__cards {
+    grid-template-columns: minmax(0, 440px);
+    justify-content: center;
+  }
+}
+
+/* ---------- Mobile (7009:4997) ---------- */
+
+@media screen and (max-width: 749px) {
+  .aria-colour-ways {
+    gap: 32px;
+    padding: 48px 16px 32px;
+  }
+
+  .aria-colour-ways__intro {
+    width: 100%;
+  }
+
+  /* Montserrat 24/32 also lands 1px above Figma's render; the 56px desktop title does not. */
+  .aria-colour-ways__title {
+    position: relative;
+    top: 1px;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .aria-colour-ways__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aria-colour-ways__card {
+    padding: 20px;
+  }
+
+  .aria-colour-ways__media {
+    height: 218px;
+  }
+
+  /* Mobile frames photo 1 with a plain cover; photo 2 keeps the desktop framing. */
+  .aria-colour-ways__media--crop-1 img {
+    top: 0;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .aria-colour-ways__tag {
+    padding: 6px 12px;
+    border-radius: 40px;
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .aria-colour-ways__card-text {
+    line-height: 24px;
+    color: #4a4a4a;
+  }
+
+  .aria-colour-ways__btn {
+    padding: 14px 24px;
+    border-color: #cd8080;
+    border-radius: 0;
+    background: var(--white, #fff);
+    font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 26px;
+    text-transform: uppercase;
+    color: #cd8080;
+  }
+
+  .aria-colour-ways__btn:hover {
+    background: #cd8080;
+    color: var(--white, #fff);
+  }
+}

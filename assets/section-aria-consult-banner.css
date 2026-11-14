@@ -1,0 +1,234 @@
+/* Wig Party — consult banner (sections/consult-banner.liquid), Figma 7289:6522.
+ *
+ * Desktop geometry (px, Figma, 1440 x 592): pt-80 px-40, the card at the top (90 below).
+ *   card   1360 x 422, white -> #EADDD4 (top to bottom), 1px #EADDD4 ring that counts toward
+ *          layout, r-20, clipped; px-40 py-32, the copy centred vertically (46 from the top)
+ *   copy   571 wide: a 242-tall group spread top to bottom (an #F79510 pill, r-16, px-12
+ *          py-6, Poppins 12/14 uppercase black; the title, Montserrat Medium 48/56 black; the
+ *          text, Poppins 18/28 #3F3E3E), then 32 to a #A64A4C button (px-50 py-14, Poppins
+ *          Medium 18/28 white)
+ *   photo  Figma's 566 x 436 frame at 856 / 32 crops a cutout that ends 1.37 past the card's
+ *          right edge. The built-in file is the cutout from Figma's crop to its bottom (930 x
+ *          739 at 0.5438), drawn 505.7 x 402.4 at 855.67 / 31.56, i.e. 2.37 past the padding
+ *          box's right edge; the card clips its bottom
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-consult-banner,
+.aria-consult-banner *,
+.aria-consult-banner *::before,
+.aria-consult-banner *::after {
+  box-sizing: border-box;
+}
+
+/* Figma's 592-tall frame is pt-80 with the 422 card at the top, so 90 is left below. */
+.aria-consult-banner {
+  padding: 80px 40px 90px;
+}
+
+/* ---------- Card (7289:6523) ---------- */
+
+.aria-consult-banner__card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 1360px;
+  height: 422px;
+  margin: 0 auto;
+  /* Figma counts the ring toward layout: 40 / 32 padding inside the 1px ring. */
+  padding: 32px 40px;
+  overflow: hidden;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+}
+
+/* ---------- Copy (7289:6524) ---------- */
+
+.aria-consult-banner__copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  width: 571px;
+  max-width: 100%;
+}
+
+.aria-consult-banner__text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 242px;
+}
+
+.aria-consult-banner__eyebrow {
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #f79510;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-consult-banner__title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-consult-banner__text {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-consult-banner__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 50px;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-consult-banner__btn:hover,
+.aria-consult-banner__btn:focus-visible {
+  background: #8e3d3f;
+}
+
+/* ---------- Photo (7289:6531) ---------- */
+
+.aria-consult-banner__photo {
+  position: absolute;
+  top: 30.56px;
+  right: -2.37px;
+  width: 505.7px;
+  height: 402.4px;
+  pointer-events: none;
+}
+
+.aria-consult-banner__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: fill;
+}
+
+/* An uploaded photo fills Figma's whole 566 x 436 frame instead, cropped to fit. */
+.aria-consult-banner__photo--custom {
+  top: 31px;
+  right: -63px;
+  width: 566px;
+  height: 436px;
+}
+
+.aria-consult-banner__photo--custom img {
+  object-fit: cover;
+  object-position: left top;
+}
+
+@media screen and (min-width: 750px) and (max-width: 1199px) {
+  .aria-consult-banner__photo {
+    opacity: 0.35;
+  }
+}
+
+/* ---------- Mobile (Figma 7289:6131, 375 x 750) ----------
+ * py-48 px-16. Card 343 x 654 (fixed), r-16, pt-32 px-16 inside the 1px ring, the copy at the
+ * top: pill, 16, title Montserrat Medium 24/32, 16, text Poppins 16/26 #2D2D2D, 32, a
+ * full-width 52-tall button. Photo: Figma's 343 x 272 frame at 16 / 382 of the card (bleeding
+ * 16 past its right edge, ending on its bottom) crops the cutout at 0.3711 x 0.3719; the
+ * built-in file lands 345.1 x 274.8 at 14.75 / 380.72 of the padding box. Title and text drop
+ * 1px (24/32 and 16/26 land higher in the browser than in Figma).
+ */
+@media screen and (max-width: 749px) {
+  .aria-consult-banner {
+    padding: 48px 16px;
+  }
+
+  .aria-consult-banner__card {
+    flex-direction: column;
+    align-items: stretch;
+    height: 654px;
+    padding: 32px 16px;
+    border-radius: 16px;
+  }
+
+  .aria-consult-banner__copy {
+    width: 100%;
+  }
+
+  .aria-consult-banner__text-group {
+    justify-content: flex-start;
+    min-height: 0;
+  }
+
+  .aria-consult-banner__title,
+  .aria-consult-banner__text {
+    position: relative;
+    top: 1px;
+  }
+
+  .aria-consult-banner__title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .aria-consult-banner__text {
+    font-size: 16px;
+    line-height: 26px;
+    color: #2d2d2d;
+  }
+
+  .aria-consult-banner__btn {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .aria-consult-banner__photo {
+    top: 380.72px;
+    right: auto;
+    left: 14.75px;
+    width: 345.1px;
+    height: 274.8px;
+  }
+
+  .aria-consult-banner__photo--custom {
+    top: 381px;
+    left: 15px;
+    width: 343px;
+    height: 272px;
+  }
+}

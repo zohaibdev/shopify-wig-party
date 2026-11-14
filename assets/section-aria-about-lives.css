@@ -1,0 +1,183 @@
+/* Wig Party — About Kristi, "Where the Lives happen" (sections/about-lives.liquid),
+ * Figma 7841:3592.
+ *
+ * Desktop geometry (px, Figma, 1440 x 592, white): p-80, 56 between heading and cards.
+ *   heading  Montserrat Medium 48/56 black, centred
+ *   cards    a 1252 row, centred: 401 x 320 cards 24 apart, r-4, clipped. A poster fills each
+ *            card (Figma's crops below); the first two carry a rgba(0,0,0,.2) wash
+ *   play     a 70 circle, rgba(192,192,192,.5) with a 33.4 background blur (16.7 in CSS),
+ *            centred (0.5 right of the middle on desktop); the white triangle is the 70-box
+ *            path shared with the PDP video (wp-pdp-kristi-play.svg)
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-about-lives,
+.aria-about-lives *,
+.aria-about-lives *::before,
+.aria-about-lives *::after {
+  box-sizing: border-box;
+}
+
+.aria-about-lives {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  padding: 80px;
+  background: var(--white, #fff);
+}
+
+.aria-about-lives__title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--black, #000);
+}
+
+.aria-about-lives__live {
+  width: 100%;
+}
+
+/* The LiveMeUp row shows once its replays are in; Figma's posters stand in until then. */
+.aria-about-lives:not([data-lmu-state='ready']) .aria-about-lives__live {
+  display: none;
+}
+
+.aria-about-lives__cards {
+  display: flex;
+  justify-content: flex-start;
+  gap: 24px;
+  width: 100%;
+  /* Figma's row is 1252 wide for 3 x 401 + 2 x 24 = 1251 of cards, left-aligned in it. */
+  max-width: 1252px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-about-lives__card {
+  flex: 0 1 401px;
+  min-width: 0;
+}
+
+/* ---------- Card (7841:3595) ---------- */
+
+.aria-about-lives__media {
+  position: relative;
+  display: block;
+  height: 320px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--white, #fff);
+  color: var(--white, #fff);
+}
+
+.aria-about-lives__media img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Posters 1 and 2 simply fill the card (Figma's FILL); poster 3 is Figma's crop, as % of the
+   card (it stretches it to fit, so the same numbers hold on mobile's 280 x 210 card). */
+.aria-about-lives__media img.aria-about-lives__fallback--3 {
+  inset: auto;
+  top: -1.98%;
+  left: -49.04%;
+  width: 149.04%;
+  height: 103.96%;
+  object-fit: fill;
+}
+
+/* The LiveMeUp cards always carry the wash, as the posters with a photo behind them do. */
+.aria-about-lives__media--darken::after,
+.aria-about-lives__live .aria-about-lives__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.aria-about-lives__play {
+  position: absolute;
+  z-index: 1;
+  top: calc(50% - 35px);
+  left: calc(50% - 34.5px);
+  display: block;
+  width: 70px;
+  height: 70px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: rgba(192, 192, 192, 0.5);
+  -webkit-backdrop-filter: blur(16.7px);
+  backdrop-filter: blur(16.7px);
+  transition: transform 0.2s ease;
+}
+
+.aria-about-lives__play svg {
+  display: block;
+  width: 70px;
+  height: 70px;
+}
+
+.aria-about-lives__media:hover .aria-about-lives__play,
+.aria-about-lives__media:focus-visible .aria-about-lives__play {
+  transform: scale(1.06);
+}
+
+.aria-about-lives__media:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+/* ---------- Mobile (Figma 7847:290, 375 x 386) ----------
+ * py-40 px-16, 24 between heading and cards; heading Montserrat Medium 28/36. The 280 x 210
+ * cards sit 12 apart in a row that scrolls sideways inside the 343 column; the play button
+ * is exactly centred.
+ */
+@media screen and (max-width: 749px) {
+  .aria-about-lives {
+    gap: 24px;
+    padding: 40px 16px;
+  }
+
+  .aria-about-lives__title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .aria-about-lives__cards {
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .aria-about-lives__cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .aria-about-lives__card {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+  }
+
+  .aria-about-lives__media {
+    height: 210px;
+  }
+
+  .aria-about-lives__play {
+    left: calc(50% - 35px);
+  }
+}

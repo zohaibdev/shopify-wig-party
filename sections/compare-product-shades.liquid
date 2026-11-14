@@ -1,0 +1,16 @@
+{%- comment -%}
+  Wig Party: one product's shades, as data. Not placed on any template: the Compare Shades
+  page fetches it through the Section Rendering API,
+  /products/<handle>?section_id=compare-product-shades, when a shopper picks a wig
+  (?product=<handle>, assets/aria-compare-shades.js). The shades are the product's own
+  variants and variant images (snippets/compare-wig-shades.liquid).
+{%- endcomment -%}
+<script type="application/json" data-product-shades>
+  {%- render 'compare-wig-shades', wig: product -%}
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.compare-product-shades.name"
+}
+{% endschema %}

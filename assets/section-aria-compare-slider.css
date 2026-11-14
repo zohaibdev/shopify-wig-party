@@ -1,0 +1,289 @@
+/* Wig Party — Compare Shades, before/after slider (sections/compare-slider.liquid),
+ * Figma 7289:6403.
+ *
+ * Desktop geometry (px, Figma, 1440 x 984): py-80 px-40.
+ *   frame    1360 x 824, #F5ECE4, r-8, p-28, clipped. The 1311 x 768 photo is centred in it,
+ *            so it overhangs the 1304 content box by 3.5 each side, as Figma draws it
+ *   photo    #EEE under the photo, r-12, clipped
+ *   split    Shade B from the line rightwards; the line is 3 white at --pos (Figma's 638.5 of
+ *            1311 is 48.703%; number settings stop at one decimal, so 48.7% = 638.46). Figma's stand-in wash over B, rgba(10,10,10,.2), only shows while both
+ *            sides are the built-in photo
+ *   handle   40 white circle centred on the photo's middle, its left edge 18 before the line;
+ *            the two 12 chevrons (#141B34) as one 24 x 12 icon at 8 / 14
+ *   actions  #EADDD4, p-10, 654 from the photo's top, centred 0.5 right of the middle; three
+ *            #A64A4C buttons 16 apart, px-50 (the last px-40) py-14, Poppins Medium 18/28 white
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-compare-slider,
+.aria-compare-slider *,
+.aria-compare-slider *::before,
+.aria-compare-slider *::after {
+  box-sizing: border-box;
+}
+
+.aria-compare-slider {
+  padding: 80px 40px;
+}
+
+/* ---------- Frame (7289:6404) ---------- */
+
+.aria-compare-slider__frame {
+  position: relative;
+  display: block;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 28px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f5ece4;
+  /* The start comes from the section settings; dragging sets --pos inline, which wins. */
+  --pos: var(--pos-start, 48.7%);
+}
+
+/* ---------- Photo (7289:6405) ---------- */
+
+.aria-compare-slider__stage {
+  position: relative;
+  width: calc(100% + 7px);
+  height: 768px;
+  margin: 0 -3.5px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #eee;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.aria-compare-slider__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  /* Shade photos are portrait, so filling the 1311 x 768 stage edge to edge crops them top
+     and bottom. Centred, that left a mouth-to-chest band; anchored near the top it keeps
+     the hair and face, which is what is being compared. */
+  object-fit: cover;
+  object-position: center 8%;
+  pointer-events: none;
+}
+
+/* The built-in photo (1035 x 888) is placed with Figma's own crop: desktop 109.18% x 159.9%
+   at -7.28% / -12.18% (1.383x). Mobile uses its own crop in the block below. */
+.aria-compare-slider__img.is-fallback {
+  inset: auto;
+  top: -12.18%;
+  left: -7.28%;
+  width: 109.18%;
+  height: 159.9%;
+  object-fit: fill;
+}
+
+.aria-compare-slider__b {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 var(--pos));
+}
+
+/* Shade C (ADD A THIRD): a third layer from the second line (--pos-c) to the right edge. */
+.aria-compare-slider__c {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 var(--pos-c, 67%));
+}
+
+.aria-compare-slider__c[hidden],
+.aria-compare-slider__line[hidden],
+.aria-compare-slider__handle[hidden] {
+  display: none;
+}
+
+/* Figma's 20% wash, standing in for a second shade while both sides are the same photo. */
+.aria-compare-slider__b.is-demo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.2);
+}
+
+.aria-compare-slider__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  width: 3px;
+  background: var(--white, #fff);
+  pointer-events: none;
+}
+
+/* The second line and handle sit at --pos-c; the handle is otherwise the first one. */
+.aria-compare-slider__line--c {
+  left: var(--pos-c, 67%);
+}
+
+/* ---------- Handle (7289:6415) ---------- */
+
+.aria-compare-slider__handle {
+  position: absolute;
+  top: calc(50% - 20px);
+  left: calc(var(--pos) - 18px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 131px;
+  background: var(--white, #fff);
+  color: #141b34;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.aria-compare-slider__handle svg {
+  display: block;
+}
+
+.aria-compare-slider__handle--c {
+  left: calc(var(--pos-c, 67%) - 18px);
+}
+
+.aria-compare-slider__handle:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+/* ---------- Actions (7289:6407) ---------- */
+
+.aria-compare-slider__actions {
+  position: absolute;
+  top: 654px;
+  left: calc(50% + 0.5px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px;
+  background: var(--cream, #eaddd4);
+  transform: translateX(-50%);
+  cursor: default;
+}
+
+.aria-compare-slider__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 14px 50px;
+  border: 0;
+  border-radius: 0;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-compare-slider__btn--narrow {
+  padding: 14px 40px;
+}
+
+.aria-compare-slider__btn:hover,
+.aria-compare-slider__btn:focus-visible {
+  background: #8e3d3f;
+}
+
+/* ---------- Mobile (Figma 7289:6056, 375 x 635) ----------
+ * py-48 px-16. Frame 343 x 539, p-8, r-8; the photo 327 x 523, r-4 (the built-in photo at
+ * 221.35% x 118.74%, -70.37% / 0, i.e. 0.699x). The line is 1px at 164 of 327 (50.2%), the
+ * handle 32 across, centred on the line's left edge and 0.5 above the middle, its icon at
+ * 0.8. Actions: a 319-wide #EADDD4 bar 427 from the photo's top, p-4, wrapping 8 apart: two
+ * buttons (157 and 146) on the first row and the third across the second; Poppins Medium
+ * 14/22, py-8.
+ */
+@media screen and (max-width: 749px) {
+  .aria-compare-slider {
+    padding: 48px 16px;
+  }
+
+  .aria-compare-slider__frame {
+    padding: 8px;
+    --pos: var(--pos-start-mobile, 50.2%);
+  }
+
+  .aria-compare-slider__stage {
+    width: 100%;
+    height: 523px;
+    margin: 0;
+    border-radius: 4px;
+  }
+
+  .aria-compare-slider__img.is-fallback {
+    top: 0;
+    left: -70.37%;
+    width: 221.35%;
+    height: 118.74%;
+  }
+
+  .aria-compare-slider__line {
+    width: 1px;
+  }
+
+  .aria-compare-slider__handle {
+    top: calc(50% - 16.5px);
+    left: calc(var(--pos) - 16px);
+    width: 32px;
+    height: 32px;
+    border-radius: 104.8px;
+  }
+
+  .aria-compare-slider__handle svg {
+    transform: scale(0.8);
+  }
+
+  .aria-compare-slider__handle--c {
+    left: calc(var(--pos-c, 67%) - 16px);
+  }
+
+  .aria-compare-slider__actions {
+    top: 427px;
+    left: 50%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    width: calc(100% - 8px);
+    padding: 4px;
+  }
+
+  /* Figma fixes these at 157 and 146 with the label centred, so they share the row 157:146
+     with no side padding (padding would be set aside before the share). */
+  .aria-compare-slider__btn {
+    flex: 157 1 0;
+    min-width: 0;
+    padding: 8px 0;
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .aria-compare-slider__btn:nth-child(2) {
+    flex-grow: 146;
+  }
+
+  .aria-compare-slider__btn--narrow {
+    flex: 1 0 100%;
+    padding: 8px 40px;
+  }
+}

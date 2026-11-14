@@ -1,0 +1,292 @@
+/* Wig Party — Measure & cap guide steps (sections/guide-steps.liquid), Figma 7368:103. Desktop only.
+ *
+ * Geometry (px, Figma, 1440 x 984):
+ *   section     white, pt-80 pb-80 px-40, inner 1360
+ *   head        chip, 16, heading 56/64 (H1) centered, 16, description 20/28 #3f3e3e 935 wide
+ *   head->cards 56
+ *   cards       3 x 438, gap 22 (row 1358, centered), radius 12, equal height
+ *   media       438 x 382, image cover, top corners 12; empty = assets/guide-steps-card-N.jpg
+ *   body        #f5ebe2, min 208 high, p 24/12/16, chip, 20, title H4 24/32, 12, text 16/26 #3f3e3e
+ *   chip        #f79510, px-12 py-6, r-16, Poppins 12/14 uppercase black
+ */
+
+.guide-steps,
+.guide-steps *,
+.guide-steps *::before,
+.guide-steps *::after {
+  box-sizing: border-box;
+}
+
+.guide-steps {
+  padding: var(--wp-steps-padding);
+  background: var(--wp-color-white);
+  scroll-margin-top: var(--wp-steps-scroll-offset);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.guide-steps__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-steps-head-to-cards);
+  width: 100%;
+  max-width: var(--wp-steps-max-width);
+  margin: 0 auto;
+}
+
+/* ---------- Head (7368:106) ---------- */
+
+.guide-steps__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-steps-head-gap);
+  width: 100%;
+}
+
+.guide-steps__head-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-steps-head-gap);
+  width: 100%;
+  text-align: center;
+}
+
+.guide-steps__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: var(--wp-steps-chip-padding);
+  border-radius: var(--wp-steps-chip-radius);
+  background: var(--wp-steps-chip-bg);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-tag-size);
+  font-weight: var(--wp-tag-weight);
+  line-height: var(--wp-tag-line-height);
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--wp-color-black);
+}
+
+.guide-steps__title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h1-size);
+  font-weight: var(--wp-h1-weight);
+  line-height: var(--wp-h1-line-height);
+  letter-spacing: 0;
+  color: var(--wp-color-black);
+}
+
+.guide-steps__desc {
+  width: var(--wp-steps-desc-width);
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-large-size);
+  font-weight: var(--wp-body-large-weight);
+  line-height: var(--wp-body-large-line-height);
+  letter-spacing: 0;
+  color: var(--wp-color-gray);
+}
+
+/* ---------- Cards (7368:111) ---------- */
+
+.guide-steps__cards {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--wp-steps-card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-steps__card {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 var(--wp-steps-card-width);
+  width: var(--wp-steps-card-width);
+  overflow: hidden;
+  border-radius: var(--wp-steps-card-radius);
+}
+
+.guide-steps__media {
+  position: relative;
+  flex: none;
+  width: 100%;
+  aspect-ratio: var(--wp-steps-media-ratio);
+  overflow: hidden;
+  border-radius: var(--wp-steps-card-radius) var(--wp-steps-card-radius) 0 0;
+  background: var(--wp-color-gray-25);
+}
+
+.guide-steps__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.guide-steps__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--wp-steps-placeholder-gap);
+  background: var(--wp-color-gray-25);
+  color: var(--wp-steps-placeholder-color);
+  text-align: center;
+}
+
+.guide-steps__placeholder-icon {
+  display: block;
+  flex: none;
+  width: var(--wp-steps-placeholder-icon);
+  height: var(--wp-steps-placeholder-icon);
+}
+
+.guide-steps__placeholder-text {
+  font-family: var(--wp-font-body);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+/* ---------- Card body (7368:115) ---------- */
+
+.guide-steps__body {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--wp-steps-body-gap);
+  min-height: var(--wp-steps-body-min-height);
+  padding: var(--wp-steps-body-padding);
+  background: var(--wp-steps-body-bg);
+}
+
+.guide-steps__card-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-steps-title-gap);
+  width: 100%;
+}
+
+.guide-steps__card-title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h4-size);
+  font-weight: var(--wp-h4-weight);
+  line-height: var(--wp-h4-line-height);
+  letter-spacing: 0;
+  color: var(--wp-color-black);
+}
+
+.guide-steps__card-desc {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-steps-text-size);
+  font-weight: 400;
+  line-height: var(--wp-steps-text-line-height);
+  letter-spacing: 0;
+  color: var(--wp-color-gray);
+}
+
+/* ---------- Mobile (Figma 7732:12668, 375 wide) ----------
+ * section  white, py-48 px-16; head -> cards 56, head gaps 16, chip unchanged
+ * title    Montserrat 500 36/46 centered; description 16/26 #3f3e3e, full width
+ * cards    1 column, 343 wide, gap 20, r-12
+ * media    343 x 300 fixed (image cover; no-image box same size)
+ * body     #f5ebe2, p 24/16, hug height; chip, 16, title 20/28, 12, text 16/26
+ * card 1 default asset: Figma keeps the desktop 438 x 382 framing, anchored top-left (cropped right/bottom)
+ */
+@media (max-width: 749px) {
+  .guide-steps {
+    padding: var(--wp-m-steps-padding);
+  }
+
+  .guide-steps__title {
+    font-size: var(--wp-m-steps-title-size);
+    line-height: var(--wp-m-steps-title-line-height);
+    overflow-wrap: break-word;
+  }
+
+  .guide-steps__desc {
+    width: 100%;
+    font-size: var(--wp-m-body-small-size);
+    line-height: var(--wp-m-body-small-line-height);
+  }
+
+  .guide-steps__cards {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--wp-m-steps-card-gap);
+  }
+
+  .guide-steps__card {
+    flex: none;
+    width: 100%;
+  }
+
+  .guide-steps__media {
+    aspect-ratio: auto;
+    height: var(--wp-m-steps-media-height);
+  }
+
+  .guide-steps__card:first-child .guide-steps__img[src*='guide-steps-card-1'] {
+    inset: 0 auto auto 0;
+    width: var(--wp-steps-card-width);
+    height: auto;
+    aspect-ratio: var(--wp-steps-media-ratio);
+  }
+
+  .guide-steps__body {
+    gap: var(--wp-m-steps-body-gap);
+    min-height: 0;
+    padding: var(--wp-m-steps-body-padding);
+  }
+
+  .guide-steps__card-title {
+    font-size: var(--wp-m-h4-size);
+    line-height: var(--wp-m-h4-line-height);
+  }
+}
+
+/* ---------- Tablet (750-1279) ----------
+ * Three 438px cards (1358 wide) scrolled the page sideways below 1280: they share the
+ * row from 1024, and wrap two-up below that. */
+@media (min-width: 750px) and (max-width: 1279px) {
+  .guide-steps {
+    padding-inline: 40px;
+  }
+
+  .guide-steps__cards {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .guide-steps__card {
+    flex: 1 1 280px;
+    width: auto;
+    min-width: 0;
+    max-width: var(--wp-steps-card-width);
+  }
+}
+
+/* 1280-1439: the 1358px card row is wider than the page; the cards shrink evenly. */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .guide-steps__card {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+}

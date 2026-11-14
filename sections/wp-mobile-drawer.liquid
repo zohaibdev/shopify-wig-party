@@ -1,0 +1,3146 @@
+{%- comment -%}
+  Wig Party — NEW mobile nav drawer (below 750px only). Figma file hf0beCVyuHCECkNQfaOm2q,
+  node 7799:4 (Main menu) + 5 drill-in screens (7799:91 Shop, 7809:18 Start Here,
+  7809:233 Live, 7809:404 Community, 7809:569 Dailey Deals).
+
+  This is a SEPARATE section added as a sibling of "header" in header-group.json, on
+  purpose: the existing "header" section (sections/header.liquid) and its own mobile
+  drawer (snippets/aria-mobile-nav.liquid, assets/aria-mobile-nav.js, the ".aria-mnav"
+  dialog) are NOT edited anywhere in this file or its JS. See assets/wp-mobile-drawer.js
+  for how the existing hamburger button is intercepted (capture-phase listener) and how
+  the old ".aria-mnav" is hidden below 749px (scoped rule in this section's own style
+  block, further down).
+
+  Screens are a STACK, not an accordion-of-screens: one root screen (the main menu) and
+  one child screen per panel block, each absolutely positioned and slid in from the right
+  (assets/wp-mobile-drawer.js + tokens in assets/design-tokens.css own the motion).
+
+  Tablet (750-1279px): this whole section renders `hidden` and is never shown — the
+  existing aria-mnav drawer keeps running exactly as it does today.
+
+  Block types (max 1 of each; order sets the main-menu row order):
+    panel_shop, panel_start, panel_live, panel_community, panel_deals.
+  Each block's `label` is the main-menu row text; its drill-in body is rendered in the
+  `{%- case block.type -%}` further down. Panel content is built stage-by-stage (see
+  PROGRESS.md "Mobile nav drawer" entries) — a block with no content configured yet still
+  renders its row (chevron, opens an empty panel) rather than disappearing, since all 5
+  types are inherently drill-in panels in this design (no "plain link" case exists among
+  the 5 fixed rows here).
+{%- endcomment -%}
+
+{%- liquid
+  assign wp_md_id = 'WpMdrawer-' | append: section.id
+  assign account_href = section.settings.account_url
+  if account_href == blank
+    if shop.customer_accounts_enabled
+      if customer
+        assign account_href = routes.account_url
+      else
+        assign account_href = routes.account_login_url
+      endif
+    else
+      assign account_href = routes.account_url
+    endif
+  endif
+-%}
+
+<div class="wp-mdrawer" id="{{ wp_md_id }}" data-wp-mdrawer hidden>
+  {%- comment -%}
+    Overlay is a sibling of the dialog (not a parent) for the same reason aria-mnav does
+    this: animating the backdrop's opacity must not also fade the dialog's contents.
+  {%- endcomment -%}
+  <div class="wp-mdrawer__overlay" data-wp-mdrawer-close tabindex="-1" aria-hidden="true"></div>
+
+  <div
+    class="wp-mdrawer__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'Menu' }}"
+    data-wp-mdrawer-dialog
+  >
+    {%- comment -%} ---------- ROOT SCREEN: main menu ---------- {%- endcomment -%}
+    <div class="wp-mdrawer__screen wp-mdrawer__screen--root is-active" data-wp-mdrawer-screen="root">
+      <div class="wp-mdrawer__header">
+        <a href="{{ routes.root_url }}" class="wp-mdrawer__logo">
+          {%- if section.settings.logo != blank -%}
+            {{- section.settings.logo | image_url: width: 300 | image_tag: loading: 'lazy', widths: '150, 300', class: 'wp-mdrawer__logo-img', alt: section.settings.logo.alt | default: shop.name -}}
+          {%- else -%}
+            <img
+              src="{{ 'Logo.png' | asset_url }}"
+              alt="{{ shop.name }}"
+              width="122"
+              height="32"
+              loading="lazy"
+              class="wp-mdrawer__logo-img"
+            >
+          {%- endif -%}
+        </a>
+        <button type="button" class="wp-mdrawer__close" data-wp-mdrawer-close>
+          <span class="wp-mdrawer__close-visual">
+            <span class="wp-mdrawer__close-icon">
+              <img src="{{ 'wp-mobile-drawer-close-icon.svg' | asset_url }}" alt="" width="20" height="20">
+            </span>
+          </span>
+          <span class="visually-hidden">Close menu</span>
+        </button>
+      </div>
+
+      <div class="wp-mdrawer__body">
+        <button
+          type="button"
+          class="wp-mdrawer__search"
+          data-wp-mdrawer-search
+        >
+          <span class="wp-mdrawer__search-placeholder">{{ section.settings.search_placeholder | default: "What are you looking for?" }}</span>
+          <span class="wp-mdrawer__search-icon">
+            <img src="{{ 'wp-mobile-drawer-search-icon.svg' | asset_url }}" alt="" width="16" height="16">
+          </span>
+        </button>
+
+        <nav class="wp-mdrawer__list" aria-label="Main menu">
+          <ul role="list" class="wp-mdrawer__list-inner">
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign row_label = block.settings.label
+                assign show_dot = false
+                assign show_badge = false
+                if block.type == 'panel_live' and block.settings.show_live_dot
+                  assign show_dot = true
+                endif
+                if block.type == 'panel_deals' and block.settings.show_new_badge
+                  assign show_badge = true
+                endif
+                assign panel_id = 'wp-mdrawer-panel-' | append: block.id
+              -%}
+              <li class="wp-mdrawer__item" {{ block.shopify_attributes }}>
+                <button
+                  type="button"
+                  class="wp-mdrawer__row"
+                  data-wp-mdrawer-open="{{ block.id }}"
+                  aria-haspopup="dialog"
+                  aria-controls="{{ panel_id }}"
+                >
+                  <span class="wp-mdrawer__row-label-group">
+                    <span class="wp-mdrawer__row-label">{{ row_label }}</span>
+                    {%- if show_dot -%}
+                      <span class="wp-mdrawer__row-dot" aria-hidden="true">
+                        <img src="{{ 'wp-mobile-drawer-live-dot-icon.svg' | asset_url }}" alt="" width="6" height="6">
+                      </span>
+                    {%- endif -%}
+                    {%- if show_badge -%}
+                      <span class="wp-mdrawer__row-badge">{{ block.settings.new_badge_label | default: 'NEW' }}</span>
+                    {%- endif -%}
+                  </span>
+                  <span class="wp-mdrawer__row-chevron" aria-hidden="true">
+                    <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                  </span>
+                </button>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+
+        {%- if section.settings.preorder_label != blank -%}
+          <a href="{{ section.settings.preorder_url | default: '/collections/all-pre-order-options' }}" class="wp-mdrawer__preorder">
+            {{ section.settings.preorder_label }}
+          </a>
+        {%- endif -%}
+
+        <a href="{{ account_href }}" class="wp-mdrawer__account">
+          <span class="wp-mdrawer__account-icon">
+            <img src="{{ 'wp-mobile-drawer-account-icon.svg' | asset_url }}" alt="" width="16" height="16">
+          </span>
+          <span class="wp-mdrawer__account-label">{{ section.settings.account_label | default: "Sign in / Create account" }}</span>
+        </a>
+
+        {%- if section.settings.live_title != blank -%}
+          <div class="wp-mdrawer__live-card">
+            {%- if section.settings.live_eyebrow != blank -%}
+              <p class="wp-mdrawer__live-eyebrow">{{ section.settings.live_eyebrow }}</p>
+            {%- endif -%}
+            <p class="wp-mdrawer__live-title">{{ section.settings.live_title }}</p>
+            {%- if section.settings.live_copy != blank -%}
+              <p class="wp-mdrawer__live-copy">{{ section.settings.live_copy }}</p>
+            {%- endif -%}
+            {%- if section.settings.live_button_label != blank -%}
+              <a href="{{ section.settings.live_button_url | default: '#' }}" class="wp-mdrawer__live-btn">
+                <span class="wp-mdrawer__live-btn-dot" aria-hidden="true">
+                  <img src="{{ 'wp-mobile-drawer-watch-live-dot-icon.svg' | asset_url }}" alt="" width="10" height="10">
+                </span>
+                {{ section.settings.live_button_label }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_app_store or section.settings.show_google_play -%}
+          <div class="wp-mdrawer__badges">
+            {%- if section.settings.show_app_store -%}
+              <a href="{{ section.settings.app_store_url | default: '#' }}" class="wp-mdrawer__badge">
+                <span class="wp-mdrawer__badge-icon">
+                  <img src="{{ 'wp-mobile-drawer-app-store-icon.svg' | asset_url }}" alt="" width="16" height="16">
+                </span>
+                App Store
+              </a>
+            {%- endif -%}
+            {%- if section.settings.show_google_play -%}
+              <a href="{{ section.settings.google_play_url | default: '#' }}" class="wp-mdrawer__badge">
+                <span class="wp-mdrawer__badge-icon">
+                  <img src="{{ 'wp-mobile-drawer-google-play-icon.svg' | asset_url }}" alt="" width="16" height="16">
+                </span>
+                Google Play
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} ---------- CHILD SCREENS: one per panel block ---------- {%- endcomment -%}
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign panel_id = 'wp-mdrawer-panel-' | append: block.id
+      -%}
+      <div
+        class="wp-mdrawer__screen wp-mdrawer__screen--child"
+        id="{{ panel_id }}"
+        data-wp-mdrawer-screen="{{ block.id }}"
+        hidden
+        {% if block.type == 'panel_live' %}data-lmu-root data-lmu-lazy{% endif %}
+        {{ block.shopify_attributes }}
+      >
+        <div class="wp-mdrawer__header wp-mdrawer__header--child">
+          <button type="button" class="wp-mdrawer__back" data-wp-mdrawer-back>
+            <span class="wp-mdrawer__back-icon" aria-hidden="true">
+              <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20" class="wp-mdrawer__back-icon-img">
+            </span>
+            Back
+          </button>
+          <span class="wp-mdrawer__screen-title">{{ block.settings.label }}</span>
+          <button type="button" class="wp-mdrawer__close" data-wp-mdrawer-close>
+            <span class="wp-mdrawer__close-visual">
+              <span class="wp-mdrawer__close-icon">
+                <img src="{{ 'wp-mobile-drawer-close-icon.svg' | asset_url }}" alt="" width="20" height="20">
+              </span>
+            </span>
+            <span class="visually-hidden">Close menu</span>
+          </button>
+        </div>
+        <div class="wp-mdrawer__body wp-mdrawer__body--child">
+          {%- comment -%}
+            Panel content lands stage-by-stage (see PROGRESS.md): panel_shop (stage 2),
+            panel_start / panel_live (stage 3), panel_community / panel_deals (stage 4).
+          {%- endcomment -%}
+          {%- case block.type -%}
+            {%- when 'panel_shop' -%}
+              {%- liquid
+                assign cap_defaults = 'wp-mega-construction-hand-tied.png|wp-mega-construction-extended-lace.png|wp-mega-construction-full-mono.png|wp-mega-construction-mono-topper.png' | split: '|'
+                assign first_open = false
+              -%}
+              <div class="wp-mdrawer__accordion" data-wp-mdrawer-accordion>
+                {%- for i in (1..4) -%}
+                  {%- liquid
+                    assign title_key = 'group_' | append: i | append: '_title'
+                    assign icon_key = 'group_' | append: i | append: '_icon'
+                    assign menu_key = 'group_' | append: i | append: '_menu'
+                    assign g_title = block.settings[title_key]
+                    assign g_icon = block.settings[icon_key]
+                    assign g_menu_handle = block.settings[menu_key]
+                    assign g_menu = linklists[g_menu_handle]
+                    assign g_has_links = false
+                    if g_menu != blank and g_menu.links.size > 0
+                      assign g_has_links = true
+                    endif
+                  -%}
+                  {%- if g_title != blank and g_has_links -%}
+                    {%- liquid
+                      assign group_id = 'wp-mdrawer-group-' | append: block.id | append: '-' | append: i
+                      assign is_open = false
+                      if first_open == false
+                        assign is_open = true
+                        assign first_open = true
+                      endif
+                    -%}
+                    <div class="wp-mdrawer__group">
+                      <button
+                        type="button"
+                        class="wp-mdrawer__group-trigger"
+                        data-wp-mdrawer-accordion-trigger
+                        aria-expanded="{{ is_open }}"
+                        aria-controls="{{ group_id }}"
+                      >
+                        <span class="wp-mdrawer__group-trigger-label">
+                          {%- if g_icon != blank -%}
+                            <span class="wp-mdrawer__group-icon">{{ g_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                          {%- else -%}
+                            <span class="wp-mdrawer__group-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: i -%}</span>
+                          {%- endif -%}
+                          {{ g_title }}
+                        </span>
+                        <span class="wp-mdrawer__group-chevron" aria-hidden="true">
+                          <img src="{{ 'wp-mobile-drawer-chevron-up-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                        </span>
+                      </button>
+                      <div class="wp-mdrawer__group-content" id="{{ group_id }}" {% unless is_open %}hidden{% endunless %}>
+                        {%- if i == 1 -%}
+                          <div class="wp-mdrawer__cap-items">
+                            {%- for link in g_menu.links limit: 4 -%}
+                              {%- liquid
+                                assign item_key = 'cap_item_' | append: forloop.index | append: '_image'
+                                assign item_image = block.settings[item_key]
+                              -%}
+                              <a href="{% render 'aria-link-url', url: link.url %}" class="wp-mdrawer__cap-item">
+                                <span class="wp-mdrawer__cap-item-photo">
+                                  {%- if item_image != blank -%}
+                                    {{ item_image | image_url: width: 96 | image_tag: loading: 'lazy', alt: '' }}
+                                  {%- else -%}
+                                    <img src="{{ cap_defaults[forloop.index0] | asset_url }}" alt="" loading="lazy">
+                                  {%- endif -%}
+                                </span>
+                                <span class="wp-mdrawer__cap-item-label">{{ link.title }}</span>
+                              </a>
+                            {%- endfor -%}
+                          </div>
+                        {%- else -%}
+                          <ul class="wp-mdrawer__plain-links" role="list">
+                            {%- for link in g_menu.links -%}
+                              <li>
+                                <a href="{% render 'aria-link-url', url: link.url %}" class="wp-mdrawer__plain-link">
+                                  <span>{{ link.title }}</span>
+                                  <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                    <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                  </span>
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+
+              {%- liquid
+                assign has_promo = false
+                if block.settings.promo_1_image != blank or block.settings.promo_2_image != blank
+                  assign has_promo = true
+                endif
+              -%}
+              {%- if block.settings.featured_heading != blank and has_promo -%}
+                <div class="wp-mdrawer__featured">
+                  <p class="wp-mdrawer__featured-heading">
+                    {%- if block.settings.featured_icon != blank -%}
+                      <span class="wp-mdrawer__featured-icon">{{ block.settings.featured_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                    {%- else -%}
+                      <span class="wp-mdrawer__featured-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: 'featured' -%}</span>
+                    {%- endif -%}
+                    {{ block.settings.featured_heading }}
+                  </p>
+                  <div class="wp-mdrawer__promo-grid">
+                    {%- for n in (1..2) -%}
+                      {%- liquid
+                        assign img_key = 'promo_' | append: n | append: '_image'
+                        assign badge_key = 'promo_' | append: n | append: '_badge'
+                        assign style_key = 'promo_' | append: n | append: '_badge_style'
+                        assign url_key = 'promo_' | append: n | append: '_button_url'
+                        assign p_image = block.settings[img_key]
+                        assign p_badge = block.settings[badge_key]
+                        assign p_style = block.settings[style_key]
+                        assign p_url = block.settings[url_key]
+                      -%}
+                      {%- if p_image != blank -%}
+                        <div class="wp-mdrawer__promo-card">
+                          {{ p_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 400', sizes: '165px', alt: '', class: 'wp-mdrawer__promo-img' }}
+                          {%- if p_badge != blank -%}
+                            <span class="wp-mdrawer__promo-chip wp-mdrawer__promo-chip--{{ p_style }}">{{ p_badge }}</span>
+                          {%- endif -%}
+                          <a href="{{ p_url | default: '#' }}" class="wp-mdrawer__promo-cta">See the deal</a>
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- when 'panel_start' -%}
+              {%- liquid
+                assign first_open = false
+              -%}
+              <div class="wp-mdrawer__accordion" data-wp-mdrawer-accordion>
+                {%- for i in (1..2) -%}
+                  {%- liquid
+                    assign title_key = 'group_' | append: i | append: '_title'
+                    assign icon_key = 'group_' | append: i | append: '_icon'
+                    assign menu_key = 'group_' | append: i | append: '_menu'
+                    assign g_title = block.settings[title_key]
+                    assign g_icon = block.settings[icon_key]
+                    assign g_menu_handle = block.settings[menu_key]
+                    assign g_menu = linklists[g_menu_handle]
+                    assign g_has_links = false
+                    if g_menu != blank and g_menu.links.size > 0
+                      assign g_has_links = true
+                    endif
+                  -%}
+                  {%- if g_title != blank and g_has_links -%}
+                    {%- liquid
+                      assign group_id = 'wp-mdrawer-group-' | append: block.id | append: '-' | append: i
+                      assign is_open = false
+                      if first_open == false
+                        assign is_open = true
+                        assign first_open = true
+                      endif
+                    -%}
+                    <div class="wp-mdrawer__group">
+                      <button
+                        type="button"
+                        class="wp-mdrawer__group-trigger"
+                        data-wp-mdrawer-accordion-trigger
+                        aria-expanded="{{ is_open }}"
+                        aria-controls="{{ group_id }}"
+                      >
+                        <span class="wp-mdrawer__group-trigger-label">
+                          {%- if g_icon != blank -%}
+                            <span class="wp-mdrawer__group-icon">{{ g_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                          {%- else -%}
+                            <span class="wp-mdrawer__group-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: i -%}</span>
+                          {%- endif -%}
+                          {{ g_title }}
+                        </span>
+                        <span class="wp-mdrawer__group-chevron" aria-hidden="true">
+                          <img src="{{ 'wp-mobile-drawer-chevron-up-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                        </span>
+                      </button>
+                      <div class="wp-mdrawer__group-content" id="{{ group_id }}" {% unless is_open %}hidden{% endunless %}>
+                        <ul class="wp-mdrawer__plain-links" role="list">
+                          {%- for link in g_menu.links -%}
+                            <li>
+                              <a href="{% render 'aria-link-url', url: link.url %}" class="wp-mdrawer__plain-link">
+                                <span>{{ link.title }}</span>
+                                <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                  <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                </span>
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      </div>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+
+              {%- liquid
+                assign has_picked_products = false
+                for n in (1..3)
+                  assign product_key = 'product_' | append: n
+                  if block.settings[product_key] != blank
+                    assign has_picked_products = true
+                  endif
+                endfor
+                assign fallback_collection = block.settings.featured_collection
+                assign has_fallback_collection = false
+                if has_picked_products == false and fallback_collection != blank and fallback_collection.products.size > 0
+                  assign has_fallback_collection = true
+                endif
+                assign show_featured = false
+                if has_picked_products or has_fallback_collection
+                  assign show_featured = true
+                endif
+              -%}
+              {%- if block.settings.featured_heading != blank and show_featured -%}
+                <div class="wp-mdrawer__featured">
+                  <p class="wp-mdrawer__featured-heading">
+                    {%- if block.settings.featured_icon != blank -%}
+                      <span class="wp-mdrawer__featured-icon">{{ block.settings.featured_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                    {%- else -%}
+                      <span class="wp-mdrawer__featured-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: 'featured' -%}</span>
+                    {%- endif -%}
+                    {{ block.settings.featured_heading }}
+                  </p>
+                  <div class="wp-mdrawer__carousel" data-wp-mdrawer-carousel>
+                    {%- if has_picked_products -%}
+                      {%- for n in (1..3) -%}
+                        {%- liquid
+                          assign product_key = 'product_' | append: n
+                          assign chip_key = 'product_' | append: n | append: '_chip'
+                          assign style_key = 'product_' | append: n | append: '_chip_style'
+                          assign p = block.settings[product_key]
+                          assign p_chip = block.settings[chip_key]
+                          assign p_chip_style = block.settings[style_key] | default: 'amber'
+                        -%}
+                        {%- if p != blank -%}
+                          <a href="{{ p.url }}" class="wp-mdrawer__product-card">
+                            <span class="wp-mdrawer__product-photo">
+                              {%- if p.featured_image != blank -%}
+                                {{ p.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', widths: '250, 500', sizes: '250px', alt: p.featured_image.alt | default: p.title }}
+                              {%- endif -%}
+                              {%- if p_chip != blank -%}
+                                <span class="wp-mdrawer__product-chip wp-mdrawer__product-chip--{{ p_chip_style }}">{{ p_chip }}</span>
+                              {%- endif -%}
+                              <span class="wp-mdrawer__product-title">{{ p.title }}</span>
+                            </span>
+                            <span class="wp-mdrawer__product-info">
+                              <span class="wp-mdrawer__product-thumb" aria-hidden="true">
+                                {%- if p.featured_image != blank -%}
+                                  {{ p.featured_image | image_url: width: 80 | image_tag: loading: 'lazy', alt: '' }}
+                                {%- endif -%}
+                              </span>
+                              <span class="wp-mdrawer__product-meta">
+                                <span class="wp-mdrawer__product-type">{{ p.type }}</span>
+                                <span class="wp-mdrawer__product-price">{{ p.price | money }}</span>
+                              </span>
+                              <span class="wp-mdrawer__product-cart" aria-hidden="true">
+                                <img src="{{ 'wp-mobile-drawer-cart-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                              </span>
+                            </span>
+                          </a>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    {%- else -%}
+                      {%- for p in fallback_collection.products limit: 3 -%}
+                        <a href="{{ p.url }}" class="wp-mdrawer__product-card">
+                          <span class="wp-mdrawer__product-photo">
+                            {%- if p.featured_image != blank -%}
+                              {{ p.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', widths: '250, 500', sizes: '250px', alt: p.featured_image.alt | default: p.title }}
+                            {%- endif -%}
+                            <span class="wp-mdrawer__product-title">{{ p.title }}</span>
+                          </span>
+                          <span class="wp-mdrawer__product-info">
+                            <span class="wp-mdrawer__product-thumb" aria-hidden="true">
+                              {%- if p.featured_image != blank -%}
+                                {{ p.featured_image | image_url: width: 80 | image_tag: loading: 'lazy', alt: '' }}
+                              {%- endif -%}
+                            </span>
+                            <span class="wp-mdrawer__product-meta">
+                              <span class="wp-mdrawer__product-type">{{ p.type }}</span>
+                              <span class="wp-mdrawer__product-price">{{ p.price | money }}</span>
+                            </span>
+                            <span class="wp-mdrawer__product-cart" aria-hidden="true">
+                              <img src="{{ 'wp-mobile-drawer-cart-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                            </span>
+                          </span>
+                        </a>
+                      {%- endfor -%}
+                    {%- endif -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- when 'panel_live' -%}
+              {%- liquid
+                assign first_open = false
+              -%}
+              <div class="wp-mdrawer__accordion" data-wp-mdrawer-accordion>
+                {%- for i in (1..2) -%}
+                  {%- liquid
+                    assign title_key = 'group_' | append: i | append: '_title'
+                    assign icon_key = 'group_' | append: i | append: '_icon'
+                    assign menu_key = 'group_' | append: i | append: '_menu'
+                    assign manual_key = 'group_' | append: i | append: '_manual_links'
+                    assign g_title = block.settings[title_key]
+                    assign g_icon = block.settings[icon_key]
+                    assign g_menu_handle = block.settings[menu_key]
+                    assign g_menu = linklists[g_menu_handle]
+                    assign g_manual_raw = block.settings[manual_key]
+                    assign g_has_links = false
+                    if g_menu != blank and g_menu.links.size > 0
+                      assign g_has_links = true
+                    endif
+                    assign g_has_manual = false
+                    if g_has_links == false and g_manual_raw != blank
+                      assign manual_check_lines = g_manual_raw | newline_to_br | split: '<br />'
+                      for manual_check_line in manual_check_lines
+                        assign manual_check_parts = manual_check_line | split: '|'
+                        if manual_check_parts.size > 1
+                          assign manual_check_url = manual_check_parts[1] | strip
+                          if manual_check_url != blank
+                            assign g_has_manual = true
+                          endif
+                        endif
+                      endfor
+                    endif
+                    assign g_has_content = false
+                    if g_has_links or g_has_manual
+                      assign g_has_content = true
+                    endif
+                    # -- Group 2 is the schedule: the shows booked in LiveMeUp, not a menu.
+                    assign g_lmu = false
+                    if i == 2
+                      assign g_lmu = true
+                      assign g_has_content = true
+                    endif
+                  -%}
+                  {%- if g_title != blank and g_has_content -%}
+                    {%- liquid
+                      assign group_id = 'wp-mdrawer-group-' | append: block.id | append: '-' | append: i
+                      assign is_open = false
+                      if first_open == false
+                        assign is_open = true
+                        assign first_open = true
+                      endif
+                    -%}
+                    <div class="wp-mdrawer__group">
+                      <button
+                        type="button"
+                        class="wp-mdrawer__group-trigger"
+                        data-wp-mdrawer-accordion-trigger
+                        aria-expanded="{{ is_open }}"
+                        aria-controls="{{ group_id }}"
+                      >
+                        <span class="wp-mdrawer__group-trigger-label">
+                          {%- if g_icon != blank -%}
+                            <span class="wp-mdrawer__group-icon">{{ g_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                          {%- else -%}
+                            <span class="wp-mdrawer__group-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: i -%}</span>
+                          {%- endif -%}
+                          {{ g_title }}
+                        </span>
+                        <span class="wp-mdrawer__group-chevron" aria-hidden="true">
+                          <img src="{{ 'wp-mobile-drawer-chevron-up-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                        </span>
+                      </button>
+                      <div class="wp-mdrawer__group-content" id="{{ group_id }}" {% unless is_open %}hidden{% endunless %}>
+                        {%- if g_lmu -%}
+                          {%- assign lmu_live_url = block.settings.video_url | default: '/pages/live' -%}
+                          <div data-lmu-list data-lmu-source="upcoming" data-lmu-limit="4">
+                            <template data-lmu-template>
+                              <li>
+                                <a href="{{ lmu_live_url }}" class="wp-mdrawer__plain-link" data-lmu-href="{{ lmu_live_url }}" data-lmu-action>
+                                  <span class="wp-mdrawer__lmu-row">
+                                    <span data-lmu-if="upcoming" data-lmu-date="short"></span>
+                                    <span data-lmu-if="live">{{ 'aria_theme.live.lmu.menu_live' | t }}</span>
+                                    · <span data-lmu-title></span>
+                                  </span>
+                                  <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                    <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                  </span>
+                                </a>
+                              </li>
+                            </template>
+                            <ul class="wp-mdrawer__plain-links" role="list" data-lmu-items></ul>
+                            <ul class="wp-mdrawer__plain-links" role="list" data-lmu-list-empty hidden>
+                              <li>
+                                <a href="{{ lmu_live_url }}" class="wp-mdrawer__plain-link">
+                                  <span>{{ 'aria_theme.live.lmu.menu_none' | t }}</span>
+                                  <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                    <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                  </span>
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+                        {%- else -%}
+                        <ul class="wp-mdrawer__plain-links" role="list">
+                          {%- if g_has_links -%}
+                            {%- for link in g_menu.links -%}
+                              <li>
+                                <a href="{% render 'aria-link-url', url: link.url %}" class="wp-mdrawer__plain-link">
+                                  <span>{{ link.title }}</span>
+                                  <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                    <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                  </span>
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          {%- else -%}
+                            {%- assign manual_lines = g_manual_raw | newline_to_br | split: '<br />' -%}
+                            {%- for manual_line in manual_lines -%}
+                              {%- liquid
+                                assign manual_parts = manual_line | split: '|'
+                                assign manual_label = manual_parts[0] | strip
+                                assign manual_url = ''
+                                if manual_parts.size > 1
+                                  assign manual_url = manual_parts[1] | strip
+                                endif
+                              -%}
+                              {%- if manual_url != blank -%}
+                                <li>
+                                  <a href="{{ manual_url }}" class="wp-mdrawer__plain-link">
+                                    <span>{{ manual_label }}</span>
+                                    <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                      <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                    </span>
+                                  </a>
+                                </li>
+                              {%- endif -%}
+                            {%- endfor -%}
+                          {%- endif -%}
+                        </ul>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+
+              {%- comment -%}
+                The video card follows the show on air / next / latest in LiveMeUp: its
+                heading, cover and link swap in when the panel first opens; the typed heading
+                and photo stay if LiveMeUp has no show (assets/aria-livemeup.js).
+              {%- endcomment -%}
+              {%- if block.settings.video_image != blank -%}
+                <div class="wp-mdrawer__featured">
+                  {%- if block.settings.video_heading != blank -%}
+                    <p class="wp-mdrawer__video-heading">
+                      <span class="wp-mdrawer__featured-icon" aria-hidden="true">
+                        <img src="{{ 'wp-mdrawer-icon-live-streaming.svg' | asset_url }}" alt="" width="24" height="24">
+                      </span>
+                      <span data-lmu-fallback>{{ block.settings.video_heading }}</span>
+                      <span data-lmu-featured="live-first" hidden>
+                        <span data-lmu-if="live">{{ 'aria_theme.live.lmu.menu_live' | t }}</span>
+                        <span data-lmu-if="upcoming">{{ 'aria_theme.live.lmu.menu_next' | t }} · <span data-lmu-date="short"></span></span>
+                        <span data-lmu-if="replay">{{ 'aria_theme.live.lmu.menu_replay' | t }} · <span data-lmu-date="day"></span></span>
+                      </span>
+                    </p>
+                  {%- endif -%}
+                  <a
+                    href="{{ block.settings.video_url | default: '/pages/live' }}"
+                    class="wp-mdrawer__video-card"
+                    data-lmu-featured="live-first"
+                    data-lmu-keep
+                    data-lmu-action
+                    data-lmu-upcoming-link
+                    data-lmu-href="{{ block.settings.video_url | default: '/pages/live' }}"
+                  >
+                    {{ block.settings.video_image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 700', sizes: '343px', alt: '', class: 'wp-mdrawer__video-img' }}
+                    <span data-lmu-cover="343"></span>
+                    <span class="wp-mdrawer__video-signature" aria-hidden="true">
+                      <img src="{{ 'wp-mobile-drawer-live-signature-icon.svg' | asset_url }}" alt="">
+                    </span>
+                    <span class="wp-mdrawer__video-play" aria-hidden="true">
+                      <img src="{{ 'wp-mobile-drawer-play-button-icon.svg' | asset_url }}" alt="" width="48" height="48">
+                    </span>
+                  </a>
+                </div>
+              {%- endif -%}
+            {%- when 'panel_community' -%}
+              {%- liquid
+                assign g_title = block.settings.group_1_title
+                assign g_icon = block.settings.group_1_icon
+                assign g_menu = linklists[block.settings.group_1_menu]
+                assign g_manual_raw = block.settings.group_1_manual_links
+                assign group_id = 'wp-mdrawer-group-' | append: block.id | append: '-1'
+                assign g_has_links = false
+                if g_menu != blank and g_menu.links.size > 0
+                  assign g_has_links = true
+                endif
+                assign g_has_manual = false
+                if g_has_links == false and g_manual_raw != blank
+                  assign manual_check_lines = g_manual_raw | newline_to_br | split: '<br />'
+                  for manual_check_line in manual_check_lines
+                    assign manual_check_parts = manual_check_line | split: '|'
+                    if manual_check_parts.size > 1
+                      assign manual_check_url = manual_check_parts[1] | strip
+                      if manual_check_url != blank
+                        assign g_has_manual = true
+                      endif
+                    endif
+                  endfor
+                endif
+                assign g_has_content = false
+                if g_has_links or g_has_manual
+                  assign g_has_content = true
+                endif
+              -%}
+              {%- if g_title != blank and g_has_content -%}
+                <div class="wp-mdrawer__accordion" data-wp-mdrawer-accordion>
+                  <div class="wp-mdrawer__group">
+                    <button
+                      type="button"
+                      class="wp-mdrawer__group-trigger"
+                      data-wp-mdrawer-accordion-trigger
+                      aria-expanded="true"
+                      aria-controls="{{ group_id }}"
+                    >
+                      <span class="wp-mdrawer__group-trigger-label">
+                        {%- if g_icon != blank -%}
+                          <span class="wp-mdrawer__group-icon">{{ g_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                        {%- else -%}
+                          <span class="wp-mdrawer__group-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: 1 -%}</span>
+                        {%- endif -%}
+                        {{ g_title }}
+                      </span>
+                      <span class="wp-mdrawer__group-chevron" aria-hidden="true">
+                        <img src="{{ 'wp-mobile-drawer-chevron-up-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                      </span>
+                    </button>
+                    <div class="wp-mdrawer__group-content" id="{{ group_id }}">
+                      <ul class="wp-mdrawer__plain-links" role="list">
+                        {%- if g_has_links -%}
+                          {%- for link in g_menu.links -%}
+                            <li>
+                              <a href="{% render 'aria-link-url', url: link.url %}" class="wp-mdrawer__plain-link">
+                                <span>{{ link.title }}</span>
+                                <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                  <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                </span>
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        {%- else -%}
+                          {%- assign manual_lines = g_manual_raw | newline_to_br | split: '<br />' -%}
+                          {%- for manual_line in manual_lines -%}
+                            {%- liquid
+                              assign manual_parts = manual_line | split: '|'
+                              assign manual_label = manual_parts[0] | strip
+                              assign manual_url = ''
+                              if manual_parts.size > 1
+                                assign manual_url = manual_parts[1] | strip
+                              endif
+                            -%}
+                            {%- if manual_url != blank -%}
+                              <li>
+                                <a href="{{ manual_url }}" class="wp-mdrawer__plain-link">
+                                  <span>{{ manual_label }}</span>
+                                  <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                    <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                  </span>
+                                </a>
+                              </li>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        {%- endif -%}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+
+              {%- liquid
+                assign has_photos = false
+                if block.settings.photo_1 != blank or block.settings.photo_2 != blank or block.settings.photo_3 != blank
+                  assign has_photos = true
+                endif
+                assign has_gallery_button = false
+                if block.settings.gallery_button_label != blank
+                  assign has_gallery_button = true
+                endif
+                assign show_featured = false
+                if has_photos or has_gallery_button
+                  assign show_featured = true
+                endif
+              -%}
+              {%- if block.settings.featured_heading != blank and show_featured -%}
+                <div class="wp-mdrawer__featured">
+                  <p class="wp-mdrawer__featured-heading">
+                    {%- if block.settings.featured_icon != blank -%}
+                      <span class="wp-mdrawer__featured-icon">{{ block.settings.featured_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                    {%- else -%}
+                      <span class="wp-mdrawer__featured-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: 'featured' -%}</span>
+                    {%- endif -%}
+                    {{ block.settings.featured_heading }}
+                  </p>
+                  {%- if block.settings.photo_1 != blank or block.settings.photo_2 != blank or block.settings.photo_3 != blank -%}
+                    <div class="wp-mdrawer__photo-strip">
+                      <span class="wp-mdrawer__photo-strip-item">
+                        {%- if block.settings.photo_1 != blank -%}
+                          {{ block.settings.photo_1 | image_url: width: 220 | image_tag: loading: 'lazy', alt: '' }}
+                        {%- endif -%}
+                      </span>
+                      <span class="wp-mdrawer__photo-strip-item wp-mdrawer__photo-strip-item--tall">
+                        {%- if block.settings.photo_2 != blank -%}
+                          {{ block.settings.photo_2 | image_url: width: 240 | image_tag: loading: 'lazy', alt: '' }}
+                        {%- endif -%}
+                      </span>
+                      <span class="wp-mdrawer__photo-strip-item">
+                        {%- if block.settings.photo_3 != blank -%}
+                          {{ block.settings.photo_3 | image_url: width: 220 | image_tag: loading: 'lazy', alt: '' }}
+                        {%- endif -%}
+                      </span>
+                    </div>
+                  {%- endif -%}
+                  {%- if block.settings.gallery_button_label != blank -%}
+                    <a href="{{ block.settings.gallery_button_url | default: '#' }}" class="wp-mdrawer__outline-btn">
+                      {{ block.settings.gallery_button_label }}
+                    </a>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.sisterhood_title != blank -%}
+                <div class="wp-mdrawer__sisterhood-wrap">
+                  {%- if block.settings.sisterhood_label != blank -%}
+                    <p class="wp-mdrawer__sisterhood-label">{{ block.settings.sisterhood_label }}</p>
+                  {%- endif -%}
+                  <div class="wp-mdrawer__sisterhood-card">
+                    <div class="wp-mdrawer__glass-panel wp-mdrawer__sisterhood-panel">
+                      <div class="wp-mdrawer__sisterhood-text">
+                        <p class="wp-mdrawer__sisterhood-title">{{ block.settings.sisterhood_title }}</p>
+                        {%- if block.settings.sisterhood_copy != blank -%}
+                          <p class="wp-mdrawer__sisterhood-copy">{{ block.settings.sisterhood_copy }}</p>
+                        {%- endif -%}
+                      </div>
+                      <span class="wp-mdrawer__sisterhood-signature" aria-hidden="true">
+                        <img src="{{ 'wp-mobile-drawer-sisterhood-signature-icon.svg' | asset_url }}" alt="">
+                      </span>
+                      {%- if block.settings.sisterhood_button_label != blank -%}
+                        <a href="{{ block.settings.sisterhood_button_url | default: '#' }}" class="wp-mdrawer__dark-btn">
+                          {{ block.settings.sisterhood_button_label }}
+                        </a>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- when 'panel_deals' -%}
+              {%- liquid
+                assign g_title = block.settings.group_1_title
+                assign g_icon = block.settings.group_1_icon
+                assign g_menu = linklists[block.settings.group_1_menu]
+                assign g_manual_raw = block.settings.group_1_manual_links
+                assign group_id = 'wp-mdrawer-group-' | append: block.id | append: '-1'
+                assign g_has_links = false
+                if g_menu != blank and g_menu.links.size > 0
+                  assign g_has_links = true
+                endif
+                assign g_has_manual = false
+                if g_has_links == false and g_manual_raw != blank
+                  assign manual_check_lines = g_manual_raw | newline_to_br | split: '<br />'
+                  for manual_check_line in manual_check_lines
+                    assign manual_check_parts = manual_check_line | split: '|'
+                    if manual_check_parts.size > 1
+                      assign manual_check_url = manual_check_parts[1] | strip
+                      if manual_check_url != blank
+                        assign g_has_manual = true
+                      endif
+                    endif
+                  endfor
+                endif
+                assign g_has_content = false
+                if g_has_links or g_has_manual
+                  assign g_has_content = true
+                endif
+              -%}
+              {%- if g_title != blank and g_has_content -%}
+                <div class="wp-mdrawer__accordion" data-wp-mdrawer-accordion>
+                  <div class="wp-mdrawer__group">
+                    <button
+                      type="button"
+                      class="wp-mdrawer__group-trigger"
+                      data-wp-mdrawer-accordion-trigger
+                      aria-expanded="true"
+                      aria-controls="{{ group_id }}"
+                    >
+                      <span class="wp-mdrawer__group-trigger-label">
+                        {%- if g_icon != blank -%}
+                          <span class="wp-mdrawer__group-icon">{{ g_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                        {%- else -%}
+                          <span class="wp-mdrawer__group-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: 1 -%}</span>
+                        {%- endif -%}
+                        {{ g_title }}
+                      </span>
+                      <span class="wp-mdrawer__group-chevron" aria-hidden="true">
+                        <img src="{{ 'wp-mobile-drawer-chevron-up-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                      </span>
+                    </button>
+                    <div class="wp-mdrawer__group-content" id="{{ group_id }}">
+                      <ul class="wp-mdrawer__plain-links" role="list">
+                        {%- if g_has_links -%}
+                          {%- for link in g_menu.links -%}
+                            <li>
+                              <a href="{% render 'aria-link-url', url: link.url %}" class="wp-mdrawer__plain-link">
+                                <span>{{ link.title }}</span>
+                                <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                  <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                </span>
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        {%- else -%}
+                          {%- assign manual_lines = g_manual_raw | newline_to_br | split: '<br />' -%}
+                          {%- for manual_line in manual_lines -%}
+                            {%- liquid
+                              assign manual_parts = manual_line | split: '|'
+                              assign manual_label = manual_parts[0] | strip
+                              assign manual_url = ''
+                              if manual_parts.size > 1
+                                assign manual_url = manual_parts[1] | strip
+                              endif
+                            -%}
+                            {%- if manual_url != blank -%}
+                              <li>
+                                <a href="{{ manual_url }}" class="wp-mdrawer__plain-link">
+                                  <span>{{ manual_label }}</span>
+                                  <span class="wp-mdrawer__plain-link-chevron" aria-hidden="true">
+                                    <img src="{{ 'wp-mobile-drawer-chevron-right-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                                  </span>
+                                </a>
+                              </li>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        {%- endif -%}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.promo_image != blank -%}
+                <div class="wp-mdrawer__promo-wrap">
+                  <div class="wp-mdrawer__promo-banner">
+                    {{ block.settings.promo_image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350, 700', sizes: '343px', alt: '', class: 'wp-mdrawer__promo-banner-img' }}
+                    <div class="wp-mdrawer__glass-panel wp-mdrawer__promo-banner-panel">
+                      <div class="wp-mdrawer__promo-banner-text">
+                        {%- if block.settings.promo_title != blank -%}
+                          <p class="wp-mdrawer__promo-banner-title">{{ block.settings.promo_title }}</p>
+                        {%- endif -%}
+                        {%- if block.settings.promo_copy != blank -%}
+                          <p class="wp-mdrawer__promo-banner-copy">{{ block.settings.promo_copy }}</p>
+                        {%- endif -%}
+                      </div>
+                      {%- if block.settings.promo_button_label != blank -%}
+                        <a href="{{ block.settings.promo_button_url | default: '#' }}" class="wp-mdrawer__dark-pink-btn">
+                          {{ block.settings.promo_button_label }}
+                        </a>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+
+              {%- liquid
+                assign has_picked_products = false
+                for n in (1..3)
+                  assign product_key = 'product_' | append: n
+                  if block.settings[product_key] != blank
+                    assign has_picked_products = true
+                  endif
+                endfor
+                assign fallback_collection = block.settings.featured_collection
+                assign has_fallback_collection = false
+                if has_picked_products == false and fallback_collection != blank and fallback_collection.products.size > 0
+                  assign has_fallback_collection = true
+                endif
+                assign show_featured = false
+                if has_picked_products or has_fallback_collection
+                  assign show_featured = true
+                endif
+              -%}
+              {%- if block.settings.featured_heading != blank and show_featured -%}
+                <div class="wp-mdrawer__featured">
+                  <p class="wp-mdrawer__featured-heading">
+                    {%- if block.settings.featured_icon != blank -%}
+                      <span class="wp-mdrawer__featured-icon">{{ block.settings.featured_icon | image_url: width: 48 | image_tag: loading: 'lazy', alt: '' }}</span>
+                    {%- else -%}
+                      <span class="wp-mdrawer__featured-icon">{%- render 'wp-mdrawer-default-icon', panel: block.type, slot: 'featured' -%}</span>
+                    {%- endif -%}
+                    {{ block.settings.featured_heading }}
+                  </p>
+                  <div class="wp-mdrawer__carousel" data-wp-mdrawer-carousel>
+                    {%- if has_picked_products -%}
+                      {%- for n in (1..3) -%}
+                        {%- liquid
+                          assign product_key = 'product_' | append: n
+                          assign chip_key = 'product_' | append: n | append: '_chip'
+                          assign style_key = 'product_' | append: n | append: '_chip_style'
+                          assign p = block.settings[product_key]
+                          assign p_chip = block.settings[chip_key]
+                          assign p_chip_style = block.settings[style_key] | default: 'amber'
+                        -%}
+                        {%- if p != blank -%}
+                          <a href="{{ p.url }}" class="wp-mdrawer__product-card">
+                            <span class="wp-mdrawer__product-photo">
+                              {%- if p.featured_image != blank -%}
+                                {{ p.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', widths: '250, 500', sizes: '250px', alt: p.featured_image.alt | default: p.title }}
+                              {%- endif -%}
+                              {%- if p_chip != blank -%}
+                                <span class="wp-mdrawer__product-chip wp-mdrawer__product-chip--{{ p_chip_style }}">{{ p_chip }}</span>
+                              {%- endif -%}
+                              <span class="wp-mdrawer__product-title">{{ p.title }}</span>
+                            </span>
+                            <span class="wp-mdrawer__product-info">
+                              <span class="wp-mdrawer__product-thumb" aria-hidden="true">
+                                {%- if p.featured_image != blank -%}
+                                  {{ p.featured_image | image_url: width: 80 | image_tag: loading: 'lazy', alt: '' }}
+                                {%- endif -%}
+                              </span>
+                              <span class="wp-mdrawer__product-meta">
+                                <span class="wp-mdrawer__product-type">{{ p.type }}</span>
+                                <span class="wp-mdrawer__product-price">{{ p.price | money }}</span>
+                              </span>
+                              <span class="wp-mdrawer__product-cart" aria-hidden="true">
+                                <img src="{{ 'wp-mobile-drawer-cart-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                              </span>
+                            </span>
+                          </a>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    {%- else -%}
+                      {%- for p in fallback_collection.products limit: 3 -%}
+                        <a href="{{ p.url }}" class="wp-mdrawer__product-card">
+                          <span class="wp-mdrawer__product-photo">
+                            {%- if p.featured_image != blank -%}
+                              {{ p.featured_image | image_url: width: 500 | image_tag: loading: 'lazy', widths: '250, 500', sizes: '250px', alt: p.featured_image.alt | default: p.title }}
+                            {%- endif -%}
+                            <span class="wp-mdrawer__product-title">{{ p.title }}</span>
+                          </span>
+                          <span class="wp-mdrawer__product-info">
+                            <span class="wp-mdrawer__product-thumb" aria-hidden="true">
+                              {%- if p.featured_image != blank -%}
+                                {{ p.featured_image | image_url: width: 80 | image_tag: loading: 'lazy', alt: '' }}
+                              {%- endif -%}
+                            </span>
+                            <span class="wp-mdrawer__product-meta">
+                              <span class="wp-mdrawer__product-type">{{ p.type }}</span>
+                              <span class="wp-mdrawer__product-price">{{ p.price | money }}</span>
+                            </span>
+                            <span class="wp-mdrawer__product-cart" aria-hidden="true">
+                              <img src="{{ 'wp-mobile-drawer-cart-icon.svg' | asset_url }}" alt="" width="20" height="20">
+                            </span>
+                          </span>
+                        </a>
+                      {%- endfor -%}
+                    {%- endif -%}
+                  </div>
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{%- assign mdrawer_body_semibold = settings.type_body_font | font_modify: 'weight', '600' -%}
+{% style %}
+  {%- if mdrawer_body_semibold -%}{{ mdrawer_body_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+
+  /* ---------- Hide the OLD mobile drawer below 749px; untouched 750px+ ---------- */
+  @media screen and (max-width: 749px) {
+    .aria-mnav {
+      display: none !important;
+    }
+  }
+
+  /*
+   * ---------- Closed header (<=749px): hide Search + Account, restyle the hamburger ----------
+   * sections/header.liquid is NOT edited; these are CSS-only overrides from this section's own
+   * style block, same technique already used above for ".aria-mnav". 750px+ is untouched: both
+   * rules are scoped inside "max-width: 749px" and target classes header.liquid already renders.
+   *
+   * Search: only the trigger BUTTON is hidden (not its parent ".aria-header__search", which also
+   * contains ".aria-header__search-panel"/the legacy search dropdown) so the drawer's own search
+   * row can still call `.aria-header__search-trigger.click()` (assets/wp-mobile-drawer.js) and have
+   * it work exactly as before -- a hidden element still receives and dispatches a synthetic click,
+   * and assets/wp-search-overlay.js's capture-phase listener matches on the element, not on whether
+   * it is visible. `display: none` also removes the button from the Tab order on its own.
+   *
+   * Account: the drawer's own Account row (section.settings.account_url / routes.account_url,
+   * built in Stage 1) already does not read anything from this header icon, so the whole
+   * <shopify-account> element can be hidden outright with no follow-on dependency.
+   */
+  @media screen and (max-width: 749px) {
+    .aria-header__search-trigger {
+      display: none !important;
+    }
+
+    /* Account is shown again: Figma Home mobile 7238:5130 has search, account, cart and menu
+       icons (assets/section-aria-header.css, mobile header block). */
+
+    /*
+     * Hamburger: same 44x44 circle/pill the wishlist + cart icons already use
+     * (.aria-header__icon-btn, assets/section-aria-header.css), via the SAME --it-rgb
+     * variable (assets/style.css :root) those icons read -- no new hardcoded color.
+     * Markup/icon glyph (sections/header.liquid, snippets/aria-icon.liquid "menu", already
+     * 3 horizontal lines) is untouched; only size/shape/color change here.
+     */
+    .aria-header__menu-toggle {
+      width: var(--wp-m-header-hamburger-size);
+      height: var(--wp-m-header-hamburger-size);
+      border: 0;
+      border-radius: var(--wp-m-header-hamburger-radius);
+      background: var(--wp-m-header-hamburger-bg);
+      color: var(--wp-m-header-hamburger-color);
+    }
+
+    .aria-header__menu-icon-open,
+    .aria-header__menu-icon-close {
+      width: var(--wp-m-header-hamburger-icon-size);
+      height: var(--wp-m-header-hamburger-icon-size);
+    }
+  }
+
+  /* This whole section only exists below 750px; 750px+ keeps the existing aria-mnav drawer. */
+  #shopify-section-{{ section.id }} {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} {
+      display: contents;
+    }
+
+    .wp-mdrawer {
+      position: fixed;
+      inset: 0;
+      z-index: var(--wp-m-mdrawer-z, 1100);
+    }
+
+    .wp-mdrawer:not(.is-open) {
+      pointer-events: none;
+    }
+
+    body.wp-mdrawer-open {
+      overflow: hidden;
+    }
+
+    .wp-mdrawer__overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--wp-m-mdrawer-overlay-bg);
+      opacity: 0;
+      transition: opacity var(--wp-m-mdrawer-motion-duration) ease;
+    }
+
+    .wp-mdrawer.is-open .wp-mdrawer__overlay {
+      opacity: 1;
+    }
+
+    .wp-mdrawer__dialog {
+      position: absolute;
+      inset: 0;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100vw;
+      background: var(--wp-color-white);
+      overflow: hidden;
+      /* clip, unlike hidden, cannot be scrolled sideways by focus() or scrollIntoView, which
+         left Live, Community and Dailey Deals opening shifted ~218px on phones. */
+      overflow: clip;
+      transform: translateX(100%);
+      transition: transform var(--wp-m-mdrawer-motion-duration) ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wp-mdrawer.is-open .wp-mdrawer__dialog {
+      transform: translateX(0);
+    }
+
+    .wp-mdrawer__screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      background: var(--wp-color-white);
+      transform: translateX(100%);
+      transition: transform var(--wp-m-mdrawer-motion-duration) ease;
+    }
+
+    .wp-mdrawer__screen--root {
+      position: relative;
+      transform: none;
+      transition: none;
+    }
+
+    .wp-mdrawer__screen--child.is-active {
+      transform: translateX(0);
+    }
+
+    .wp-mdrawer__body {
+      flex: 1 1 auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-space-16);
+      padding: var(--wp-m-mdrawer-body-pad);
+    }
+
+    .wp-mdrawer__header {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--wp-m-mdrawer-header-pad);
+      border-bottom: 1px solid var(--wp-m-mdrawer-border);
+    }
+
+    .wp-mdrawer__header--child {
+      justify-content: space-between;
+      /* Figma panel header: 60 tall + 1px rule, title centred at 30. */
+      box-sizing: content-box;
+      height: 60px;
+    }
+
+    .wp-mdrawer__logo-img {
+      height: var(--wp-m-mdrawer-logo-h);
+      width: auto;
+      display: block;
+    }
+
+    .wp-mdrawer__close,
+    .wp-mdrawer__back {
+      appearance: none;
+      border: 0;
+      padding: 0;
+      background: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wp-mdrawer__close {
+      /* 44px tap target (a11y) around a 36px visual circle, matching Figma */
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+    }
+
+    .wp-mdrawer__close-visual {
+      width: var(--wp-m-mdrawer-close-size);
+      height: var(--wp-m-mdrawer-close-size);
+      border-radius: 50%;
+      background: var(--wp-m-mdrawer-close-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wp-mdrawer__close-icon {
+      width: var(--wp-m-mdrawer-close-icon);
+      height: var(--wp-m-mdrawer-close-icon);
+      display: block;
+    }
+
+    .wp-mdrawer__close-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__back {
+      gap: var(--wp-space-08);
+      min-height: 44px;
+      min-width: 44px;
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-account-size);
+      line-height: var(--wp-m-mdrawer-account-line);
+      color: var(--wp-color-black);
+    }
+
+    .wp-mdrawer__back-icon {
+      width: var(--wp-m-mdrawer-close-icon);
+      height: var(--wp-m-mdrawer-close-icon);
+      display: block;
+      transform: rotate(180deg);
+    }
+
+    .wp-mdrawer__back-icon-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__screen-title {
+      /* Figma panel titles: Poppins SemiBold 16/26. */
+      font-family: var(--wp-font-body);
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 26px;
+      color: var(--wp-color-black);
+    }
+
+    .wp-mdrawer__search {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--wp-space-08);
+      background: var(--wp-m-mdrawer-rose-8);
+      border-radius: var(--wp-m-mdrawer-search-radius);
+      padding: var(--wp-m-mdrawer-search-pad);
+      text-align: left;
+    }
+
+    .wp-mdrawer__search-placeholder {
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-search-size);
+      line-height: var(--wp-m-mdrawer-search-line);
+      color: var(--wp-m-mdrawer-search-color);
+    }
+
+    .wp-mdrawer__search-icon {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-search-icon);
+      height: var(--wp-m-mdrawer-search-icon);
+    }
+
+    .wp-mdrawer__search-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__list-inner {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .wp-mdrawer__row {
+      appearance: none;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      width: 100%;
+      min-height: var(--wp-m-mdrawer-row-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--wp-space-08);
+      padding: var(--wp-space-16) 0;
+      border-bottom: 1px solid var(--wp-m-mdrawer-border);
+      text-align: left;
+    }
+
+    .wp-mdrawer__row-label-group {
+      display: flex;
+      align-items: center;
+      gap: var(--wp-space-08);
+    }
+
+    .wp-mdrawer__row-label {
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-row-label-size);
+      line-height: var(--wp-m-mdrawer-row-label-line);
+      color: var(--wp-color-black);
+    }
+
+    .wp-mdrawer__row-dot {
+      width: var(--wp-m-mdrawer-live-dot);
+      height: var(--wp-m-mdrawer-live-dot);
+      flex: 0 0 auto;
+    }
+
+    .wp-mdrawer__row-dot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__row-badge {
+      display: inline-flex;
+      flex: none;
+      margin-left: 8px;
+      vertical-align: middle;
+      position: static;
+      align-items: center;
+      background: var(--wp-m-mdrawer-badge-bg);
+      padding: var(--wp-m-mdrawer-badge-pad);
+      border-radius: var(--wp-m-mdrawer-badge-radius);
+      font-family: var(--wp-font-body);
+      font-size: var(--wp-m-mdrawer-badge-size);
+      line-height: var(--wp-m-mdrawer-badge-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__row-chevron {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-row-chevron);
+      height: var(--wp-m-mdrawer-row-chevron);
+    }
+
+    .wp-mdrawer__row-chevron img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__preorder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
+      flex-shrink: 0;
+      white-space: normal;
+      text-align: center;
+      overflow-wrap: anywhere;
+      padding: var(--wp-m-mdrawer-preorder-pad);
+      background: var(--wp-m-mdrawer-preorder-bg);
+      border-radius: var(--wp-m-mdrawer-preorder-radius);
+      font-family: var(--wp-font-body);
+      font-weight: 700;
+      font-size: var(--wp-m-mdrawer-preorder-size);
+      line-height: var(--wp-m-mdrawer-preorder-line);
+      color: var(--wp-color-white);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .wp-mdrawer__account {
+      display: flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-account-gap);
+      text-decoration: none;
+    }
+
+    .wp-mdrawer__account-icon {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-account-icon-size);
+      height: var(--wp-m-mdrawer-account-icon-size);
+      border-radius: 50%;
+      background: var(--wp-m-mdrawer-rose-8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wp-mdrawer__account-icon img {
+      display: block;
+      width: var(--wp-m-mdrawer-account-icon-inner);
+      height: var(--wp-m-mdrawer-account-icon-inner);
+    }
+
+    .wp-mdrawer__account-label {
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-account-size);
+      line-height: var(--wp-m-mdrawer-account-line);
+      color: var(--wp-color-black);
+    }
+
+    .wp-mdrawer__live-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-m-mdrawer-live-card-gap);
+      align-items: flex-start;
+      background: var(--wp-m-mdrawer-live-card-bg);
+      border-radius: var(--wp-m-mdrawer-live-card-radius);
+      padding: var(--wp-m-mdrawer-live-card-pad);
+    }
+
+    .wp-mdrawer__live-eyebrow {
+      margin: 0;
+      font-family: var(--wp-font-heading);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-live-eyebrow-size);
+      line-height: var(--wp-m-mdrawer-live-eyebrow-line);
+      color: var(--wp-color-white);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__live-title {
+      margin: 0;
+      font-family: var(--wp-font-heading);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-live-title-size);
+      line-height: var(--wp-m-mdrawer-live-title-line);
+      color: var(--wp-color-white);
+    }
+
+    .wp-mdrawer__live-copy {
+      margin: 0;
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-live-body-size);
+      line-height: var(--wp-m-mdrawer-live-body-line);
+      color: var(--wp-color-white);
+    }
+
+    .wp-mdrawer__live-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-live-btn-gap);
+      background: var(--wp-color-white);
+      padding: var(--wp-m-mdrawer-live-btn-pad);
+      font-family: var(--wp-font-body);
+      font-weight: 700;
+      font-size: var(--wp-m-mdrawer-live-btn-size);
+      line-height: var(--wp-m-mdrawer-live-btn-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .wp-mdrawer__live-btn-dot {
+      width: var(--wp-m-mdrawer-live-btn-dot);
+      height: var(--wp-m-mdrawer-live-btn-dot);
+      flex: 0 0 auto;
+    }
+
+    .wp-mdrawer__live-btn-dot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__badges {
+      display: flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-badge-row-gap);
+    }
+
+    .wp-mdrawer__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-badge-item-gap);
+      background: var(--wp-color-white);
+      border-radius: var(--wp-m-mdrawer-badge-item-radius);
+      padding: var(--wp-m-mdrawer-badge-item-pad);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-badge-text-size);
+      line-height: var(--wp-m-mdrawer-badge-text-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .wp-mdrawer__badge-icon {
+      width: var(--wp-m-mdrawer-badge-icon);
+      height: var(--wp-m-mdrawer-badge-icon);
+      flex: 0 0 auto;
+    }
+
+    .wp-mdrawer__badge-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ---------- Shop panel: accordion groups ---------- */
+    .wp-mdrawer__body--child {
+      gap: 0;
+      padding-top: 8px;
+    }
+
+    /* Figma 7799:91: the cap-construction photos start 12 below their heading row. */
+    .wp-mdrawer__cap-items {
+      padding-top: 12px;
+    }
+
+    .wp-mdrawer__accordion {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wp-mdrawer__group {
+      border-bottom: 1px solid var(--wp-m-mdrawer-border);
+    }
+
+    .wp-mdrawer__group-trigger {
+      appearance: none;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--wp-space-08);
+      padding: var(--wp-m-mdrawer-group-pad);
+      text-align: left;
+      min-height: 44px;
+    }
+
+    .wp-mdrawer__group-trigger-label {
+      display: flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-group-gap);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-group-title-size);
+      line-height: var(--wp-m-mdrawer-group-title-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__group-icon {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-group-icon);
+      height: var(--wp-m-mdrawer-group-icon);
+      display: block;
+    }
+
+    .wp-mdrawer__group-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .wp-mdrawer__group-chevron {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-group-chevron);
+      height: var(--wp-m-mdrawer-group-chevron);
+      transform: rotate(180deg);
+      transition: transform var(--wp-m-mdrawer-motion-duration) ease;
+    }
+
+    .wp-mdrawer__group-trigger[aria-expanded="true"] .wp-mdrawer__group-chevron {
+      transform: rotate(0deg);
+    }
+
+    .wp-mdrawer__group-chevron img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__group-content {
+      padding-bottom: var(--wp-space-16);
+    }
+
+    .wp-mdrawer__cap-items {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-m-mdrawer-cap-gap);
+    }
+
+    .wp-mdrawer__cap-item {
+      display: flex;
+      align-items: center;
+      gap: var(--wp-space-12);
+      text-decoration: none;
+      min-height: var(--wp-m-mdrawer-cap-row-pitch);
+    }
+
+    .wp-mdrawer__cap-item-photo {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-cap-photo);
+      height: var(--wp-m-mdrawer-cap-photo);
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e9e9e9;
+      display: block;
+    }
+
+    .wp-mdrawer__cap-item-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wp-mdrawer__cap-item-label {
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-cap-label-size);
+      line-height: var(--wp-m-mdrawer-cap-label-line);
+      color: var(--wp-m-mdrawer-cap-label-color);
+    }
+
+    .wp-mdrawer__plain-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wp-mdrawer__plain-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--wp-space-08);
+      padding: var(--wp-m-mdrawer-plain-link-pad);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-cap-label-size);
+      line-height: var(--wp-m-mdrawer-cap-label-line);
+      color: var(--wp-m-mdrawer-cap-label-color);
+      text-decoration: none;
+      min-height: 48px;
+    }
+
+    .wp-mdrawer__plain-link-chevron {
+      flex: 0 0 auto;
+      width: 20px;
+      height: 20px;
+    }
+
+    .wp-mdrawer__plain-link-chevron img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__featured {
+      /* Figma: 24 from the last heading row's rule to the featured heading, every panel. */
+      margin-top: 24px;
+      padding-bottom: var(--wp-space-16);
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-m-mdrawer-featured-gap);
+    }
+
+    .wp-mdrawer__featured-heading {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-group-gap);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-group-title-size);
+      line-height: var(--wp-m-mdrawer-group-title-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__featured-icon {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-group-icon);
+      height: var(--wp-m-mdrawer-group-icon);
+    }
+
+    .wp-mdrawer__featured-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .wp-mdrawer__promo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--wp-m-mdrawer-promo-gap);
+    }
+
+    .wp-mdrawer__promo-card {
+      position: relative;
+      display: block;
+      border-radius: var(--wp-m-mdrawer-promo-radius);
+      overflow: hidden;
+      background: var(--wp-color-white);
+      aspect-ratio: 165.5 / 314;
+    }
+
+    .wp-mdrawer__promo-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wp-mdrawer__promo-chip {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      display: inline-flex;
+      align-items: center;
+      padding: var(--wp-m-mdrawer-promo-chip-pad);
+      border-radius: var(--wp-m-mdrawer-promo-chip-radius);
+      font-family: var(--wp-font-body);
+      font-size: var(--wp-m-mdrawer-promo-chip-size);
+      line-height: var(--wp-m-mdrawer-promo-chip-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__promo-chip--amber {
+      background: var(--wp-m-mdrawer-promo-chip-bg-amber);
+    }
+
+    .wp-mdrawer__promo-chip--white {
+      background: var(--wp-m-mdrawer-promo-chip-bg-white);
+    }
+
+    .wp-mdrawer__promo-cta {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: var(--wp-m-mdrawer-promo-cta-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--wp-m-mdrawer-promo-cta-bg);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-promo-cta-size);
+      line-height: var(--wp-m-mdrawer-promo-cta-line);
+      color: var(--wp-color-white);
+      text-decoration: none;
+    }
+
+    /* ---------- Start Here: product carousel ---------- */
+    .wp-mdrawer__carousel {
+      display: flex;
+      gap: var(--wp-m-mdrawer-carousel-gap);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      margin: 0 -16px;
+      padding: 0 16px;
+      /* Snap the first card to the 16px gutter, not the carousel's own edge (it opened
+         16px in, with the first card cut off at the screen edge). */
+      scroll-padding-inline: 16px;
+    }
+
+    .wp-mdrawer__carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .wp-mdrawer__product-card {
+      flex: 0 0 var(--wp-m-mdrawer-product-card-w);
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-space-12);
+      text-decoration: none;
+      scroll-snap-align: start;
+    }
+
+    .wp-mdrawer__product-photo {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: var(--wp-m-mdrawer-product-photo-h);
+      border-radius: var(--wp-m-mdrawer-promo-radius);
+      overflow: hidden;
+      background: var(--wp-color-white);
+    }
+
+    .wp-mdrawer__product-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: bottom;
+    }
+
+    .wp-mdrawer__product-chip {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      display: inline-flex;
+      align-items: center;
+      background: var(--wp-m-mdrawer-promo-chip-bg-amber);
+      padding: var(--wp-m-mdrawer-promo-chip-pad);
+      border-radius: var(--wp-m-mdrawer-promo-chip-radius);
+      font-family: var(--wp-font-body);
+      font-size: var(--wp-m-mdrawer-promo-chip-size);
+      line-height: var(--wp-m-mdrawer-promo-chip-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__product-chip--amber {
+      background: var(--wp-m-mdrawer-promo-chip-bg-amber);
+    }
+
+    .wp-mdrawer__product-chip--white {
+      background: var(--wp-m-mdrawer-promo-chip-bg-white);
+    }
+
+    .wp-mdrawer__product-chip--pink {
+      background: var(--wp-color-pink);
+    }
+
+    .wp-mdrawer__product-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-product-title-size);
+      line-height: var(--wp-m-mdrawer-product-title-line);
+      color: var(--wp-color-white);
+      text-transform: uppercase;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      /* overflow clips at the padding edge, so a bottom padding showed part of a clamped
+         third line; the 10px below the text is a transparent border instead. */
+      padding-bottom: 0;
+      border-bottom: 10px solid transparent;
+    }
+
+    .wp-mdrawer__product-info {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-product-bar-gap);
+      border: 1px solid var(--wp-m-mdrawer-product-bar-border);
+      border-radius: var(--wp-m-mdrawer-promo-radius);
+      background: var(--wp-m-mdrawer-product-bar-bg);
+      backdrop-filter: blur(6.7px);
+      -webkit-backdrop-filter: blur(6.7px);
+      padding: var(--wp-m-mdrawer-product-bar-pad);
+    }
+
+    .wp-mdrawer__product-thumb {
+      flex: 0 0 auto;
+      width: var(--wp-m-mdrawer-product-thumb);
+      height: var(--wp-m-mdrawer-product-thumb);
+      border-radius: var(--wp-m-mdrawer-promo-radius);
+      border: 1px solid var(--wp-color-white);
+      overflow: hidden;
+      background: #e9e9e9;
+    }
+
+    .wp-mdrawer__product-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wp-mdrawer__product-cart {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .wp-mdrawer__product-cart img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__product-meta {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--wp-space-08);
+      min-width: 0;
+    }
+
+    .wp-mdrawer__product-type {
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-product-type-size);
+      line-height: var(--wp-m-mdrawer-product-type-line);
+      color: var(--wp-color-black);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .wp-mdrawer__product-price {
+      flex: 0 0 auto;
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-product-price-size);
+      line-height: var(--wp-m-mdrawer-product-price-line);
+      color: var(--wp-color-black);
+    }
+
+    /* ---------- Live: video card ---------- */
+    .wp-mdrawer__video-heading {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--wp-m-mdrawer-group-gap);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-video-heading-size);
+      line-height: var(--wp-m-mdrawer-video-heading-line);
+      color: var(--wp-m-mdrawer-video-heading-color);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__video-dot {
+      flex: 0 0 auto;
+      width: 6px;
+      height: 6px;
+    }
+
+    .wp-mdrawer__video-dot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .wp-mdrawer__video-card {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: var(--wp-m-mdrawer-video-h);
+      border-radius: var(--wp-m-mdrawer-video-radius);
+      overflow: hidden;
+    }
+
+    .wp-mdrawer__video-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wp-mdrawer__video-signature {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      width: 120px;
+    }
+
+    .wp-mdrawer__video-signature img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .wp-mdrawer__video-play {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      width: var(--wp-m-mdrawer-video-play);
+      height: var(--wp-m-mdrawer-video-play);
+    }
+
+    .wp-mdrawer__video-play img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ---------- Community: photo strip + outline button + sisterhood card ---------- */
+    .wp-mdrawer__photo-strip {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--wp-m-mdrawer-photo-strip-gap);
+    }
+
+    .wp-mdrawer__photo-strip-item {
+      flex: 1 1 0;
+      display: block;
+      aspect-ratio: var(--wp-m-mdrawer-photo-strip-ratio);
+      background: var(--wp-m-mdrawer-photo-strip-bg);
+      padding: var(--wp-m-mdrawer-photo-strip-inset);
+      border-radius: 2px;
+    }
+
+    .wp-mdrawer__photo-strip-item--tall {
+      flex: 1.11 1 0;
+    }
+
+    .wp-mdrawer__photo-strip-item img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 1px;
+    }
+
+    .wp-mdrawer__outline-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border: 1px solid var(--wp-color-black);
+      border-radius: var(--wp-radius-sm);
+      padding: var(--wp-m-mdrawer-outline-btn-pad);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-outline-btn-size);
+      line-height: var(--wp-m-mdrawer-outline-btn-line);
+      color: var(--wp-color-black);
+      text-decoration: none;
+    }
+
+    .wp-mdrawer__glass-panel {
+      background: var(--wp-m-mdrawer-glass-bg);
+      backdrop-filter: blur(var(--wp-m-mdrawer-glass-blur));
+      -webkit-backdrop-filter: blur(var(--wp-m-mdrawer-glass-blur));
+      border: 1px solid var(--wp-m-mdrawer-glass-border);
+      border-radius: var(--wp-m-mdrawer-glass-radius);
+    }
+
+    .wp-mdrawer__sisterhood-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-space-16);
+    }
+
+    .wp-mdrawer__sisterhood-label {
+      margin: 0;
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-group-title-size);
+      line-height: var(--wp-m-mdrawer-group-title-line);
+      color: var(--wp-color-black);
+      text-transform: uppercase;
+    }
+
+    .wp-mdrawer__sisterhood-card {
+      background: var(--wp-m-mdrawer-sisterhood-gradient);
+      border-radius: var(--wp-m-mdrawer-sisterhood-card-radius);
+      padding: var(--wp-m-mdrawer-sisterhood-card-pad);
+    }
+
+    .wp-mdrawer__sisterhood-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-m-mdrawer-sisterhood-gap);
+      padding: var(--wp-m-mdrawer-sisterhood-panel-pad);
+    }
+
+    .wp-mdrawer__sisterhood-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .wp-mdrawer__sisterhood-title {
+      margin: 0;
+      font-family: var(--wp-font-heading);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-sisterhood-title-size);
+      line-height: var(--wp-m-mdrawer-sisterhood-title-line);
+      color: var(--wp-m-mdrawer-sisterhood-title-color);
+    }
+
+    .wp-mdrawer__sisterhood-copy {
+      margin: 0;
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-sisterhood-copy-size);
+      line-height: var(--wp-m-mdrawer-sisterhood-copy-line);
+      color: var(--wp-m-mdrawer-sisterhood-title-color);
+    }
+
+    .wp-mdrawer__sisterhood-signature {
+      display: block;
+      width: var(--wp-m-mdrawer-sisterhood-signature-w);
+      max-width: 100%;
+    }
+
+    .wp-mdrawer__sisterhood-signature img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .wp-mdrawer__dark-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: var(--wp-m-mdrawer-dark-btn-bg);
+      border-radius: var(--wp-radius-sm);
+      padding: var(--wp-m-mdrawer-dark-btn-pad);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-dark-btn-size);
+      line-height: var(--wp-m-mdrawer-dark-btn-line);
+      color: var(--wp-color-white);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    /* ---------- Dailey Deals: promo banner ---------- */
+    .wp-mdrawer__promo-wrap {
+      margin-top: var(--wp-space-16);
+    }
+
+    .wp-mdrawer__promo-banner {
+      position: relative;
+      height: var(--wp-m-mdrawer-promo-banner-h);
+      border-radius: var(--wp-m-mdrawer-promo-banner-radius);
+      overflow: hidden;
+    }
+
+    .wp-mdrawer__promo-banner-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wp-mdrawer__promo-banner-panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-m-mdrawer-promo-banner-gap);
+      padding: var(--wp-m-mdrawer-promo-banner-panel-pad);
+    }
+
+    .wp-mdrawer__promo-banner-text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--wp-space-08);
+    }
+
+    .wp-mdrawer__promo-banner-title {
+      margin: 0;
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-medium);
+      font-size: var(--wp-m-mdrawer-promo-banner-title-size);
+      line-height: var(--wp-m-mdrawer-promo-banner-title-line);
+      color: var(--wp-color-white);
+    }
+
+    .wp-mdrawer__promo-banner-copy {
+      margin: 0;
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-promo-banner-copy-size);
+      line-height: var(--wp-m-mdrawer-promo-banner-copy-line);
+      color: var(--wp-color-white);
+    }
+
+    .wp-mdrawer__dark-pink-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: var(--wp-color-dark-pink);
+      border-radius: var(--wp-radius-sm);
+      padding: var(--wp-m-mdrawer-dark-btn-pad);
+      font-family: var(--wp-font-body);
+      font-weight: var(--wp-weight-regular);
+      font-size: var(--wp-m-mdrawer-dark-btn-size);
+      line-height: var(--wp-m-mdrawer-dark-btn-line);
+      color: var(--wp-color-white);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wp-mdrawer__overlay,
+    .wp-mdrawer__dialog,
+    .wp-mdrawer__screen {
+      transition-duration: 0.001ms !important;
+    }
+  }
+{% endstyle %}
+
+<script src="{{ 'wp-mobile-drawer.js' | asset_url }}" defer="defer"></script>
+{%- render 'aria-livemeup' -%}
+
+{% schema %}
+{
+  "name": "Mobile nav drawer",
+  "tag": "div",
+  "class": "wp-mdrawer-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Mobile only (below 750px). Content/order here is independent of the desktop header's mega menus."
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "What are you looking for?"
+    },
+    {
+      "type": "header",
+      "content": "Pre-order banner"
+    },
+    {
+      "type": "text",
+      "id": "preorder_label",
+      "label": "Label",
+      "default": "Pre-Order"
+    },
+    {
+      "type": "url",
+      "id": "preorder_url",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Account row"
+    },
+    {
+      "type": "text",
+      "id": "account_label",
+      "label": "Label",
+      "default": "Sign in / Create account"
+    },
+    {
+      "type": "url",
+      "id": "account_url",
+      "label": "Link (blank = automatic sign-in / account link)"
+    },
+    {
+      "type": "header",
+      "content": "Live card"
+    },
+    {
+      "type": "text",
+      "id": "live_eyebrow",
+      "label": "Eyebrow",
+      "default": "LIVE TONIGHT · 7:00 PM CT"
+    },
+    {
+      "type": "text",
+      "id": "live_title",
+      "label": "Title",
+      "default": "Join us live on Facebook"
+    },
+    {
+      "type": "textarea",
+      "id": "live_copy",
+      "label": "Copy",
+      "default": "See the wigs. Ask questions. Laugh with friends."
+    },
+    {
+      "type": "text",
+      "id": "live_button_label",
+      "label": "Button label",
+      "default": "Watch Live"
+    },
+    {
+      "type": "url",
+      "id": "live_button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "App badges"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_app_store",
+      "label": "Show App Store badge",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "app_store_url",
+      "label": "App Store link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_google_play",
+      "label": "Show Google Play badge",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "google_play_url",
+      "label": "Google Play link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "panel_shop",
+      "name": "Panel: Shop",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Add only one of this block type."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Main menu label",
+          "default": "Shop"
+        },
+        {
+          "type": "header",
+          "content": "Group 1: Cap construction"
+        },
+        {
+          "type": "text",
+          "id": "group_1_title",
+          "label": "Title",
+          "default": "CAP CONSTRUCTION"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_1_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_1_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "paragraph",
+          "content": "Shown as 48x48 round photos, in menu order (up to 4). Blank photo falls back to a default."
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_1_image",
+          "label": "Photo 1 (Hand-tied)"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_2_image",
+          "label": "Photo 2 (Extended lace front)"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_3_image",
+          "label": "Photo 3 (Full mono)"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_4_image",
+          "label": "Photo 4 (Mono topper)"
+        },
+        {
+          "type": "header",
+          "content": "Group 2: By collection"
+        },
+        {
+          "type": "text",
+          "id": "group_2_title",
+          "label": "Title",
+          "default": "BY COLLECTION"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_2_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_2_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Group 3: Shop by color"
+        },
+        {
+          "type": "text",
+          "id": "group_3_title",
+          "label": "Title",
+          "default": "SHOP BY COLOR"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_3_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_3_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Group 4: By size and length"
+        },
+        {
+          "type": "text",
+          "id": "group_4_title",
+          "label": "Title",
+          "default": "BY SIZE & LENGTH"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_4_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_4_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Featured"
+        },
+        {
+          "type": "text",
+          "id": "featured_heading",
+          "label": "Heading",
+          "default": "BEST SELLERS & MARKDOWNS"
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_icon",
+          "label": "Heading icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_1_image",
+          "label": "Card 1 photo"
+        },
+        {
+          "type": "text",
+          "id": "promo_1_badge",
+          "label": "Card 1 chip text",
+          "default": "New Arrival"
+        },
+        {
+          "type": "select",
+          "id": "promo_1_badge_style",
+          "label": "Card 1 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" }
+          ],
+          "default": "amber"
+        },
+        {
+          "type": "url",
+          "id": "promo_1_button_url",
+          "label": "Card 1 \"See the deal\" link"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_2_image",
+          "label": "Card 2 photo"
+        },
+        {
+          "type": "text",
+          "id": "promo_2_badge",
+          "label": "Card 2 chip text",
+          "default": "Icons Collection"
+        },
+        {
+          "type": "select",
+          "id": "promo_2_badge_style",
+          "label": "Card 2 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" }
+          ],
+          "default": "white"
+        },
+        {
+          "type": "url",
+          "id": "promo_2_button_url",
+          "label": "Card 2 \"See the deal\" link"
+        }
+      ]
+    },
+    {
+      "type": "panel_start",
+      "name": "Panel: Start Here",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Add only one of this block type."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Main menu label",
+          "default": "Start Here"
+        },
+        {
+          "type": "header",
+          "content": "Group 1: Wig 101"
+        },
+        {
+          "type": "text",
+          "id": "group_1_title",
+          "label": "Title",
+          "default": "WIG 101: THE BASICS"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_1_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_1_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Group 2: Guides and answers"
+        },
+        {
+          "type": "text",
+          "id": "group_2_title",
+          "label": "Title",
+          "default": "GUIDES & ANSWERS"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_2_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_2_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "header",
+          "content": "Featured: Best Sellers carousel"
+        },
+        {
+          "type": "text",
+          "id": "featured_heading",
+          "label": "Heading",
+          "default": "BEST SELLERS"
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_icon",
+          "label": "Heading icon"
+        },
+        {
+          "type": "product",
+          "id": "product_1",
+          "label": "Product 1"
+        },
+        {
+          "type": "text",
+          "id": "product_1_chip",
+          "label": "Product 1 chip text (blank = no chip)"
+        },
+        {
+          "type": "select",
+          "id": "product_1_chip_style",
+          "label": "Product 1 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" },
+            { "value": "pink", "label": "Pink" }
+          ],
+          "default": "amber"
+        },
+        {
+          "type": "product",
+          "id": "product_2",
+          "label": "Product 2"
+        },
+        {
+          "type": "text",
+          "id": "product_2_chip",
+          "label": "Product 2 chip text (blank = no chip)"
+        },
+        {
+          "type": "select",
+          "id": "product_2_chip_style",
+          "label": "Product 2 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" },
+            { "value": "pink", "label": "Pink" }
+          ],
+          "default": "amber"
+        },
+        {
+          "type": "product",
+          "id": "product_3",
+          "label": "Product 3"
+        },
+        {
+          "type": "text",
+          "id": "product_3_chip",
+          "label": "Product 3 chip text (blank = no chip)"
+        },
+        {
+          "type": "select",
+          "id": "product_3_chip_style",
+          "label": "Product 3 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" },
+            { "value": "pink", "label": "Pink" }
+          ],
+          "default": "amber"
+        },
+        {
+          "type": "collection",
+          "id": "featured_collection",
+          "label": "Featured collection (fallback for blank products)"
+        }
+      ]
+    },
+    {
+      "type": "panel_live",
+      "name": "Panel: Live",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Add only one of this block type."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Main menu label",
+          "default": "Live"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_live_dot",
+          "label": "Show live dot next to label",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Group 1: Catch up"
+        },
+        {
+          "type": "text",
+          "id": "group_1_title",
+          "label": "Title",
+          "default": "CATCH UP"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_1_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_1_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "textarea",
+          "id": "group_1_manual_links",
+          "label": "Manual links (used only if Menu above is blank or empty)",
+          "info": "One per line: Label | /url. A line with no URL is skipped."
+        },
+        {
+          "type": "header",
+          "content": "Group 2: This week's schedule"
+        },
+        {
+          "type": "text",
+          "id": "group_2_title",
+          "label": "Title",
+          "default": "THIS WEEK'S SCHEDULE"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_2_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_2_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "textarea",
+          "id": "group_2_manual_links",
+          "label": "Manual links (used only if Menu above is blank or empty)",
+          "info": "One per line: Label | /url. A line with no URL is skipped."
+        },
+        {
+          "type": "header",
+          "content": "Featured: Live video"
+        },
+        {
+          "type": "text",
+          "id": "video_heading",
+          "label": "Heading",
+          "default": "LIVE TONIGHT · 7:00 PM CT"
+        },
+        {
+          "type": "image_picker",
+          "id": "video_image",
+          "label": "Video thumbnail photo"
+        },
+        {
+          "type": "url",
+          "id": "video_url",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "panel_community",
+      "name": "Panel: Community",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Add only one of this block type."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Main menu label",
+          "default": "Community"
+        },
+        {
+          "type": "header",
+          "content": "Group 1: Our heart"
+        },
+        {
+          "type": "text",
+          "id": "group_1_title",
+          "label": "Title",
+          "default": "OUR HEART"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_1_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_1_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "textarea",
+          "id": "group_1_manual_links",
+          "label": "Manual links (used only if Menu above is blank or empty)",
+          "info": "One per line: Label | /url. A line with no URL is skipped."
+        },
+        {
+          "type": "header",
+          "content": "Featured: Real women, real wigs"
+        },
+        {
+          "type": "text",
+          "id": "featured_heading",
+          "label": "Heading",
+          "default": "REAL WOMEN, REAL WIGS"
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_icon",
+          "label": "Heading icon"
+        },
+        {
+          "type": "image_picker",
+          "id": "photo_1",
+          "label": "Photo 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "photo_2",
+          "label": "Photo 2 (shown taller, centered)"
+        },
+        {
+          "type": "image_picker",
+          "id": "photo_3",
+          "label": "Photo 3"
+        },
+        {
+          "type": "text",
+          "id": "gallery_button_label",
+          "label": "Button label",
+          "default": "See the gallery  →"
+        },
+        {
+          "type": "url",
+          "id": "gallery_button_url",
+          "label": "Button link"
+        },
+        {
+          "type": "header",
+          "content": "The Sisterhood card"
+        },
+        {
+          "type": "text",
+          "id": "sisterhood_label",
+          "label": "Small label above the card",
+          "default": "THE SISTERHOOD"
+        },
+        {
+          "type": "text",
+          "id": "sisterhood_title",
+          "label": "Card title",
+          "default": "Join our Facebook group"
+        },
+        {
+          "type": "textarea",
+          "id": "sisterhood_copy",
+          "label": "Card copy",
+          "default": "Real talk, support, and first looks with women just like you."
+        },
+        {
+          "type": "text",
+          "id": "sisterhood_button_label",
+          "label": "Button label",
+          "default": "Join the group"
+        },
+        {
+          "type": "url",
+          "id": "sisterhood_button_url",
+          "label": "Button link"
+        }
+      ]
+    },
+    {
+      "type": "panel_deals",
+      "name": "Panel: Dailey Deals",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Add only one of this block type."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Main menu label",
+          "default": "Dailey Deals"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_new_badge",
+          "label": "Show \"NEW\" badge next to label",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "new_badge_label",
+          "label": "Badge text",
+          "default": "NEW"
+        },
+        {
+          "type": "header",
+          "content": "Group 1: All the ways to save"
+        },
+        {
+          "type": "text",
+          "id": "group_1_title",
+          "label": "Title",
+          "default": "ALL THE WAYS TO SAVE"
+        },
+        {
+          "type": "image_picker",
+          "id": "group_1_icon",
+          "label": "Icon"
+        },
+        {
+          "type": "link_list",
+          "id": "group_1_menu",
+          "label": "Menu"
+        },
+        {
+          "type": "textarea",
+          "id": "group_1_manual_links",
+          "label": "Manual links (used only if Menu above is blank or empty)",
+          "info": "One per line: Label | /url. A line with no URL is skipped."
+        },
+        {
+          "type": "header",
+          "content": "Promo card"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Photo"
+        },
+        {
+          "type": "text",
+          "id": "promo_title",
+          "label": "Title",
+          "default": "Dailey Deals + Clearance"
+        },
+        {
+          "type": "textarea",
+          "id": "promo_copy",
+          "label": "Copy"
+        },
+        {
+          "type": "text",
+          "id": "promo_button_label",
+          "label": "Button label",
+          "default": "Shop all deals"
+        },
+        {
+          "type": "url",
+          "id": "promo_button_url",
+          "label": "Button link"
+        },
+        {
+          "type": "header",
+          "content": "Featured: product carousel"
+        },
+        {
+          "type": "text",
+          "id": "featured_heading",
+          "label": "Heading",
+          "default": "DAILEY DEALS · NEW MARKDOWNS EVERY DAY"
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_icon",
+          "label": "Heading icon"
+        },
+        {
+          "type": "product",
+          "id": "product_1",
+          "label": "Product 1"
+        },
+        {
+          "type": "text",
+          "id": "product_1_chip",
+          "label": "Product 1 chip text (blank = no chip)"
+        },
+        {
+          "type": "select",
+          "id": "product_1_chip_style",
+          "label": "Product 1 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" },
+            { "value": "pink", "label": "Pink" }
+          ],
+          "default": "amber"
+        },
+        {
+          "type": "product",
+          "id": "product_2",
+          "label": "Product 2"
+        },
+        {
+          "type": "text",
+          "id": "product_2_chip",
+          "label": "Product 2 chip text (blank = no chip)"
+        },
+        {
+          "type": "select",
+          "id": "product_2_chip_style",
+          "label": "Product 2 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" },
+            { "value": "pink", "label": "Pink" }
+          ],
+          "default": "pink"
+        },
+        {
+          "type": "product",
+          "id": "product_3",
+          "label": "Product 3"
+        },
+        {
+          "type": "text",
+          "id": "product_3_chip",
+          "label": "Product 3 chip text (blank = no chip)"
+        },
+        {
+          "type": "select",
+          "id": "product_3_chip_style",
+          "label": "Product 3 chip style",
+          "options": [
+            { "value": "amber", "label": "Amber" },
+            { "value": "white", "label": "White" },
+            { "value": "pink", "label": "Pink" }
+          ],
+          "default": "amber"
+        },
+        {
+          "type": "collection",
+          "id": "featured_collection",
+          "label": "Featured collection (fallback for blank products)"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

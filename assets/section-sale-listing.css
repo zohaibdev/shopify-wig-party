@@ -1,0 +1,821 @@
+/* Wig Party — SALE listing (sections/sale-listing.liquid; cards = shared aria-product-card, see the block at the end)
+ * Figma 7547:4684 (frame 1360 x 1850), card 7547:4733. Desktop only (min-width 750); mobile is a later session.
+ * Tokens: --wp-sale-listing-* in assets/design-tokens.css.
+ *   chips row 74 high (padding 19 + 1px ring), label + 4 chips 34 high, gap 8; 32 to banner (416); 32 to grid
+ *   grid 3 x 1fr (440; Figma 441 x 3 + 40 = 1363 > 1360), col gap 20, row gap 32
+ *   card 632: photo 380 -> 12 -> info 166 -> 20 -> button 54
+ */
+
+@media screen and (min-width: 750px) {
+  .wp-sale-listing,
+  .wp-sale-listing *,
+  .wp-sale-listing *::before,
+  .wp-sale-listing *::after {
+    box-sizing: border-box;
+  }
+
+  .wp-sale-listing {
+    padding-top: var(--wp-sale-pad-top, var(--wp-sale-listing-pad));
+    padding-bottom: var(--wp-sale-pad-bottom, var(--wp-sale-listing-pad));
+    letter-spacing: 0;
+  }
+
+  .wp-sale-listing__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-sale-listing-block-gap);
+    width: 100%;
+    max-width: 1360px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Chips row ---------- */
+
+  .wp-sale-listing__chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wp-sale-listing-chips-row-gap);
+    padding: var(--wp-sale-listing-chips-padding);
+    border: 1px solid var(--wp-color-cream);
+    border-radius: var(--wp-radius-08);
+    background: linear-gradient(180deg, var(--wp-color-white) 0%, var(--wp-color-cream) 100%);
+  }
+
+  .wp-sale-listing__chips-label {
+    padding-right: var(--wp-space-08);
+    font-family: var(--wp-font-body);
+    font-size: 16px;
+    line-height: 26px;
+    text-transform: uppercase;
+    color: var(--wp-sale-listing-label-color);
+    white-space: nowrap;
+  }
+
+  .wp-sale-listing__chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wp-space-08);
+  }
+
+  .wp-sale-listing__chip {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--wp-sale-listing-chip-padding);
+    border: 1px solid var(--wp-color-gray);
+    border-radius: var(--wp-radius-96);
+    background: var(--wp-color-white);
+    font-family: var(--wp-font-body);
+    font-size: 14px;
+    line-height: 22px;
+    color: #1a1a1a;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .wp-sale-listing__chip:hover,
+  .wp-sale-listing__chip:focus-visible {
+    border-color: var(--wp-color-dark-pink);
+    color: var(--wp-color-dark-pink);
+  }
+
+  .wp-sale-listing__chip--active,
+  .wp-sale-listing__chip--active:hover,
+  .wp-sale-listing__chip--active:focus-visible {
+    border-color: var(--wp-color-cream);
+    background: var(--wp-color-dark-pink);
+    color: var(--wp-color-white);
+  }
+
+  /* ---------- Grid ---------- */
+
+  .wp-sale-listing__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--wp-sale-listing-row-gap) var(--wp-sale-listing-col-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wp-sale-listing__item {
+    display: flex;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .wp-sale-listing__empty {
+    margin: 0;
+    padding: var(--wp-space-40) 0;
+    text-align: center;
+    font-family: var(--wp-font-body);
+    font-size: 18px;
+    line-height: 28px;
+    color: var(--wp-color-gray);
+  }
+
+  /* ---------- Show more ---------- */
+
+  .wp-sale-listing__more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--wp-sale-listing-more-gap);
+  }
+
+  .wp-sale-listing__more-wrap:empty {
+    display: none;
+  }
+
+  .wp-sale-listing__more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--wp-search-more-padding);
+    border-radius: var(--wp-radius-sm);
+    background: var(--wp-search-more-bg);
+    font-family: var(--wp-font-body);
+    font-size: 18px;
+    line-height: 28px;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--wp-color-white);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .wp-sale-listing__more.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .wp-sale-listing__chip:focus-visible,
+  .wp-sale-listing__more:focus-visible {
+    outline: 2px solid var(--wp-color-dark-pink);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Card ---------- */
+
+  .wp-sale-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-sale-card-gap);
+    width: 100%;
+    background: transparent;
+  }
+
+  .wp-sale-card__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-sale-card-top-gap);
+  }
+
+  .wp-sale-card__media {
+    position: relative;
+    height: var(--wp-sale-card-image-height);
+    overflow: hidden;
+    border-radius: var(--wp-sale-card-radius);
+    background: var(--wp-color-white);
+  }
+
+  .wp-sale-card__media-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .wp-sale-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .wp-sale-card__wishlist {
+    position: absolute;
+    top: var(--wp-sale-card-inset);
+    right: var(--wp-sale-card-inset);
+    width: var(--wp-sale-card-heart-size);
+    height: var(--wp-sale-card-heart-size);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .wp-sale-card__wishlist svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Saved state (not in Figma): colours inverted, white disc with a dark pink heart. */
+  .wp-sale-card__wishlist[aria-pressed='true'] rect {
+    fill: var(--wp-color-white);
+  }
+
+  .wp-sale-card__wishlist[aria-pressed='true'] path {
+    fill: var(--wp-color-dark-pink);
+  }
+
+  .wp-sale-card__chip {
+    position: absolute;
+    left: var(--wp-sale-card-inset);
+    bottom: var(--wp-sale-card-inset);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--wp-sale-card-chip-height);
+    padding: var(--wp-sale-card-chip-padding);
+    border-radius: var(--wp-sale-card-chip-radius);
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-sale-card-chip-size);
+    font-weight: 400;
+    line-height: var(--wp-sale-card-chip-line-height);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .wp-sale-card__chip--sold-out {
+    background: var(--wp-sale-card-chip-sold-out-bg);
+    color: var(--wp-color-white);
+  }
+
+  /* New Arrival: not in Figma, same shape as Sold out with the theme chip colour. */
+  .wp-sale-card__chip--new {
+    background: var(--wp-color-chip-new);
+    color: var(--wp-color-black);
+  }
+
+  .wp-sale-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-sale-card-info-gap);
+  }
+
+  .wp-sale-card__meta,
+  .wp-sale-card__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-sale-card-meta-gap);
+  }
+
+  .wp-sale-card__rating {
+    display: flex;
+    align-items: center;
+    gap: var(--wp-space-04);
+  }
+
+  .wp-sale-card__stars {
+    display: flex;
+    align-items: center;
+    gap: var(--wp-sale-card-star-gap);
+  }
+
+  .wp-sale-card__star {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wp-sale-card-star-size);
+    height: var(--wp-sale-card-star-size);
+  }
+
+  .wp-sale-card__star svg {
+    display: block;
+    flex: none;
+  }
+
+  .wp-sale-card__star--empty {
+    opacity: 0.3;
+  }
+
+  .wp-sale-card__rating-value {
+    font-family: var(--wp-font-body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: var(--wp-color-black);
+    white-space: nowrap;
+  }
+
+  .wp-sale-card__title {
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-sale-card-name-size);
+    font-weight: 500;
+    line-height: var(--wp-sale-card-name-line-height);
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wp-sale-card__title a {
+    color: var(--wp-color-black);
+    text-decoration: none;
+  }
+
+  .wp-sale-card__swatches {
+    display: flex;
+    align-items: center;
+    gap: var(--wp-space-04);
+  }
+
+  .wp-sale-card__swatch {
+    flex: 0 0 auto;
+    width: var(--wp-sale-card-swatch-size);
+    height: var(--wp-sale-card-swatch-size);
+    border: 1px solid var(--wp-color-warm-gray-500);
+    border-radius: 50%;
+    background: var(--wp-sale-swatch, var(--wp-color-gray-100)) center / cover no-repeat;
+  }
+
+  .wp-sale-card__swatch-more {
+    font-family: var(--wp-font-body);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+    text-transform: uppercase;
+    color: var(--wp-color-black);
+    white-space: nowrap;
+  }
+
+  .wp-sale-card__price {
+    display: flex;
+    align-items: center;
+    gap: var(--wp-sale-card-price-gap);
+    font-family: var(--wp-font-heading);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .wp-sale-card__price-current {
+    font-size: var(--wp-sale-card-price-size);
+    line-height: var(--wp-sale-card-price-line-height);
+    color: var(--wp-color-black);
+  }
+
+  .wp-sale-card__price-compare {
+    font-size: var(--wp-sale-card-compare-size);
+    line-height: var(--wp-sale-card-compare-line-height);
+    color: var(--wp-color-gray);
+    text-decoration: line-through;
+  }
+
+  .wp-sale-card__quick-add {
+    display: block;
+    margin-top: auto;
+  }
+
+  .wp-sale-card__cart-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--wp-btn-gap);
+    width: 100%;
+    height: var(--wp-sale-card-btn-height);
+    padding: var(--wp-sale-card-btn-padding);
+    border: 1px solid var(--wp-color-black);
+    border-radius: var(--wp-radius-sm);
+    background: var(--wp-color-white);
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-sale-card-btn-size);
+    font-weight: 400;
+    line-height: var(--wp-sale-card-btn-line-height);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--wp-color-black);
+    cursor: pointer;
+  }
+
+  .wp-sale-card__cart-btn svg {
+    flex: 0 0 auto;
+    width: var(--wp-sale-card-btn-icon-size);
+    height: var(--wp-sale-card-btn-icon-size);
+  }
+
+  .wp-sale-card__cart-btn[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .wp-sale-card__cart-btn:focus-visible,
+  .wp-sale-card__wishlist:focus-visible,
+  .wp-sale-card__title a:focus-visible {
+    outline: 2px solid var(--wp-color-dark-pink);
+    outline-offset: 2px;
+  }
+
+  .wp-sale-card__cart-btn .loading__spinner {
+    position: absolute;
+  }
+}
+
+/* Swatches are buttons now (assets/wp-card-swatches.js). Not inside the desktop query: the
+   reset, disc and tap target are needed at every width. Selected = black ring outside the
+   1px border, so nothing in the row moves. */
+.wp-sale-card__swatches {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--wp-space-04);
+}
+
+.wp-sale-card__swatch {
+  flex: 0 0 auto;
+  width: var(--wp-sale-card-swatch-size);
+  height: var(--wp-sale-card-swatch-size);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--wp-color-warm-gray-500);
+  border-radius: 50%;
+  background: var(--wp-sale-swatch, var(--wp-color-gray-100)) center / cover no-repeat;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.wp-sale-card__swatch[hidden] {
+  display: none;
+}
+
+.wp-sale-card__swatch.is-selected {
+  border-color: var(--wp-color-white);
+  box-shadow: 0 0 0 1px var(--wp-color-black);
+}
+
+.wp-sale-card__swatch:focus-visible,
+.wp-sale-card__swatch-more:focus-visible {
+  outline: 2px solid var(--wp-color-dark-pink);
+  outline-offset: 2px;
+}
+
+.wp-sale-card__swatch-more {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+/* Colour name on hover / focus / tap; out of flow, positioned by the JS. */
+.wp-sale-card .wp-card-swatch-tooltip {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  padding: var(--wp-space-04) var(--wp-space-08);
+  border-radius: var(--wp-radius-sm);
+  background: var(--wp-color-warm-gray-950);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-caption-size);
+  font-weight: var(--wp-caption-weight);
+  line-height: var(--wp-caption-line-height);
+  color: var(--wp-color-white);
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.wp-sale-card .wp-card-swatch-tooltip.is-visible {
+  opacity: 1;
+}
+
+/* Add to Cart hover: pointer devices only, never on sold out / disabled / busy. */
+.wp-sale-card__cart-btn {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.wp-sale-card__cart-btn svg path {
+  transition: stroke 0.2s ease;
+}
+
+@media (hover: hover) {
+  .wp-sale-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):hover,
+  .wp-sale-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):focus-visible {
+    border-color: var(--wp-color-black);
+    background: var(--wp-color-black);
+    color: var(--wp-color-white);
+  }
+
+  .wp-sale-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):hover svg path,
+  .wp-sale-card__cart-btn:not([aria-disabled='true']):not([disabled]):not(.loading):focus-visible svg path {
+    stroke: var(--wp-color-white);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wp-sale-card__cart-btn,
+  .wp-sale-card__cart-btn svg path,
+  .wp-sale-card .wp-card-swatch-tooltip {
+    transition: none;
+  }
+}
+
+/* ======================================================================================
+   Collection card on Sale (shared snippets/aria-product-card.liquid)
+   The card markup and its base CSS (component-aria-product-card.css) are the collection
+   page's. sections/collection-results.liquid restyles them under `.aria-coll` in
+   assets/section-aria-collection-results.css (Figma 6663:2133); those grid-scoped rules
+   are replicated here under `.wp-sale-listing`, same values, so the shared files stay
+   untouched. All viewports: Sale mobile stays one card per row (Figma 343 wide), so the
+   collection's 2-up mobile overrides are not copied.
+   ====================================================================================== */
+
+.wp-sale-listing .aria-product-card [hidden] {
+  display: none !important;
+}
+
+/* White card, p-8, radius 2; 13px media -> text, 21px text -> button. */
+.wp-sale-listing .aria-product-card {
+  box-sizing: border-box;
+  gap: 13px;
+  padding: 8px;
+  background: var(--white, #fff);
+  border-radius: 2px;
+}
+
+/* Media: 235 x 240 ratio (collection card), white behind the photo, radius 2. */
+.wp-sale-listing .aria-product-card__media {
+  aspect-ratio: 235 / 240;
+  background: var(--white, #fff);
+  border-radius: 2px;
+}
+
+/* Heart 28px, 10px from the top and 17px from the right. */
+.wp-sale-listing .aria-product-card__wishlist {
+  top: 10px;
+  right: 17px;
+}
+
+/* Chip 10px from the left and bottom, a fixed 18px tall. */
+.wp-sale-listing .aria-product-card__badges {
+  left: 10px;
+  bottom: 10px;
+}
+
+.wp-sale-listing .aria-product-card__badge {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 8px;
+  font-family: var(--font-body-family);
+  letter-spacing: 0;
+}
+
+/* Rating: 12px stars, Helvetica Neue 10/15 #333131, one row. */
+.wp-sale-listing .aria-product-card__rating {
+  flex-wrap: nowrap;
+  min-height: 15px;
+  white-space: nowrap;
+}
+
+.wp-sale-listing .aria-product-card__stars .aria-icon {
+  display: block;
+}
+
+.wp-sale-listing .aria-product-card__rating-value {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  line-height: 15px;
+  letter-spacing: 0.5px;
+  color: #333131;
+}
+
+/* Name: Poppins 20/22 #3F3E3E, held to two lines. */
+.wp-sale-listing .aria-product-card__title {
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wp-sale-listing .aria-product-card__title a {
+  color: #3f3e3e;
+}
+
+/* Swatches: 15px discs 5 apart, "+14" Poppins 10/15 #302E2E. */
+.wp-sale-listing .aria-product-card__swatches {
+  gap: 5px;
+  min-height: 15px;
+  margin-top: -2px;
+}
+
+.wp-sale-listing .aria-product-card__swatch {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+}
+
+.wp-sale-listing .aria-product-card__swatch::before {
+  inset: 0;
+}
+
+.wp-sale-listing .aria-product-card__swatch-more {
+  font-family: var(--font-body-family);
+  font-size: 10px;
+  line-height: 15px;
+  letter-spacing: 0;
+  color: #302e2e;
+}
+
+/* Price: Poppins SemiBold 22/18 #252424, the compare Poppins Medium 22/18 #8C8C8C struck, 6 apart. */
+.wp-sale-listing .aria-product-card__price {
+  gap: 6px;
+  font-family: var(--font-body-family);
+  letter-spacing: 0;
+}
+
+.wp-sale-listing .aria-product-card__price-current,
+.wp-sale-listing .aria-product-card__price-compare {
+  font-family: var(--font-body-family);
+  font-size: 22px;
+  line-height: 18px;
+  letter-spacing: 0;
+}
+
+.wp-sale-listing .aria-product-card__price-current {
+  font-weight: 600;
+  color: #252424;
+}
+
+.wp-sale-listing .aria-product-card__price-compare {
+  font-weight: 500;
+  color: #8c8c8c;
+  opacity: 1;
+}
+
+/* Button: one full-width outline "ADD TO CART" + cart icon, 47 tall, 1px #B1B1B1,
+   Poppins SemiBold 16/26 #404040 uppercase, 4px to the 20px icon. View Product hidden. */
+.wp-sale-listing .aria-product-card__actions {
+  padding-top: 8px;
+}
+
+.wp-sale-listing .aria-product-card__view-btn {
+  display: none;
+}
+
+.wp-sale-listing .aria-product-card__quick-add {
+  flex: 1 1 auto;
+  width: auto;
+  opacity: 1;
+  overflow: visible;
+}
+
+.wp-sale-listing .aria-product-card__cart-btn {
+  box-sizing: border-box;
+  width: 100%;
+  height: 47px;
+  gap: 4px;
+  padding: 0 12px;
+  border: 1px solid #b1b1b1;
+  background: var(--white, #fff);
+  color: #404040;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.wp-sale-listing .aria-product-card__cart-btn:hover,
+.wp-sale-listing .aria-product-card__cart-btn:focus-visible {
+  border-color: var(--py, #a64a4c);
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.wp-sale-listing .aria-product-card__cart-label {
+  display: inline;
+  white-space: nowrap;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.wp-sale-listing .aria-product-card__cart-btn .aria-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Mobile: one card per row (Figma Sale mobile, 343 wide), 20 apart. Desktop grid (3 x 1fr,
+   gap 32 / 20) is in the min-width 750 block above. */
+@media screen and (max-width: 749px) {
+  .wp-sale-listing__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wp-m-sale-card-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wp-sale-listing__item {
+    display: flex;
+    min-width: 0;
+  }
+}
+
+/* ---------- Mobile chips + Show more ----------
+ * Both were styled only from 750px up, so on phones they fell back to plain blue underlined
+ * links. Same pills and button as desktop; the chips scroll sideways in one row. */
+@media screen and (max-width: 749px) {
+  .wp-sale-listing__chips-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .wp-sale-listing__chips-label {
+    font-family: var(--wp-font-body);
+    font-size: 14px;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: var(--wp-sale-listing-label-color);
+  }
+
+  .wp-sale-listing__chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .wp-sale-listing__chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wp-sale-listing__chip {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    padding: var(--wp-sale-listing-chip-padding, 4px 12px);
+    border: 1px solid var(--wp-color-gray);
+    border-radius: var(--wp-radius-96, 96px);
+    background: var(--wp-color-white);
+    font-family: var(--wp-font-body);
+    font-size: 14px;
+    line-height: 22px;
+    color: #1a1a1a;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .wp-sale-listing__chip--active {
+    border-color: var(--wp-color-cream);
+    background: var(--wp-color-dark-pink);
+    color: var(--wp-color-white);
+  }
+
+  .wp-sale-listing__more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .wp-sale-listing__more-wrap:empty {
+    display: none;
+  }
+
+  .wp-sale-listing__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 24px;
+    box-sizing: border-box;
+    border-radius: var(--wp-radius-sm, 2px);
+    background: var(--wp-search-more-bg, #a64a4c);
+    font-family: var(--wp-font-body);
+    font-size: 16px;
+    line-height: 26px;
+    text-transform: uppercase;
+    color: var(--wp-color-white);
+    text-decoration: none;
+  }
+
+  .wp-sale-listing__more.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}

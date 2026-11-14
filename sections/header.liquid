@@ -1,4 +1,13 @@
 {{ 'section-aria-header.css' | asset_url | stylesheet_tag }}
+{%- if section.settings.preorder_font != blank -%}
+  {% style %}
+    {{ section.settings.preorder_font | font_face: font_display: 'swap' }}
+    .aria-header {
+      --aria-header-preorder-font: {{ section.settings.preorder_font.family }}, {{ section.settings.preorder_font.fallback_families }};
+      --aria-header-preorder-weight: {{ section.settings.preorder_font.weight }};
+    }
+  {% endstyle %}
+{%- endif -%}
 {{ 'component-aria-mega-menu.css' | asset_url | stylesheet_tag }}
 {{ 'component-aria-mobile-nav.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'aria-header.js' | asset_url }}" defer="defer"></script>
@@ -38,6 +47,44 @@
     Do NOT reintroduce `mega_carets` from the older frame notes; section 4.6 of
     claude-context.md records this change and supersedes them.
   endcomment
+  comment
+    THE CHEVRON IS LISTED AGAIN (2026-09-30), reversing the 2026-09-08 note above. The
+    user re-approved Figma 6316:3408, which draws the chevron on Shop, Best Sellers and
+    Start Here only, and chose to follow it; `chevron_items` names those parents (every other
+    parent keeps its panel, just without the arrow). Clearing the setting gives no chevrons;
+    listing every parent restores the uniform rule.
+  endcomment
+  assign chevron_list = section.settings.chevron_items | split: ','
+
+  comment
+    MENU-ONLY PARENTS (2026-10-15, client): the parents named in `menu_only_items` (Start
+    Here) only open their mega panel when clicked; they do not navigate (Start Here has no
+    page of its own, and jumping to the home page's #start-here was not wanted). The link
+    keeps its href for no-JS; assets/aria-mega-menu.js cancels the click and opens the
+    panel. The mobile drawer drops its "View all" row for them.
+  endcomment
+  assign menu_only_list = section.settings.menu_only_items | split: ','
+
+  comment
+    LIVE FALLBACK (2026-09-30). Figma 6316:3408 has "Live" between Start Here and Community,
+    but the nav is built from the store's Main menu, which has no Live link. Until one is
+    added in admin, the desktop bar inserts it after `live_fallback_after`, with the same
+    red dot, mega panel and styling as a real menu link. It stands down by itself the moment
+    the menu has a link titled `live_dot_menu_item`, so there is never a second Live.
+  endcomment
+  assign live_label = section.settings.live_dot_menu_item | default: 'Live'
+  assign inject_live = section.settings.live_fallback_enabled
+  for menu_link in section.settings.main_menu.links
+    if menu_link.title == live_label
+      assign inject_live = false
+      break
+    endif
+  endfor
+  assign live_url = section.settings.live_fallback_url
+  if live_url == blank
+    assign live_url = routes.root_url | append: '/pages/live' | replace: '//', '/'
+  endif
+
   assign mega_names = ''
   assign mega_ids = ''
   for mega in section.blocks
@@ -63,6 +110,9 @@
   endfor
   assign mega_name_list = mega_names | split: '~'
   assign mega_id_list = mega_ids | split: '~'
+
+  # The mega panels' column menus (same handles as snippets/aria-mega-menu.liquid). A parent whose own URL is not the current page still gets the current-page pill when one of its column links is, e.g. Start Here on /pages/compare-shades.
+  assign mega_column_handles = 'header-shop-shop-by-collection,header-shop-shop-by-color,header-start-here-wig-101-the-basics,header-start-here-guides-answers,header-live-catch-up,header-live-this-week-s-schedule,header-community-our-heart,header-dailey-deals-all-the-ways-to-save' | split: ','
 -%}
 
 <header class="aria-header color-{{ section.settings.nav_color_scheme }}">
@@ -169,6 +219,26 @@
                   if section.settings.show_live_dot and section.settings.live_dot_menu_item != blank and link.title == section.settings.live_dot_menu_item
                     assign show_dot = true
                   endif
+                  assign caret_listed = false
+                  for chevron_raw in chevron_list
+                    assign chevron_name = chevron_raw | strip
+                    if chevron_name == link.title
+                      assign caret_listed = true
+                      break
+                    endif
+                  endfor
+                  assign menu_only = false
+                  for menu_only_raw in menu_only_list
+                    assign menu_only_name = menu_only_raw | strip
+                    if menu_only_name == link.title
+                      assign menu_only = true
+                      break
+                    endif
+                  endfor
+                  assign show_new = false
+                  if section.settings.new_badge_text != blank and link.title == section.settings.new_badge_item
+                    assign show_new = true
+                  endif
                 -%}
                 {%- if link.links != blank -%}
                   <li class="aria-header__menu-item aria-header__menu-item--dropdown">
@@ -177,7 +247,7 @@
                       class="aria-header__menu-link aria-header__submenu-toggle{% if highlight_item %} aria-header__menu-link--highlight{% endif %}"
                       aria-expanded="false"
                     >
-                      {{ link.title }}
+                      <span class="aria-header__menu-label">{{ link.title }}</span>
                       {%- if show_dot -%}
                         <span class="aria-header__live-dot aria-live-pulse" aria-hidden="true"></span>
                         <span class="visually-hidden">{{ 'aria_theme.header.live_now' | t }}</span>
@@ -197,7 +267,12 @@
                         hover-driven mega parents have the pink pill for that instead, and
                         their arrow deliberately does not move.
                       {%- endcomment -%}
-                      {%- render 'aria-icon', name: 'mega-chevron', class: 'aria-header__menu-caret' -%}
+                      {%- if caret_listed -%}
+                        {%- render 'aria-icon', name: 'mega-chevron', class: 'aria-header__menu-caret' -%}
+                      {%- endif -%}
+                      {%- if show_new -%}
+                        <span class="aria-header__new-chip">{{ section.settings.new_badge_text }}</span>
+                      {%- endif -%}
                     </button>
                     <ul class="aria-header__dropdown">
                       {%- for childlink in link.links -%}
@@ -216,27 +291,45 @@
                         break
                       endif
                     endfor
+
+                    assign current_state = ''
+                    if link.active
+                      assign current_state = 'page'
+                    else
+                      assign column_prefix = 'header-' | append: link.handle | append: '-'
+                      for column_handle in mega_column_handles
+                        if column_handle contains column_prefix
+                          for column_link in linklists[column_handle].links
+                            if column_link.active
+                              assign current_state = 'true'
+                              break
+                            endif
+                          endfor
+                        endif
+                      endfor
+                    endif
                   -%}
                   <li class="aria-header__menu-item{% if highlight_item %} aria-header__menu-item--highlight{% endif %}{% if has_mega %} aria-header__menu-item--mega{% endif %}">
                     <a
                       href="{{ link.url }}"
                       class="aria-header__menu-link{% if highlight_item %} aria-header__menu-link--highlight{% endif %}"
                       {% if has_mega %}data-aria-mega-trigger="{{ mega_panel_id }}"{% endif %}
-                      {% if link.active %}
-                        aria-current="page"
+                      {% if has_mega and menu_only %}
+                        data-aria-mega-menu-only
+                      {% endif %}
+                      {% if current_state != '' %}
+                        aria-current="{{ current_state }}"
                       {% endif %}
                     >
-                      {{ link.title }}
+                      <span class="aria-header__menu-label">{{ link.title }}</span>
                       {%- if show_dot -%}
                         <span class="aria-header__live-dot aria-live-pulse" aria-hidden="true"></span>
                         <span class="visually-hidden">{{ 'aria_theme.header.live_now' | t }}</span>
                       {%- endif -%}
                       {%- comment -%}
-                        A 14px `arrow-up-01` chevron 4px after the label on EVERY parent
-                        that owns a mega panel. The condition is `has_mega` — the same
-                        fact that wires the trigger and the mobile drawer panel — so the
-                        arrow is derived from the nav structure and not from a hand-kept
-                        list. Six render today, not three.
+                        A 14px `arrow-up-01` chevron 4px after the label on the parents
+                        named in `chevron_items` that own a mega panel (Shop, Best Sellers
+                        and Start Here per Figma 6316:3408; see the note at the top).
 
                         It stays visible while the panel is open: the design draws it inside
                         the open pink pill, and an earlier pass hid it there.
@@ -248,7 +341,51 @@
                         chevron sits 4px after the DOT rather than 4px after the word; that
                         is the same label-then-affordance order the drawer already uses.
                       {%- endcomment -%}
-                      {%- if has_mega -%}
+                      {%- if has_mega and caret_listed -%}
+                        {%- render 'aria-icon', name: 'mega-chevron', class: 'aria-header__menu-caret' -%}
+                      {%- endif -%}
+                      {%- if show_new -%}
+                        <span class="aria-header__new-chip">{{ section.settings.new_badge_text }}</span>
+                      {%- endif -%}
+                    </a>
+                  </li>
+                {%- endif -%}
+
+                {%- if inject_live and link.title == section.settings.live_fallback_after -%}
+                  {%- liquid
+                    assign live_has_mega = false
+                    assign live_panel_id = ''
+                    for mega_name in mega_name_list
+                      if mega_name == live_label
+                        assign live_has_mega = true
+                        assign live_panel_id = 'AriaMega-' | append: mega_id_list[forloop.index0]
+                        break
+                      endif
+                    endfor
+                    assign live_caret = false
+                    for chevron_raw in chevron_list
+                      assign chevron_name = chevron_raw | strip
+                      if chevron_name == live_label
+                        assign live_caret = true
+                        break
+                      endif
+                    endfor
+                  -%}
+                  <li class="aria-header__menu-item{% if live_has_mega %} aria-header__menu-item--mega{% endif %}">
+                    <a
+                      href="{{ live_url }}"
+                      class="aria-header__menu-link"
+                      {% if live_has_mega %}data-aria-mega-trigger="{{ live_panel_id }}"{% endif %}
+                      {% if request.path == live_url %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      <span class="aria-header__menu-label">{{ live_label }}</span>
+                      {%- if section.settings.show_live_dot -%}
+                        <span class="aria-header__live-dot aria-live-pulse" aria-hidden="true"></span>
+                        <span class="visually-hidden">{{ 'aria_theme.header.live_now' | t }}</span>
+                      {%- endif -%}
+                      {%- if live_has_mega and live_caret -%}
                         {%- render 'aria-icon', name: 'mega-chevron', class: 'aria-header__menu-caret' -%}
                       {%- endif -%}
                     </a>
@@ -290,6 +427,19 @@
       </div>
 
       <div class="aria-header__nav-right">
+        {%- liquid
+          assign use_wp_search_overlay = false
+          if section.settings.wp_search_overlay and settings.predictive_search_enabled
+            assign use_wp_search_overlay = true
+          endif
+        -%}
+        {%- if use_wp_search_overlay -%}
+          {%- render 'wp-search-overlay',
+            placeholder: section.settings.search_placeholder,
+            live_blog: section.settings.wp_search_live_blog
+          -%}
+          <div class="wp-search-legacy">
+        {%- endif -%}
         <div class="aria-header__search">
           <button
             type="button"
@@ -343,12 +493,14 @@
                 autocomplete="off"
               >
               <input type="hidden" name="options[prefix]" value="last">
+              <input type="hidden" name="type" value="product">
               <button type="reset" class="aria-header__search-reset hidden">
                 {%- render 'aria-icon', name: 'close' -%}
                 <span class="visually-hidden">{{ 'aria_theme.header.search_reset' | t }}</span>
               </button>
               <button type="submit" class="aria-header__search-submit">
-                {%- render 'aria-icon', name: 'search' -%}
+                {%- render 'aria-icon', name: 'search', class: 'aria-header__icon--compact' -%}
+                {%- render 'aria-icon', name: 'nav-search', class: 'aria-header__icon--desktop' -%}
               </button>
             </form>
 
@@ -361,6 +513,9 @@
             {%- endif -%}
           </div>
         </div>
+        {%- if use_wp_search_overlay -%}
+          </div>
+        {%- endif -%}
 
         {%- comment -%}
           Wishlist VIEW trigger. `data-wishlist-open` is the only contract — the shared
@@ -375,7 +530,7 @@
         {%- endcomment -%}
         <button
           type="button"
-          class="aria-header__icon-btn aria-header__wishlist"
+          class="aria-header__icon-btn aria-header__wishlist{% unless section.settings.show_wishlist_desktop %} aria-header__wishlist--mobile-only{% endunless %}"
           data-wishlist-open
           aria-haspopup="dialog"
           aria-label="{{ 'aria_theme.wishlist.view' | t }}"
@@ -390,7 +545,8 @@
             class="aria-header__icon-btn aria-header__account"
           >
             <span slot="signed-out-avatar" class="aria-header__icon-slot">
-              {%- render 'aria-icon', name: 'account' -%}
+              {%- render 'aria-icon', name: 'account', class: 'aria-header__icon--compact' -%}
+              {%- render 'aria-icon', name: 'nav-user', class: 'aria-header__icon--desktop' -%}
               <span class="visually-hidden">{{ 'aria_theme.header.account_label' | t }}</span>
             </span>
           </shopify-account>
@@ -416,8 +572,7 @@
           {%- render 'aria-mega-menu',
             block: mega,
             id: mega_id,
-            ticker: section.settings.mega_ticker_text,
-            placeholders: section.settings.mega_show_placeholders
+            ticker: section.settings.mega_ticker_text
           -%}
         {%- endif -%}
       {%- endunless -%}
@@ -437,8 +592,7 @@
     section: section,
     menu: section.settings.main_menu,
     mega_names: mega_names,
-    mega_ids: mega_ids,
-    placeholders: section.settings.mega_show_placeholders
+    mega_ids: mega_ids
   -%}
 </header>
 
@@ -475,6 +629,65 @@
       "info": "t:sections.aria-header.settings.highlight_last_item.info"
     },
     {
+      "type": "text",
+      "id": "menu_only_items",
+      "default": "Start Here",
+      "label": "Items that only open their menu",
+      "info": "Comma-separated menu item names. Clicking one opens its mega menu instead of going to its link."
+    },
+    {
+      "type": "text",
+      "id": "chevron_items",
+      "default": "Shop, Best Sellers, Start Here",
+      "label": "t:sections.aria-header.settings.chevron_items.label",
+      "info": "t:sections.aria-header.settings.chevron_items.info"
+    },
+    {
+      "type": "text",
+      "id": "new_badge_item",
+      "default": "Dailey Deals",
+      "label": "t:sections.aria-header.settings.new_badge_item.label"
+    },
+    {
+      "type": "text",
+      "id": "new_badge_text",
+      "default": "New",
+      "label": "t:sections.aria-header.settings.new_badge_text.label",
+      "info": "t:sections.aria-header.settings.new_badge_text.info"
+    },
+    {
+      "type": "font_picker",
+      "id": "preorder_font",
+      "default": "jost_n5",
+      "label": "t:sections.aria-header.settings.preorder_font.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist_desktop",
+      "default": false,
+      "label": "t:sections.aria-header.settings.show_wishlist_desktop.label",
+      "info": "t:sections.aria-header.settings.show_wishlist_desktop.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "live_fallback_enabled",
+      "default": true,
+      "label": "t:sections.aria-header.settings.live_fallback_enabled.label",
+      "info": "t:sections.aria-header.settings.live_fallback_enabled.info"
+    },
+    {
+      "type": "url",
+      "id": "live_fallback_url",
+      "label": "t:sections.aria-header.settings.live_fallback_url.label",
+      "info": "t:sections.aria-header.settings.live_fallback_url.info"
+    },
+    {
+      "type": "text",
+      "id": "live_fallback_after",
+      "default": "Start Here",
+      "label": "t:sections.aria-header.settings.live_fallback_after.label"
+    },
+    {
       "type": "checkbox",
       "id": "show_live_dot",
       "default": true,
@@ -496,6 +709,19 @@
       "id": "search_placeholder",
       "default": "What are you looking for?",
       "label": "t:sections.aria-header.settings.search_placeholder.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "wp_search_overlay",
+      "default": false,
+      "label": "Use new search overlay",
+      "info": "Desktop 1280px and up. Needs predictive search on."
+    },
+    {
+      "type": "text",
+      "id": "wp_search_live_blog",
+      "label": "Live blog handle for search",
+      "info": "Shown as FROM THE LIVE. Empty hides that group."
     },
     {
       "type": "header",
@@ -530,16 +756,9 @@
     {
       "type": "text",
       "id": "mega_ticker_text",
-      "default": "JOIN US LIVE ON FACEBOOK  ·  1,100+ BELLE TRESS WIGS IN STOCK  ·  SHOP BY STYLE",
+      "default": "JOIN US LIVE ON FACEBOOK  ·  1,100+ WIGS IN STOCK  ·  SHOP BY STYLE",
       "label": "t:sections.aria-header.settings.mega_ticker_text.label",
       "info": "t:sections.aria-header.settings.mega_ticker_text.info"
-    },
-    {
-      "type": "checkbox",
-      "id": "mega_show_placeholders",
-      "default": true,
-      "label": "t:sections.aria-header.settings.mega_show_placeholders.label",
-      "info": "t:sections.aria-header.settings.mega_show_placeholders.info"
     },
     {
       "type": "header",
@@ -686,6 +905,120 @@
           "id": "promo_2_button_url",
           "label": "t:sections.aria-header.blocks.mega.settings.button_url.label",
           "info": "t:sections.aria-header.blocks.mega.settings.button_url.info"
+        },
+        {
+          "type": "header",
+          "content": "By Cap Construction"
+        },
+        {
+          "type": "text",
+          "id": "cap_heading",
+          "label": "Column heading",
+          "default": "By Cap Construction"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_icon",
+          "label": "Column icon"
+        },
+        {
+          "type": "link_list",
+          "id": "cap_menu",
+          "label": "Column menu",
+          "info": "Top-level links only, max 10. Hidden if empty."
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_1_image",
+          "label": "Thumbnail 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_2_image",
+          "label": "Thumbnail 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_3_image",
+          "label": "Thumbnail 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_4_image",
+          "label": "Thumbnail 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_5_image",
+          "label": "Thumbnail 5"
+        },
+        {
+          "type": "image_picker",
+          "id": "cap_item_6_image",
+          "label": "Thumbnail 6"
+        },
+        {
+          "type": "header",
+          "content": "Shop by Collection"
+        },
+        {
+          "type": "text",
+          "id": "collection_heading",
+          "label": "Column heading",
+          "default": "Shop by Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "collection_icon",
+          "label": "Column icon (optional)"
+        },
+        {
+          "type": "link_list",
+          "id": "collection_menu",
+          "label": "Column menu",
+          "info": "Top-level links only, max 10. Hidden if empty."
+        },
+        {
+          "type": "header",
+          "content": "Shop by Color"
+        },
+        {
+          "type": "text",
+          "id": "color_heading",
+          "label": "Column heading",
+          "default": "Shop by Color"
+        },
+        {
+          "type": "image_picker",
+          "id": "color_icon",
+          "label": "Column icon"
+        },
+        {
+          "type": "link_list",
+          "id": "color_menu",
+          "label": "Column menu",
+          "info": "Top-level links only, max 10. Hidden if empty."
+        },
+        {
+          "type": "header",
+          "content": "By Size & Length"
+        },
+        {
+          "type": "text",
+          "id": "size_heading",
+          "label": "Column heading",
+          "default": "By Size & Length"
+        },
+        {
+          "type": "image_picker",
+          "id": "size_icon",
+          "label": "Column icon"
+        },
+        {
+          "type": "link_list",
+          "id": "size_menu",
+          "label": "Column menu",
+          "info": "Top-level links only, max 10. Hidden if empty."
         }
       ]
     },
@@ -927,7 +1260,7 @@
           "type": "textarea",
           "id": "feature_text",
           "label": "t:sections.aria-header.blocks.mega.settings.feature_text.label",
-          "default": "Two old menu items become one place — a fresh markdown every single day."
+          "default": "Dailey Deals, Sale and Clearance, all in one place."
         },
         {
           "type": "text",

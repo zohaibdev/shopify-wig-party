@@ -1,0 +1,189 @@
+{%- comment -%}
+  Wig Party — collection hero. Figma internal file, node 6655:400 (1440 x 448).
+
+  A full-bleed hair-texture photo under a grey wash, with a 1360 x 384 frosted panel
+  holding the breadcrumb, the heading and a short description, and a cut-out model photo
+  that rises out of the panel's right side and is cropped by the section's bottom edge.
+
+  Content is driven by the collection being viewed: `[count]` in the heading is its product
+  count and `[title]` its title, and the last breadcrumb is the collection title. Both
+  images default to theme assets taken from the Figma frame until a merchant picks others.
+{%- endcomment -%}
+
+{{ 'section-aria-collection-hero.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign coll_title = collection.title | default: section.settings.fallback_title
+  assign coll_count = collection.products_count | default: 0
+  assign heading = section.settings.heading | replace: '[count]', coll_count | replace: '[title]', coll_title
+  assign description = section.settings.description | replace: '[count]', coll_count | replace: '[title]', coll_title
+-%}
+
+<section class="aria-coll-hero">
+  <div class="aria-coll-hero__bg" aria-hidden="true">
+    {%- if section.settings.background_image != blank -%}
+      {{
+        section.settings.background_image
+        | image_url: width: 2000
+        | image_tag:
+          loading: 'eager',
+          sizes: '100vw',
+          widths: '750,1100,1500,2000',
+          class: 'aria-coll-hero__bg-img',
+          alt: ''
+      }}
+    {%- else -%}
+      <img
+        src="{{ 'wp-find-texture.jpg' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+        loading="eager"
+        class="aria-coll-hero__bg-img"
+      >
+    {%- endif -%}
+    <span class="aria-coll-hero__wash"><span></span></span>
+  </div>
+
+  <div class="aria-coll-hero__panel">
+    {%- if section.settings.show_breadcrumb -%}
+      <nav class="aria-coll-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+        {%- comment -%}
+          Figma sets the separator as "  /  " (two spaces each side) in one text run, so
+          the row is `white-space: pre` and the spacing is literal, not a gap.
+        {%- endcomment -%}
+        {%- comment -%}
+          Written on one line on purpose: the row is `white-space: pre`, so any newline or
+          indent between these tags would render as visible space and extra lines.
+        {%- endcomment -%}
+        <a href="{{ routes.root_url }}" class="aria-coll-hero__crumb">{{ section.settings.home_label }}</a>{%- if section.settings.shop_label != blank -%}<span class="aria-coll-hero__crumb-sep" aria-hidden="true">  /  </span><a href="{{ section.settings.shop_link | default: routes.all_products_collection_url }}" class="aria-coll-hero__crumb">{{ section.settings.shop_label }}</a>{%- endif -%}<span class="aria-coll-hero__crumb-sep" aria-hidden="true">  /  </span><span class="aria-coll-hero__crumb aria-coll-hero__crumb--current" aria-current="page">{{ coll_title }}</span></nav>
+    {%- endif -%}
+
+    <div class="aria-coll-hero__copy">
+      {%- if heading != blank -%}
+        <h1 class="aria-coll-hero__heading">{{ heading }}</h1>
+      {%- endif -%}
+      {%- if description != blank -%}
+        <p class="aria-coll-hero__description">{{ description }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_model -%}
+      <span class="aria-coll-hero__model" aria-hidden="true">
+        {%- if section.settings.model_image != blank -%}
+          {{
+            section.settings.model_image
+            | image_url: width: 1000
+            | image_tag:
+              loading: 'eager',
+              sizes: '(min-width: 1440px) 403px, (min-width: 750px) 28vw, 240px',
+              widths: '300,403,600,806,1000',
+              class: 'aria-coll-hero__model-img',
+              alt: ''
+          }}
+        {%- else -%}
+          <img
+            src="{{ 'wp-collection-hero-model.png' | asset_img_url: '806x' }}"
+            srcset="{{ 'wp-collection-hero-model.png' | asset_img_url: '403x' }} 403w, {{ 'wp-collection-hero-model.png' | asset_img_url: '806x' }} 806w, {{ 'wp-collection-hero-model.png' | asset_url }} 1000w"
+            sizes="(min-width: 1440px) 403px, (min-width: 750px) 28vw, 240px"
+            alt=""
+            width="1000"
+            height="1400"
+            loading="eager"
+            class="aria-coll-hero__model-img"
+          >
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection hero",
+  "tag": "section",
+  "class": "aria-coll-hero-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "[count] wigs, and a way to narrow them down",
+      "info": "[count] is replaced by the number of products in the collection, [title] by its title."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Filter by the things that actually change the decision: cap construction, cap size, colour family, length. Every filter shows a count, so nothing you click is a dead end."
+    },
+    {
+      "type": "text",
+      "id": "fallback_title",
+      "label": "Title when no collection is loaded",
+      "default": "All wigs",
+      "info": "Only used in the theme editor preview or on pages without a collection."
+    },
+    {
+      "type": "header",
+      "content": "Breadcrumb"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home label",
+      "default": "Home"
+    },
+    {
+      "type": "text",
+      "id": "shop_label",
+      "label": "Middle label",
+      "default": "Shop",
+      "info": "Leave empty to go straight from Home to the collection."
+    },
+    {
+      "type": "url",
+      "id": "shop_link",
+      "label": "Middle link",
+      "info": "Defaults to all products."
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image",
+      "info": "Empty uses the theme's hair-texture photo."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_model",
+      "label": "Show model photo",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "model_image",
+      "label": "Model photo",
+      "info": "Use a cut-out PNG with a transparent background, portrait (about 1000 x 1400). Empty uses the theme's default."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection hero"
+    }
+  ]
+}
+{% endschema %}

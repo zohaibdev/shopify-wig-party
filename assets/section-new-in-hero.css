@@ -1,0 +1,696 @@
+/* Wig Party — NEW IN hero (sections/new-in-hero.liquid), Figma 7454:24371. Desktop only.
+ *
+ * Geometry (px, Figma, 1440 x 442, clipped):
+ *   background  1440 x 468 from the top. Built-in photo cropped as Figma does: 100.18% wide,
+ *               -0.09% left, 352.74% tall, -96.41% top; under a 133.4deg wash
+ *               rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602%
+ *   panel       1360 x 362 at 40 / 40: rgba(255,255,255,.13), 50 backdrop blur, 1px white ring,
+ *               pt-16 px-40 pb-40, 12 between crumbs and body, content vertically centred
+ *   crumbs      Poppins 12/14 uppercase white, current crumb Bold
+ *   copy        651 wide: title Montserrat Medium 48/56, 8, text Poppins 16/26 584.225 wide,
+ *               20, button black r-2 px-24 py-12, Poppins 18/28 (337 x 52)
+ *   stats       629 wide: rgba(255,255,255,.2), 34.4 blur, r-8, px-40 py-24; three columns
+ *               space-between. Each: 46 white r-8 tile (24px icon), 16, 92-tall block:
+ *               value Montserrat Medium 48/56, 8, label Montserrat Medium 20/28
+ * No global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.new-in-hero,
+.new-in-hero *,
+.new-in-hero *::before,
+.new-in-hero *::after {
+  box-sizing: border-box;
+}
+
+.new-in-hero {
+  position: relative;
+  height: 442px;
+  padding: 40px;
+  overflow: hidden;
+  background: #f5ebe2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Background (7454:24373) ---------- */
+
+.new-in-hero__bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 468px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.new-in-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    133.39934543901973deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+.new-in-hero__bg img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's crop of the built-in photo: 352.74% of 468 tall, top -96.41%. */
+.new-in-hero__bg img.new-in-hero__bg-fallback {
+  inset: auto;
+  top: -96.41%;
+  left: -0.09%;
+  width: 100.18%;
+  height: 352.74%;
+  object-fit: fill;
+}
+
+/* ---------- Panel (7454:24375) ---------- */
+
+.new-in-hero__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--wp-spacing-12, 12px);
+  height: 362px;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 16px 40px 40px;
+  border: 1px solid var(--wp-color-white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+}
+
+.new-in-hero__crumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--wp-color-white, #fff);
+}
+
+.new-in-hero__crumbs-list li + li::before {
+  content: '  /  ';
+  white-space: pre;
+}
+
+.new-in-hero__crumbs-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.new-in-hero__crumbs-list a:hover,
+.new-in-hero__crumbs-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.new-in-hero__crumbs-list [aria-current='page'] {
+  font-weight: 700;
+  white-space: pre;
+}
+
+.new-in-hero__crumbs-list [aria-current='page']::before {
+  content: '  / ';
+  font-weight: 400;
+}
+
+.new-in-hero__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% + 2px);
+  max-width: 1280px;
+}
+
+/* ---------- Copy (7454:24379) ---------- */
+
+.new-in-hero__copy {
+  display: flex;
+  flex: 0 1 651px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--wp-spacing-20, 20px);
+  min-width: 0;
+}
+
+.new-in-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-spacing-md, 8px);
+  width: 100%;
+  color: var(--wp-color-white, #fff);
+}
+
+.new-in-hero__title {
+  margin: 0;
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.new-in-hero__text {
+  width: 584.225px;
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: var(--wp-body-small-size, 16px);
+  font-weight: 400;
+  line-height: var(--wp-body-small-line-height, 26px);
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.new-in-hero__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: var(--wp-radius-sm, 2px);
+  background: var(--wp-color-black, #000);
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: var(--wp-body-medium-size, 18px);
+  font-weight: 400;
+  line-height: var(--wp-body-medium-line-height, 28px);
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--wp-color-white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.new-in-hero__btn:hover,
+.new-in-hero__btn:focus-visible {
+  background: #2b2b2b;
+}
+
+/* ---------- Stats (7454:24384) ---------- */
+
+.new-in-hero__stats {
+  display: flex;
+  flex: 0 0 629px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 40px;
+  border-radius: var(--wp-radius-08, 8px);
+  background: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(34.4px);
+  backdrop-filter: blur(34.4px);
+}
+
+.new-in-hero__stats-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.new-in-hero__stat {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.new-in-hero__stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0 2px;
+  overflow: hidden;
+  border-radius: var(--wp-radius-08, 8px);
+  background: var(--wp-color-white, #fff);
+}
+
+.new-in-hero__stat-icon img {
+  display: block;
+  flex: none;
+  max-width: none;
+}
+
+.new-in-hero__stat-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  height: 92px;
+  color: var(--wp-color-white, #fff);
+  white-space: nowrap;
+}
+
+.new-in-hero__stat-value {
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+}
+
+.new-in-hero__stat-label {
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-size: var(--wp-h5-size, 20px);
+  font-weight: var(--wp-h5-weight, 500);
+  line-height: var(--wp-h5-line-height, 28px);
+  letter-spacing: 0;
+}
+
+/* ---------- Sale variant (Figma 7547:4637), desktop: stat numbers 32/40 ---------- */
+
+@media (min-width: 750px) {
+  .new-in-hero--stat-32 {
+    height: 442px;
+    padding-bottom: 30px;
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__panel {
+    height: 372px;
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__stats {
+    flex: 0 0 auto;
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__stats-row {
+    justify-content: flex-start;
+    gap: 41px;
+    width: auto;
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__stat:first-child {
+    width: 120px;
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__stat-value {
+    font-size: 32px;
+    line-height: 40px;
+  }
+}
+
+/* ---------- Reviews variant (Figma 7664:17794, 1440 x 492), desktop ----------
+ * Used with stat_size 32. Background 1514 x 492 at -2.57% (aspect 1440/468), same photo crop.
+ * Panel hugs content: crumbs, 12, row (copy 573 | stats 629, space-between, centred), 16,
+ * button 224 x 74. Stats columns space-between (first 120 wide). Crumbs all regular.
+ */
+
+@media (min-width: 750px) {
+  .new-in-hero--reviews {
+    height: 492px;
+    padding-bottom: 40px;
+  }
+
+  .new-in-hero--reviews .new-in-hero__bg {
+    right: -2.57%;
+    left: -2.57%;
+    height: auto;
+    aspect-ratio: 1440 / 468;
+  }
+
+  .new-in-hero--reviews .new-in-hero__bg::after {
+    background: linear-gradient(
+      133.40225212725014deg,
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .new-in-hero--reviews .new-in-hero__panel {
+    height: auto;
+  }
+
+  .new-in-hero--reviews .new-in-hero__crumbs-list [aria-current='page'] {
+    font-weight: 400;
+  }
+
+  .new-in-hero--reviews .new-in-hero__body {
+    display: grid;
+    grid-template-columns: 573px 629px;
+    align-items: center;
+    justify-content: space-between;
+    row-gap: 16px;
+  }
+
+  .new-in-hero--reviews .new-in-hero__copy {
+    display: contents;
+  }
+
+  .new-in-hero--reviews .new-in-hero__text-group {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .new-in-hero--reviews .new-in-hero__text {
+    width: 564px;
+  }
+
+  .new-in-hero--reviews .new-in-hero__stats {
+    grid-row: 1;
+    grid-column: 2;
+    width: 629px;
+  }
+
+  .new-in-hero--reviews .new-in-hero__stats-row {
+    justify-content: space-between;
+    gap: 0;
+    width: 100%;
+  }
+
+  .new-in-hero--reviews .new-in-hero__btn {
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: start;
+    width: 224px;
+    height: 74px;
+  }
+}
+
+/* ---------- Mobile (Figma 7492:8300, 375 x 584) ---------- */
+
+@media (max-width: 749px) {
+  .new-in-hero {
+    height: auto;
+    padding: var(--wp-m-newin-hero-padding);
+  }
+
+  /* Photo box 381.08 x 683 centred on the hero; same photo, own crop via object-position. */
+  .new-in-hero__bg {
+    top: 50%;
+    right: auto;
+    left: 50%;
+    width: var(--wp-m-newin-bg-width);
+    height: var(--wp-m-newin-bg-height);
+    transform: translate(-50%, -50%);
+  }
+
+  .new-in-hero__bg::after {
+    background: linear-gradient(
+      var(--wp-m-newin-wash-angle),
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .new-in-hero__bg img,
+  .new-in-hero__bg img.new-in-hero__bg-fallback {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--wp-m-newin-bg-position);
+  }
+
+  .new-in-hero__panel {
+    align-items: stretch;
+    gap: var(--wp-m-newin-panel-gap);
+    width: 100%;
+    height: auto;
+    padding: var(--wp-m-newin-panel-padding);
+  }
+
+  .new-in-hero__crumbs-list {
+    font-size: var(--wp-m-tag-size);
+    line-height: var(--wp-m-tag-line-height);
+  }
+
+  /* Order: title + text, stats, button (copy wrapper dissolves so the stats can sit between). */
+  .new-in-hero__body {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: none;
+  }
+
+  .new-in-hero__copy {
+    display: contents;
+  }
+
+  .new-in-hero__text-group {
+    order: 1;
+    gap: var(--wp-m-newin-text-gap);
+  }
+
+  .new-in-hero__title {
+    font-size: var(--wp-m-newin-title-size);
+    line-height: var(--wp-m-newin-title-line-height);
+  }
+
+  .new-in-hero__text {
+    width: 100%;
+    font-size: var(--wp-m-body-small-size);
+    line-height: var(--wp-m-body-small-line-height);
+  }
+
+  .new-in-hero__stats {
+    order: 2;
+    flex: none;
+    width: 100%;
+    margin-top: var(--wp-m-newin-text-gap);
+    padding: var(--wp-m-newin-stats-padding);
+  }
+
+  .new-in-hero__stats-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: var(--wp-m-newin-stats-gap);
+  }
+
+  .new-in-hero__stat {
+    flex: 1 0 0;
+    min-width: 1px;
+    gap: var(--wp-m-newin-stat-gap);
+  }
+
+  .new-in-hero__stat-icon {
+    width: var(--wp-m-newin-stat-icon-size);
+    height: var(--wp-m-newin-stat-icon-size);
+    padding: 0 1.391px;
+    border-radius: var(--wp-m-newin-stat-icon-radius);
+  }
+
+  /* Desktop artwork, scaled around its centre (24 -> 16.696). */
+  .new-in-hero__stat-icon img {
+    transform: scale(var(--wp-m-newin-stat-icon-scale));
+  }
+
+  .new-in-hero__stat-text {
+    gap: var(--wp-m-newin-stat-text-gap);
+    height: auto;
+    white-space: normal;
+  }
+
+  .new-in-hero__stat:nth-child(3) .new-in-hero__stat-text {
+    gap: var(--wp-m-newin-stat-text-gap-last);
+  }
+
+  .new-in-hero__stat-value {
+    font-size: var(--wp-m-h4-size);
+    line-height: var(--wp-m-h4-line-height);
+    white-space: nowrap;
+  }
+
+  .new-in-hero__stat-label {
+    font-size: var(--wp-m-newin-stat-label-size);
+    line-height: var(--wp-m-newin-stat-label-line-height);
+  }
+
+  .new-in-hero__btn {
+    order: 3;
+    align-self: flex-start;
+    width: var(--wp-m-newin-btn-width);
+    max-width: 100%;
+    margin-top: var(--wp-m-newin-btn-gap);
+    font-size: var(--wp-m-newin-btn-size);
+    line-height: var(--wp-m-newin-btn-line-height);
+  }
+}
+
+/* ---------- Sale variant, mobile (Figma 7547:5291, 375 x 620) ---------- */
+
+@media (max-width: 749px) {
+  .new-in-hero--stat-32 {
+    min-height: var(--wp-m-sale-hero-min-height);
+    padding: var(--wp-m-sale-hero-padding);
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__bg {
+    left: var(--wp-m-sale-hero-bg-left);
+    width: var(--wp-m-sale-hero-bg-width);
+    height: var(--wp-m-sale-hero-bg-height);
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__bg::after {
+    background: linear-gradient(
+      var(--wp-m-sale-hero-wash-angle),
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__bg img,
+  .new-in-hero--stat-32 .new-in-hero__bg img.new-in-hero__bg-fallback {
+    object-position: var(--wp-m-sale-hero-bg-position);
+  }
+
+  /* Figma crumbs: Poppins 14/22, as typed, all regular. */
+  .new-in-hero--stat-32 .new-in-hero__crumbs-list {
+    font-size: var(--wp-m-sale-hero-crumb-size);
+    line-height: var(--wp-m-sale-hero-crumb-line-height);
+    text-transform: none;
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__crumbs-list [aria-current='page'] {
+    font-weight: 400;
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__title {
+    line-height: var(--wp-m-sale-hero-title-line-height);
+  }
+
+  .new-in-hero--stat-32 .new-in-hero__stats {
+    margin-top: var(--wp-m-sale-hero-stats-gap);
+  }
+}
+
+/* Below 360px the 305px button label no longer fits on one line. */
+@media (max-width: 359px) {
+  .new-in-hero__btn {
+    white-space: normal;
+  }
+}
+
+/* ---------- Reviews variant, mobile (Figma 7732:14919, 375 x 728) ----------
+ * Overrides the NEW IN and Sale (stat-32) mobile blocks; NEW IN, Sale and Picks unchanged.
+ * Photo box = hero, built-in photo with the desktop crop (100.18% x 352.74% at -0.09% / -96.41%).
+ */
+
+@media (max-width: 749px) {
+  .new-in-hero--reviews {
+    min-height: 0;
+    padding: var(--wp-m-rv-hero-padding);
+  }
+
+  .new-in-hero--reviews .new-in-hero__bg {
+    inset: 0;
+    width: auto;
+    height: auto;
+    transform: none;
+  }
+
+  .new-in-hero--reviews .new-in-hero__bg::after {
+    background: linear-gradient(
+      var(--wp-m-rv-hero-wash-angle),
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .new-in-hero--reviews .new-in-hero__bg img {
+    object-position: 50% 50%;
+  }
+
+  .new-in-hero--reviews .new-in-hero__bg img.new-in-hero__bg-fallback {
+    inset: auto;
+    top: -96.41%;
+    left: -0.09%;
+    width: 100.18%;
+    height: 352.74%;
+    object-fit: fill;
+  }
+
+  .new-in-hero--reviews .new-in-hero__panel {
+    gap: var(--wp-m-rv-hero-panel-gap);
+    padding: var(--wp-m-rv-hero-panel-padding);
+  }
+
+  /* Figma crumbs: Poppins 12/14 uppercase, all regular (Sale mobile uses 14/22 as typed). */
+  .new-in-hero--reviews .new-in-hero__crumbs-list {
+    font-size: var(--wp-m-tag-size);
+    line-height: var(--wp-m-tag-line-height);
+    text-transform: uppercase;
+  }
+
+  .new-in-hero--reviews .new-in-hero__title {
+    font-size: var(--wp-m-rv-hero-title-size);
+    line-height: var(--wp-m-rv-hero-title-line-height);
+  }
+
+  .new-in-hero--reviews .new-in-hero__stats {
+    margin-top: var(--wp-m-rv-hero-section-gap);
+    padding: var(--wp-m-rv-hero-stats-padding);
+  }
+
+  .new-in-hero--reviews .new-in-hero__stats-row {
+    flex-wrap: nowrap;
+  }
+
+  .new-in-hero--reviews .new-in-hero__stat-icon {
+    width: var(--wp-m-rv-hero-stat-icon-size);
+    height: var(--wp-m-rv-hero-stat-icon-size);
+    padding: 0 2px;
+    border-radius: var(--wp-m-rv-hero-stat-icon-radius);
+  }
+
+  /* Figma mobile icons are the desktop size (no 0.6957 scale). */
+  .new-in-hero--reviews .new-in-hero__stat-icon img {
+    transform: none;
+  }
+
+  .new-in-hero--reviews .new-in-hero__stat-text,
+  .new-in-hero--reviews .new-in-hero__stat:nth-child(3) .new-in-hero__stat-text {
+    gap: var(--wp-m-newin-stat-text-gap);
+    height: var(--wp-m-rv-hero-stat-text-height);
+  }
+
+  .new-in-hero--reviews .new-in-hero__stat-value {
+    font-size: var(--wp-m-h3-size);
+    line-height: var(--wp-m-h3-line-height);
+  }
+
+  .new-in-hero--reviews .new-in-hero__stat-label {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-rv-hero-stat-label-size);
+    font-weight: 400;
+    line-height: var(--wp-m-rv-hero-stat-label-line-height);
+  }
+
+  .new-in-hero--reviews .new-in-hero__btn {
+    align-self: stretch;
+    width: 100%;
+    height: var(--wp-m-rv-hero-btn-height);
+    margin-top: var(--wp-m-rv-hero-section-gap);
+    font-size: var(--wp-m-rv-hero-btn-size);
+    line-height: var(--wp-m-rv-hero-btn-line-height);
+  }
+}

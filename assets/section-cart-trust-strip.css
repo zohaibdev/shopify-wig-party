@@ -1,0 +1,130 @@
+.wp-trust-strip {
+  background: var(--wp-trust-bg, var(--wp-color-white));
+}
+
+.wp-trust-strip__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--wp-space-40) clamp(40px, 4.8611vw, var(--wp-trust-gap));
+  padding: var(--wp-trust-padding);
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.wp-trust-strip__item {
+  flex: 0 1 auto;
+  width: var(--wp-trust-column-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-space-16);
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.wp-trust-strip__item--auto {
+  width: auto;
+}
+
+.wp-trust-strip__icon {
+  display: block;
+  width: var(--wp-trust-icon-size);
+  height: var(--wp-trust-icon-size);
+}
+
+.wp-trust-strip__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-space-08);
+  width: 100%;
+}
+
+.wp-trust-strip__heading {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h5-size);
+  font-weight: var(--wp-h5-weight);
+  line-height: var(--wp-h5-line-height);
+  letter-spacing: var(--wp-letter-spacing);
+  color: var(--wp-color-black);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.wp-trust-strip__description {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-xs-size);
+  font-weight: var(--wp-body-xs-weight);
+  line-height: var(--wp-body-xs-line-height);
+  letter-spacing: var(--wp-letter-spacing);
+  color: var(--wp-color-gray);
+}
+
+/* Anything injected inside the text (e.g. a price/currency app wrapping "$400") keeps the text colour. */
+.wp-trust-strip__description * {
+  color: inherit;
+}
+
+/* ---------- Mobile (max 749px). Figma 7452:6561. Tokens: --wp-m-trust-* ---------- */
+@media (max-width: 749px) {
+  .wp-trust-strip__inner {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    align-items: start;
+    gap: var(--wp-m-trust-row-gap) var(--wp-m-trust-col-gap);
+    padding: var(--wp-m-trust-padding);
+    width: 100%;
+    max-width: 100%;
+  }
+  .wp-trust-strip__item,
+  .wp-trust-strip__item--auto {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: var(--wp-m-trust-item-gap);
+  }
+  .wp-trust-strip__icon {
+    width: var(--wp-m-trust-icon-size);
+    height: var(--wp-m-trust-icon-size);
+    object-fit: contain;
+  }
+  .wp-trust-strip__text { gap: var(--wp-m-trust-text-gap); min-width: 0; }
+  .wp-trust-strip__heading {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: var(--wp-m-trust-heading-size);
+    line-height: var(--wp-m-trust-heading-line-height);
+  }
+  .wp-trust-strip__description {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: var(--wp-m-trust-desc-size);
+    line-height: var(--wp-m-trust-desc-line-height);
+  }
+}
+
+/* ---------- Contact page override (max 749px). Figma 7995:826. Tokens: --wp-m-trust-compact-*
+   Scoped to .wp-trust-strip--figma-compact (contact-trust instance only); shared defaults above
+   are unchanged for cart/search/reviews/sale/about pages. Column width stays fluid (1fr x2). ---------- */
+@media (max-width: 749px) {
+  .wp-trust-strip--figma-compact .wp-trust-strip__inner {
+    gap: var(--wp-m-trust-compact-row-gap) var(--wp-m-trust-compact-col-gap);
+    padding: var(--wp-m-trust-compact-padding);
+  }
+  .wp-trust-strip--figma-compact .wp-trust-strip__icon {
+    width: var(--wp-m-trust-compact-icon-size);
+    height: var(--wp-m-trust-compact-icon-size);
+  }
+  .wp-trust-strip--figma-compact .wp-trust-strip__heading {
+    font-size: var(--wp-m-trust-compact-heading-size);
+    line-height: var(--wp-m-trust-compact-heading-line-height);
+  }
+}

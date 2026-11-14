@@ -382,3 +382,148 @@
     flex: 1 1 0;
   }
 }
+
+/* The <picture> wrapper around the deal image must not add a box of its own. */
+.aria-community-exclusive__media picture {
+  display: contents;
+}
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6576:12208 (375 x 1170). Scoped under 750px, so tablet and desktop are
+ * untouched.
+ *
+ * Ladder (px, Figma): 48 pad / 26 eyebrow / 8 / 96 heading / 12 / 140 description / 24 /
+ * 282 photo / 12 / 474 deal card / 48 pad = 1170.
+ * Deal card (p-16, gap 32, content top-aligned): 26 eyebrow / 8 / 92 title / 8 / 84
+ * description / 8 / 56 price / 32 / 54 + 12 + 54 buttons.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-community-exclusive__inner {
+    gap: 24px;
+  }
+
+  /* Poppins Medium 16/26 uppercase white. */
+  .aria-community-exclusive__eyebrow {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  /* Mobile Title: Montserrat Medium 40/48 white. */
+  .aria-community-exclusive__heading {
+    font-family: var(--font-heading-family);
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 48px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 20/28, 12px under the heading (8 header gap + 4). */
+  .aria-community-exclusive__description {
+    font-family: var(--font-body-family);
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  .aria-community-exclusive__card {
+    gap: 12px;
+  }
+
+  /* Photo (6576:12218): 343 x 282, radius 4, #F6EDE5 behind it. */
+  .aria-community-exclusive__media {
+    aspect-ratio: 343 / 282;
+    border-radius: 4px;
+  }
+
+  /* Chip (6576:12221): 13.5 / 12.5 in, 32 tall, px-8 py-4, Helvetica Neue Bold 14/24. */
+  .aria-community-exclusive__badge {
+    box-sizing: border-box;
+    top: 12.5px;
+    left: 13.5px;
+    padding: 4px 8px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0;
+  }
+
+  /* Deal card (6576:12224): white, radius 4, p-16, 474 tall with its content at the top
+     (Figma leaves the spare 8px at the bottom, not between the copy and the buttons). */
+  .aria-community-exclusive__panel {
+    box-sizing: border-box;
+    justify-content: flex-start;
+    gap: 32px;
+    min-height: 474px;
+    padding: 16px;
+    border-radius: 4px;
+  }
+
+  /* Poppins Medium 16/26 uppercase #A64A4C. */
+  .aria-community-exclusive__deal-eyebrow {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  /* Mobile H1: Montserrat Medium 36/46 black. */
+  .aria-community-exclusive__deal-title {
+    font-family: var(--font-heading-family);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 46px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 20/28 black. */
+  .aria-community-exclusive__deal-description {
+    font-family: var(--font-body-family);
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  /* Price: Montserrat Medium 48/56, the struck 28/38 at 67% centred beside it, 6 apart,
+     8px under the description (the panel-top gap alone). */
+  .aria-community-exclusive__price {
+    align-items: center;
+    margin-top: 0;
+    font-family: var(--font-heading-family);
+    letter-spacing: 0;
+  }
+
+  .aria-community-exclusive__price-current {
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 56px;
+  }
+
+  .aria-community-exclusive__price-compare {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 38px;
+  }
+
+  /* Two full-width 54px buttons, 12 apart, Poppins 18/28. */
+  .aria-community-exclusive__actions {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .aria-community-exclusive__btn {
+    box-sizing: border-box;
+    flex: none;
+    width: 100%;
+    height: 54px;
+    min-height: 0;
+    font-family: var(--font-body-family);
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  /* The frame ends at the deal card; the "Shop all" / "How this works" row is not in it. */
+  .aria-community-exclusive__footer {
+    display: none;
+  }
+}

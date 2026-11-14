@@ -6,7 +6,7 @@
 -%}
 
 <section
-  class="aria-education"
+  class="aria-education{% if section.settings.link_style == 'left' %} aria-education--links-left{% endif %}"
   style="--aria-eg-bg-from: {{ section.settings.background_gradient_start }}; --aria-eg-bg-to: {{ section.settings.background_gradient_end }}; --aria-eg-panel-from: {{ section.settings.panel_gradient_start }}; --aria-eg-panel-to: {{ section.settings.panel_gradient_end }};"
 >
   {%- if section.settings.show_decoration -%}
@@ -60,7 +60,7 @@
                 merchant uploads their own imagery.
               {%- endcomment -%}
               <img
-                src="{{ 'wp-education-feature.jpg' | asset_url }}"
+                src="{{ 'wp-education-feature.png' | asset_url }}"
                 alt=""
                 width="1264"
                 height="670"
@@ -92,14 +92,20 @@
                   alt: section.settings.signature_image.alt | default: ''
               }}
             {%- else -%}
-              <img
-                src="{{ 'wp-kristi-signature.svg' | asset_url }}"
-                alt=""
-                width="276"
-                height="106"
-                loading="lazy"
-                class="aria-education__signature-img"
-              >
+              {%- comment -%}
+                The theme asset is authored in brand pink, which is what the dark and cream
+                placements need. This panel is near-white, so the signature is painted black
+                here instead — passed in as a CSS mask so the shared file is not forked for
+                one placement.
+
+                A merchant-uploaded signature above stays a real <img> on purpose: masking it
+                would flatten whatever they chose into a solid silhouette.
+              {%- endcomment -%}
+              <span
+                class="aria-education__signature-img aria-education__signature-img--brand"
+                style="--aria-eg-signature: url({{ 'wp-pdp-reviews-signature.svg' | asset_url }});"
+                aria-hidden="true"
+              ></span>
             {%- endif -%}
           </div>
         {%- endif -%}
@@ -111,14 +117,13 @@
         {%- if section.blocks.size > 0 -%}
           {%- comment -%}
             Every guide is a plain navigational link — no tab or slider behaviour, no
-            selected state, and nothing here drives the image. A guide with no URL set yet
-            still renders as a link on a '#' placeholder rather than as dead text, so the
-            row stays visually consistent and the merchant can see what needs filling in
-            (same convention as the About and Footer social links).
+            selected state, and nothing here drives the image. A guide with no URL yet (its
+            page does not exist) is hidden, and appears by itself once a link is set.
           {%- endcomment -%}
           <ul class="aria-education__links">
             {%- for block in section.blocks -%}
-              {%- assign guide_url = block.settings.link | default: '#' -%}
+              {%- if block.settings.link == blank or block.settings.link == '#' -%}{%- continue -%}{%- endif -%}
+              {%- assign guide_url = block.settings.link -%}
               <li class="aria-education__link-item" {{ block.shopify_attributes }}>
                 <a href="{{ guide_url }}" class="aria-education__link">
                   <span class="aria-education__link-label">{{ block.settings.title }}</span>
@@ -143,6 +148,23 @@
       "id": "heading",
       "default": "Education and guides",
       "label": "t:sections.aria-education-guides.settings.heading.label"
+    },
+    {
+      "type": "select",
+      "id": "link_style",
+      "options": [
+        {
+          "value": "center",
+          "label": "t:sections.aria-education-guides.settings.link_style.options__1.label"
+        },
+        {
+          "value": "left",
+          "label": "t:sections.aria-education-guides.settings.link_style.options__2.label"
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.aria-education-guides.settings.link_style.label",
+      "info": "t:sections.aria-education-guides.settings.link_style.info"
     },
     {
       "type": "checkbox",
@@ -242,9 +264,24 @@
     {
       "name": "t:sections.aria-education-guides.presets.name",
       "blocks": [
-        { "type": "tab", "settings": { "title": "Where to start" } },
-        { "type": "tab", "settings": { "title": "How to measure your head" } },
-        { "type": "tab", "settings": { "title": "Cap construction" } }
+        {
+          "type": "tab",
+          "settings": {
+            "title": "Where to start"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "title": "How to measure your head"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "title": "Cap construction"
+          }
+        }
       ]
     }
   ]

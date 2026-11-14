@@ -1,0 +1,232 @@
+/* Wig Party — Community "From Kristi" (sections/community-kristi.liquid), Figma 6849:22801.
+ *
+ * Desktop geometry (px, Figma, 1440 x 615): white, pt-80 (no bottom padding), a 1360 row of
+ * 739 | 580, centred.
+ *   card    739 x 535, white, 1px #BC696B, r-8; the 711 x 503 r-8 video 14 in and 14 down
+ *           (18 below), a 20% wash and the 70px disc 0.5 right of and 0.5 above the middle
+ *   copy    580 wide, as tall as the card: "FROM KRISTI" (Montserrat SemiBold 56/64), 16, the
+ *           quote (Poppins 20/28 black, 481 wide, Figma's own line breaks), 12, the note
+ *           (Poppins Medium Italic 14/22 uppercase); the 345 x 134 signature 358 down
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-comm-kristi,
+.aria-comm-kristi *,
+.aria-comm-kristi *::before,
+.aria-comm-kristi *::after {
+  box-sizing: border-box;
+}
+
+.aria-comm-kristi {
+  padding: 80px 40px 0;
+  background: var(--aria-comm-kristi-bg, #fff);
+}
+
+.aria-comm-kristi__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 41px;
+  max-width: var(--container, 1360px);
+  margin: 0 auto;
+}
+
+/* ---------- Card (6849:22804) ---------- */
+
+.aria-comm-kristi__card {
+  flex: 0 1 739px;
+  min-width: 0;
+  padding: 13px 13px 17px;
+  border: 1px solid var(--qi, #bc696b);
+  border-radius: 8px;
+  background: var(--white, #fff);
+}
+
+.aria-comm-kristi__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 711 / 503;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+
+.aria-comm-kristi__poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.aria-comm-kristi__poster:disabled {
+  cursor: default;
+}
+
+.aria-comm-kristi__poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-comm-kristi__poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.aria-comm-kristi__play {
+  position: absolute;
+  z-index: 1;
+  top: calc(50% - 0.5px);
+  left: calc(50% + 0.5px);
+  display: block;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(192, 192, 192, 0.5);
+  backdrop-filter: blur(16.7px);
+  -webkit-backdrop-filter: blur(16.7px);
+  color: var(--white, #fff);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.2s ease;
+}
+
+.aria-comm-kristi__play svg {
+  display: block;
+  width: 70px;
+  height: 70px;
+}
+
+.aria-comm-kristi__poster:hover .aria-comm-kristi__play,
+.aria-comm-kristi__poster:focus-visible .aria-comm-kristi__play {
+  background: rgba(192, 192, 192, 0.7);
+}
+
+.aria-comm-kristi__media[loaded] .aria-comm-kristi__poster {
+  display: none;
+}
+
+.aria-comm-kristi__media > div,
+.aria-comm-kristi__media iframe,
+.aria-comm-kristi__media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------- Copy (6849:22813) ---------- */
+
+.aria-comm-kristi__copy {
+  position: relative;
+  flex: 0 1 580px;
+  align-self: stretch;
+  min-width: 0;
+}
+
+.aria-comm-kristi__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aria-comm-kristi__quote-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.aria-comm-kristi__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 64px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-comm-kristi__quote {
+  max-width: 481px;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-comm-kristi__note {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--black, #000);
+}
+
+.aria-comm-kristi__signature {
+  position: absolute;
+  top: 358px;
+  left: 0;
+  display: block;
+  width: 345px;
+  height: 134px;
+  color: var(--black, #000);
+}
+
+.aria-comm-kristi__signature svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Below desktop (no Figma frame yet): stack ---------- */
+
+@media screen and (max-width: 1199px) {
+  .aria-comm-kristi__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aria-comm-kristi__card,
+  .aria-comm-kristi__copy {
+    flex: none;
+  }
+
+  .aria-comm-kristi__signature {
+    position: static;
+    margin-top: 32px;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-comm-kristi {
+    padding: 48px 24px 0;
+  }
+
+  .aria-comm-kristi__title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .aria-comm-kristi__signature {
+    width: 240px;
+    height: auto;
+  }
+}

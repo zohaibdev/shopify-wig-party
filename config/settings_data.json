@@ -9,6 +9,34 @@
  */
 {
   "current": {
+    "blocks": {
+      "1996061711396120121": {
+        "type": "shopify://apps/uppromote-affiliate/blocks/message-bar/64c32457-930d-4cb9-9641-e24c0d9cf1f4",
+        "disabled": false,
+        "settings": {}
+      },
+      "3138269044488530766": {
+        "type": "shopify://apps/uppromote-affiliate/blocks/core-script/64c32457-930d-4cb9-9641-e24c0d9cf1f4",
+        "disabled": false,
+        "settings": {}
+      },
+      "15516442047899035060": {
+        "type": "shopify://apps/livemeup-live-shopping/blocks/live-widget/82ccf4ed-67f8-4725-9167-e54475d4748e",
+        "disabled": false,
+        "settings": {
+          "horizontal_position": "left",
+          "horizontal_distance": 10,
+          "vertical_distance": 10,
+          "show_desktop": true,
+          "show_mobile": true,
+          "thumbnail_desktop_width": 200,
+          "thumbnail_mobile_width": 150,
+          "thumbnail_corner_radius": 10,
+          "border_color": "",
+          "border_thickness": 1
+        }
+      }
+    },
     "logo": "shopify://shop_images/Logo_fa521127-cc33-4ead-919f-0c038ec89bd6.png",
     "logo_width": 90,
     "favicon": "shopify://shop_images/fav.png",
@@ -200,7 +228,15 @@
           "shadow": "#000000"
         }
       }
-    }
+    },
+    "cart_upsell_product": "detangle-brush-for-wigs-show-special",
+    "cart_upsell_title": "Add the LUX Detangle Brush",
+    "cart_upsell_text": "[price]: the brush made for wig fibres.",
+    "cart_free_shipping_threshold": 0,
+    "cart_shipping_note": "Orders are processed in 1 to 3 business days. Tracking within 24 to 48 hours.",
+    "cart_upsell_source": "product_then_recommendations",
+    "cart_recs_title": "Pair it with [product]",
+    "cart_recs_text": "[price]: picked to go with your bag."
   },
   "presets": {
     "Dawn": {

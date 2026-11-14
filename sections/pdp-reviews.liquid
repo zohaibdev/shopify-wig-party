@@ -1,0 +1,570 @@
+{%- comment -%}
+  Wig Party — PDP customer reviews. Figma node 6356:922, 1440 wide with an 80px margin.
+
+  DATA SOURCE. This store has no reviews app installed, and Liquid has no native access to
+  individual reviews. So:
+    • the aggregate score and count come from Shopify's standard
+      `product.metafields.reviews.rating` / `rating_count` when an app populates them,
+      falling back to section settings;
+    • the star distribution, customer photos and individual reviews come from section
+      blocks, which is the only merchant-editable source available without an app.
+  When a reviews app is added, swap the block loops for that app's objects — the markup
+  and styling below do not otherwise change.
+{%- endcomment -%}
+
+{{ 'section-aria-pdp-reviews.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-pdp-reviews.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'aria-product-carousel.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign review_blocks = section.blocks | where: 'type', 'review'
+  assign photo_blocks = section.blocks | where: 'type', 'photo'
+
+  # -- Aggregate: prefer real metafield data, fall back to the section settings.
+  assign rating_value = section.settings.rating_value
+  assign rating_count = section.settings.rating_count
+  if product.metafields.reviews.rating.value != blank
+    assign rating_value = product.metafields.reviews.rating.value.rating
+  endif
+  if product.metafields.reviews.rating_count != blank
+    assign rating_count = product.metafields.reviews.rating_count
+  endif
+
+  # -- Histogram totals, highest star first.
+  assign d5 = section.settings.count_5 | plus: 0
+  assign d4 = section.settings.count_4 | plus: 0
+  assign d3 = section.settings.count_3 | plus: 0
+  assign d2 = section.settings.count_2 | plus: 0
+  assign d1 = section.settings.count_1 | plus: 0
+  assign dist_total = d5 | plus: d4 | plus: d3 | plus: d2 | plus: d1
+-%}
+
+{%- comment -%}
+  `data-initial` is what makes collapsing possible: it is the count the list was rendered
+  at, so "Show less" can restore exactly that state rather than guessing.
+{%- endcomment -%}
+<aria-pdp-reviews class="aria-reviews" data-step="{{ section.settings.load_step }}"
+  data-initial="{{ section.settings.initial_count }}"
+  style="--aria-reviews-from: {{ section.settings.gradient_from }}; --aria-reviews-to: {{ section.settings.gradient_to }};"
+>
+  <div class="aria-reviews__inner">
+    {%- comment -%} Summary (6356:926) {%- endcomment -%}
+    <div class="aria-reviews__summary">
+      <div class="aria-reviews__summary-main">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-reviews__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        <div class="aria-reviews__score-block">
+          <div class="aria-reviews__score-row">
+            <p class="aria-reviews__score">{{ rating_value }}</p>
+            <div class="aria-reviews__score-meta">
+              <span
+                class="aria-reviews__stars aria-reviews__stars--gold"
+                role="img"
+                aria-label="{{ 'aria_theme.reviews.rating_of' | t: rating: rating_value }}"
+              >
+                {%- for i in (1..5) -%}
+                  {{ 'wp-pdp-review-star.svg' | inline_asset_content }}
+                {%- endfor -%}
+              </span>
+              <p class="aria-reviews__score-caption">
+                {{- 'aria_theme.reviews.out_of_five' | t: count: rating_count -}}
+              </p>
+            </div>
+          </div>
+
+          {%- if dist_total > 0 -%}
+            <ul class="aria-reviews__histogram" role="list">
+              {%- for star in (1..5) reversed -%}
+                {%- liquid
+                  case star
+                    when 5
+                      assign bucket = d5
+                    when 4
+                      assign bucket = d4
+                    when 3
+                      assign bucket = d3
+                    when 2
+                      assign bucket = d2
+                    else
+                      assign bucket = d1
+                  endcase
+                  assign pct = bucket | times: 100.0 | divided_by: dist_total
+                -%}
+                <li class="aria-reviews__hist-row">
+                  <span class="aria-reviews__hist-label">
+                    {{- star }}
+                    {{ 'wp-pdp-review-star.svg' | inline_asset_content -}}
+                  </span>
+                  <span class="aria-reviews__hist-bar">
+                    <span class="aria-reviews__hist-fill" style="width: {{ pct }}%;"></span>
+                  </span>
+                  <span class="aria-reviews__hist-count">{{ bucket }}</span>
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="aria-reviews__aside">
+        {%- if section.settings.write_label != blank -%}
+          <a
+            class="aria-reviews__write"
+            href="{{ section.settings.write_link | default: '#' }}"
+          >
+            {{- section.settings.write_label -}}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.show_signature -%}
+          <img
+            class="aria-reviews__signature"
+            src="{{ 'wp-pdp-reviews-signature.svg' | asset_url }}"
+            alt=""
+            width="288"
+            height="120"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} Customer photos (6356:984) {%- endcomment -%}
+    {%- if photo_blocks.size > 0 -%}
+      <div class="aria-reviews__photos">
+        {%- if section.settings.photos_title != blank -%}
+          <p class="aria-reviews__photos-title">{{ section.settings.photos_title }}</p>
+        {%- endif -%}
+
+        {%- comment -%}
+          Attributes stay on their own lines: a whitespace-trimming Liquid comment between
+          them welds attribute names together and stops Swiper initialising.
+        {%- endcomment -%}
+        <div
+          class="aria-reviews__photos-carousel"
+          data-aria-product-carousel
+          data-slides-mobile="auto"
+          data-slides-sm="auto"
+          data-slides-md="auto"
+          data-slides-desktop="auto"
+          data-space-between="12"
+          data-space-between-mobile="8"
+        >
+          <div class="swiper aria-reviews__photos-swiper" data-aria-carousel-swiper>
+            <div class="swiper-wrapper">
+              {%- for block in photo_blocks -%}
+                <div class="swiper-slide aria-reviews__photo" {{ block.shopify_attributes }}>
+                  {%- if block.settings.image != blank -%}
+                    {{
+                      block.settings.image
+                      | image_url: width: 300
+                      | image_tag: loading: 'eager', widths: '150,300', alt: block.settings.alt | escape
+                    }}
+                  {%- else -%}
+                    {%- assign photo_parity = forloop.index0 | modulo: 2 -%}
+                    {%- if photo_parity == 0 -%}
+                      {%- assign fallback_photo = 'wp-ugc-featured.jpg' -%}
+                    {%- else -%}
+                      {%- assign fallback_photo = 'wp-ugc-photo-1.jpg' -%}
+                    {%- endif -%}
+                    <img
+                      src="{{ fallback_photo | asset_url }}"
+                      alt="{{ block.settings.alt | default: 'Customer photo' | escape }}"
+                      width="300"
+                      height="300"
+                      loading="eager"
+                    >
+                  {%- endif -%}
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="aria-reviews__photos-nav aria-reviews__photos-nav--prev"
+            data-aria-carousel-prev
+            aria-label="{{ 'aria_theme.carousel.previous' | t }}"
+          >
+            {%- render 'aria-icon', name: 'arrow-left' -%}
+          </button>
+          <button
+            type="button"
+            class="aria-reviews__photos-nav aria-reviews__photos-nav--next"
+            data-aria-carousel-next
+            aria-label="{{ 'aria_theme.carousel.next' | t }}"
+          >
+            {%- render 'aria-icon', name: 'arrow-right' -%}
+          </button>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <hr class="aria-reviews__rule">
+
+  {%- comment -%} Review list (6356:1027) {%- endcomment -%}
+  {%- if review_blocks.size > 0 -%}
+    <ul class="aria-reviews__list" role="list">
+      {%- for block in review_blocks -%}
+        <li
+          class="aria-reviews__item"
+          data-review
+          {% if forloop.index > section.settings.initial_count %}
+            hidden
+          {% endif %}
+          {{ block.shopify_attributes }}
+        >
+          <div class="aria-reviews__author">
+            <div class="aria-reviews__avatar">
+              {%- if block.settings.avatar != blank -%}
+                {{
+                  block.settings.avatar
+                  | image_url: width: 200
+                  | image_tag: loading: 'eager', widths: '100,200', alt: block.settings.name | escape
+                }}
+              {%- else -%}
+                <img
+                  src="{{ 'wp-ugc-featured.jpg' | asset_url }}"
+                  alt="{{ block.settings.name | escape }}"
+                  width="100"
+                  height="100"
+                  loading="eager"
+                >
+              {%- endif -%}
+            </div>
+            <div class="aria-reviews__author-meta">
+              <p class="aria-reviews__author-name">
+                {{ block.settings.name }}
+                {%- if block.settings.verified -%}
+                  <span class="aria-reviews__verified" aria-hidden="true">
+                    {{- 'wp-pdp-verified-badge.svg' | inline_asset_content -}}
+                  </span>
+                {%- endif -%}
+              </p>
+              {%- if block.settings.role != blank -%}
+                <p class="aria-reviews__author-role">{{ block.settings.role }}</p>
+              {%- endif -%}
+              {%- if block.settings.date != blank -%}
+                <p class="aria-reviews__date">{{ block.settings.date }}</p>
+              {%- endif -%}
+            </div>
+          </div>
+
+          <div class="aria-reviews__body">
+            <span
+              class="aria-reviews__stars aria-reviews__stars--pink"
+              role="img"
+              aria-label="{{ 'aria_theme.reviews.rating_of' | t: rating: block.settings.rating }}"
+            >
+              {%- for i in (1..block.settings.rating) -%}
+                {{ 'wp-pdp-review-star.svg' | inline_asset_content }}
+              {%- endfor -%}
+            </span>
+
+            <div class="aria-reviews__content">
+              <div class="aria-reviews__text-group">
+                {%- if block.settings.title != blank -%}
+                  <p class="aria-reviews__title">{{ block.settings.title }}</p>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <div
+                    class="aria-reviews__text aria-reviews__text--clamped"
+                    data-review-text
+                    data-more-label="{{ 'aria_theme.reviews.read_more' | t }}"
+                    data-less-label="{{ 'aria_theme.reviews.read_less' | t }}"
+                  >
+                    {{ block.settings.text }}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              {%- if block.settings.image_1 != blank or block.settings.image_2 != blank or forloop.index == 1 or forloop.index == 3 -%}
+                <ul class="aria-reviews__media" role="list">
+                  {%- for key in (1..2) -%}
+                    {%- liquid
+                      if key == 1
+                        assign shot = block.settings.image_1
+                      else
+                        assign shot = block.settings.image_2
+                      endif
+                    -%}
+                    {%- if shot != blank -%}
+                      <li class="aria-reviews__media-item">
+                        {{
+                          shot
+                          | image_url: width: 456
+                          | image_tag: loading: 'eager', widths: '228,456', alt: block.settings.name | escape
+                        }}
+                      </li>
+                    {%- elsif forloop.parentloop.index == 1 or forloop.parentloop.index == 3 and key == 1 -%}
+                      <li class="aria-reviews__media-item">
+                        <img
+                          src="{% if forloop.parentloop.index == 3 %}{{ 'wp-ugc-featured.jpg' | asset_url }}{% elsif key == 1 %}{{ 'wp-ugc-photo-1.jpg' | asset_url }}{% else %}{{ 'wp-ugc-featured.jpg' | asset_url }}{% endif %}"
+                          alt="{{ block.settings.name | escape }}"
+                          width="228"
+                          height="228"
+                          loading="eager"
+                        >
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    <p class="aria-reviews__empty">{{ 'aria_theme.reviews.empty' | t }}</p>
+  {%- endif -%}
+
+  <hr class="aria-reviews__rule">
+
+  {%- comment -%}
+    Figma 6356:1122 draws "Load more" alone, so it keeps the primary treatment and its own
+    place in the stack. "Show less" is an addition on top of the design, and is styled as a
+    quiet text link beneath it rather than a second button competing with it.
+  {%- endcomment -%}
+  <div class="aria-reviews__actions">
+    <button type="button" class="aria-reviews__more" data-reviews-more>
+      {{- section.settings.load_label -}}
+    </button>
+    {%- if section.settings.less_label != blank -%}
+    <button type="button" class="aria-reviews__more aria-reviews__less" data-reviews-less hidden>
+        {{- section.settings.less_label -}}
+      </button>
+    {%- endif -%}
+  </div>
+</aria-pdp-reviews>
+
+{%- comment -%}
+  Collapse controller.
+
+  Deliberately additive: aria-pdp-reviews.js already owns revealing reviews in steps and
+  the read-more clamp, and nothing here touches either. This only adds the reverse action
+  and keeps both buttons' visibility in step with what is actually on screen — so it stays
+  correct whatever the expand handler does, and the two files cannot drift apart.
+{%- endcomment -%}
+<script>
+  (function () {
+    if (window.ariaReviewsCollapseBound) return;
+    window.ariaReviewsCollapseBound = true;
+
+    function sync(root) {
+      var items = root.querySelectorAll('[data-review]');
+      var initial = parseInt(root.getAttribute('data-initial'), 10) || 1;
+      var more = root.querySelector('[data-reviews-more]');
+      var less = root.querySelector('[data-reviews-less]');
+      var shown = 0;
+      var i;
+
+      for (i = 0; i < items.length; i++) {
+        if (!items[i].hidden) shown++;
+      }
+
+      // Nothing left to reveal, and nothing beyond the starting set to put away.
+      if (more) more.hidden = shown >= items.length;
+      if (less) less.hidden = shown <= initial;
+    }
+
+    function collapse(root) {
+      var items = root.querySelectorAll('[data-review]');
+      var initial = parseInt(root.getAttribute('data-initial'), 10) || 1;
+      var i;
+
+      for (i = 0; i < items.length; i++) {
+        items[i].hidden = i >= initial;
+      }
+      sync(root);
+
+      // Without this the shopper is left stranded wherever the now-removed reviews used
+      // to be, often far below the section.
+      root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.addEventListener('click', function (event) {
+      var root = event.target.closest('aria-pdp-reviews');
+      if (!root) return;
+
+      if (event.target.closest('[data-reviews-less]')) {
+        collapse(root);
+        return;
+      }
+
+      // Re-sync after the expand handler has run. The two listeners are independent, so
+      // the order between them is not guaranteed — deferring a tick removes the race.
+      if (event.target.closest('[data-reviews-more]')) {
+        setTimeout(function () {
+          sync(root);
+        }, 0);
+      }
+    });
+
+    function init() {
+      var roots = document.querySelectorAll('aria-pdp-reviews');
+      var i;
+      for (i = 0; i < roots.length; i++) sync(roots[i]);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    // Theme editor re-renders replace the markup wholesale.
+    document.addEventListener('shopify:section:load', init);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.aria-pdp-reviews.name",
+  "tag": "section",
+  "class": "aria-reviews-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Customer reviews",
+      "label": "t:sections.aria-pdp-reviews.settings.heading.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-reviews.settings.summary_header.content"
+    },
+    {
+      "type": "text",
+      "id": "rating_value",
+      "default": "4.93",
+      "label": "t:sections.aria-pdp-reviews.settings.rating_value.label",
+      "info": "t:sections.aria-pdp-reviews.settings.rating_value.info"
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "default": "70",
+      "label": "t:sections.aria-pdp-reviews.settings.rating_count.label"
+    },
+    { "type": "number", "id": "count_5", "default": 68, "label": "t:sections.aria-pdp-reviews.settings.count_5.label" },
+    { "type": "number", "id": "count_4", "default": 1, "label": "t:sections.aria-pdp-reviews.settings.count_4.label" },
+    { "type": "number", "id": "count_3", "default": 0, "label": "t:sections.aria-pdp-reviews.settings.count_3.label" },
+    { "type": "number", "id": "count_2", "default": 0, "label": "t:sections.aria-pdp-reviews.settings.count_2.label" },
+    { "type": "number", "id": "count_1", "default": 0, "label": "t:sections.aria-pdp-reviews.settings.count_1.label" },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-reviews.settings.aside_header.content"
+    },
+    {
+      "type": "text",
+      "id": "write_label",
+      "default": "Write a review",
+      "label": "t:sections.aria-pdp-reviews.settings.write_label.label"
+    },
+    {
+      "type": "url",
+      "id": "write_link",
+      "label": "t:sections.aria-pdp-reviews.settings.write_link.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_signature",
+      "default": true,
+      "label": "t:sections.aria-pdp-reviews.settings.show_signature.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-reviews.settings.photos_header.content"
+    },
+    {
+      "type": "text",
+      "id": "photos_title",
+      "default": "Customer photos",
+      "label": "t:sections.aria-pdp-reviews.settings.photos_title.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-reviews.settings.list_header.content"
+    },
+    {
+      "type": "range",
+      "id": "initial_count",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 3,
+      "label": "t:sections.aria-pdp-reviews.settings.initial_count.label"
+    },
+    {
+      "type": "range",
+      "id": "load_step",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 3,
+      "label": "t:sections.aria-pdp-reviews.settings.load_step.label"
+    },
+    {
+      "type": "text",
+      "id": "load_label",
+      "default": "Load more",
+      "label": "t:sections.aria-pdp-reviews.settings.load_label.label"
+    },
+    {
+      "type": "text",
+      "id": "less_label",
+      "default": "Show less",
+      "label": "Show less label",
+      "info": "Appears once more reviews than the starting count are on screen. Leave blank to hide the control."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-reviews.settings.background_header.content"
+    },
+    { "type": "color", "id": "gradient_from", "default": "#ffffff", "label": "t:sections.aria-pdp-reviews.settings.gradient_from.label" },
+    { "type": "color", "id": "gradient_to", "default": "#eaddd4", "label": "t:sections.aria-pdp-reviews.settings.gradient_to.label" }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "t:sections.aria-pdp-reviews.blocks.photo.name",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "t:sections.aria-pdp-reviews.blocks.photo.settings.image.label" },
+        { "type": "text", "id": "alt", "label": "t:sections.aria-pdp-reviews.blocks.photo.settings.alt.label" }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "t:sections.aria-pdp-reviews.blocks.review.name",
+      "settings": [
+        { "type": "text", "id": "name", "default": "Nina", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.name.label" },
+        { "type": "image_picker", "id": "avatar", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.avatar.label" },
+        { "type": "checkbox", "id": "verified", "default": true, "label": "t:sections.aria-pdp-reviews.blocks.review.settings.verified.label" },
+        { "type": "text", "id": "role", "default": "Verified Buyer", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.role.label" },
+        { "type": "text", "id": "date", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.date.label" },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "label": "t:sections.aria-pdp-reviews.blocks.review.settings.rating.label"
+        },
+        { "type": "text", "id": "title", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.title.label" },
+        { "type": "richtext", "id": "text", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.text.label" },
+        { "type": "image_picker", "id": "image_1", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.image_1.label" },
+        { "type": "image_picker", "id": "image_2", "label": "t:sections.aria-pdp-reviews.blocks.review.settings.image_2.label" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-pdp-reviews.presets.name"
+    }
+  ]
+}
+{% endschema %}

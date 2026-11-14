@@ -1,0 +1,320 @@
+{%- comment -%}
+  Wig Party — PDP "Kristi styled this one" video + newsletter signup.
+  Figma node 6356:539 ("Frame 2147240327"), 1440x778.
+
+  Playback reuses Dawn's <deferred-media> custom element (defined in assets/global.js,
+  which theme.liquid already loads globally): the poster is a button, the player lives in
+  a <template>, and the element swaps it in on click. No bespoke video code and nothing
+  embedded until the visitor asks for it.
+
+  The signup posts through Shopify's real customer form — the same
+  `{% form 'customer' %}` + `contact[email]` contract as join-the-party.liquid — so
+  submissions actually create a subscriber.
+{%- endcomment -%}
+
+{{ 'section-aria-pdp-kristi-video.css' | asset_url | stylesheet_tag }}
+
+{%- comment -%}
+  The heading is explicitly Montserrat BOLD (700), but theme.liquid only font_face's the
+  theme's configured header weight (Medium/500) globally — without this declaration the
+  browser has no bold file to use and fakes it (synthetic/faux bold), which renders
+  visibly lighter and narrower than Figma's true bold face. Same fix as the extra weights
+  pdp-buy-box.liquid loads for its own heading/body needs. font_modify returns nil when a
+  weight is unavailable, hence the guard.
+{%- endcomment -%}
+{%- liquid
+  assign heading_font_bold = settings.type_header_font | font_modify: 'weight', '700'
+  # -- Nov 6: the "Kristi styles it" video is for wigs only. Accessories and wig supplies
+  # -- (Triple Confidence spray, beanies, lenses) skip it unless they name their own video.
+  assign kv_show = false
+  assign kv_title_down = product.title | downcase
+  assign kv_type_down = product.type | downcase
+  if kv_title_down contains 'belle tress' or kv_type_down contains 'wig' or kv_type_down contains 'lace' or kv_type_down contains 'hand tied'
+    assign kv_show = true
+  endif
+  if kv_type_down contains 'suppl' or kv_type_down contains 'accessor' or kv_type_down contains 'lens' or kv_type_down contains 'beanie' or kv_type_down contains 'care'
+    assign kv_show = false
+  endif
+  if product.metafields.wigparty.styling_video.value != blank
+    assign kv_show = true
+  endif
+-%}
+{%- if kv_show -%}
+{% style %}
+  {%- if heading_font_bold -%}{{ heading_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+{%- liquid
+  assign video_id = 'AriaKristiVideo-' | append: section.id
+
+  # ==========================================================================
+  # The SAME `styling_video` record that drives the buy box's gallery pill also
+  # drives this section, so a product's video is entered once. Each value falls
+  # back to its section setting, which is what renders until a product names a
+  # record — the date in the default heading is otherwise identical on every wig.
+  # ==========================================================================
+  assign sv = product.metafields.wigparty.styling_video.value
+
+  assign kv_heading = sv.heading.value | default: section.settings.heading
+  # -- The record's video_url is a plain URL string, whereas the section setting is a
+  # -- VideoUrlDrop with `.type` and `.id` already parsed. They are not interchangeable,
+  # -- so the string is turned into an embed URL here rather than being mixed with the
+  # -- drop below.
+  assign sv_url = sv.video_url.value
+  assign kv_embed = ''
+  if sv_url contains 'youtube.com/watch'
+    assign yt_id = sv_url | split: 'v=' | last | split: '&' | first
+    assign kv_embed = 'https://www.youtube.com/embed/' | append: yt_id | append: '?enablejsapi=1&autoplay=1'
+  elsif sv_url contains 'youtu.be/'
+    assign yt_id = sv_url | split: 'youtu.be/' | last | split: '?' | first
+    assign kv_embed = 'https://www.youtube.com/embed/' | append: yt_id | append: '?enablejsapi=1&autoplay=1'
+  elsif sv_url contains 'vimeo.com/'
+    assign vm_id = sv_url | split: 'vimeo.com/' | last | split: '?' | first
+    assign kv_embed = 'https://player.vimeo.com/video/' | append: vm_id | append: '?autoplay=1'
+  endif
+
+  # -- Poster: the record's own still, else the section's, else the frame that
+  # -- Shopify generates for an uploaded video.
+  assign poster = sv.poster.value | default: section.settings.poster
+  if poster == blank and section.settings.video != blank
+    assign poster = section.settings.video.preview_image
+  endif
+
+  # -- A File field limited to images resolves to an `image`; left unrestricted it
+  # -- can be a `generic_file`, where `image_url` yields nothing. Resolve a usable
+  # -- src once here so the poster works however the field was defined.
+  assign poster_src = poster | image_url: width: 1058
+  if poster_src == blank
+    assign poster_src = poster.url
+  endif
+-%}
+
+<section
+  class="aria-kristi"
+  style="--aria-kristi-from: {{ section.settings.gradient_from }}; --aria-kristi-to: {{ section.settings.gradient_to }};"
+>
+  <div class="aria-kristi__card">
+    <div class="aria-kristi__body">
+      <div class="aria-kristi__text">
+        {%- if kv_heading != blank -%}
+          <h2 class="aria-kristi__heading">{{ kv_heading }}</h2>
+        {%- endif -%}
+        {%- comment -%}
+          Rich text, handled the same way as the buy box. Neither `.value` (the parsed
+          document tree) nor `| default:` (coerces the field to a string) may touch it —
+          both print the raw `{"type":"root", ...}` JSON. `metafield_tag` is the
+          type-aware filter that renders a rich_text_field as HTML; a section block's
+          richtext is already HTML and is output directly.
+        {%- endcomment -%}
+        {%- if sv.body != blank -%}
+          <div class="aria-kristi__copy">
+            {%- if sv.body.type == 'rich_text_field' -%}
+              {{- sv.body | metafield_tag -}}
+            {%- else -%}
+              {{- sv.body -}}
+            {%- endif -%}
+          </div>
+        {%- elsif section.settings.copy != blank -%}
+          <div class="aria-kristi__copy">{{ section.settings.copy }}</div>
+        {%- endif -%}
+      </div>
+
+      {%- form 'customer', class: 'aria-kristi__form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+
+        <label class="visually-hidden" for="AriaKristiEmail-{{ section.id }}">
+          {{ 'newsletter.label' | t }}
+        </label>
+        <input
+          id="AriaKristiEmail-{{ section.id }}"
+          class="aria-kristi__input"
+          type="email"
+          name="contact[email]"
+          value="{{ form.email }}"
+          placeholder="{{ section.settings.placeholder | escape }}"
+          aria-required="true"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="email"
+          required
+        >
+        <button type="submit" class="aria-kristi__submit" name="commit">
+          {{- section.settings.button_label -}}
+        </button>
+
+        {%- if form.errors -%}
+          <p class="aria-kristi__message aria-kristi__message--error">
+            {{- form.errors.translated_fields.email | capitalize }}
+            {{ form.errors.messages.email -}}
+          </p>
+        {%- elsif form.posted_successfully? -%}
+          <p class="aria-kristi__message">{{ 'newsletter.success' | t }}</p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+
+    <deferred-media class="aria-kristi__media" data-media-id="{{ video_id }}">
+      <button
+        id="Deferred-Poster-{{ video_id }}"
+        class="aria-kristi__poster"
+        type="button"
+        aria-label="{{ section.settings.play_label | escape }}"
+      >
+        {%- if poster_src != blank -%}
+          {%- comment -%}
+            Intrinsic size is the Figma panel (529x536); the CSS covers the box, so these
+            exist to reserve space and stop the card shifting as the poster loads.
+          {%- endcomment -%}
+          <img
+            src="{{ poster_src }}"
+            alt="{{ section.settings.play_label | escape }}"
+            width="529"
+            height="536"
+            loading="lazy"
+          >
+        {%- else -%}
+          {{ 'hero-apparel-3' | placeholder_svg_tag: '' }}
+        {%- endif -%}
+        <span class="aria-kristi__play" aria-hidden="true">
+          {{- 'wp-pdp-kristi-play.svg' | inline_asset_content -}}
+        </span>
+      </button>
+
+      {%- comment -%}
+        DeferredMedia clones `template.content.firstElementChild` and expects it to be a
+        video, model-viewer or iframe — so exactly one such element, and no comment or
+        whitespace node ahead of it.
+      {%- endcomment -%}
+      <template>
+        {%- if kv_embed != blank -%}
+          {%- comment -%}
+            The product's own `styling_video` record wins, so each wig plays its own clip.
+          {%- endcomment -%}
+          <iframe
+            src="{{ kv_embed }}"
+            allow="autoplay; encrypted-media"
+            allowfullscreen
+            title="{{ section.settings.play_label | escape }}"
+          ></iframe>
+        {%- elsif section.settings.video != blank -%}
+          {{
+            section.settings.video
+            | video_tag: image_size: '1058x', autoplay: true, loop: false, controls: true
+          }}
+        {%- else -%}
+          {%- comment -%}
+            `external_video_tag` takes a media object from product media, not a
+            `video_url` setting (which is a VideoUrlDrop) — so the embed is built by
+            hand, the same way Dawn's own video.liquid does it.
+          {%- endcomment -%}
+          {%- if section.settings.video_url.type == 'youtube' -%}
+            <iframe
+              src="https://www.youtube.com/embed/{{ section.settings.video_url.id }}?enablejsapi=1&autoplay=1"
+              class="js-youtube"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+              title="{{ section.settings.play_label | escape }}"
+            ></iframe>
+          {%- else -%}
+            <iframe
+              src="https://player.vimeo.com/video/{{ section.settings.video_url.id }}?autoplay=1"
+              class="js-vimeo"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+              title="{{ section.settings.play_label | escape }}"
+            ></iframe>
+          {%- endif -%}
+        {%- endif -%}
+      </template>
+    </deferred-media>
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.aria-pdp-kristi-video.name",
+  "tag": "section",
+  "class": "aria-kristi-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Watch Kristi style it",
+      "label": "t:sections.aria-pdp-kristi-video.settings.heading.label"
+    },
+    {
+      "type": "richtext",
+      "id": "copy",
+      "default": "<p>Eleven minutes, including what it looks like from the back and what she does to the fringe. Clipped from the Tuesday Live so you do not have to scrub through two hours of Facebook.</p>",
+      "label": "t:sections.aria-pdp-kristi-video.settings.copy.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-kristi-video.settings.form_header.content"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "default": "Enter your email address",
+      "label": "t:sections.aria-pdp-kristi-video.settings.placeholder.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Join the Party",
+      "label": "t:sections.aria-pdp-kristi-video.settings.button_label.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-kristi-video.settings.video_header.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "t:sections.aria-pdp-kristi-video.settings.poster.label",
+      "info": "t:sections.aria-pdp-kristi-video.settings.poster.info"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:sections.aria-pdp-kristi-video.settings.video.label"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "accept": ["youtube", "vimeo"],
+      "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+      "label": "t:sections.aria-pdp-kristi-video.settings.video_url.label",
+      "info": "t:sections.aria-pdp-kristi-video.settings.video_url.info"
+    },
+    {
+      "type": "text",
+      "id": "play_label",
+      "default": "Play video",
+      "label": "t:sections.aria-pdp-kristi-video.settings.play_label.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-kristi-video.settings.background_header.content"
+    },
+    {
+      "type": "color",
+      "id": "gradient_from",
+      "default": "#ffffff",
+      "label": "t:sections.aria-pdp-kristi-video.settings.gradient_from.label"
+    },
+    {
+      "type": "color",
+      "id": "gradient_to",
+      "default": "#eaddd4",
+      "label": "t:sections.aria-pdp-kristi-video.settings.gradient_to.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-pdp-kristi-video.presets.name"
+    }
+  ]
+}
+{% endschema %}

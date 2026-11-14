@@ -1,5 +1,15 @@
 <!doctype html>
-<html class="js" lang="{{ request.locale.iso_code }}">
+{%- comment -%}
+  `data-currency` / `data-country` let assets/aria-discount-price.js price automatic
+  discounts in the shopper's own market, so cards and the PDP match the cart.
+{%- endcomment -%}
+<html
+  class="js"
+  lang="{{ request.locale.iso_code }}"
+  data-currency="{{ cart.currency.iso_code }}"
+  data-country="{{ localization.country.iso_code }}"
+  data-shop-domain="{{ shop.permanent_domain }}"
+>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -95,6 +105,7 @@
     {%- endcomment -%}
     {{ 'component-aria-video-controls.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'aria-video-controls.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'aria-discount-price.js' | asset_url }}" defer="defer"></script>
     {%- comment -%}
       Swiper and the shared carousel driver, loaded once. Five sections used to emit their
       own copies, so the UMD bundle re-executed five times per page. Deferred scripts run
@@ -309,7 +320,7 @@
         min-height: 100%;
         margin: 0;
         font-size: 1.5rem;
-        letter-spacing: 0.06rem;
+        letter-spacing: 0;
         line-height: calc(1 + 0.8 / var(--font-body-scale));
         font-family: var(--font-body-family);
         font-style: var(--font-body-style);
@@ -323,11 +334,13 @@
       }
     {% endstyle %}
 
+    {{ 'design-tokens.css' | asset_url | stylesheet_tag }}
     {{ 'base.css' | asset_url | stylesheet_tag }}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
     {%- if settings.cart_type == 'drawer' -%}
       {{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+      {{ 'component-aria-cart-drawer.css' | asset_url | stylesheet_tag }}
       {{ 'component-cart.css' | asset_url | stylesheet_tag }}
       {{ 'component-totals.css' | asset_url | stylesheet_tag }}
       {{ 'component-price.css' | asset_url | stylesheet_tag }}
@@ -368,7 +381,7 @@
     {{ "style.css" | asset_url | stylesheet_tag }}
   </head>
 
-  <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
+  <body class="gradient aria-template-{{ template.name }}{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
     <a class="skip-to-content-link button visually-hidden" href="#MainContent">
       {{ 'accessibility.skip_to_text' | t }}
     </a>
@@ -383,6 +396,23 @@
     {%- endcomment -%}
     {%- render 'aria-wishlist-drawer' -%}
 
+    {%- if template.name == 'product' -%}
+      {%- comment -%}
+        Recently viewed: every product page records its handle, newest first, for the
+        "Recently viewed by the shopper" carousel (assets/aria-recently-viewed.js).
+      {%- endcomment -%}
+      <script>
+        try {
+          (function (key, handle) {
+            var list = JSON.parse(localStorage.getItem(key) || '[]');
+            if (!Array.isArray(list)) list = [];
+            list = [handle].concat(list.filter(function (h) { return h !== handle; })).slice(0, 13);
+            localStorage.setItem(key, JSON.stringify(list));
+          })('aria:recently-viewed', {{ product.handle | json }});
+        } catch (e) {}
+      </script>
+    {%- endif -%}
+
     {% sections 'header-group' %}
 
     <main
@@ -393,6 +423,32 @@
       data-template="{{ template.name }}"
     >
       {{ content_for_layout }}
+
+      {%- comment -%}
+        Shared bottom sections. Section groups, so editing them on any page updates all.
+        Find Your Perfect Wig and Join the Party were in the first group too, but the home
+        page places them mid-page, where a group cannot render, so each template now holds
+        its own copy of them. A group can only render outside the template, which is why
+        these sit after `content_for_layout` rather than inside the template JSON.
+          • shared-bottom-group (Instagram): the home page and every product template except
+            `legacy` (the old Dawn page);
+          • shared-trust-group (trust badges): those two, plus the `live`, `replays`,
+            `community`, `compare-shades` and `find-your-colour` page templates. (The `cap-construction` collection template places
+            its own copy mid-page, before its consult section, so it is not listed here.)
+        Every other template is unchanged.
+      {%- endcomment -%}
+      {%- liquid
+        assign new_pdp = false
+        if template.name == 'product' and template.suffix != 'legacy'
+          assign new_pdp = true
+        endif
+      -%}
+      {%- if template.name == 'index' or new_pdp -%}
+        {% sections 'shared-bottom-group' %}
+      {%- endif -%}
+      {%- if template.name == 'index' or new_pdp or template.suffix == 'live' or template.suffix == 'replays' or template.suffix == 'community' or template.suffix == 'compare-shades' or template.suffix == 'find-your-colour' -%}
+        {% sections 'shared-trust-group' %}
+      {%- endif -%}
     </main>
 
     {% sections 'footer-group' %}
@@ -453,6 +509,13 @@
 
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+      {%- comment -%}
+        The Rebuy app injects its own script (not part of this theme), which opens Rebuy's
+        Smart Cart on every add to cart alongside this drawer. This keeps only the theme
+        drawer. It does nothing when Rebuy is not on the page.
+      {%- endcomment -%}
+      <script src="{{ 'aria-suppress-rebuy-cart.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'wp-cart-redirect.js' | asset_url }}" defer="defer" data-redirect="{{ settings.wp_cart_redirect }}" data-delay="{{ settings.wp_cart_redirect_delay }}" data-cart-url="{{ routes.cart_url }}"></script>
     {%- endif -%}
   </body>
 </html>

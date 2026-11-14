@@ -1,0 +1,306 @@
+/* Wig Party — PDP shade carousel (sections/pdp-shade-carousel.liquid), Figma 6356:1787.
+ *
+ * Frame is 1440x820: 80px vertical padding, 56px horizontal, around a 1328px inner
+ * column. Note the 1328 is NOT the theme's 1360 `--container` — this section is inset
+ * further than the buy box above it, so the width is stated here rather than inherited.
+ *
+ * Inner column is a 48px vertical rhythm: heading 64, track 436, controls 64
+ * (64 + 48 + 436 + 48 + 64 = 660, matching the frame).
+ */
+
+.aria-shades,
+.aria-shades *,
+.aria-shades *::before,
+.aria-shades *::after {
+  box-sizing: border-box;
+}
+
+.aria-shades {
+  background: var(--aria-shades-bg, #f5ebe2);
+  padding: 80px 56px;
+}
+
+.aria-shades__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+  max-width: 1328px;
+  margin-inline: auto;
+}
+
+/* Montserrat SemiBold 56/64. The theme's heading family is Montserrat, but its weight
+   setting is 500 — this heading is explicitly 600, so the weight is stated. */
+.aria-shades__heading {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 64px;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--black, #000);
+}
+
+/* Figma centres a 1314px track inside the 1328 column (5 x 250 + 4 x 16 gaps).
+   Swiper needs the viewport to be the full column width, so the 7px inset Figma shows
+   is left to `justify-content` rather than baked in as padding. */
+.aria-shades__carousel {
+  width: 100%;
+}
+
+.aria-shades__swiper {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Slides are a fixed 250px in the design, so slidesPerView is driven by the carousel
+   driver's breakpoint attributes rather than by percentage widths here. */
+.aria-shades__slide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  height: auto;
+}
+
+/* 250x372 in Figma. Aspect ratio rather than a fixed height so the tile scales with the
+   slide once the viewport is narrower than the design width. */
+.aria-shades__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 250 / 372;
+  overflow: hidden;
+  background: var(--cream, #eaddd4);
+}
+
+.aria-shades__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Poppins Regular 16/26, centred, Primary/Gray. Figma gives the first slide a 52px
+   label box (two lines) and the rest 26px (one line) — that is just content wrapping,
+   so no height is fixed here. */
+.aria-shades__label {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  text-align: center;
+  color: var(--gray, #3f3e3e);
+}
+
+/* --- Controls row (6356:1806) — 64px tall -------------------------- */
+
+.aria-shades__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  height: 64px;
+}
+
+/* Figma: 1184px bar + 12px gap + 132px buttons = 1328. Flexing the bar reproduces
+   1184 exactly at the design width and adapts below it. */
+.aria-shades__progress {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 40px;
+  height: 4px;
+}
+
+/* Dawn's base.css hides empty elements via `:empty { display: none }`, so these
+   decorative bars each carry an aria-hidden span — same workaround as best-sellers. */
+.aria-shades__progress-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  background: var(--qi, #bc696b);
+  opacity: 0.3;
+}
+
+.aria-shades__progress-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  min-width: 4px;
+  border-radius: 30px;
+  background: var(--py, #a64a4c);
+  transition: width 0.2s ease;
+}
+
+.aria-shades__nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The two buttons are deliberately different sizes in the design: 60px outlined
+   previous, 64px filled next. 60 + 8 + 64 = 132, the width Figma reports. */
+.aria-shades__prev,
+.aria-shades__next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-shades__prev {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #a9aab5;
+  background: var(--white, #fff);
+  color: var(--black, #000);
+}
+
+.aria-shades__next {
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--py, #a64a4c);
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-shades__prev:hover:not(:disabled) {
+  border-color: var(--py, #a64a4c);
+  color: var(--py, #a64a4c);
+}
+
+.aria-shades__next:hover:not(:disabled) {
+  background: var(--sy, #000);
+  border-color: var(--sy, #000);
+}
+
+.aria-shades__prev:disabled,
+.aria-shades__next:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Figma nests the glyph in a 28px icon frame. The export points DOWN; a quarter turn
+   each way gives the left/right arrows the design shows, so one asset serves both. */
+.aria-shades__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.aria-shades__icon svg {
+  display: block;
+  width: 13.1667px;
+  height: 19.9622px;
+}
+
+.aria-shades__prev .aria-shades__icon svg {
+  transform: rotate(90deg);
+}
+
+.aria-shades__next .aria-shades__icon svg {
+  transform: rotate(-90deg);
+}
+
+/* The driver hides this wrapper when every slide already fits. */
+.aria-shades__controls[hidden] {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reflow. Desktop (>=1440) is the design of record; below it the
+ * padding and heading step down while the slide count is handled by
+ * the carousel driver's breakpoint attributes.
+ * ------------------------------------------------------------------ */
+
+@media screen and (max-width: 1439px) {
+  .aria-shades {
+    padding-inline: 40px;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-shades {
+    padding: 56px 24px;
+  }
+
+  .aria-shades__inner {
+    gap: 32px;
+  }
+
+  .aria-shades__heading {
+    font-size: 36px;
+    line-height: 44px;
+  }
+
+  .aria-shades__controls {
+    height: 56px;
+  }
+
+  .aria-shades__prev {
+    width: 52px;
+    height: 52px;
+  }
+
+  .aria-shades__next {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:3713 — its own 375px frame, not the 1440px frame scaled down).
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-shades {
+    padding: 48px 16px;
+  }
+
+  /* Mobile/Heading/H1 token: Montserrat MEDIUM (500) 36/46 — not the 989px
+     block's guessed 28/36, and not desktop's SemiBold 600. Both the size
+     and the weight differ from every wider breakpoint. */
+  .aria-shades__heading {
+    font-size: 36px;
+    line-height: 46px;
+    font-weight: 500;
+  }
+
+  /* 6441:3716's own 12px gap between the slide track and the controls row —
+     a tighter rhythm than the 32px the 989px block sets for the outer
+     heading-to-track gap (that one is unchanged; this is the inner one). */
+  .aria-shades__carousel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Controls row is 48px tall on this frame (not desktop's 64 or the 989px
+     block's 56), and both nav buttons drop to an equal 48x48 — the design
+     no longer differentiates a smaller outlined "previous" from a larger
+     filled "next" at this width. */
+  .aria-shades__controls {
+    height: 48px;
+  }
+
+  .aria-shades__nav {
+    gap: 4px;
+  }
+
+  .aria-shades__prev,
+  .aria-shades__next {
+    width: 48px;
+    height: 48px;
+  }
+}

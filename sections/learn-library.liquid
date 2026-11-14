@@ -1,0 +1,186 @@
+{%- comment -%}
+  Wig Party — Learn page, "The whole library". Figma internal file, node 7605:7779
+  (1440 x 2052). An eyebrow and title over a two-column grid of `topic` panels; each panel
+  lists up to four blog articles (thumbnail, title, date, read time, arrow) and its count.
+  A topic shows the articles tagged with its tag when it has one and any are tagged;
+  otherwise the articles picked in it. A topic with no articles is not rendered.
+  Styles in assets/section-aria-learn-library.css.
+{%- endcomment -%}
+
+{{ 'section-aria-learn-library.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-learn-library.js' | asset_url }}" defer></script>
+
+{%- liquid
+  assign topic_blocks = section.blocks | where: 'type', 'topic'
+  assign panel_count = 0
+-%}
+
+<aria-learn-library class="aria-learn-library">
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
+    <div class="aria-learn-library__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="aria-learn-library__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="aria-learn-library__title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="aria-learn-library__grid">
+    {%- for block in topic_blocks -%}
+      {%- liquid
+        assign topic_blog = block.settings.blog | default: blogs.news
+        assign tag = block.settings.tag | strip
+        assign rows = ''
+        assign count = 0
+        assign use_tag = false
+
+        if tag != blank and topic_blog != blank
+          for a in topic_blog.articles
+            if a.tags contains tag
+              assign count = count | plus: 1
+              assign use_tag = true
+            endif
+          endfor
+        endif
+      -%}
+
+      {%- capture rows -%}
+        {%- if use_tag -%}
+          {%- assign shown = 0 -%}
+          {%- for a in topic_blog.articles -%}
+            {%- if a.tags contains tag and shown < 4 -%}
+              {%- assign shown = shown | plus: 1 -%}
+              {%- render 'aria-learn-article-row', article: a -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for i in (1..4) -%}
+            {%- assign key = 'article_' | append: i -%}
+            {%- assign a = block.settings[key] -%}
+            {%- if a != blank and a.url != blank -%}
+              {%- render 'aria-learn-article-row', article: a -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endcapture -%}
+
+      {%- liquid
+        unless use_tag
+          assign count = 0
+          for i in (1..4)
+            assign key = 'article_' | append: i
+            assign a = block.settings[key]
+            if a != blank and a.url != blank
+              assign count = count | plus: 1
+            endif
+          endfor
+        endunless
+      -%}
+
+      {%- if count > 0 -%}
+        {%- assign panel_count = panel_count | plus: 1 -%}
+        <div class="aria-learn-library__topic" {{ block.shopify_attributes }}>
+          <div class="aria-learn-library__topic-head">
+            <h3 class="aria-learn-library__topic-title">{{ block.settings.title }}</h3>
+            <span class="aria-learn-library__count">
+              {{- 'aria_theme.learn.articles_count' | t: count: count -}}
+            </span>
+          </div>
+          <ul class="aria-learn-library__rows" role="list">
+            {{ rows }}
+          </ul>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} Mobile only: the grid becomes a one-panel slider (aria-learn-library.js). {%- endcomment -%}
+  {%- if panel_count > 1 -%}
+    <div class="aria-learn-library__pager">
+      {%- for i in (1..panel_count) -%}
+        <button
+          type="button"
+          class="aria-learn-library__page"
+          aria-label="{{ 'aria_theme.learn.go_to_topic' | t: number: i }}"
+          {% if forloop.first %}aria-current="true"{% endif %}
+        ></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</aria-learn-library>
+
+{% schema %}
+{
+  "name": "t:sections.aria-learn-library.name",
+  "tag": "section",
+  "class": "aria-learn-library-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "Community exclusive",
+      "label": "t:sections.aria-learn-library.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "The whole library",
+      "label": "t:sections.aria-learn-library.settings.heading.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "topic",
+      "name": "t:sections.aria-learn-library.blocks.topic.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Wig 101",
+          "label": "t:sections.aria-learn-library.blocks.topic.settings.title.label"
+        },
+        {
+          "type": "blog",
+          "id": "blog",
+          "label": "t:sections.aria-learn-library.blocks.topic.settings.blog.label",
+          "info": "t:sections.aria-learn-library.blocks.topic.settings.blog.info"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "t:sections.aria-learn-library.blocks.topic.settings.tag.label",
+          "info": "t:sections.aria-learn-library.blocks.topic.settings.tag.info"
+        },
+        {
+          "type": "article",
+          "id": "article_1",
+          "label": "t:sections.aria-learn-library.blocks.topic.settings.article_1.label"
+        },
+        {
+          "type": "article",
+          "id": "article_2",
+          "label": "t:sections.aria-learn-library.blocks.topic.settings.article_2.label"
+        },
+        {
+          "type": "article",
+          "id": "article_3",
+          "label": "t:sections.aria-learn-library.blocks.topic.settings.article_3.label"
+        },
+        {
+          "type": "article",
+          "id": "article_4",
+          "label": "t:sections.aria-learn-library.blocks.topic.settings.article_4.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-learn-library.presets.name",
+      "blocks": [{ "type": "topic" }, { "type": "topic" }]
+    }
+  ]
+}
+{% endschema %}

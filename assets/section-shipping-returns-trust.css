@@ -1,0 +1,82 @@
+/*
+ * Shipping & Returns, trust row. Figma node 7900:527 (1440 x 320), desktop only.
+ * 4 items, icon 64x64 + gap 16 + text gap 8, row centered, border-top divider.
+ */
+.wp-sr-trust {
+  background: var(--wp-color-white);
+  border-top: 1px solid var(--wp-sr-trust-border);
+  padding: var(--wp-sr-trust-padding);
+}
+
+.wp-sr-trust__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 1360px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: var(--wp-sr-trust-gap);
+}
+
+.wp-sr-trust__item {
+  flex: 0 1 255px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--wp-sr-trust-icon-gap);
+}
+
+.wp-sr-trust__icon img {
+  display: block;
+  width: var(--wp-sr-trust-icon-size);
+  height: var(--wp-sr-trust-icon-size);
+}
+
+.wp-sr-trust__title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h5-size);
+  font-weight: var(--wp-h5-weight);
+  line-height: var(--wp-h5-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-sr-trust__description {
+  margin: var(--wp-sr-trust-text-gap) 0 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-xs-size);
+  font-weight: var(--wp-body-xs-weight);
+  line-height: var(--wp-body-xs-line-height);
+  color: var(--wp-color-gray);
+}
+
+@media (max-width: 749px) {
+  .wp-sr-trust {
+    padding: var(--wp-m-sr-trust-padding);
+  }
+
+  .wp-sr-trust__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--wp-m-sr-trust-row-gap) var(--wp-m-sr-trust-col-gap);
+  }
+
+  .wp-sr-trust__item {
+    flex: 0 1 var(--wp-m-sr-trust-item-width);
+    max-width: var(--wp-m-sr-trust-item-width);
+  }
+
+  .wp-sr-trust__icon img {
+    width: var(--wp-m-sr-trust-icon-size);
+    height: var(--wp-m-sr-trust-icon-size);
+  }
+
+  .wp-sr-trust__title {
+    font-size: var(--wp-m-sr-trust-title-size);
+    line-height: var(--wp-m-sr-trust-title-line-height);
+  }
+}

@@ -1,0 +1,110 @@
+{%- comment -%}
+  Wig Party — Compare Shades page, hero. Figma internal file, node 7289:6351 (1440 x 356).
+  The Find Your Colour hero's hair photo and frosted panel (sections/colour-hero.liquid), here
+  with dark breadcrumbs and a centred title and text.
+  Styles in assets/section-aria-compare-hero.css.
+{%- endcomment -%}
+
+{{ 'section-aria-compare-hero.css' | asset_url | stylesheet_tag }}
+
+{%- assign current_label = section.settings.current_label | default: page.title -%}
+
+<div class="aria-compare-hero">
+  <div class="aria-compare-hero__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1100,1440,2160,2880', sizes: '100vw', alt: '', loading: 'eager'
+      }}
+    {%- else -%}
+      <img
+        class="aria-compare-hero__bg-fallback"
+        src="{{ 'wp-colour-hero.jpg' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="aria-compare-hero__panel">
+    <nav class="aria-compare-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="aria-compare-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank -%}
+          <li><a href="{{ section.settings.parent_url | default: '/#start-here' }}">{{ section.settings.parent_label }}</a></li>
+        {%- endif -%}
+        <li aria-current="page">{{ current_label }}</li>
+      </ol>
+    </nav>
+
+    <div class="aria-compare-hero__text-group">
+      {%- if section.settings.heading != blank -%}
+        <h1 class="aria-compare-hero__title">{{ section.settings.heading }}</h1>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <p class="aria-compare-hero__text">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-compare-hero.name",
+  "tag": "section",
+  "class": "aria-compare-hero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-compare-hero.settings.background.label",
+      "info": "t:sections.aria-compare-hero.settings.background.info"
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "t:sections.aria-compare-hero.settings.home_label.label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "Start Here",
+      "label": "t:sections.aria-compare-hero.settings.parent_label.label"
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "t:sections.aria-compare-hero.settings.parent_url.label",
+      "info": "t:sections.aria-compare-hero.settings.parent_url.info"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "Compare shades",
+      "label": "t:sections.aria-compare-hero.settings.current_label.label",
+      "info": "t:sections.aria-compare-hero.settings.current_label.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Two shades, one screen, same light",
+      "label": "t:sections.aria-compare-hero.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "The thing you actually want to do is hold two colours next to each other. Flicking between two \nproduct pages does not work because the lighting and the model change with them.",
+      "label": "t:sections.aria-compare-hero.settings.text.label",
+      "info": "t:sections.aria-compare-hero.settings.text.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-compare-hero.presets.name"
+    }
+  ]
+}
+{% endschema %}

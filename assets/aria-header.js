@@ -126,4 +126,25 @@
       button.setAttribute('aria-expanded', String(!isOpen));
     });
   });
+
+  /*
+   * Desktop menu labels at whole-pixel widths. Figma sizes every hug-width text box to a
+   * whole pixel ("Shop" is 38 there, 37.38 in Chrome), and the item positions in the
+   * design are built from those rounded widths, so without this each item drifts left by
+   * the accumulated fractions (2.7px by PRE-ORDER at 1440). Desktop only; below 1280 the
+   * labels are left to size themselves.
+   */
+  var desktopNav = window.matchMedia('(min-width: 1280px)');
+
+  function roundMenuLabels() {
+    document.querySelectorAll('.aria-header__menu-label').forEach(function (label) {
+      label.style.width = '';
+      if (!desktopNav.matches) return;
+      label.style.width = Math.ceil(label.getBoundingClientRect().width) + 'px';
+    });
+  }
+
+  roundMenuLabels();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(roundMenuLabels);
+  if (desktopNav.addEventListener) desktopNav.addEventListener('change', roundMenuLabels);
 })();

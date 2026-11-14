@@ -1,0 +1,530 @@
+/* Wig Party — PDP product carousel — Figma nodes 6356:554 ("What people buy alongside …") and 6356:1125 ("Suggested by Kristi").
+ *
+ * Both frames are 1440x919 on the same 48px column rhythm; they differ only in the
+ * column: 6356:554 uses a 1360 column (40px inset, the theme's `--container`), while
+ * 6356:1125 uses a centred 1280 column (80px inset) whose 4 x 331 card row overflows and
+ * clips the fourth card. The `--narrow` modifier below is that second framing.
+ *
+ * Column rhythm is 48px: heading 64 + cards 535 + controls 64 = 759, matching the frame.
+ *
+ * The cards themselves are the theme's shared `aria-product-card` snippet, whose stylesheet
+ * already encodes this exact design (331/320 media, 20px stack, 28px wishlist, 18/28 title,
+ * 24/32 price with a 20/28 struck compare, 54px View Product, and the hover state that
+ * turns the button pink and slides in the cart button — the design's third card). Nothing
+ * about the card is restyled here; this file owns only the section shell.
+ */
+
+.aria-pcar,
+.aria-pcar *,
+.aria-pcar *::before,
+.aria-pcar *::after {
+  box-sizing: border-box;
+}
+
+.aria-pcar {
+  background: var(--aria-pcar-bg, #f5ebe2);
+  padding: 80px 40px;
+}
+
+.aria-pcar__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+  max-width: 1360px;
+  margin-inline: auto;
+}
+
+.aria-pcar__recs {
+  display: block;
+  width: 100%;
+}
+
+/* Montserrat SemiBold 56/64 — the theme's heading weight setting is 500, so 600 is
+   stated explicitly. */
+.aria-pcar__heading {
+  width: 100%;
+  margin: 0 0 48px;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 64px;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--black, #000);
+}
+
+.aria-pcar__carousel {
+  width: 100%;
+}
+
+.aria-pcar__swiper {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Swiper's own base CSS sets `.swiper-wrapper { align-items: flex-start }` — each slide
+   just sits at its OWN natural content height, not stretched to its row's tallest sibling
+   (an earlier comment here claimed the opposite default; checked directly against
+   assets/vendor-swiper-bundle.min.css, it does not hold). `stretch` is what actually makes
+   every card in a row end the same height regardless of whether it has a swatch row or how
+   many lines its title wraps to — `.aria-product-card`'s own `height: 100%` (a flex child
+   with `align-items: stretch` and `height: auto` fills the stretched cross size) and
+   `.aria-product-card__actions { margin-top: auto }` (component-aria-product-card.css) do
+   the rest, pinning the button to the bottom of that now-equal height. Scoped to this
+   swiper specifically rather than the bare `.swiper-wrapper` class, which other carousels
+   in the theme (the coverflow ones especially) rely on keeping at its default. Applies at
+   every breakpoint and to both the wide and narrow (`.aria-pcar--narrow`) placements —
+   card height consistency isn't a mobile-only or wide-only concern. */
+.aria-pcar__swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.aria-pcar__slide {
+  height: auto;
+  display: flex;
+}
+
+.aria-pcar__slide > * {
+  width: 100%;
+}
+
+/* --- Controls row (6356:4953) — 64px tall ------------------------- */
+
+.aria-pcar__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  width: 100%;
+  height: 64px;
+  margin-top: 48px;
+}
+
+/* Figma: 1184 bar + 144 nav inside 1360 leaves exactly 32px, which is the gap above —
+   so the bar simply flexes into the remainder and lands on 1184 at the design width. */
+.aria-pcar__progress {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 40px;
+  height: 4px;
+}
+
+/* Dawn's base.css hides empty elements (`:empty { display: none }`), hence the
+   aria-hidden spans inside these decorative bars. */
+.aria-pcar__progress-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  background: var(--qi, #bc696b);
+  opacity: 0.3;
+}
+
+.aria-pcar__progress-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  min-width: 4px;
+  border-radius: 30px;
+  background: var(--py, #a64a4c);
+  transition: width 0.2s ease;
+}
+
+/* 60 + 20 + 64 = 144, the nav width Figma reports. Note the 20px gap here differs from
+   the shade carousel's 8px — the two sections genuinely space their buttons apart. */
+.aria-pcar__nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.aria-pcar__prev,
+.aria-pcar__next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-pcar__prev {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #a9aab5;
+  background: var(--white, #fff);
+  color: var(--black, #000);
+}
+
+.aria-pcar__next {
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--py, #a64a4c);
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-pcar__prev:hover:not(:disabled) {
+  border-color: var(--py, #a64a4c);
+  color: var(--py, #a64a4c);
+}
+
+.aria-pcar__next:hover:not(:disabled) {
+  background: var(--sy, #000);
+  border-color: var(--sy, #000);
+}
+
+.aria-pcar__prev:disabled,
+.aria-pcar__next:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Same 28px icon frame and quarter-turn treatment as the shade carousel; the arrow asset
+   is byte-identical between the two Figma frames, so one file serves both sections. */
+.aria-pcar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.aria-pcar__icon svg {
+  display: block;
+  width: 13.1667px;
+  height: 19.9622px;
+}
+
+.aria-pcar__prev .aria-pcar__icon svg {
+  transform: rotate(90deg);
+}
+
+.aria-pcar__next .aria-pcar__icon svg {
+  transform: rotate(-90deg);
+}
+
+.aria-pcar__controls[hidden] {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reflow — desktop (1440) is the design of record.
+ * ------------------------------------------------------------------ */
+
+@media screen and (max-width: 989px) {
+  .aria-pcar {
+    padding: 56px 24px;
+  }
+
+  .aria-pcar__inner {
+    gap: 32px;
+  }
+
+  .aria-pcar__heading {
+    margin-bottom: 32px;
+    font-size: 36px;
+    line-height: 44px;
+  }
+
+  .aria-pcar__controls {
+    height: 56px;
+    margin-top: 32px;
+    gap: 16px;
+  }
+
+  .aria-pcar__prev {
+    width: 52px;
+    height: 52px;
+  }
+
+  .aria-pcar__next {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:3765 — its own 375px frame for the "wide" ("What people buy
+ * alongside …") placement only; see the `:not(.aria-pcar--narrow)`
+ * scoping below).
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-pcar {
+    padding: 48px 16px;
+  }
+
+  /* Mobile/Heading/H1 token: Montserrat MEDIUM (500) 36/46 — not the previous
+     guess (28/36) and not desktop's SemiBold (600). */
+  .aria-pcar__heading {
+    font-size: 36px;
+    line-height: 46px;
+    font-weight: 500;
+  }
+
+  /* This frame's own 12px gap between the card row and the controls row —
+     not the 989px block's 32px margin (that value is for the wider tablet
+     column). */
+  .aria-pcar__controls {
+    height: 48px;
+    margin-top: 12px;
+  }
+
+  .aria-pcar__nav {
+    gap: 4px;
+  }
+
+  .aria-pcar__prev,
+  .aria-pcar__next {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Card treatment below is only verified against a mobile Figma frame for
+   * the "wide" placement. `:not(.aria-pcar--narrow)` keeps "Suggested by
+   * Kristi" on its existing styling rather than inheriting an unverified
+   * guess — there is no mobile frame for that placement yet.
+   * ------------------------------------------------------------------ */
+
+  /* Figma boxes this card in white with 8px padding — a real departure from
+     the shared component's usual "transparent, unpadded, sits on the section
+     ground" treatment (see component-aria-product-card.css's header
+     comment). 13px is this frame's own media -> body gap; the body -> actions
+     gap (21px) is reached via the margin below rather than by overriding the
+     shared component's internal `gap`, which flat siblings can't do with two
+     different values. */
+  /*
+   * Real product titles vary wildly in length ("Omega Hand-Tied Wig | Lux V HT
+   * Collection | In Stock" vs the same string plus "(Oyster Gray)"), unlike Figma's
+   * single-word "Hepburn" placeholder. Two adjacent cards with different title
+   * lengths otherwise land the price row — and the button below it — at two
+   * different heights, since a plain flex column just stacks each row as tall as its
+   * own content needs. Equal slide/card height is now the base `.aria-pcar__slide`
+   * rule (applies at every breakpoint, not just this one), and `.aria-product-card`'s
+   * own `height: 100%` + `.aria-product-card__actions`' `margin-top: auto` are the
+   * shared component's own base rules now too (component-aria-product-card.css) — so
+   * nothing needs restating here.
+   */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card {
+    background: var(--white, #fff);
+    padding: 8px;
+    border-radius: 2px;
+    gap: 13px;
+  }
+
+  /* Caps the title at 2 lines so it can never be the reason two cards' price/button
+     rows land at different heights — long titles truncate with an ellipsis instead
+     of pushing the rest of the card down by an extra line. */
+
+  /* 153 x 161.053 — a different, TALLER-than-wide ratio than the shared
+     component's 331/320. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__media {
+    aspect-ratio: 153 / 161.053;
+  }
+
+  /* No wishlist layer on this card at mobile — Figma positions it at x=190
+     inside a 153px-wide media box, i.e. off-canvas by design. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__wishlist {
+    display: none;
+  }
+
+  /* Mobile/Mobile/Large/Regular token (20px; line-height stays 28). */
+  /* Mobile/Mobile/Large/Regular token (20px; line-height stays 28). Clamped to 2
+     lines so a long real product title (e.g. "Fendi Hand-Tied Wig | Lux V HT
+     Collection | In Stock (Oyster Gray)", unlike Figma's single-word "Hepburn"
+     placeholder) truncates with an ellipsis instead of pushing the price row and
+     button below it further down than a shorter neighbour's card. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__title {
+    font-size: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Figma sets the rating value in Helvetica Neue — a real font-family swap
+     off this card's usual Poppins, not just a size change. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__rating-value {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Title -> swatches is 6px on this frame, 2px tighter than the shared
+     `.aria-product-card__body` gap (8px) that every other row in the stack
+     already matches (rating -> title stays 8px; swatches -> price stays the
+     existing 24px). Shaved off with a negative margin rather than
+     restructuring the shared component's flex gap. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__swatches {
+    margin-top: -2px;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__swatch-more {
+    line-height: 15px;
+  }
+
+  /* Mobile/Mobile/Large/Medium token: Helvetica Neue Medium 20/28 for BOTH
+     the current and compare price — desktop steps them at 24/32 and 20/28,
+     this frame sets both to the same size. Figma also gives the compare
+     price 0.49 opacity, which the shared component does not set. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__price-current,
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__price-compare {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__price-compare {
+    opacity: 0.49;
+  }
+
+  /* Actions row: this frame shows ONE full-width "Add to Cart" button
+     (bordered, white, text + icon) — not the desktop View Product + separate
+     icon-only cart button pair. View Product is hidden and the shared
+     quick-add button (icon-only everywhere else; see
+     component-aria-product-card.css) is stretched to fill the row and given
+     its text label back. Pinning it to the bottom of the card (previously
+     restated here as `margin-top: auto`) is the shared component's own base
+     rule now — nothing to add for that here. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__view-btn {
+    display: none;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__quick-add {
+    flex: 1 1 auto;
+    width: auto;
+    opacity: 1;
+    overflow: visible;
+  }
+
+  /* 153 x 47, ~10.5px padding all round (from the node's own rendered box,
+     not the stale 24/15 the Tailwind conversion carried over from a
+     differently-sized base component instance). */
+  /*
+   * Padding/gap tightened from the node's own 10.5px/4px: at this card's 153px
+   * content width, "ADD TO CART" (Poppins Bold, uppercase) plus the 20px cart icon
+   * measures wider in an actual browser than Figma's own text tool accounted for —
+   * the same class of Figma-vs-real-font-metrics mismatch already hit on the
+   * eyebrow pill (sections/pdp-buy-box.liquid) — so it wrapped to two lines
+   * instead of Figma's single line. Reclaiming a few px here keeps it on one line
+   * without changing the 16px type size the rest of this button already matches.
+   */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__cart-btn {
+    width: 100%;
+    height: 47px;
+    gap: 2px;
+    padding-block: 10.5px;
+    padding-inline: 4px;
+    background: var(--white, #fff);
+    border: 1px solid #b1b1b1;
+    color: var(--black, #000);
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__cart-label {
+    display: inline;
+    white-space: nowrap;
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 26px;
+    text-transform: uppercase;
+  }
+
+  /* Figma draws the label before the icon; `order` flips the icon after it
+     without touching the shared button's DOM. */
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__cart-btn .aria-icon {
+    width: 20px;
+    height: 20px;
+    order: 2;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------ *
+ * Narrow framing (Figma 6356:1125, "Suggested by Kristi").
+ *
+ * A centred 1280 column inside the same 1440 frame. Four 331px cards plus their 12px
+ * gaps come to 1360, so the row deliberately runs past the column and the fourth card is
+ * clipped — that overflow is the design's "there is more" cue, and it is why this variant
+ * drives the carousel with fixed-width slides (slidesPerView: auto) rather than four
+ * equal ones.
+ *
+ * Figma's own nav coordinates run 88px past the column (a repeat of the rotated-frame
+ * artifact seen on the other carousels); the buttons are kept inside the column here so
+ * the control is never half off-screen.
+ * ------------------------------------------------------------------ *
+ */
+@media screen and (min-width: 990px) {
+  .aria-pcar--narrow {
+    padding-inline: 80px;
+  }
+
+  .aria-pcar--narrow .aria-pcar__inner {
+    max-width: 1280px;
+  }
+
+  .aria-pcar--narrow .aria-pcar__slide {
+    width: 331px;
+  }
+}
+/* Dawn ki base.css `:empty` ko display:none karti hai. Ye element pehle render par
+   jaan-boojh kar khali hota hai — recommendations baad mein aati hain — aur ek
+   display:none element kabhi intersect nahi karta, is liye Dawn ka IntersectionObserver
+   fetch kabhi trigger hi nahi hota. 1px isay observable rakhta hai. */
+.aria-pcar__recs:empty {
+  display: block;
+  min-height: 1px;
+}
+/* ---------- Nov 6 QA: "What people buy alongside" card colours, Figma PDP V2 7104:4028 ----------
+ * Desktop and tablet, wide placement only (Suggested by Kristi keeps its own look).
+ * Design card: white #FFFFFF panel, radius 2, p-16 on the #F5EBE2 ground; title and rating
+ * #3F3E3E, price #1A1A1A, struck compare #8C8C8C; button white with a 1px #B1B1B1 border
+ * and #3F3E3E label. Card widths are unchanged. */
+@media screen and (min-width: 750px) {
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card {
+    background: #ffffff;
+    padding: 16px;
+    border-radius: 2px;
+    color: #3f3e3e;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__title,
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__title a,
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__rating-value,
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__swatch-more {
+    color: #3f3e3e;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__price-current {
+    color: #1a1a1a;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__price-compare {
+    color: #8c8c8c;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__view-btn {
+    background: #ffffff;
+    border-color: #b1b1b1;
+    color: #3f3e3e;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card__cart-btn {
+    background: #ffffff;
+    border-color: #b1b1b1;
+    color: #3f3e3e;
+  }
+
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card:hover .aria-product-card__view-btn,
+  .aria-pcar:not(.aria-pcar--narrow) .aria-product-card:focus-within .aria-product-card__view-btn {
+    background: var(--py, #a64a4c);
+    border-color: var(--py, #a64a4c);
+    color: #ffffff;
+  }
+}

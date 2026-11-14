@@ -1,0 +1,309 @@
+{%- comment -%}
+  Wig Party — Shipping & Returns page, policy body. Figma node 7900:475 (1440 x 1776):
+  sidebar (help nav + "Rather ask a person" card) and article (policy sections + a
+  "Full legal text" accordion). Desktop only.
+
+  The accordion's expanded panel content was never designed in Figma (get_metadata on
+  7900:521 shows only the closed trigger row, no child panel) — its body is a plain
+  richtext block so a merchant can fill in the real legal text from the editor.
+
+  Styles in assets/section-shipping-returns-policy.css, accordion behaviour in
+  shipping-returns-accordion.js (keyboard + aria-expanded, native <details> otherwise).
+{%- endcomment -%}
+
+{{ 'section-shipping-returns-policy.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign nav_blocks = section.blocks | where: 'type', 'nav_link'
+  assign section_blocks = section.blocks | where: 'type', 'article_section'
+  assign accordion_blocks = section.blocks | where: 'type', 'accordion'
+-%}
+
+<div class="wp-sr-body">
+  <div class="wp-sr-body__inner">
+    <aside class="wp-sr-sidebar">
+      {%- if nav_blocks.size > 0 -%}
+        <nav class="wp-sr-nav" aria-label="{{ section.settings.sidebar_eyebrow | default: 'Help & policies' }}">
+          {%- if section.settings.sidebar_eyebrow != blank -%}
+            <p class="wp-sr-nav__eyebrow">{{ section.settings.sidebar_eyebrow }}</p>
+          {%- endif -%}
+          <ul class="wp-sr-nav__list" role="list">
+            {%- for block in nav_blocks -%}
+              {%- liquid
+                assign nav_url = block.settings.url
+                if nav_url == blank and block.settings.active
+                  assign nav_url = page.url
+                endif
+                if nav_url == blank and block.settings.label == 'Privacy policy'
+                  assign nav_url = shop.privacy_policy.url
+                endif
+                if nav_url == blank and block.settings.label == 'Terms of service'
+                  assign nav_url = shop.terms_of_service.url
+                endif
+              -%}
+              {%- if nav_url != blank -%}
+                <li {{ block.shopify_attributes }}>
+                  <a
+                    class="wp-sr-nav__link{% if block.settings.active %} wp-sr-nav__link--active{% endif %}"
+                    href="{{ nav_url }}"
+                    {% if block.settings.active %}aria-current="page"{% endif %}
+                  >
+                    {{ block.settings.label }}
+                  </a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      {%- if section.settings.ask_eyebrow != blank or section.settings.ask_text != blank -%}
+        <div class="wp-sr-ask">
+          {%- if section.settings.ask_eyebrow != blank -%}
+            <p class="wp-sr-ask__eyebrow">{{ section.settings.ask_eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.ask_text != blank -%}
+            <p class="wp-sr-ask__text">{{ section.settings.ask_text }}</p>
+          {%- endif -%}
+          {%- if section.settings.ask_button_label != blank and section.settings.ask_button_url != blank -%}
+            <a class="wp-sr-ask__btn" href="{{ section.settings.ask_button_url }}">
+              {{- section.settings.ask_button_label -}}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </aside>
+
+    <div class="wp-sr-article">
+      {%- for block in section_blocks -%}
+        <article
+          class="wp-sr-article__section{% if block.settings.style == 'callout' %} wp-sr-article__section--callout{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.heading != blank -%}
+            <h2 class="wp-sr-article__heading">{{ block.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if block.settings.body != blank -%}
+            <div class="wp-sr-article__body rte">{{ block.settings.body }}</div>
+          {%- endif -%}
+        </article>
+      {%- endfor -%}
+
+      {%- for block in accordion_blocks -%}
+        <div class="wp-sr-accordion" {{ block.shopify_attributes }}>
+          <details id="ShippingReturnsAccordion-{{ block.id }}">
+            <summary
+              class="wp-sr-accordion__trigger"
+              id="ShippingReturnsAccordionTrigger-{{ block.id }}"
+              aria-controls="ShippingReturnsAccordionPanel-{{ block.id }}"
+            >
+              <span class="wp-sr-accordion__trigger-text">
+                {%- if block.settings.title != blank -%}
+                  <span class="wp-sr-accordion__title">{{ block.settings.title }}</span>
+                {%- endif -%}
+                {%- if block.settings.subtitle != blank -%}
+                  <span class="wp-sr-accordion__subtitle">{{ block.settings.subtitle }}</span>
+                {%- endif -%}
+              </span>
+              <img
+                class="wp-sr-accordion__icon"
+                src="{{ 'shipping-returns-accordion-plus.svg' | asset_url }}"
+                alt=""
+                width="24"
+                height="24"
+              >
+            </summary>
+            <div
+              class="wp-sr-accordion__panel rte"
+              id="ShippingReturnsAccordionPanel-{{ block.id }}"
+              role="region"
+              aria-labelledby="ShippingReturnsAccordionTrigger-{{ block.id }}"
+            >
+              {{ block.settings.content }}
+            </div>
+          </details>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'shipping-returns-accordion.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Shipping: Policy",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "sidebar_eyebrow",
+      "default": "HELP & POLICIES",
+      "label": "Sidebar nav eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "ask_eyebrow",
+      "default": "RATHER ASK A PERSON?",
+      "label": "\"Ask a person\" card: eyebrow"
+    },
+    {
+      "type": "textarea",
+      "id": "ask_text",
+      "default": "Policies answer the rule. If your situation is not in one, write to us — we decide in your favour more often than not.",
+      "label": "\"Ask a person\" card: body text"
+    },
+    {
+      "type": "text",
+      "id": "ask_button_label",
+      "default": "CONTACT US",
+      "label": "\"Ask a person\" card: button label"
+    },
+    {
+      "type": "url",
+      "id": "ask_button_url",
+      "label": "\"Ask a person\" card: button URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "nav_link",
+      "name": "Sidebar nav link",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Shipping & returns"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "URL"
+        },
+        {
+          "type": "checkbox",
+          "id": "active",
+          "label": "Mark as current page",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "article_section",
+      "name": "Policy section",
+      "settings": [
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "default", "label": "Default" },
+            { "value": "callout", "label": "Callout (blush background)" }
+          ],
+          "default": "default"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Returns"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Full legal text accordion",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Trigger title",
+          "default": "Full legal text"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Trigger subtitle",
+          "default": "The binding version of everything above."
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Expanded content",
+          "info": "Not in the Figma design (closed state only) — add the real legal copy here."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shipping & Returns: policy body",
+      "blocks": [
+        { "type": "nav_link", "settings": { "label": "Shipping & returns", "active": true } },
+        { "type": "nav_link", "settings": { "label": "Privacy policy" } },
+        { "type": "nav_link", "settings": { "label": "Terms of service" } },
+        { "type": "nav_link", "settings": { "label": "Pre-order terms" } },
+        { "type": "nav_link", "settings": { "label": "Accessibility" } },
+        { "type": "nav_link", "settings": { "label": "Contact us" } },
+        {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Returns",
+            "body": "<p>You have 45 days from delivery to send an in-stock wig back. Tags attached, not cut, not coloured, not worn out.</p><p>Start a return from your account or email us. <strong>There is no restocking fee either way.</strong></p><p>We would genuinely rather you sent something back than kept something you do not wear.</p>"
+          }
+        },
+        {
+          "type": "article_section",
+          "settings": {
+            "style": "callout",
+            "heading": "Why this changed",
+            "body": "<p>For a long time this page said <strong>ALL SALES ARE FINAL.</strong></p><p>We looked at the numbers. <strong>About one order in a hundred ever came back.</strong></p>"
+          }
+        },
+        {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Shipping",
+            "body": "<p>In-stock orders ship in <strong>1–2 business days</strong>, Monday to Friday. Free over <strong>$99</strong>.</p><p><strong>Everything ships discreetly.</strong> No branding.</p>"
+          }
+        },
+        {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Before you order",
+            "body": "<p>All sales are final: no returns, exchanges or cancellations. Please email shopwigparty@gmail.com with any question before you order.</p>"
+          }
+        },
+        {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Sample sale and clearance",
+            "body": "<p>These are returnable on the same terms. Each one says on its own page whether it has been tried on, photographed or ex-display.</p>"
+          }
+        },
+        {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Damaged or wrong",
+            "body": "<p>Send a photo within 30 days. We reship or refund the same day and you do not need to send the damaged one back.</p>"
+          }
+        },
+        { "type": "accordion" }
+      ]
+    }
+  ]
+}
+{% endschema %}

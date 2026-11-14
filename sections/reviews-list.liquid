@@ -1,0 +1,573 @@
+{%- comment -%}
+  Wig Party — Reviews page list area. Figma 7664:17841 (container 1280, desktop).
+  Two columns: left sidebar 348 (summary, distribution, filter list, button, note) and right
+  column 849 (sort chips 7664:17914, review cards 7664:17932 / 7664:17958, LOAD MORE 7664:18090).
+  Static build: every number is plain editable text, filter items and sort chips are
+  non-functional labels, LOAD MORE is a plain link. Styles in assets/section-reviews-list.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-reviews-list.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign dist_blocks = section.blocks | where: 'type', 'distribution'
+  assign filter_blocks = section.blocks | where: 'type', 'filter'
+  assign rating_pct = section.settings.rating | times: 20 | at_most: 100 | at_least: 0
+  assign rating_label = section.settings.rating | append: ' out of 5'
+  assign button_url = section.settings.button_url | default: '#'
+  assign stars_url = 'reviews-list-rating-stars.svg' | asset_url
+  assign review_blocks = section.blocks | where: 'type', 'review'
+  assign avatar_default = 'reviews-list-avatar.png' | asset_url
+  assign photo_default = 'reviews-list-review-photo.png' | asset_url
+  assign verified_icon = 'reviews-list-verified-icon.svg' | asset_url
+  assign load_more_url = section.settings.load_more_url | default: '#'
+  assign sort_chips = ''
+  for i in (1..4)
+    assign chip_key = 'chip_' | append: i
+    assign chip_label = section.settings[chip_key]
+    if chip_label != blank
+      assign sort_chips = sort_chips | append: chip_label | append: '|||'
+    endif
+  endfor
+  assign sort_chips = sort_chips | split: '|||'
+-%}
+
+<div class="reviews-list">
+  <div class="reviews-list__container">
+    <aside class="reviews-list__sidebar">
+      <div class="reviews-list__side-main">
+        <div class="reviews-list__side-top">
+          <div class="reviews-list__summary-wrap">
+            {%- if section.settings.heading != blank -%}
+              <div class="reviews-list__heading-wrap">
+                <h2 class="reviews-list__heading">{{ section.settings.heading }}</h2>
+              </div>
+            {%- endif -%}
+
+            <div class="reviews-list__rating-block">
+              <div class="reviews-list__summary">
+                {%- if section.settings.rating != blank -%}
+                  <p class="reviews-list__rating">{{ section.settings.rating }}</p>
+                {%- endif -%}
+                <div class="reviews-list__stars-group">
+                  <span
+                    class="reviews-list__stars"
+                    role="img"
+                    aria-label="{{ rating_label | escape }}"
+                    style="--rl-rating: {{ rating_pct }}%; --rl-stars-mask: url('{{ stars_url }}');"
+                  >
+                    <span class="reviews-list__stars-fill">
+                      <img src="{{ stars_url }}" alt="" width="100" height="20" loading="lazy">
+                    </span>
+                  </span>
+                  {%- if section.settings.rating_text != blank -%}
+                    <div class="reviews-list__rating-text-box">
+                      <p class="reviews-list__rating-text">{{ section.settings.rating_text }}</p>
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              {%- if dist_blocks.size > 0 -%}
+                <ul class="reviews-list__dist" role="list">
+                  {%- for block in dist_blocks -%}
+                    {%- assign bar_pct = block.settings.percent | at_most: 100 | at_least: 0 -%}
+                    <li class="reviews-list__dist-row" {{ block.shopify_attributes }}>
+                      <span class="reviews-list__dist-main">
+                        <span class="reviews-list__dist-label">
+                          <span class="reviews-list__dist-num">{{ block.settings.stars }}</span>
+                          <img
+                            class="reviews-list__dist-star"
+                            src="{{ 'reviews-list-star-icon.svg' | asset_url }}"
+                            alt=""
+                            width="14"
+                            height="13.4055"
+                            loading="lazy"
+                          >
+                        </span>
+                        <span class="reviews-list__dist-track" aria-hidden="true">
+                          {%- if bar_pct > 0 -%}
+                            <span class="reviews-list__dist-fill" style="width: {{ bar_pct }}%;"></span>
+                          {%- endif -%}
+                        </span>
+                      </span>
+                      <span class="reviews-list__dist-count">{{ block.settings.count }}</span>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          </div>
+
+          {%- if filter_blocks.size > 0 -%}
+            <div class="reviews-list__filter">
+              {%- if section.settings.filter_label != blank -%}
+                <p class="reviews-list__filter-label">{{ section.settings.filter_label }}</p>
+                {%- comment -%} Mobile only (7732:15024): static dropdown look, non-functional. {%- endcomment -%}
+                <div class="reviews-list__filter-trigger">
+                  <span class="reviews-list__filter-trigger-text">{{ section.settings.filter_label }}</span>
+                  <img
+                    class="reviews-list__filter-chevron"
+                    src="{{ 'reviews-list-filter-chevron.svg' | asset_url }}"
+                    alt=""
+                    width="16"
+                    height="16"
+                    loading="lazy"
+                  >
+                </div>
+              {%- endif -%}
+              <ul class="reviews-list__filter-list" role="list">
+                {%- for block in filter_blocks -%}
+                  <li class="reviews-list__filter-item" {{ block.shopify_attributes }}>
+                    <span>
+                      {{- block.settings.label -}}
+                      {%- if block.settings.count != blank %} ({{ block.settings.count }}){% endif -%}
+                    </span>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.button_label != blank -%}
+          <div class="reviews-list__btn-wrap">
+            <a class="reviews-list__btn" href="{{ button_url }}">{{ section.settings.button_label }}</a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.note != blank -%}
+        <p class="reviews-list__note">{{ section.settings.note }}</p>
+      {%- endif -%}
+    </aside>
+
+    <div class="reviews-list__main">
+      {%- if sort_chips.size > 0 -%}
+        <div class="reviews-list__sort">
+          {%- if section.settings.sort_label != blank -%}
+            <span class="reviews-list__sort-label">{{ section.settings.sort_label }}</span>
+          {%- endif -%}
+          <div class="reviews-list__chips">
+            {%- for chip in sort_chips -%}
+              <span class="reviews-list__chip{% if forloop.first %} reviews-list__chip--active{% endif %}">
+                {{- chip -}}
+              </span>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if review_blocks.size > 0 -%}
+        <ul class="reviews-list__cards" role="list">
+          {%- for block in review_blocks -%}
+            {%- liquid
+              assign r = block.settings
+              assign star_pct = r.rating | times: 20
+              assign star_label = r.rating | append: ' out of 5 stars'
+            -%}
+            <li
+              class="reviews-list__card"
+              {% if r.placeholder %}data-placeholder="true"{% endif %}
+              {{ block.shopify_attributes }}
+            >
+              <div class="reviews-list__card-head">
+                <div class="reviews-list__author">
+                  <span class="reviews-list__avatar">
+                    {%- if r.avatar != blank -%}
+                      {{ r.avatar | image_url: width: 200 | image_tag: width: 100, height: 100, loading: 'lazy', alt: r.name }}
+                    {%- else -%}
+                      <img src="{{ avatar_default }}" alt="{{ r.name | escape }}" width="100" height="100" loading="lazy">
+                    {%- endif -%}
+                  </span>
+                  <div class="reviews-list__author-info">
+                    <div class="reviews-list__name-row">
+                      {%- if r.name != blank -%}
+                        <p class="reviews-list__name">{{ r.name }}</p>
+                      {%- endif -%}
+                      {%- if r.verified -%}
+                        <img
+                          class="reviews-list__verified-icon"
+                          src="{{ verified_icon }}"
+                          alt="Verified"
+                          width="16"
+                          height="16"
+                          loading="lazy"
+                        >
+                      {%- endif -%}
+                    </div>
+                    {%- if r.verified_label != blank -%}
+                      <p class="reviews-list__verified-label">{{ r.verified_label }}</p>
+                    {%- endif -%}
+                    {%- if r.date != blank -%}
+                      <p class="reviews-list__date">{{ r.date }}</p>
+                    {%- endif -%}
+                  </div>
+                </div>
+                <span
+                  class="reviews-list__stars reviews-list__card-stars"
+                  role="img"
+                  aria-label="{{ star_label | escape }}"
+                  style="--rl-rating: {{ star_pct }}%; --rl-stars-mask: url('{{ stars_url }}');"
+                >
+                  <span class="reviews-list__stars-fill">
+                    <img src="{{ stars_url }}" alt="" width="100" height="20" loading="lazy">
+                  </span>
+                </span>
+              </div>
+
+              <div class="reviews-list__card-body">
+                {%- if r.title != blank or r.text != blank -%}
+                  <div class="reviews-list__card-copy">
+                    {%- if r.title != blank -%}
+                      <h3 class="reviews-list__card-title">{{ r.title }}</h3>
+                    {%- endif -%}
+                    {%- if r.text != blank -%}
+                      <p class="reviews-list__card-text">{{ r.text }}</p>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+                {%- if r.show_photos -%}
+                  <div class="reviews-list__photos">
+                    {%- for photo in (1..2) -%}
+                      {%- liquid
+                        if forloop.first
+                          assign photo_img = r.photo_1
+                        else
+                          assign photo_img = r.photo_2
+                        endif
+                      -%}
+                      <span class="reviews-list__photo">
+                        {%- if photo_img != blank -%}
+                          {{ photo_img | image_url: width: 310 | image_tag: width: 155, height: 164, loading: 'lazy', alt: '' }}
+                        {%- else -%}
+                          <img src="{{ photo_default }}" alt="" width="155" height="164" loading="lazy">
+                        {%- endif -%}
+                      </span>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              {%- if r.meta != blank -%}
+                <p class="reviews-list__card-meta">{{ r.meta }}</p>
+              {%- endif -%}
+
+              {%- if r.reply != blank -%}
+                <div class="reviews-list__reply">
+                  <p class="reviews-list__reply-text">
+                    {%- if section.settings.reply_label != blank -%}
+                      <strong>{{ section.settings.reply_label }}</strong> · {% endif -%}
+                    {{- r.reply -}}
+                  </p>
+                </div>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if section.settings.load_more_label != blank -%}
+        <div class="reviews-list__more-wrap">
+          <a class="reviews-list__more" href="{{ load_more_url }}">{{ section.settings.load_more_label }}</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Reviews list",
+  "tag": "section",
+  "class": "reviews-list-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Customer reviews",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "rating",
+      "default": "4.93",
+      "label": "Average rating (0 to 5)",
+      "info": "Also sets how much of the 5 stars is filled."
+    },
+    {
+      "type": "text",
+      "id": "rating_text",
+      "default": "out of 5 · based on 70 reviews",
+      "label": "Rating text"
+    },
+    {
+      "type": "text",
+      "id": "filter_label",
+      "default": "FILTER",
+      "label": "Filter label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "WRITE A REVIEW",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link",
+      "info": "Empty links to #."
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "default": "Photo review earns 50 points. Video earns 200.",
+      "label": "Note under button"
+    },
+    {
+      "type": "header",
+      "content": "Sort chips"
+    },
+    {
+      "type": "text",
+      "id": "sort_label",
+      "default": "SORT",
+      "label": "Sort label"
+    },
+    {
+      "type": "text",
+      "id": "chip_1",
+      "default": "All 2,140",
+      "label": "Chip 1 (shown as active)"
+    },
+    {
+      "type": "text",
+      "id": "chip_2",
+      "default": "Most recent",
+      "label": "Chip 2"
+    },
+    {
+      "type": "text",
+      "id": "chip_3",
+      "default": "Most helpful",
+      "label": "Chip 3"
+    },
+    {
+      "type": "text",
+      "id": "chip_4",
+      "default": "Critical first",
+      "label": "Chip 4"
+    },
+    {
+      "type": "header",
+      "content": "Review cards"
+    },
+    {
+      "type": "text",
+      "id": "reply_label",
+      "default": "Kristi replied",
+      "label": "Reply label (bold)"
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "default": "LOAD MORE",
+      "label": "Load more label"
+    },
+    {
+      "type": "url",
+      "id": "load_more_url",
+      "label": "Load more link",
+      "info": "Empty links to #."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "distribution",
+      "name": "Rating row",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "text",
+          "id": "stars",
+          "default": "5",
+          "label": "Star label"
+        },
+        {
+          "type": "range",
+          "id": "percent",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 0,
+          "label": "Bar fill"
+        },
+        {
+          "type": "text",
+          "id": "count",
+          "default": "0",
+          "label": "Count"
+        }
+      ]
+    },
+    {
+      "type": "filter",
+      "name": "Filter item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "default": "With photos",
+          "label": "Label"
+        },
+        {
+          "type": "text",
+          "id": "count",
+          "default": "612",
+          "label": "Count",
+          "info": "Shown in brackets. Leave empty to hide."
+        }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Review card",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "placeholder",
+          "default": true,
+          "label": "Placeholder review (copy needs approval)"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Avatar",
+          "info": "Empty uses the default avatar."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "default": "Nina",
+          "label": "Name"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "default": true,
+          "label": "Show verified icon"
+        },
+        {
+          "type": "text",
+          "id": "verified_label",
+          "default": "Verified Buyer",
+          "label": "Verified label"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "default": "06/28/2026",
+          "label": "Date"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5,
+          "label": "Rating"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Hair Type: Straight · Age 18–24 · Verified buyer",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "I was terrified of being clocked. Six weeks in, two people have told me my hair looks good and neither of them knew.",
+          "label": "Review text"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_photos",
+          "default": false,
+          "label": "Show 2 photos"
+        },
+        {
+          "type": "image_picker",
+          "id": "photo_1",
+          "label": "Photo 1",
+          "info": "Empty uses the default photo."
+        },
+        {
+          "type": "image_picker",
+          "id": "photo_2",
+          "label": "Photo 2",
+          "info": "Empty uses the default photo."
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "Meta line",
+          "info": "Example: Robin · Kennedy · pre-order · 3 stars"
+        },
+        {
+          "type": "textarea",
+          "id": "reply",
+          "label": "Reply text",
+          "info": "Leave empty to hide the reply box."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews list",
+      "blocks": [
+        { "type": "distribution", "settings": { "stars": "5", "percent": 80, "count": "68" } },
+        { "type": "distribution", "settings": { "stars": "4", "percent": 9, "count": "1" } },
+        { "type": "distribution", "settings": { "stars": "3", "percent": 0, "count": "0" } },
+        { "type": "distribution", "settings": { "stars": "2", "percent": 0, "count": "0" } },
+        { "type": "distribution", "settings": { "stars": "1", "percent": 0, "count": "0" } },
+        { "type": "filter", "settings": { "label": "With photos", "count": "612" } },
+        { "type": "filter", "settings": { "label": "First wig", "count": "488" } },
+        { "type": "filter", "settings": { "label": "Hand-tied", "count": "901" } },
+        { "type": "filter", "settings": { "label": "Petite cap", "count": "207" } },
+        { "type": "filter", "settings": { "label": "Pre-order", "count": "394" } },
+        { "type": "filter", "settings": { "label": "3 star and below", "count": "107" } },
+        { "type": "review", "settings": { "placeholder": true, "show_photos": true } },
+        {
+          "type": "review",
+          "settings": {
+            "placeholder": true,
+            "title": "The pre-order wait was longer than I expected",
+            "text": "Four and a half weeks, not the two to four I was told. The wig is lovely but I would have picked something in stock if I had understood.",
+            "meta": "Robin · Kennedy · pre-order · 3 stars",
+            "reply": "“You are right and that is on us. We have changed how we show pre-order timing.”"
+          }
+        },
+        { "type": "review", "settings": { "placeholder": true } },
+        { "type": "review", "settings": { "placeholder": true, "show_photos": true } },
+        {
+          "type": "review",
+          "settings": {
+            "placeholder": true,
+            "title": "The pre-order wait was longer than I expected",
+            "text": "Four and a half weeks, not the two to four I was told. The wig is lovely but I would have picked something in stock if I had understood.",
+            "meta": "Robin · Kennedy · pre-order · 3 stars",
+            "reply": "“You are right and that is on us. We have changed how we show pre-order timing.”"
+          }
+        },
+        { "type": "review", "settings": { "placeholder": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}

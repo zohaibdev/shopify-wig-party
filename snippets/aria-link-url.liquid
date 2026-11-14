@@ -1,0 +1,33 @@
+{%- comment -%}
+  Wig Party — a menu link's href, made site-relative when the menu item was pasted as a full
+  myshopify.com address (often with a theme-preview id): "https://<shop>.myshopify.com/pages/x?
+  view=y&preview_theme_id=1" becomes "/pages/x?view=y", so it works on the real domain and
+  does not pin visitors to a preview theme. Every other link is output unchanged.
+  Accepts: url
+{%- endcomment -%}
+{%- liquid
+  assign out = url
+  if out contains '.myshopify.com/'
+    assign out = out | split: '.myshopify.com' | last
+    if out contains 'preview_theme_id='
+      assign query_start = out | split: '?' | first
+      assign query = out | remove_first: query_start | remove_first: '?'
+      assign kept = ''
+      assign pairs = query | split: '&'
+      for pair in pairs
+        if pair contains 'preview_theme_id='
+          continue
+        endif
+        if kept != ''
+          assign kept = kept | append: '&'
+        endif
+        assign kept = kept | append: pair
+      endfor
+      assign out = query_start
+      if kept != ''
+        assign out = out | append: '?' | append: kept
+      endif
+    endif
+  endif
+  echo out
+-%}

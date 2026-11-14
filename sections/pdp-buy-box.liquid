@@ -1,0 +1,1517 @@
+{%- comment -%}
+  Wig Party — PDP buy box. Figma node 6358:1262 ("Frame 2147240329"), desktop 1360 frame.
+
+  Structure mirrors the Figma frame exactly: a 727px gallery column and a 593px info
+  column separated by the 40px residual of the 1360 container.
+
+  This is a `main-` style section: it owns the add-to-cart form for the product template
+  and must not be placed twice on a page.
+{%- endcomment -%}
+
+{{ 'section-aria-pdp-buy-box.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-pdp-buy-box.js' | asset_url }}" defer="defer"></script>
+
+{%- comment -%}
+  The design leans on Poppins Medium (500) and SemiBold (600) for body copy, and on
+  Montserrat Medium (500) for the headings and the gallery pill. theme.liquid only
+  font_face's the regular + bold pair of each family, so without these declarations the
+  browser synthesises the missing weights and every label renders subtly heavier and
+  wider than the Figma text — which is what made the video pill break a word early.
+  font_modify returns nil when a weight is unavailable, hence the guards.
+{%- endcomment -%}
+{%- liquid
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+  assign body_font_semibold = settings.type_body_font | font_modify: 'weight', '600'
+  assign heading_font_medium = settings.type_header_font | font_modify: 'weight', '500'
+-%}
+{% style %}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if body_font_semibold -%}{{ body_font_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if heading_font_medium -%}{{ heading_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+{%- liquid
+  assign product_form_id = 'aria-pdp-form-' | append: section.id
+  assign current_variant = product.selected_or_first_available_variant
+
+  # -- Locate the colour and cap-size options by name so the section works on any
+  # -- product whose options follow the store's naming, in either spelling.
+  assign colour_option = null
+  assign cap_option = null
+  for option in product.options_with_values
+    assign option_key = option.name | downcase
+    if option_key == 'color' or option_key == 'colour'
+      assign colour_option = option
+    elsif option_key contains 'cap' or option_key == 'size'
+      assign cap_option = option
+    endif
+  endfor
+
+  # -- Liquid does not allow a filter inside an array subscript, so the zero-based
+  # -- indexes have to exist as their own variables before any options[] lookup.
+  if colour_option
+    assign colour_index = colour_option.position | minus: 1
+    assign selected_colour = current_variant.options[colour_index]
+  endif
+  if cap_option
+    assign cap_index = cap_option.position | minus: 1
+    assign selected_cap = current_variant.options[cap_index]
+  endif
+
+  assign on_sale = false
+  if current_variant.compare_at_price > current_variant.price
+    assign on_sale = true
+    assign save_pct = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round
+  endif
+
+  # ==========================================================================
+  # DYNAMIC CONTENT
+  #
+  # Precedence is always: product metafield -> section setting -> derived value.
+  # Keeping the section setting as a middle rung is deliberate: the page renders
+  # correctly before any definition exists, and each metafield takes over the
+  # moment it is filled in, so the definitions can be added one at a time
+  # without the PDP ever breaking.
+  #
+  # Site-wide lists are read from SHOP metafields rather than
+  # `shop.metaobjects.<type>.values` because a shop metafield of type
+  # list.metaobject_reference preserves the order the merchant drags them into;
+  # the bare metaobject collection has no dependable order to sort on.
+  # ==========================================================================
+  assign mf = product.metafields.wigparty
+
+  assign eyebrow = mf.eyebrow.value | default: section.settings.eyebrow_text
+  if eyebrow == blank
+    # -- The separator is added only between two present parts. (`remove_first` cannot
+    # -- be used to trim a leading separator: it would strip the joining one instead.)
+    assign eyebrow_parts = ''
+    if product.vendor != blank
+      assign eyebrow_parts = product.vendor
+    endif
+    if product.type != blank
+      if eyebrow_parts != blank
+        assign eyebrow_parts = eyebrow_parts | append: ' · '
+      endif
+      assign eyebrow_parts = eyebrow_parts | append: product.type
+    endif
+    assign eyebrow = eyebrow_parts
+  endif
+
+  assign summary = mf.summary.value | default: section.settings.summary
+  if summary == blank
+    assign summary = product.description | strip_html | truncatewords: 30
+  endif
+
+  # -- Rating: Shopify's standard `reviews` namespace, which every review app writes to.
+  # -- Only real review data (the standard `reviews.*` metafields a reviews app writes) is
+  # -- shown. There is no typed-in fallback: a static score would read as live reviews.
+  assign rating_value = product.metafields.reviews.rating.value.rating
+  assign rating_count = product.metafields.reviews.rating_count.value
+
+  # -- Instalment line computed from the live price, so it can never drift out of step
+  # -- with a price change the way the hardcoded string did.
+  assign instalment_money = current_variant.price | divided_by: 4 | money
+  capture instalment
+    echo '<span data-pdp-instalment>' | append: instalment_money | append: '</span>'
+  endcapture
+
+  # -- Kristi's colour story. Assigned with an `if`, never `| default:` — the default
+  # -- filter coerces a rich text field to a string, which prints the raw
+  # -- `{"type":"root", ...}` JSON. A plain assign keeps the field intact so the
+  # -- `metafield_tag` branch at the point of use can render it as HTML.
+  assign colour_story = mf.colour_story
+  if colour_story == blank
+    assign colour_story = section.settings.banner_text
+  endif
+
+  # -- One `styling_video` record drives BOTH the gallery pill here and the
+  # -- "Kristi styled this one" section further down the page.
+  assign styling_video = mf.styling_video.value
+
+  # -- Per-product metaobject lists.
+  assign cap_entries = mf.cap_sizes.value
+  assign accordion_entries = mf.accordion_rows.value
+
+  # -- Site-wide, identical on every PDP, so it hangs off the shop rather than the product.
+  # --
+  # -- Two routes, because shop metafield VALUES are editable only on the
+  # -- Settings > Custom data > Shop screen itself and that is easy to miss:
+  # --   1. a shop metafield list -- preferred, because the list keeps the exact
+  # --      order the badges are dragged into;
+  # --   2. every `trust_badge` entry, when no such list is set. This needs no shop
+  # --      metafield at all, but the order is whatever Shopify returns, so create
+  # --      the entries in the order they should appear and check the result.
+  # -- `== blank`, NOT `.size == 0`: an unset metafield is nil, and nil.size is nil
+  # -- rather than 0, so a size comparison silently never matches. `blank` is true
+  # -- for both nil and an empty list, which is what is actually meant here.
+  assign trust_entries = shop.metafields.wigparty.trust_badges.value
+  if trust_entries == blank
+    assign trust_entries = shop.metaobjects.trust_badge.values
+  endif
+-%}
+
+{%- comment -%}
+  `data-currency` lets aria-pdp-buy-box.js format quantity x price totals itself (the
+  "Add to cart — $X" button must reflect the quantity in the stepper, not just the unit
+  price — see the JS for why that needs real client-side formatting rather than a
+  pre-rendered string).
+
+{%- endcomment -%}
+<aria-pdp-buy-box
+  class="aria-pdp"
+  data-section-id="{{ section.id }}"
+  data-currency="{{ cart.currency.iso_code }}"
+>
+  <div class="aria-pdp__inner">
+    <div class="aria-pdp__layout">
+      {%- comment -%} ---------- Gallery (6358:1263) ---------- {%- endcomment -%}
+      <div class="aria-pdp__gallery">
+        <div class="aria-pdp__main-media">
+          {%- if product.media.size > 0 -%}
+            {%- for media in product.media -%}
+              <div
+                class="aria-pdp__main-slide"
+                data-pdp-slide="{{ media.id }}"
+                {% unless forloop.first %}hidden{% endunless %}
+              >
+                {{
+                  media
+                  | image_url: width: 1454
+                  | image_tag:
+                    loading: 'eager',
+                    fetchpriority: 'high',
+                    sizes: '(min-width: 990px) 727px, 100vw',
+                    widths: '727,1091,1454',
+                    class: 'aria-pdp__main-image',
+                    alt: media.alt | default: product.title | escape
+                }}
+              </div>
+            {%- endfor -%}
+          {%- else -%}
+            {{ 'product-1' | placeholder_svg_tag: 'aria-pdp__main-image' }}
+          {%- endif -%}
+
+          {%- comment -%}
+            Reuses the theme's global wishlist controller: assets/aria-wishlist.js binds
+            every [data-wishlist-toggle] on the document and falls back to these data
+            attributes when the button is not inside an .aria-product-card.
+          {%- endcomment -%}
+          <button
+            type="button"
+            class="aria-pdp__wishlist"
+            data-wishlist-toggle
+            data-product-id="{{ product.id }}"
+            data-variant-id="{{ current_variant.id }}"
+            data-product-handle="{{ product.handle }}"
+            data-product-title="{{ product.title | escape }}"
+            data-product-url="{{ product.url }}"
+            data-product-vendor="{{ product.vendor | escape }}"
+            {% if product.featured_image != blank %}
+              data-product-image="{{ product.featured_image | image_url: width: 200 }}"
+            {% endif %}
+            data-product-price="{{ current_variant.price | money }}"
+            {% if on_sale %}
+              data-product-compare-price="{{ current_variant.compare_at_price | money }}"
+            {% endif %}
+            aria-pressed="false"
+            aria-label="{{ 'aria_theme.product_card.wishlist_named' | t: product_name: product.title }}"
+          >
+            {%- render 'aria-icon', name: 'heart' -%}
+          </button>
+
+          {%- comment -%}
+            The pill is the entry point to the same `styling_video` record that section 3
+            renders in full, so label, avatar and destination all come off that one
+            metaobject when a product has one; the section settings remain as the fallback.
+          {%- endcomment -%}
+          {%- liquid
+            assign pill_label = styling_video.pill_label.value | default: section.settings.video_label
+            assign pill_avatar = styling_video.avatar.value | default: section.settings.video_avatar
+            assign pill_link = styling_video.video_url.value | default: section.settings.video_link
+          -%}
+          {%- if pill_label != blank and pill_link != blank -%}
+            {%- capture video_pill -%}
+              <span class="aria-pdp__video-avatar">
+                {%- comment -%}
+                  A File metafield resolves to one of two things. Limited to images, it is
+                  an `image` and `image_url` works. Left unrestricted, it can be a
+                  `generic_file` — `image_url` then yields nothing and the avatar silently
+                  vanishes while the text fields beside it render fine. Falling back to
+                  `.url` covers that case, so the field works however it was defined.
+
+                  The third rung is the theme asset. Figma always draws a face here, and a
+                  pill showing a play badge floating over blank space reads as broken, so
+                  an unconfigured store still gets the designed composition.
+                {%- endcomment -%}
+                {%- liquid
+                  assign avatar_src = pill_avatar | image_url: width: 80
+                  if avatar_src == blank
+                    assign avatar_src = pill_avatar.url
+                  endif
+                  if avatar_src == blank
+                    assign avatar_src = 'wp-kristi-avatar.png' | asset_url
+                  endif
+                -%}
+                <img
+                  src="{{ avatar_src }}"
+                  alt=""
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                >
+                <span class="aria-pdp__video-badge">
+                  {{- 'wp-pdp-play-badge.svg' | inline_asset_content -}}
+                </span>
+              </span>
+              <span class="aria-pdp__video-label">{{ pill_label }}</span>
+            {%- endcapture -%}
+
+            {%- comment -%}
+              A <button> that opens the lightbox below, not an <a> that navigates: sending
+              a shopper off the page mid-purchase to watch a video loses the cart. Without a
+              video the pill is not rendered at all, so nothing claims to be playable.
+            {%- endcomment -%}
+            <button
+              type="button"
+              class="aria-pdp__video-pill"
+              data-pdp-video-open
+              data-video-url="{{ pill_link }}"
+            >
+              {{ video_pill }}
+            </button>
+          {%- endif -%}
+        </div>
+
+        {%- if product.media.size > 1 -%}
+          <div class="aria-pdp__thumbs">
+            {%- for media in product.media -%}
+              <button
+                type="button"
+                class="aria-pdp__thumb"
+                data-pdp-thumb="{{ media.id }}"
+                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                aria-label="{{ media.alt | default: product.title | escape }}"
+              >
+                {{
+                  media.preview_image
+                  | image_url: width: 236
+                  | image_tag: loading: 'lazy', widths: '118,236', alt: ''
+                }}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} ---------- Info column (6358:1279) ---------- {%- endcomment -%}
+      <div class="aria-pdp__info">
+        {%- comment -%} Title block (6358:1280) {%- endcomment -%}
+        <div class="aria-pdp__heading-block">
+          <div>
+            {%- if eyebrow != blank or section.settings.show_stock_badge -%}
+              <span class="aria-pdp__eyebrow">
+                {%- if eyebrow != blank -%}
+                  <span class="aria-pdp__eyebrow-text">{{ eyebrow }}</span>
+                {%- endif -%}
+                {%- if section.settings.show_stock_badge -%}
+                  {%- liquid
+                    # -- Pre-order: PREORDER tag, "Preorder"/"Pre-order" in the title, or a
+                    # -- pre-order collection. These are available to buy but not in stock,
+                    # -- so they must never show the In Stock pill.
+                    assign is_preorder = false
+                    assign title_down = product.title | downcase
+                    if title_down contains 'preorder' or title_down contains 'pre-order' or title_down contains 'pre order'
+                      assign is_preorder = true
+                    endif
+                    for t in product.tags
+                      assign tag_down = t | downcase
+                      if tag_down contains 'preorder' or tag_down contains 'pre-order' or tag_down contains 'pre order'
+                        assign is_preorder = true
+                      endif
+                    endfor
+                    unless is_preorder
+                      for c in product.collections
+                        if c.handle contains 'pre-order' or c.handle contains 'preorder'
+                          assign is_preorder = true
+                          break
+                        endif
+                      endfor
+                    endunless
+                    # -- Sold past zero: Shopify tracks the variant, "Continue selling when out of
+                    # -- stock" is on and nothing is on hand, so the order is a pre-order (no ETA).
+                    unless is_preorder
+                      if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'continue' and current_variant.inventory_quantity <= 0
+                        assign is_preorder = true
+                      endif
+                    endunless
+                    assign preorder_eta = ''
+                    if is_preorder and product.title contains 'ETA'
+                      assign preorder_eta = product.title | split: 'ETA' | last | remove: ':' | remove: ')' | strip | split: ' ' | first
+                    endif
+                  -%}
+                  {%- if is_preorder -%}
+                    <span class="aria-pdp__stock-badge aria-pdp__stock-badge--preorder">
+                      {{- 'Pre-order' -}}{%- if preorder_eta != blank %} · ETA {{ preorder_eta }}{%- endif -%}
+                    </span>
+                  {%- elsif current_variant.available -%}
+                    <span class="aria-pdp__stock-badge">
+                      {{- 'aria_theme.pdp.in_stock' | t -}}
+                    </span>
+                  {%- else -%}
+                    <span class="aria-pdp__stock-badge aria-pdp__stock-badge--out">
+                      {{- 'aria_theme.pdp.out_of_stock' | t -}}
+                    </span>
+                  {%- endif -%}
+                {%- endif -%}
+              </span>
+            {%- endif -%}
+
+            <div class="aria-pdp__title-group">
+              {%- if section.settings.show_rating and rating_value != blank -%}
+                <div class="aria-pdp__rating">
+                  <span class="aria-pdp__stars" role="img" aria-label="{{ rating_value }}">
+                    {%- for i in (1..5) -%}
+                      <span class="aria-pdp__star">{{ 'wp-pdp-star.svg' | inline_asset_content }}</span>
+                    {%- endfor -%}
+                  </span>
+                  <p class="aria-pdp__rating-text">
+                    {{- rating_value }}
+                    {% if rating_count != blank %}({{ rating_count }}){% endif -%}
+                  </p>
+                </div>
+              {%- endif -%}
+
+              <h1 class="aria-pdp__title">{{ product.title | escape }}</h1>
+            </div>
+          </div>
+
+          {%- if summary != blank -%}
+            <p class="aria-pdp__summary">{{ summary }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Price block (6358:1307) {%- endcomment -%}
+        <div class="aria-pdp__price-block">
+          <div class="aria-pdp__price-row">
+            <p class="aria-pdp__price" data-pdp-price>{{ current_variant.price | money }}</p>
+            <p class="aria-pdp__price-compare" data-pdp-compare {% unless on_sale %}hidden{% endunless %}>
+              {%- if on_sale %}{{ current_variant.compare_at_price | money }}{% endif -%}
+            </p>
+            {%- comment -%}
+              `data-label-template` carries the translated string with a stand-in where
+              the number goes, so the script can rebuild this badge for a discounted
+              percentage without hardcoding English or assuming where the % sign belongs.
+              The stand-in is a brace-free token on purpose: a literal '{{ percent }}'
+              here would end the surrounding Liquid tag at its own first '}}'.
+            {%- endcomment -%}
+            <span
+              class="aria-pdp__save-badge"
+              data-pdp-save
+              data-label-template="{{ 'aria_theme.pdp.save_amount' | t: percent: '__PCT__' }}"
+              {% unless on_sale %}hidden{% endunless %}
+            >
+              {%- if on_sale %}{{ 'aria_theme.pdp.save_amount' | t: percent: save_pct }}{% endif -%}
+            </span>
+          </div>
+          {%- comment -%}
+            The instalment amount is derived from the live variant price rather than typed
+            in, so it follows every price and variant change. The surrounding wording stays
+            a section setting — it is legal copy that never varies by product — and uses
+            [amount] as its placeholder.
+
+            "Learn more" is part of that same sentence in Figma (6358:1312), not a separate
+            layer, so it is turned into a link by substitution rather than by splitting the
+            copy into two settings. The merchant names the words to link in
+            `finance_link_text`.
+
+            Without a destination those words are removed rather than left as a link
+            that goes nowhere. If they are not in the sentence the replace is a no-op.
+          {%- endcomment -%}
+          {%- if section.settings.finance_text != blank -%}
+            {%- liquid
+              assign finance_text = section.settings.finance_text | replace: '[amount]', instalment
+              assign finance_cta = section.settings.finance_link_text
+              assign finance_href = section.settings.finance_link
+            -%}
+            {%- if finance_cta != blank -%}
+              {%- if finance_href != blank -%}
+                {%- capture finance_anchor -%}<a class="aria-pdp__finance-link" href="{{ finance_href }}">{{ finance_cta }}</a>{%- endcapture -%}
+                {%- assign finance_text = finance_text | replace: finance_cta, finance_anchor -%}
+              {%- else -%}
+                {%- assign finance_text = finance_text | replace: finance_cta, '' | strip -%}
+              {%- endif -%}
+            {%- endif -%}
+            <p class="aria-pdp__finance">{{ finance_text }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%}
+          The form opens here and closes after the cart row so the quantity input, the
+          swatch radios and the submit button are all one submission. product-form.js
+          then handles the fetch and the cart drawer.
+        {%- endcomment -%}
+        <product-form class="aria-pdp__product-form" data-hide-errors="false" data-section-id="{{ section.id }}">
+
+          {%- form 'product',
+            product,
+            id: product_form_id,
+            class: 'aria-pdp__form',
+            novalidate: 'novalidate',
+            data-type: 'add-to-cart-form'
+          -%}
+            <input
+              type="hidden"
+              name="id"
+              value="{{ current_variant.id }}"
+              {% unless current_variant.available %}
+                disabled
+              {% endunless %}
+            >
+
+            <div class="aria-pdp__form-stack">
+              {%- comment -%} Colour + swatches (6358:1313) {%- endcomment -%}
+              {%- if colour_option -%}
+                <div class="aria-pdp__colour">
+                  {%- comment -%}
+                    Figma 6358:1313 (and its mobile counterpart, node 6441:4639) draws
+                    "Compare all N in daylight" on every product, tied to the colour count,
+                    not to whether a URL happens to be set — gating it on the link meant an
+                    unconfigured store lost a labelled part of the design (the same bug
+                    already fixed for "How do I measure?" and "Learn more" above).
+                  {%- endcomment -%}
+                  {%- comment -%}
+                    The link opens the Color Comparison page for this product (?product=<handle>).
+                    Each variant names its shade in its own custom.shade_for_comparison
+                    metafield; those shades (variant order, each once, only ones with a photo:
+                    hero photo, else swatch) also ride in the link as ?shades=<handles> with
+                    ?a= / ?b= on the first two (assets/aria-compare-shades.js). The link shows
+                    on every product with variants; when no variant has a shade yet the count
+                    is the variant count and the page shows its "no shades" message. The page is
+                    the compare_all_link setting when that is a page, else /pages/compare-shades.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign compare_page = '/pages/compare-shades'
+                    if section.settings.compare_all_link contains '/pages/'
+                      assign compare_page = section.settings.compare_all_link | split: '?' | first
+                    endif
+                    assign compare_all_href = compare_page | append: '?product=' | append: product.handle
+                    assign compare_count = 0
+                    assign compare_seen = ','
+                    assign compare_first = ''
+                    assign compare_second = ''
+                    for compare_variant in product.variants
+                      assign compare_entry = compare_variant.metafields.custom.shade_for_comparison.value
+                      if compare_entry == blank
+                        continue
+                      endif
+                      if compare_entry.hero_photo.value == blank and compare_entry.swatch.value == blank
+                        continue
+                      endif
+                      assign compare_key = ',' | append: compare_entry.system.handle | append: ','
+                      if compare_seen contains compare_key
+                        continue
+                      endif
+                      assign compare_seen = compare_seen | append: compare_entry.system.handle | append: ','
+                      assign compare_count = compare_count | plus: 1
+                      if compare_count == 1
+                        assign compare_first = compare_entry.system.handle
+                      elsif compare_count == 2
+                        assign compare_second = compare_entry.system.handle
+                      endif
+                    endfor
+                    assign compare_label_count = compare_count
+                    if compare_count > 0
+                      assign compare_handles = compare_seen | remove_first: ',' | remove_last: ','
+                      if compare_second == blank
+                        assign compare_second = compare_first
+                      endif
+                      assign compare_all_href = compare_all_href | append: '&shades=' | append: compare_handles | append: '&a=' | append: compare_first | append: '&b=' | append: compare_second
+                    else
+                      assign compare_label_count = product.variants.size
+                    endif
+                  -%}
+                  <p class="aria-pdp__colour-label">
+                    {{ 'aria_theme.pdp.colour_prefix' | t }}:
+                    <span data-pdp-colour-name>{{ selected_colour }}</span>
+                    {%- comment -%}
+                      Nov 6: the link opens the shade pop-up (snippets/pdp-shade-compare-modal.liquid)
+                      and stays a real link to the full page when JS is off. Shown only on wigs
+                      with 2 or more colours; the count is the colour count. Non-wig: product type
+                      contains supplies, jewel or accessor, or a blank type with no "wig" in the title.
+                    {%- endcomment -%}
+                    {%- liquid
+                      assign is_wig_product = true
+                      assign wig_type_down = product.type | downcase
+                      if wig_type_down contains 'suppl' or wig_type_down contains 'jewel' or wig_type_down contains 'accessor'
+                        assign is_wig_product = false
+                      elsif wig_type_down == blank
+                        assign wig_title_down = product.title | downcase
+                        unless wig_title_down contains 'wig'
+                          assign is_wig_product = false
+                        endunless
+                      endif
+                      assign shade_real_count = 0
+                      for shade_v in colour_option.values
+                        assign shade_vk = shade_v | downcase
+                        unless shade_vk contains 'choose' or shade_vk contains 'drop down' or shade_vk contains 'dropdown'
+                          assign shade_real_count = shade_real_count | plus: 1
+                        endunless
+                      endfor
+                      assign show_shade_compare = false
+                      if is_wig_product and shade_real_count > 1
+                        assign show_shade_compare = true
+                      endif
+                    -%}
+                    {% if show_shade_compare -%}
+                      <a
+                        class="aria-pdp__compare-all"
+                        href="{{ compare_all_href | escape }}"
+                        data-pdp-shade-compare-open
+                        aria-haspopup="dialog"
+                        aria-controls="PdpShadeCompare-{{ section.id }}"
+                      >
+                        {{- 'aria_theme.pdp.compare_all' | t: count: shade_real_count -}}
+                      </a>
+                    {%- endif -%}
+                  </p>
+
+                  <div>
+                    <ul
+                      class="aria-pdp__swatches"
+                      role="list"
+                      style="--aria-pdp-swatch-flag: url({{ 'wp-pdp-swatch-flag.svg' | asset_url }});"
+                    >
+                      {%- for value in colour_option.values -%}
+                        {%- liquid
+                          assign swatch_vk = value | downcase
+                          if swatch_vk contains 'choose' or swatch_vk contains 'drop down' or swatch_vk contains 'dropdown'
+                            continue
+                          endif
+                          # First variant carrying this colour supplies the swatch image
+                          # and, with a single-option product, its availability.
+                          assign swatch_variant = null
+                          assign colour_available = false
+                          for variant in product.variants
+                            if variant.options[colour_index] == value
+                              if swatch_variant == null
+                                assign swatch_variant = variant
+                              endif
+                              if variant.available
+                                assign colour_available = true
+                                assign swatch_variant = variant
+                                break
+                              endif
+                            endif
+                          endfor
+                          assign swatch_image = swatch_variant.image | default: product.featured_image
+                        -%}
+                        <li
+                          class="aria-pdp__swatch{% unless colour_available %} aria-pdp__swatch--unavailable{% endunless %}"
+                        >
+                          <input
+                            class="aria-pdp__swatch-input"
+                            type="radio"
+                            id="{{ section.id }}-colour-{{ forloop.index }}"
+                            name="option-{{ colour_option.position }}"
+                            value="{{ value | escape }}"
+                            data-pdp-option="{{ colour_option.position }}"
+                            {% if value == selected_colour %}
+                              checked
+                            {% endif %}
+                          >
+                          <label
+                            class="aria-pdp__swatch-label"
+                            for="{{ section.id }}-colour-{{ forloop.index }}"
+                            title="{{ value | escape }}"
+                          >
+                            {%- if swatch_image != blank -%}
+                              {{
+                                swatch_image
+                                | image_url: width: 137
+                                | image_tag: loading: 'lazy', widths: '69,137', alt: value | escape
+                              }}
+                            {%- endif -%}
+                            <span class="visually-hidden">{{ value }}</span>
+                          </label>
+                          {%- unless colour_available -%}
+                            <span class="aria-pdp__swatch-flag" aria-hidden="true">
+                              <span>{{ 'aria_theme.pdp.back_soon' | t }}</span>
+                            </span>
+                          {%- endunless -%}
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+
+                    {%- comment -%}
+                      Figma 6358:1344 shows the select resting on its placeholder, so no
+                      option is pre-selected from the variant. `disabled selected` together
+                      is the right pairing: the placeholder shows on load and cannot be
+                      returned to once a real colour is picked. The select carries no
+                      `name`, so an empty value can never reach /cart/add — the variant is
+                      driven by the hidden `id` input and the swatch radios above.
+                    {%- endcomment -%}
+                    <div class="aria-pdp__colour-select-wrap">
+                      <select
+                        class="aria-pdp__colour-select"
+                        data-pdp-colour-select
+                        data-pdp-colour-position="{{ colour_option.position }}"
+                        aria-label="{{ 'aria_theme.pdp.choose_colour' | t }}"
+                      >
+                        <option value="" disabled selected>
+                          {{- 'aria_theme.pdp.choose_colour' | t -}}
+                        </option>
+                        {%- for value in colour_option.values -%}
+                          {%- liquid
+                            assign opt_vk = value | downcase
+                            if opt_vk contains 'choose' or opt_vk contains 'drop down' or opt_vk contains 'dropdown'
+                              continue
+                            endif
+                          -%}
+                          <option value="{{ value | escape }}">{{- value -}}</option>
+                        {%- endfor -%}
+                      </select>
+                      <span class="aria-pdp__colour-select-icon">
+                        {{- 'wp-pdp-chevron-down.svg' | inline_asset_content -}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+
+              {%- comment -%}
+                Cap size (6358:1415), above the Kristi banner as in Figma PDP V2 7104:3781; in one of two modes.
+
+                SELECTOR — the product has a real cap-size variant option. The radio set
+                is built from that option's own values, so the control can never offer a
+                size with no variant behind it; a `cap_size` metaobject whose `name`
+                matches the value supplies its caption and figure.
+
+                DISPLAY — the product has no such option (every wig in this catalogue
+                currently ships with a single cap size, so the only option is Colour) but
+                DOES list cap sizes in `wigparty.cap_sizes`. The block then states which
+                sizes the style comes in, with no radios, because there is nothing to
+                select. Without this branch the metafield could never render at all.
+              {%- endcomment -%}
+              {%- comment -%}
+                Figma shows one card pre-highlighted in DISPLAY mode ("Average") in every
+                frame this component appears in — a card set with nothing selected reads
+                as broken, not neutral, since these radios exist purely to carry the
+                highlighted styling. `recommended` is the merchant's explicit choice when
+                set on an entry; when none is, the entry named "Average" (case-insensitive)
+                stands in, and failing that the middle entry, so a highlighted card always
+                renders rather than depending on metaobject data being fully filled in.
+              {%- endcomment -%}
+              {%- liquid
+                assign cap_has_recommended = false
+                for entry in cap_entries
+                  if entry.recommended.value
+                    assign cap_has_recommended = true
+                    break
+                  endif
+                endfor
+
+                assign cap_default_name = null
+                if cap_has_recommended == false and cap_entries.size > 0
+                  for entry in cap_entries
+                    assign entry_name_lower = entry.name.value | downcase
+                    if entry_name_lower == 'average'
+                      assign cap_default_name = entry.name.value
+                      break
+                    endif
+                  endfor
+                  if cap_default_name == null
+                    assign cap_default_index = cap_entries.size | minus: 1 | divided_by: 2
+                    assign cap_default_name = cap_entries[cap_default_index].name.value
+                  endif
+                endif
+              -%}
+              {%- if cap_option or cap_entries.size > 0 -%}
+                <div class="aria-pdp__cap">
+                  <div class="aria-pdp__cap-label-row">
+                    <p class="aria-pdp__cap-label">
+                      {%- if cap_option -%}
+                        {{- cap_option.name -}}
+                      {%- else -%}
+                        {{- 'aria_theme.pdp.cap_size' | t -}}
+                      {%- endif -%}
+                    </p>
+                    {%- comment -%}
+                      Figma 6358:1419 draws "How do I measure?" beside the CAP SIZE label
+                      on every product, so the text is tied to the row, not to whether a
+                      URL happens to be set — gating the whole thing on the link meant an
+                      unconfigured store lost a labelled part of the design.
+
+                      It is only rendered once a destination is set, so it never reads
+                      as a link that goes nowhere.
+                    {%- endcomment -%}
+                    {%- if section.settings.cap_measure_link != blank -%}
+                      <a class="aria-pdp__cap-measure" href="{{ section.settings.cap_measure_link }}">
+                        {{- 'aria_theme.pdp.how_measure' | t -}}
+                      </a>
+                    {%- endif -%}
+                  </div>
+
+                  <ul
+                    class="aria-pdp__cap-options"
+                    role="list"
+                    style="--aria-pdp-cap-sprite: url({{ 'wp-pdp-cap-measure.png' | asset_url }});"
+                  >
+                    {%- if cap_option == null -%}
+                      {%- comment -%}
+                        DISPLAY mode. Same card markup as the selector so the design is
+                        identical, but rendered as list items rather than radios — there
+                        is no variant to choose, so offering a control would be a lie.
+                        `recommended` is optional: set it on one entry to get the
+                        highlighted card the design shows on "Average".
+                      {%- endcomment -%}
+                      {%- for entry in cap_entries -%}
+                        <li class="aria-pdp__cap-option">
+                          {%- comment -%}
+                            Real radios so the card highlights on click exactly as the
+                            design does. The name is deliberately NOT `option-N`: there
+                            is no cap-size variant to switch, so this must never be
+                            mistaken for one. Shopify ignores unrecognised parameters on
+                            /cart/add, so it cannot affect what is added to the cart.
+                            `recommended` on a `cap_size` entry sets the one highlighted
+                            on load — the design's default state on "Average".
+                          {%- endcomment -%}
+                          <input
+                            class="aria-pdp__cap-input"
+                            type="radio"
+                            id="{{ section.id }}-capinfo-{{ forloop.index }}"
+                            name="cap-size-info-{{ section.id }}"
+                            value="{{ entry.name.value | escape }}"
+                            {% if entry.recommended.value or entry.name.value == cap_default_name %}
+                              checked
+                            {% endif %}
+                          >
+                          <label
+                            class="aria-pdp__cap-card"
+                            for="{{ section.id }}-capinfo-{{ forloop.index }}"
+                          >
+                            {%- if entry.image.value != blank -%}
+                              {{
+                                entry.image.value
+                                | image_url: width: 72
+                                | image_tag:
+                                  loading: 'lazy',
+                                  widths: '36,72',
+                                  class: 'aria-pdp__cap-figure aria-pdp__cap-figure--image',
+                                  alt: ''
+                              }}
+                            {%- else -%}
+                              <span class="aria-pdp__cap-figure" aria-hidden="true"></span>
+                            {%- endif -%}
+                            <span class="aria-pdp__cap-text">
+                              <span class="aria-pdp__cap-name">{{ entry.name.value }}</span>
+                              {%- if entry.caption.value != blank -%}
+                                <span class="aria-pdp__cap-measure-value">{{ entry.caption.value }}</span>
+                              {%- endif -%}
+                            </span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    {%- else -%}
+                      {%- for value in cap_option.values -%}
+                        {%- liquid
+                          # -- The radio set is still built from the product's real option
+                          # -- values, so the control can never offer a size that has no
+                          # -- variant behind it. A `cap_size` metaobject whose `name`
+                          # -- matches the option value supplies that option's caption and
+                          # -- figure; a section block does the same as the fallback.
+                          assign cap_entry = null
+                          for entry in cap_entries
+                            if entry.name.value == value
+                              assign cap_entry = entry
+                              break
+                            endif
+                          endfor
+
+                          assign cap_block = null
+                          for block in section.blocks
+                            if block.type == 'cap_size' and block.settings.name == value
+                              assign cap_block = block
+                              break
+                            endif
+                          endfor
+
+                          assign cap_image = cap_entry.image.value | default: cap_block.settings.image
+                          assign cap_caption = cap_entry.caption.value | default: cap_block.settings.caption
+                        -%}
+                        <li class="aria-pdp__cap-option">
+                          <input
+                            class="aria-pdp__cap-input"
+                            type="radio"
+                            id="{{ section.id }}-cap-{{ forloop.index }}"
+                            name="option-{{ cap_option.position }}"
+                            value="{{ value | escape }}"
+                            data-pdp-option="{{ cap_option.position }}"
+                            {% if value == selected_cap %}
+                              checked
+                            {% endif %}
+                          >
+                          <label class="aria-pdp__cap-card" for="{{ section.id }}-cap-{{ forloop.index }}">
+                            {%- if cap_image != blank -%}
+                              {{
+                                cap_image
+                                | image_url: width: 72
+                                | image_tag:
+                                  loading: 'lazy',
+                                  widths: '36,72',
+                                  class: 'aria-pdp__cap-figure aria-pdp__cap-figure--image',
+                                  alt: ''
+                              }}
+                            {%- else -%}
+                              <span class="aria-pdp__cap-figure" aria-hidden="true"></span>
+                            {%- endif -%}
+                            <span class="aria-pdp__cap-text">
+                              <span class="aria-pdp__cap-name">{{ value }}</span>
+                              {%- if cap_caption != blank -%}
+                                <span class="aria-pdp__cap-measure-value">{{ cap_caption }}</span>
+                              {%- endif -%}
+                            </span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    {%- endif -%}
+                  </ul>
+                </div>
+              {%- endif -%}
+
+              {%- comment -%} Kristi banner (6358:1347) {%- endcomment -%}
+              {%- if colour_story != blank -%}
+                <div class="aria-pdp__kristi">
+                  {%- if section.settings.banner_image != blank -%}
+                    <div class="aria-pdp__kristi-media">
+                      {{
+                        section.settings.banner_image
+                        | image_url: width: 255
+                        | image_tag: loading: 'lazy', widths: '128,255', alt: ''
+                      }}
+                    </div>
+                  {%- endif -%}
+                  <div class="aria-pdp__kristi-body">
+                    {%- comment -%}
+                      Figma 6358:1350 paints the signature white on the black card, but the
+                      shared asset is authored in brand pink for light backgrounds and is
+                      used elsewhere on the site. Passing the file in as a CSS mask lets the
+                      colour be set from the stylesheet without forking the artwork — the
+                      same approach the swatch flag and cap sprite already use.
+                    {%- endcomment -%}
+                    <span
+                      class="aria-pdp__kristi-signature"
+                      style="--aria-pdp-kristi-signature: url({{ 'wp-pdp-reviews-signature.svg' | asset_url }});"
+                      aria-hidden="true"
+                    ></span>
+                    <div class="aria-pdp__kristi-text">
+                      {%- if colour_story.type == 'rich_text_field' -%}
+                        {{- colour_story | metafield_tag -}}
+                      {%- else -%}
+                        {{- colour_story -}}
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+
+              {%- comment -%} Add to cart row (6358:1353) {%- endcomment -%}
+              <div class="aria-pdp__actions">
+                {%- comment -%}
+                  Class names here are product-form.js's contract, not decoration: it looks
+                  up `.product-form__error-message-wrapper` and its
+                  `.product-form__error-message` child by those exact selectors. Placed
+                  against the button so a cart error surfaces where the action was taken.
+                {%- endcomment -%}
+                <div class="product-form__error-message-wrapper aria-pdp__error" role="alert" hidden>
+                  <span class="product-form__error-message"></span>
+                </div>
+
+                <div class="aria-pdp__cart-row">
+                  <div class="aria-pdp__qty">
+                    <button
+                      type="button"
+                      class="aria-pdp__qty-btn aria-pdp__qty-btn--minus"
+                      data-pdp-qty-step="-1"
+                      aria-label="{{ 'products.product.quantity.decrease' | t: product: product.title | escape }}"
+                    >
+                      {{- 'wp-pdp-qty-minus.svg' | inline_asset_content -}}
+                    </button>
+                    <input
+                      class="aria-pdp__qty-input"
+                      type="number"
+                      name="quantity"
+                      value="1"
+                      min="1"
+                      step="1"
+                      data-pdp-qty
+                      aria-label="{{ 'products.product.quantity.input_label' | t: product: product.title | escape }}"
+                    >
+                    <button
+                      type="button"
+                      class="aria-pdp__qty-btn aria-pdp__qty-btn--plus"
+                      data-pdp-qty-step="1"
+                      aria-label="{{ 'products.product.quantity.increase' | t: product: product.title | escape }}"
+                    >
+                      {{- 'wp-pdp-qty-plus.svg' | inline_asset_content -}}
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    name="add"
+                    class="aria-pdp__submit"
+                    data-pdp-submit
+                    data-add-label="{{ 'aria_theme.pdp.add_to_cart' | t }}"
+                    data-sold-out-label="{{ 'products.product.sold_out' | t }}"
+                    {% unless current_variant.available %}
+                      aria-disabled="true" disabled
+                    {% endunless %}
+                  >
+                    {%- comment -%}
+                      The icon deliberately is not a <span>: product-form.js takes
+                      `submitButton.querySelector('span')` as the label node, so the first
+                      span inside this button must be the text, whatever the visual order.
+                    {%- endcomment -%}
+                    <i class="aria-pdp__submit-icon" aria-hidden="true">
+                      {{- 'wp-pdp-cart.svg' | inline_asset_content -}}
+                    </i>
+                    <span data-pdp-submit-text>
+                      {%- if current_variant.available -%}
+                        {{ 'aria_theme.pdp.add_to_cart' | t }} | {{ current_variant.price | money }}
+                      {%- else -%}
+                        {{ 'products.product.sold_out' | t }}
+                      {%- endif -%}
+                    </span>
+                    {%- render 'loading-spinner' -%}
+                  </button>
+                </div>
+
+                {%- comment -%}
+                  Trust cards (6358:1371). Identical on every product and repeated verbatim
+                  by the trust-badges section at the foot of the page, so they live in one
+                  shop-level list of `trust_badge` metaobjects. Section blocks remain the
+                  fallback until that list exists.
+                {%- endcomment -%}
+                {%- assign trust_blocks = section.blocks | where: 'type', 'trust' -%}
+                {%- comment -%} Nov 6: the template blocks hold the checked copy (all sales final, processing time), so they win over the shop trust_badge metaobjects, which still carry returns and price-match claims the store does not offer. {%- endcomment -%}
+                {%- if trust_blocks.size == 0 and trust_entries.size > 0 -%}
+                  <ul class="aria-pdp__trust" role="list">
+                    {%- for entry in trust_entries -%}
+                      <li class="aria-pdp__trust-card">
+                        <span class="aria-pdp__trust-icon">
+                          {%- if entry.icon.value != blank -%}
+                            {{
+                              entry.icon.value
+                              | image_url: width: 70
+                              | image_tag: loading: 'lazy', widths: '35,70', alt: ''
+                            }}
+                          {%- endif -%}
+                        </span>
+                        <span class="aria-pdp__trust-text">
+                          <span class="aria-pdp__trust-title">{{ entry.title.value }}</span>
+                          <span class="aria-pdp__trust-desc">{{ entry.description.value }}</span>
+                        </span>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- elsif trust_blocks.size > 0 -%}
+                  <ul class="aria-pdp__trust" role="list">
+                    {%- for block in trust_blocks -%}
+                      <li class="aria-pdp__trust-card" {{ block.shopify_attributes }}>
+                        <span class="aria-pdp__trust-icon">
+                          {%- if block.settings.icon != blank -%}
+                            {{
+                              block.settings.icon
+                              | image_url: width: 70
+                              | image_tag: loading: 'lazy', widths: '35,70', alt: ''
+                            }}
+                          {%- else -%}
+                            {{- block.settings.default_icon | inline_asset_content -}}
+                          {%- endif -%}
+                        </span>
+                        <span class="aria-pdp__trust-text">
+                          <span class="aria-pdp__trust-title">{{ block.settings.title }}</span>
+                          <span class="aria-pdp__trust-desc">{{ block.settings.description }}</span>
+                        </span>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+
+
+                {%- comment -%}
+                  Accordions (6358:1436). Each row is a `pdp_accordion` metaobject so a
+                  body can be written once and reused: "Shipping & returns" is the same on
+                  every product, and "What you should know" is shared by every wig of the
+                  same construction. The product's list decides which rows appear and in
+                  what order. Section blocks remain the fallback.
+                {%- endcomment -%}
+                {%- assign accordion_blocks = section.blocks | where: 'type', 'accordion' -%}
+                {%- if accordion_entries.size > 0 -%}
+                  <div class="aria-pdp__accordions">
+                    {%- for entry in accordion_entries -%}
+                      {%- comment -%}
+                        A shared `name` makes these an exclusive group natively: opening
+                        one closes the rest, with no JS. aria-pdp-buy-box.js enforces the
+                        same for browsers that predate the attribute.
+                      {%- endcomment -%}
+                      <details
+                        class="aria-pdp__accordion"
+                        name="aria-pdp-accordion-{{ section.id }}"
+                        {% if forloop.first %}
+                          open
+                        {% endif %}
+                      >
+                        <summary class="aria-pdp__accordion-summary">
+                          <span class="aria-pdp__accordion-title">{{ entry.title.value }}</span>
+                          <span class="aria-pdp__accordion-icon">
+                            <span class="aria-pdp__icon-plus">
+                              {{- 'wp-pdp-accordion-plus.svg' | inline_asset_content -}}
+                            </span>
+                            <span class="aria-pdp__icon-minus">
+                              {{- 'wp-pdp-accordion-minus.svg' | inline_asset_content -}}
+                            </span>
+                          </span>
+                        </summary>
+                        <div class="aria-pdp__accordion-content">
+                          {%- comment -%}
+                            Rich text has two ways to come out wrong, and both have been
+                            seen on this store:
+                              `.value`            -> the parsed tree, prints {"type"=>"root"
+                              plain output        -> on some field shapes, the raw JSON
+                                                     string, prints {"type":"root"
+                            `metafield_tag` is the type-aware filter that turns a
+                            rich_text_field into real HTML, so it is used whenever the
+                            field reports that type; anything else (plain text, or a
+                            section block's richtext) is output directly.
+                          {%- endcomment -%}
+                          {%- if entry.body.type == 'rich_text_field' -%}
+                            {{- entry.body | metafield_tag -}}
+                          {%- else -%}
+                            {{- entry.body -}}
+                          {%- endif -%}
+                        </div>
+                      </details>
+                    {%- endfor -%}
+                  </div>
+                {%- elsif accordion_blocks.size > 0 -%}
+                  <div class="aria-pdp__accordions">
+                    {%- for block in accordion_blocks -%}
+                      {%- if block.settings.use_product_description == false and block.settings.content == blank -%}
+                        {%- continue -%}
+                      {%- endif -%}
+                      <details
+                        class="aria-pdp__accordion"
+                        name="aria-pdp-accordion-{{ section.id }}"
+                        {% if block.settings.open %}
+                          open
+                        {% endif %}
+                        {{ block.shopify_attributes }}
+                      >
+                        <summary class="aria-pdp__accordion-summary">
+                          <span class="aria-pdp__accordion-title">{{ block.settings.title }}</span>
+                          <span class="aria-pdp__accordion-icon">
+                            <span class="aria-pdp__icon-plus">
+                              {{- 'wp-pdp-accordion-plus.svg' | inline_asset_content -}}
+                            </span>
+                            <span class="aria-pdp__icon-minus">
+                              {{- 'wp-pdp-accordion-minus.svg' | inline_asset_content -}}
+                            </span>
+                          </span>
+                        </summary>
+                        <div class="aria-pdp__accordion-content">
+                          {%- if block.settings.use_product_description -%}
+                            {{ product.description }}
+                          {%- else -%}
+                            {{ block.settings.content }}
+                          {%- endif -%}
+                        </div>
+                      </details>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endform -%}
+        </product-form>
+
+        {%- comment -%}
+          Returns disclaimer. It used to sit ABOVE the H1 in all caps, where it was the
+          first copy on the page and Google could lift it as the search snippet. Here it
+          follows the whole purchase area, so it is still read before checkout but the
+          title, price and description lead. Kept outside the <product-form> because it is
+          not part of the form. Merchant-editable; empty hides it.
+        {%- endcomment -%}
+        {%- if section.settings.returns_disclaimer != blank -%}
+          <div class="aria-pdp__disclaimer">
+            {{ section.settings.returns_disclaimer }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%}
+    Video lightbox. Kept outside the form so a stray Enter inside it can never submit the
+    add-to-cart, and outside .aria-pdp__inner so the container padding does not offset the
+    centred dialog. A native <dialog> gives focus trapping, Esc-to-close and the backdrop
+    without writing any of it.
+  {%- endcomment -%}
+  <dialog class="aria-pdp__video-modal" data-pdp-video-modal>
+    <button
+      type="button"
+      class="aria-pdp__video-close"
+      data-pdp-video-close
+      aria-label="{{ 'accessibility.close' | t }}"
+    >
+      &times;
+    </button>
+    <div class="aria-pdp__video-frame" data-pdp-video-frame></div>
+  </dialog>
+
+  {%- if show_shade_compare -%}
+    {%- render 'pdp-shade-compare-modal',
+      product: product,
+      colour_option: colour_option,
+      section_id: section.id,
+      compare_href: compare_all_href,
+      is_preorder: is_preorder,
+      preorder_eta: preorder_eta
+    -%}
+  {%- endif -%}
+
+  {%- comment -%}
+    Variant lookup table for the client. Emitted as application/json rather than inline JS
+    so the payload cannot break the page if a title contains quotes or a closing tag.
+  {%- endcomment -%}
+  <script type="application/json" data-pdp-variants>
+    [
+      {%- for variant in product.variants -%}
+        {%- liquid
+          assign v_pct = 0
+          if variant.compare_at_price > variant.price
+            assign v_pct = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
+          endif
+        -%}
+        {
+          "id": {{ variant.id | json }},
+          "options": {{ variant.options | json }},
+          "available": {{ variant.available | json }},
+          "title": {{ variant.title | json }},
+          "price": {{ variant.price | money | json }},
+          "price_value": {{ variant.price | json }},
+          "compare_at_price": {{ variant.compare_at_price | money | json }},
+          "compare_at_price_value": {{ variant.compare_at_price | default: 0 | json }},
+          "save_label": {%- if v_pct > 0 -%}
+              {{ 'aria_theme.pdp.save_amount' | t: percent: v_pct | json }}
+            {%- else -%}
+              ""
+            {%- endif -%},
+          "featured_media_id": {{ variant.featured_media.id | default: 0 | json }},
+          "colour": {%- if colour_option -%}{{ variant.options[colour_index] | json }}{%- else -%}""{%- endif -%}
+        }{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  </script>
+</aria-pdp-buy-box>
+
+{%- comment -%}
+  Lightbox controller. Lives here rather than in aria-pdp-buy-box.js so the feature is
+  self-contained in the section that owns it. Listeners are delegated on the document so
+  they survive a theme-editor section re-render, and the flag stops a re-render from
+  binding a second copy.
+{%- endcomment -%}
+<script>
+  (function () {
+    if (window.ariaPdpVideoBound) return;
+    window.ariaPdpVideoBound = true;
+
+    function buildPlayer(url) {
+      var yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+      var vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      var node;
+
+      if (yt || vimeo) {
+        node = document.createElement('iframe');
+        node.src = yt
+          ? 'https://www.youtube.com/embed/' + yt[1] + '?autoplay=1&rel=0'
+          : 'https://player.vimeo.com/video/' + vimeo[1] + '?autoplay=1';
+        node.allow = 'autoplay; fullscreen; picture-in-picture';
+        node.allowFullscreen = true;
+      } else {
+        // A file uploaded to Shopify Files, or any direct media URL.
+        node = document.createElement('video');
+        node.src = url;
+        node.controls = true;
+        node.autoplay = true;
+        node.playsInline = true;
+      }
+      return node;
+    }
+
+    document.addEventListener('click', function (event) {
+      var trigger = event.target.closest('[data-pdp-video-open]');
+
+      if (trigger) {
+        var root = trigger.closest('aria-pdp-buy-box');
+        var modal = root && root.querySelector('[data-pdp-video-modal]');
+        if (!modal || typeof modal.showModal !== 'function') return;
+
+        modal.querySelector('[data-pdp-video-frame]').replaceChildren(buildPlayer(trigger.dataset.videoUrl));
+        modal.showModal();
+        return;
+      }
+
+      // Closing via the button, or by clicking the backdrop (which targets the dialog
+      // element itself, since the frame covers the rest of the box).
+      var open = event.target.closest('[data-pdp-video-modal]');
+      if (open && (event.target.closest('[data-pdp-video-close]') || event.target === open)) {
+        open.close();
+      }
+    });
+
+    // `close` does not bubble, so this is captured. Without it, dismissing with Esc would
+    // leave the video playing behind the closed dialog.
+    document.addEventListener(
+      'close',
+      function (event) {
+        if (event.target.matches('[data-pdp-video-modal]')) {
+          event.target.querySelector('[data-pdp-video-frame]').replaceChildren();
+        }
+      },
+      true
+    );
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.aria-pdp-buy-box.name",
+  "tag": "section",
+  "class": "aria-pdp-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow_text",
+      "label": "t:sections.aria-pdp-buy-box.settings.eyebrow_text.label",
+      "info": "t:sections.aria-pdp-buy-box.settings.eyebrow_text.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock_badge",
+      "default": true,
+      "label": "t:sections.aria-pdp-buy-box.settings.show_stock_badge.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": true,
+      "label": "t:sections.aria-pdp-buy-box.settings.show_rating.label"
+    },
+    {
+      "type": "text",
+      "id": "rating_value",
+      "default": "4.9",
+      "label": "t:sections.aria-pdp-buy-box.settings.rating_value.label"
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "default": "212",
+      "label": "t:sections.aria-pdp-buy-box.settings.rating_count.label"
+    },
+    {
+      "type": "textarea",
+      "id": "summary",
+      "label": "t:sections.aria-pdp-buy-box.settings.summary.label",
+      "info": "t:sections.aria-pdp-buy-box.settings.summary.info"
+    },
+    {
+      "type": "text",
+      "id": "finance_text",
+      "default": "Or 4 interest-free payments of [amount] with Sezzle.",
+      "label": "t:sections.aria-pdp-buy-box.settings.finance_text.label",
+      "info": "t:sections.aria-pdp-buy-box.settings.finance_text.info"
+    },
+    {
+      "type": "text",
+      "id": "finance_link_text",
+      "default": "Learn more",
+      "label": "Finance link words",
+      "info": "The words inside the line above that become a link. Must match exactly. Leave blank for no link."
+    },
+    {
+      "type": "url",
+      "id": "finance_link",
+      "label": "Finance link"
+    },
+    {
+      "type": "url",
+      "id": "compare_all_link",
+      "label": "t:sections.aria-pdp-buy-box.settings.compare_all_link.label"
+    },
+    {
+      "type": "url",
+      "id": "cap_measure_link",
+      "label": "t:sections.aria-pdp-buy-box.settings.cap_measure_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-buy-box.settings.video_header.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "video_avatar",
+      "label": "t:sections.aria-pdp-buy-box.settings.video_avatar.label"
+    },
+    {
+      "type": "text",
+      "id": "video_label",
+      "default": "Watch Kristi style this one",
+      "label": "t:sections.aria-pdp-buy-box.settings.video_label.label"
+    },
+    {
+      "type": "url",
+      "id": "video_link",
+      "label": "t:sections.aria-pdp-buy-box.settings.video_link.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-pdp-buy-box.settings.banner_header.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "t:sections.aria-pdp-buy-box.settings.banner_image.label"
+    },
+    {
+      "type": "richtext",
+      "id": "banner_text",
+      "default": "<p>New styles, live shows and exclusive deals from Kristi.</p>",
+      "label": "t:sections.aria-pdp-buy-box.settings.banner_text.label"
+    },
+    {
+      "type": "header",
+      "content": "Returns disclaimer"
+    },
+    {
+      "type": "richtext",
+      "id": "returns_disclaimer",
+      "label": "Disclaimer text",
+      "info": "Shown below the buy box, after the add-to-cart area. Write it in normal sentence case: all-caps copy reads as shouting and is what Google tends to lift as the search snippet. Leave empty to hide.",
+      "default": "<p><strong>All sales are final.</strong> No refunds, no exchanges, no returns, no exceptions.</p><p>All Belle Tress wigs are handmade in Indonesia, making each piece unique, and may vary slightly from the stock photo, be it color, style, cut, curl or fit. In-stock wigs may have been tried on by Kristi during a Facebook Live. If you want an unopened-box wig, avoid in-stock selections.</p><p>If returns or exchanges are important to you, we kindly suggest shopping with a retailer that has a flexible return policy. By purchasing here at WigParty.com, you agree to these terms. These terms are in place to keep our selection vast and our prices as low as possible for you. ❤️ Kristi</p>"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "t:sections.aria-pdp-buy-box.blocks.trust.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "default": "ALL SALES FINAL",
+          "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.title.label"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "default": "Worry Free & No Restocking Fees",
+          "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.description.label"
+        },
+        {
+          "type": "select",
+          "id": "default_icon",
+          "options": [
+            { "value": "wp-pdp-trust-returns.svg", "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.default_icon.options__1.label" },
+            { "value": "wp-pdp-trust-gift.svg", "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.default_icon.options__2.label" },
+            { "value": "wp-pdp-trust-shipping.svg", "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.default_icon.options__3.label" },
+            { "value": "wp-pdp-trust-pricematch.svg", "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.default_icon.options__4.label" }
+          ],
+          "default": "wp-pdp-trust-returns.svg",
+          "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.default_icon.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.aria-pdp-buy-box.blocks.trust.settings.icon.label",
+          "info": "t:sections.aria-pdp-buy-box.blocks.trust.settings.icon.info"
+        }
+      ]
+    },
+    {
+      "type": "cap_size",
+      "name": "t:sections.aria-pdp-buy-box.blocks.cap_size.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "default": "Average",
+          "label": "t:sections.aria-pdp-buy-box.blocks.cap_size.settings.name.label",
+          "info": "t:sections.aria-pdp-buy-box.blocks.cap_size.settings.name.info"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "default": "21½\" · most people",
+          "label": "t:sections.aria-pdp-buy-box.blocks.cap_size.settings.caption.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-pdp-buy-box.blocks.cap_size.settings.image.label",
+          "info": "t:sections.aria-pdp-buy-box.blocks.cap_size.settings.image.info"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "t:sections.aria-pdp-buy-box.blocks.accordion.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "default": "What you should know",
+          "label": "t:sections.aria-pdp-buy-box.blocks.accordion.settings.title.label"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:sections.aria-pdp-buy-box.blocks.accordion.settings.content.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "use_product_description",
+          "default": false,
+          "label": "t:sections.aria-pdp-buy-box.blocks.accordion.settings.use_product_description.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "open",
+          "default": false,
+          "label": "t:sections.aria-pdp-buy-box.blocks.accordion.settings.open.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-pdp-buy-box.presets.name",
+      "blocks": [
+        { "type": "trust", "settings": { "title": "TRIED ON LIVE BY KRISTI", "description": "", "default_icon": "wp-pdp-trust-returns.svg" } },
+        { "type": "trust", "settings": { "title": "PROCESSED IN 1 TO 3 BUSINESS DAYS", "description": "", "default_icon": "wp-pdp-trust-gift.svg" } },
+        { "type": "trust", "settings": { "title": "TRACKING WITHIN 24 TO 48 HOURS", "description": "", "default_icon": "wp-pdp-trust-shipping.svg" } },
+        { "type": "trust", "settings": { "title": "ALL SALES FINAL, ASK US FIRST", "description": "", "default_icon": "wp-pdp-trust-pricematch.svg" } },
+        { "type": "cap_size", "settings": { "name": "Petite", "caption": "20½\"" } },
+        { "type": "cap_size", "settings": { "name": "Average", "caption": "21½\" · most people" } },
+        { "type": "cap_size", "settings": { "name": "Large", "caption": "22½\"" } },
+        { "type": "accordion", "settings": { "title": "What you should know", "open": true, "use_product_description": true } },
+        { "type": "accordion", "settings": { "title": "Cap & fit" } },
+        { "type": "accordion", "settings": { "title": "Specification" } },
+        { "type": "accordion", "settings": { "title": "Caring for it" } },
+        { "type": "accordion", "settings": { "title": "Shipping & returns" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

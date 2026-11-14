@@ -13,6 +13,7 @@
 {%- endcomment -%}
 <ul class="aria-mega__sublinks" role="list">
   {%- for child in link.links -%}
+    {%- if child.url == blank or child.url == '#' -%}{%- continue -%}{%- endif -%}
     <li>
       <a
         href="{{ child.url }}"

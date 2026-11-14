@@ -1,0 +1,165 @@
+{%- comment -%}
+  Wig Party — Learn page, "Ask and we will write it". Figma internal file, node 7605:7756
+  (1440 x 738). The hair photo under a grey wash, with a frosted, white-ringed panel holding the
+  title, text and a button beside a four-photo collage.
+  Styles in assets/section-aria-learn-ask.css.
+{%- endcomment -%}
+
+{{ 'section-aria-learn-ask.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # -- theme.liquid only font_faces the heading base weight; the title is Montserrat 700.
+  assign heading_font_bold = settings.type_header_font | font_modify: 'weight', '700'
+-%}
+{% style %}
+  {%- if heading_font_bold -%}{{ heading_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-learn-ask">
+  <div class="aria-learn-ask__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1100,1440,2160,2880', sizes: '100vw', alt: '', loading: 'lazy'
+      }}
+    {%- else -%}
+      <img
+        class="aria-learn-ask__bg-fallback"
+        src="{{ 'wp-colour-hero.jpg' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+        loading="lazy"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="aria-learn-ask__panel">
+    <div class="aria-learn-ask__copy">
+      <div class="aria-learn-ask__text-group">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-learn-ask__title">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="aria-learn-ask__text">{{ section.settings.text | escape | newline_to_br }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} No real page means no button (dead links are hidden, never '#'). {%- endcomment -%}
+      {%- if section.settings.button_label != blank and section.settings.button_url != blank -%}
+        <a class="aria-learn-ask__btn" href="{{ section.settings.button_url }}">
+          {{- section.settings.button_label -}}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-learn-ask__collage">
+      {%- comment -%} The mobile frame draws the same collage scaled; the inner box scales as one. {%- endcomment -%}
+      <div class="aria-learn-ask__collage-inner">
+      {%- for i in (1..4) -%}
+        {%- liquid
+          assign key = 'image_' | append: i
+          assign image = section.settings[key]
+          assign fallback = 'wp-learn-ask-' | append: i | append: '.jpg'
+          case i
+            when 1
+              assign w = 236
+              assign h = 365
+            when 2
+              assign w = 199
+              assign h = 297
+            when 3
+              assign w = 188
+              assign h = 235
+            else
+              assign w = 189
+              assign h = 284
+          endcase
+          assign w2 = w | times: 2
+          assign h2 = h | times: 2
+        -%}
+        <div class="aria-learn-ask__photo aria-learn-ask__photo--{{ i }}">
+          {%- if image != blank -%}
+            {{ image | image_url: width: w2 | image_tag: width: w, height: h, alt: image.alt, loading: 'lazy' }}
+          {%- else -%}
+            <img src="{{ fallback | asset_url }}" alt="" width="{{ w2 }}" height="{{ h2 }}" loading="lazy">
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-learn-ask.name",
+  "tag": "section",
+  "class": "aria-learn-ask-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-learn-ask.settings.background.label",
+      "info": "t:sections.aria-learn-ask.settings.background.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Ask and we will write it",
+      "label": "t:sections.aria-learn-ask.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "If your question is not here, send it. Kristi answers it directly, and if it comes up more than once it becomes an article and probably a Live.",
+      "label": "t:sections.aria-learn-ask.settings.text.label",
+      "info": "t:sections.aria-learn-ask.settings.text.info"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "ASK A QUESTION",
+      "label": "t:sections.aria-learn-ask.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-learn-ask.settings.button_url.label",
+      "info": "t:sections.aria-learn-ask.settings.button_url.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-learn-ask.settings.collage.content",
+      "info": "t:sections.aria-learn-ask.settings.collage.info"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "t:sections.aria-learn-ask.settings.image_1.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "t:sections.aria-learn-ask.settings.image_2.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "t:sections.aria-learn-ask.settings.image_3.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "t:sections.aria-learn-ask.settings.image_4.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-learn-ask.presets.name",
+      "settings": { "button_url": "/pages/contact" }
+    }
+  ]
+}
+{% endschema %}

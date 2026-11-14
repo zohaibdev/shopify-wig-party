@@ -1,0 +1,133 @@
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-wp-search-guides.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'wp-search-guides.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  comment
+    A request without ?type= searches every type (types = product, page, article), so
+    "contains 'article'" is not enough. Cards render only when article is the ONLY type.
+  endcomment
+  assign is_article_request = false
+  if search.performed and search.types.size == 1 and search.types.first == 'article'
+    assign is_article_request = true
+  endif
+  assign article_count = 0
+  if is_article_request
+    for item in search.results
+      if item.object_type == 'article'
+        assign article_count = article_count | plus: 1
+      endif
+    endfor
+  endif
+-%}
+
+{%- if is_article_request -%}
+  {%- if article_count > 0 -%}
+    {%- liquid
+      assign terms_lower = search.terms | downcase
+      assign title_text = section.settings.title_template | replace: '{count}', search.results_count | replace: '{terms}', terms_lower
+    -%}
+    <div class="wp-guides" data-wp-guides data-wp-guides-mode="cards">
+      <div class="wp-guides__inner" data-wp-guides-content>
+        <h2 class="wp-guides__title">{{ title_text | escape }}</h2>
+        <ul class="wp-guides__grid">
+          {%- assign shown = 0 -%}
+          {%- for item in search.results -%}
+            {%- if item.object_type != 'article' or shown >= 3 -%}{%- continue -%}{%- endif -%}
+            {%- assign shown = shown | plus: 1 -%}
+            {%- liquid
+              assign cta = item.metafields.custom.cta_label.value | default: section.settings.default_cta
+              assign desc = item.excerpt_or_content | strip_html | strip | truncatewords: 40
+            -%}
+            <li class="wp-guides__card">
+              <a class="wp-guides__media" href="{{ item.url }}" aria-hidden="true" tabindex="-1">
+                {%- liquid
+                  # -- Nov 6: most blog posts have no featured image but do carry photos in
+                  # -- the body, so the first body image stands in before the gray box.
+                  assign body_img = ''
+                  if item.image == blank and item.content contains '<img'
+                    assign img_parts = item.content | split: '<img'
+                    assign img_tag = img_parts[1] | split: '>' | first
+                    if img_tag contains 'src="'
+                      assign body_img = img_tag | split: 'src="' | last | split: '"' | first
+                    endif
+                  endif
+                -%}
+                {%- if item.image != blank -%}
+                  {{ item.image | image_url: width: 876 | image_tag: loading: 'lazy', widths: '438, 876', sizes: '438px', alt: '' }}
+                {%- elsif body_img != blank -%}
+                  <img src="{{ body_img }}" alt="" loading="lazy" width="438" height="292" style="width:100%;height:100%;object-fit:cover;">
+                {%- elsif section.settings.fallback_image != blank -%}
+                  {{ section.settings.fallback_image | image_url: width: 876 | image_tag: loading: 'lazy', widths: '438, 876', sizes: '438px', alt: '' }}
+                {%- else -%}
+                  <span class="wp-guides__placeholder">
+                    <svg class="wp-guides__placeholder-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                    {%- if section.settings.no_image_text != blank -%}
+                      <span class="wp-guides__placeholder-text">{{ section.settings.no_image_text | escape }}</span>
+                    {%- endif -%}
+                  </span>
+                {%- endif -%}
+              </a>
+              <div class="wp-guides__body">
+                <div class="wp-guides__text">
+                  <h3 class="wp-guides__card-title">{{ item.title | escape }}</h3>
+                  {%- if desc != blank -%}
+                    <p class="wp-guides__desc">{{ desc }}</p>
+                  {%- endif -%}
+                </div>
+                <a class="wp-guides__link" href="{{ item.url }}">{{ cta | escape }}</a>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    </div>
+  {%- endif -%}
+{%- elsif search.performed and search.results_count == 0 -%}
+  {%- comment -%} No products found: the empty state replaces this section, so no shell and no fetch. {%- endcomment -%}
+{%- else -%}
+  {%- comment -%} Page request: empty hidden shell. wp-search-guides.js fetches the article request and injects the cards. {%- endcomment -%}
+  <div
+    class="wp-guides"
+    data-wp-guides
+    data-wp-guides-mode="shell"
+    data-wp-guides-terms="{{ search.terms | url_encode }}"
+    data-wp-guides-section-id="{{ section.id }}"
+    hidden
+  ></div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Search guides",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title_template",
+      "label": "Title template",
+      "info": "Use {count} and {terms}. Terms are lowercased.",
+      "default": "GUIDES {count} ({terms})"
+    },
+    {
+      "type": "text",
+      "id": "default_cta",
+      "label": "Default link text",
+      "info": "Used when the article has no custom.cta_label metafield.",
+      "default": "Read the guide"
+    },
+    {
+      "type": "image_picker",
+      "id": "fallback_image",
+      "label": "Fallback image",
+      "info": "Shown when an article has no image. Empty shows a gray box."
+    },
+    {
+      "type": "text",
+      "id": "no_image_text",
+      "label": "No image text",
+      "info": "Shown under the icon in the gray box. Empty hides the text.",
+      "default": "No image"
+    }
+  ]
+}
+{% endschema %}

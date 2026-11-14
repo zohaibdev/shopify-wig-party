@@ -1,0 +1,160 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "community-intro": {
+      "type": "community-intro",
+      "blocks": {
+        "stat-1": {
+          "type": "stat",
+          "settings": {
+            "value": "Private",
+            "label": "Facebook group"
+          }
+        },
+        "stat-2": {
+          "type": "stat",
+          "settings": {
+            "value": "LIVE",
+            "label": "throughout the week"
+          }
+        },
+        "stat-3": {
+          "type": "stat",
+          "settings": {
+            "value": "Free",
+            "label": "to join"
+          }
+        },
+        "card-1": {
+          "type": "card",
+          "settings": {
+            "title": "Real women, real wigs",
+            "text": "Our private community support group on Facebook is where members talk about their wigs in real life. Join to see their photos and ask your own questions.",
+            "button_label": "See photos in the Facebook group",
+            "url": "https://www.facebook.com/groups/wigpartyshop"
+          }
+        },
+        "card-2": {
+          "type": "card",
+          "settings": {
+            "title": "The private group",
+            "text": "Our private community support group on Facebook. For exclusive deals, join our group.",
+            "button_label": "Request to join",
+            "url": "https://www.facebook.com/groups/wigpartyshop"
+          }
+        },
+        "card-3": {
+          "type": "card",
+          "settings": {
+            "title": "Never miss a LIVE",
+            "text": "We go LIVE on Facebook and Instagram throughout the week. Text love to (833) 280-2725 to hear when Kristi goes LIVE, or watch any show you missed.",
+            "button_label": "Watch the replays",
+            "url": "/pages/replays"
+          }
+        }
+      },
+      "block_order": [
+        "stat-1",
+        "stat-2",
+        "stat-3",
+        "card-1",
+        "card-2",
+        "card-3"
+      ],
+      "settings": {
+        "background_color": "#F5EBE2",
+        "primary_url": "https://www.facebook.com/groups/wigpartyshop",
+        "secondary_url": "https://www.facebook.com/groups/wigpartyshop"
+      }
+    },
+    "community-audience": {
+      "type": "community-audience",
+      "blocks": {
+        "reason-1": {
+          "type": "reason",
+          "settings": {
+            "glyph": "medical",
+            "title": "MEDICAL",
+            "text": "Chemotherapy and radiation, alopecia, thyroid and autoimmune conditions, PCOS, postpartum shedding."
+          }
+        },
+        "reason-2": {
+          "type": "reason",
+          "settings": {
+            "glyph": "transition",
+            "title": "TRANSITION",
+            "text": "Gender-affirming, at whatever stage, at whatever pace."
+          }
+        },
+        "reason-3": {
+          "type": "reason",
+          "settings": {
+            "glyph": "thinning",
+            "title": "THINNING",
+            "text": "Age, genetics, stress, or no reason anyone has been able to give you."
+          }
+        },
+        "reason-4": {
+          "type": "reason",
+          "settings": {
+            "glyph": "convenience",
+            "title": "CONVENIENCE",
+            "text": "You are tired of your own hair taking forty minutes."
+          }
+        },
+        "reason-5": {
+          "type": "reason",
+          "settings": {
+            "glyph": "fashion",
+            "title": "FASHION",
+            "text": "You want to be a redhead on Thursday. That is a completely good reason."
+          }
+        },
+        "reason-6": {
+          "type": "reason",
+          "settings": {
+            "glyph": "private",
+            "title": "NOT SAYING",
+            "text": "You do not owe anybody an explanation, including us."
+          }
+        }
+      },
+      "block_order": [
+        "reason-1",
+        "reason-2",
+        "reason-3",
+        "reason-4",
+        "reason-5",
+        "reason-6"
+      ],
+      "settings": {
+        "background_color": "#F5EBE2"
+      }
+    },
+    "community-kristi": {
+      "type": "community-kristi",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "quote": "“If hair loss has dimmed your confidence, you’re not alone. We bring compassion, quality, and a community that sees you, not just your wig.”",
+        "note": "Watch Kristi's Total Request Belle Tress Wig LIVE from November 2.",
+        "play_label": "Play Kristi's LIVE replay",
+        "replay_id": "feed1451-4857-46cb-a94d-83b385e24117",
+        "replay_cover_url": "https://theme.livemeup.io/customers-branding/feed1451-4857-46cb-a94d-83b385e24117-pre-event-cover?vh=1793646017376",
+        "replay_page": "/pages/replays"
+      }
+    }
+  },
+  "order": [
+    "community-intro",
+    "community-audience",
+    "community-kristi"
+  ]
+}

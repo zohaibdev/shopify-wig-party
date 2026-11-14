@@ -1,0 +1,164 @@
+{%- comment -%}
+  Wig Party — Find Your Colour page, "If you are new" tips. Figma internal file, desktop node
+  7009:5431 (1440 x 873).
+  A dark band with a centred intro (pill, title) over a row of `tip` cards that runs off the
+  right edge of the page: a photo with a frosted panel (tag, title, text) along its bottom.
+  The row is the shared aria-product-carousel.js driver (drag / swipe, `auto` slide widths).
+  Styles in assets/section-aria-colour-tips.css.
+{%- endcomment -%}
+
+{{ 'section-aria-colour-tips.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-product-carousel.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign tip_blocks = section.blocks | where: 'type', 'tip'
+  # -- Built-in photos, one per card position. Card 2's photo is the same file the
+  # -- "Three ways to be sure" section uses.
+  assign fallback_files = 'wp-colour-tip-1.jpg,wp-colour-ways-1.jpg,wp-colour-tip-3.jpg,wp-colour-tip-4.jpg' | split: ','
+
+  # -- theme.liquid only font_faces the heading's base weight (500) and the body's 400/700;
+  # -- the title is Montserrat Regular and the tags Poppins Medium.
+  assign heading_font_regular = settings.type_header_font | font_modify: 'weight', '400'
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+-%}
+{% style %}
+  {%- if heading_font_regular -%}{{ heading_font_regular | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-colour-tips">
+  <div class="aria-colour-tips__inner">
+    <div class="aria-colour-tips__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="aria-colour-tips__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="aria-colour-tips__title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if tip_blocks.size > 0 -%}
+      {%- comment -%}
+        Attributes stay on their own lines: a whitespace-trimming Liquid comment between
+        them welds attribute names together and stops Swiper initialising.
+      {%- endcomment -%}
+      <div
+        class="aria-colour-tips__carousel"
+        data-aria-product-carousel
+        data-slides-mobile="auto"
+        data-slides-sm="auto"
+        data-slides-md="auto"
+        data-slides-desktop="auto"
+        data-space-between="24"
+      >
+        <div class="swiper aria-colour-tips__swiper" data-aria-carousel-swiper>
+          <ul class="swiper-wrapper aria-colour-tips__list" role="list">
+            {%- for block in tip_blocks -%}
+              {%- liquid
+                assign fallback_index = forloop.index0 | modulo: fallback_files.size
+                assign fallback_file = fallback_files[fallback_index]
+                assign fallback_mobile_n = fallback_index | plus: 1
+                assign fallback_mobile = 'wp-colour-tip-' | append: fallback_mobile_n | append: '-mobile.jpg'
+              -%}
+              <li class="swiper-slide aria-colour-tips__card" {{ block.shopify_attributes }}>
+                <div class="aria-colour-tips__media">
+                  {%- if block.settings.image != blank -%}
+                    {{
+                      block.settings.image
+                      | image_url: width: 1164
+                      | image_tag: widths: '388,776,1164', sizes: '388px', alt: block.settings.image.alt, loading: 'lazy'
+                    }}
+                  {%- else -%}
+                    {%- comment -%}
+                      Mobile (7009:5044) frames each photo its own way (card 1 leaves Figma's
+                      grey under the panel), so it gets copies composed to that 343 x 501 frame.
+                    {%- endcomment -%}
+                    <picture>
+                      <source media="(max-width: 749px)" srcset="{{ fallback_mobile | asset_url }}" width="343" height="501">
+                      <img src="{{ fallback_file | asset_url }}" alt="" width="388" height="501" loading="lazy">
+                    </picture>
+                  {%- endif -%}
+                </div>
+                <div class="aria-colour-tips__panel">
+                  {%- if block.settings.tag != blank -%}
+                    <span class="aria-colour-tips__tag">{{ block.settings.tag }}</span>
+                  {%- endif -%}
+                  <div class="aria-colour-tips__copy">
+                    {%- if block.settings.title != blank -%}
+                      <h3 class="aria-colour-tips__card-title">{{ block.settings.title }}</h3>
+                    {%- endif -%}
+                    {%- if block.settings.text != blank -%}
+                      <p class="aria-colour-tips__card-text">{{ block.settings.text | escape | newline_to_br }}</p>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-colour-tips.name",
+  "tag": "section",
+  "class": "aria-colour-tips-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "IF YOU ARE NEW",
+      "label": "t:sections.aria-colour-tips.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Start rooted, and go one shade lighter than you think",
+      "label": "t:sections.aria-colour-tips.settings.heading.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tip",
+      "name": "t:sections.aria-colour-tips.blocks.tip.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-colour-tips.blocks.tip.settings.image.label",
+          "info": "t:sections.aria-colour-tips.blocks.tip.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "default": "Tips 1",
+          "label": "t:sections.aria-colour-tips.blocks.tip.settings.tag.label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Rooted is forgiving",
+          "label": "t:sections.aria-colour-tips.blocks.tip.settings.title.label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "A darker root reads as natural regrowth and hides the hairline. Solid colours look more obviously uniform than real hair does.",
+          "label": "t:sections.aria-colour-tips.blocks.tip.settings.text.label",
+          "info": "t:sections.aria-colour-tips.blocks.tip.settings.text.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-colour-tips.presets.name",
+      "blocks": [{ "type": "tip" }, { "type": "tip" }, { "type": "tip" }, { "type": "tip" }]
+    }
+  ]
+}
+{% endschema %}

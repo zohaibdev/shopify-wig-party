@@ -1,0 +1,405 @@
+{%- comment -%}
+  Wig Party — Watch Live, first section. Figma internal file, node 6849:21153 (1440 wide).
+
+  Breadcrumb bar, then a 739 / 586 split inside the 1360 container:
+    • left  — the stream card and the show's date, title and description. The show is the
+              one on air in the LiveMeUp app, else the next one scheduled, else the latest
+              replay; the card plays it (or, before it starts, sets a reminder) in
+              LiveMeUp's shoppable player, with a LIVE NOW / countdown / LATEST REPLAY pill;
+    • right — "Up next & just aired": the other upcoming shows and the latest replays from
+              LiveMeUp, each with its own Watch / Remind me button, then a button that opens
+              the featured show's player, where everything she shows can be added to the
+              bag; below it the Ask the Community box, which posts to the store's contact form.
+
+  Nothing about a show is set here: it all comes from LiveMeUp and swaps over on its own
+  when a show goes live (assets/aria-livemeup.js). assets/aria-live-watch.js only reveals
+  the guest email field of the Ask box.
+{%- endcomment -%}
+
+{{ 'section-aria-live-watch.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-live-watch.js' | asset_url }}" defer="defer"></script>
+{%- render 'aria-livemeup' -%}
+
+{%- liquid
+  # -- theme.liquid only font_faces the body regular/bold and the heading base weight; the
+  # -- design also uses Poppins 600 (dates) and Montserrat 600 (title).
+  assign body_font_semibold = settings.type_body_font | font_modify: 'weight', '600'
+  assign heading_font_semibold = settings.type_header_font | font_modify: 'weight', '600'
+
+  assign crumb_current = section.settings.crumb_current | default: page.title | default: 'Watch Live'
+-%}
+{% style %}
+  {%- if body_font_semibold -%}{{ body_font_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if heading_font_semibold -%}{{ heading_font_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div
+  class="aria-live"
+  style="--aria-live-bg: {{ section.settings.background_color }};"
+  data-aria-live
+  data-lmu-root
+>
+  {%- comment -%}
+    Breadcrumb (6849:21154; mobile 6849:21654). Figma sets it as one string, "Home  /  Live
+    /   Watch Live": the separators carry those literal spaces and the list preserves them.
+    The last one has a third space on desktop only; the mobile frame (two spaces) gets its
+    own copy, so the desktop text is untouched.
+  {%- endcomment -%}
+  <nav class="aria-live__crumbs" aria-label="{{ 'aria_theme.live.breadcrumb' | t }}">
+    <ol class="aria-live__crumb-list">
+      <li><a class="aria-live__crumb-link" href="{{ routes.root_url }}">{{ 'aria_theme.pdp.home' | t }}</a></li>
+      {%- if section.settings.crumb_parent != blank -%}
+        <li>
+          <span class="aria-live__crumb-sep" aria-hidden="true">  /  </span>
+          {%- if section.settings.crumb_parent_url != blank -%}
+            <a class="aria-live__crumb-link" href="{{ section.settings.crumb_parent_url }}">{{ section.settings.crumb_parent }}</a>
+          {%- else -%}
+            <span class="aria-live__crumb-link">{{ section.settings.crumb_parent }}</span>
+          {%- endif -%}
+        </li>
+      {%- endif -%}
+      <li>
+        <span class="aria-live__crumb-sep" aria-hidden="true">  /  </span>
+        <span class="aria-live__crumb-current" aria-current="page">{{ crumb_current }}</span>
+      </li>
+    </ol>
+  </nav>
+
+  <div class="aria-live__grid">
+    {%- comment -%} Left: stream card + show copy (6849:21157). {%- endcomment -%}
+    <div class="aria-live__main">
+      <div class="aria-live__featured" data-lmu-featured="live-first">
+        <div class="aria-live__card">
+          <div class="aria-live__media">
+            <button
+              type="button"
+              class="aria-live__poster"
+              data-lmu-action
+              aria-label="{{ section.settings.play_label | escape }}"
+            >
+              <span data-lmu-cover="711" data-lmu-eager></span>
+              <span class="aria-live__play" aria-hidden="true" data-lmu-if="live replay">
+                {{- 'wp-pdp-kristi-play.svg' | inline_asset_content -}}
+              </span>
+            </button>
+
+            {%- if section.settings.live_label != blank -%}
+              <span class="aria-live__live" data-lmu-if="live" hidden>
+                <span class="aria-live__live-dot" aria-hidden="true"></span>
+                {{- section.settings.live_label -}}
+              </span>
+            {%- endif -%}
+            <span class="aria-live__live aria-live__live--soon" data-lmu-if="upcoming" data-lmu-countdown hidden></span>
+            {%- if section.settings.replay_label != blank -%}
+              <span class="aria-live__live aria-live__live--soon" data-lmu-if="replay" hidden>
+                {{- section.settings.replay_label -}}
+              </span>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="aria-live__copy">
+          <span class="aria-live__badge" data-lmu-date="when"></span>
+          <div class="aria-live__copy-text">
+            <h1 class="aria-live__title" data-lmu-title></h1>
+            <p class="aria-live__text" data-lmu-description></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="aria-live__card" data-lmu-loading aria-hidden="true">
+        <div class="aria-live__media aria-lmu-skeleton"></div>
+      </div>
+      <div class="aria-live__copy" data-lmu-loading aria-hidden="true">
+        <span class="aria-lmu-skeleton-line" style="width: 70%; height: 32px;"></span>
+        <span class="aria-lmu-skeleton-line aria-lmu-skeleton-line--short"></span>
+      </div>
+      <p class="aria-live__copy" data-lmu-empty>{{ section.settings.empty_text }}</p>
+      <p class="aria-live__copy" data-lmu-error>{{ 'aria_theme.live.lmu.unavailable' | t }}</p>
+    </div>
+
+    {%- comment -%} Right: up next & just aired + ask the community (6849:21185). {%- endcomment -%}
+    <div class="aria-live__side">
+      <div class="aria-live__showing" data-lmu-hide-empty>
+        <h2 class="aria-live__showing-title">{{ section.settings.showing_heading }}</h2>
+
+        <div class="aria-live__showing-body">
+          <div data-lmu-list data-lmu-source="mixed" data-lmu-limit="{{ section.settings.rows }}" data-lmu-skip-featured>
+            <template data-lmu-template>
+              <li class="aria-live__item">
+                <a class="aria-live__thumb" href="#" data-lmu-href data-lmu-action tabindex="-1" aria-hidden="true">
+                  <span data-lmu-cover="52"></span>
+                </a>
+                <div class="aria-live__item-info">
+                  <div class="aria-live__item-row">
+                    <a class="aria-live__item-name" href="#" data-lmu-href data-lmu-action data-lmu-title></a>
+                    <span class="aria-live__item-price" data-lmu-date="day"></span>
+                  </div>
+                  <div class="aria-live__item-row">
+                    <span class="aria-live__item-note" data-lmu-if="upcoming" data-lmu-countdown></span>
+                    <span class="aria-live__item-note" data-lmu-if="live">{{ 'aria_theme.live.lmu.on_air' | t }}</span>
+                    <span class="aria-live__item-note" data-lmu-if="replay" data-lmu-date="relative"></span>
+                    <button
+                      type="button"
+                      class="aria-live__add"
+                      data-lmu-action
+                      data-label-live="{{ section.settings.watch_live_label | escape }}"
+                      data-label-upcoming="{{ section.settings.remind_label | escape }}"
+                      data-label-replay="{{ section.settings.watch_label | escape }}"
+                    >
+                      {{- section.settings.watch_label -}}
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </template>
+            <ul class="aria-live__items" role="list" data-lmu-items>
+              {%- for i in (1..section.settings.rows) -%}
+                <li class="aria-live__item aria-lmu-skeleton" data-lmu-loading aria-hidden="true" style="height: 76px;"></li>
+              {%- endfor -%}
+            </ul>
+          </div>
+
+          {%- if section.settings.shop_live_label != blank -%}
+            <button
+              type="button"
+              class="aria-live__add-all"
+              data-lmu-featured="live-first"
+              data-lmu-action
+              data-label-live="{{ section.settings.shop_live_label | escape }}"
+              data-label-upcoming="{{ section.settings.shop_upcoming_label | escape }}"
+              data-label-replay="{{ section.settings.shop_replay_label | escape }}"
+              hidden
+            >
+              {{- section.settings.shop_live_label -}}
+            </button>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.showing_note != blank -%}
+          <p class="aria-live__showing-note">{{ section.settings.showing_note }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Ask the Community (6849:21234; heading renamed from "Ask Kristi" per client). {%- endcomment -%}
+      <div class="aria-live__ask">
+        {%- form 'contact', id: 'AriaLiveAsk', class: 'aria-live__ask-form' -%}
+          <input type="hidden" name="contact[source]" value="{{ section.settings.ask_heading | escape }}">
+          <div class="aria-live__ask-head">
+            <img
+              class="aria-live__ask-avatar"
+              src="{{ 'wp-kristi-avatar-80.png' | asset_url }}"
+              alt=""
+              width="40"
+              height="40"
+              loading="lazy"
+            >
+            <h2 class="aria-live__ask-title">{{ section.settings.ask_heading }}</h2>
+          </div>
+
+          {%- if form.posted_successfully? -%}
+            <p class="aria-live__ask-status" role="status">{{ 'aria_theme.live.question_sent' | t }}</p>
+          {%- elsif form.errors -%}
+            <p class="aria-live__ask-status aria-live__ask-status--error" role="alert">
+              {{ form.errors | default_errors }}
+            </p>
+          {%- endif -%}
+
+          <label class="visually-hidden" for="AriaLiveAsk-{{ section.id }}">{{ section.settings.ask_placeholder }}</label>
+          <input
+            id="AriaLiveAsk-{{ section.id }}"
+            class="aria-live__ask-input"
+            type="text"
+            name="contact[body]"
+            placeholder="{{ section.settings.ask_placeholder | escape }}"
+            autocomplete="off"
+            required
+            data-aria-live-question
+          >
+
+          {%- comment -%}
+            Shopify's contact form needs an email. A signed-in customer's is sent silently;
+            a guest is asked for theirs only once they start typing a question.
+          {%- endcomment -%}
+          {%- if customer.email != blank -%}
+            <input type="hidden" name="contact[email]" value="{{ customer.email | escape }}">
+          {%- else -%}
+            <div class="aria-live__ask-email" data-aria-live-email hidden>
+              <label class="visually-hidden" for="AriaLiveAskEmail-{{ section.id }}">{{ 'aria_theme.live.email_placeholder' | t }}</label>
+              <input
+                id="AriaLiveAskEmail-{{ section.id }}"
+                class="aria-live__ask-input"
+                type="email"
+                name="contact[email]"
+                placeholder="{{ 'aria_theme.live.email_placeholder' | t | escape }}"
+                autocomplete="email"
+              >
+              <button type="submit" class="aria-live__ask-send">{{ 'aria_theme.live.send' | t }}</button>
+            </div>
+          {%- endif -%}
+        {%- endform -%}
+
+        {%- if section.settings.ask_note != blank -%}
+          <p class="aria-live__ask-note">{{ section.settings.ask_note }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-live-watch.name",
+  "tag": "section",
+  "class": "aria-live-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.aria-live-watch.settings.source.content"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-live-watch.settings.background_color.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-live-watch.settings.crumbs_header.content"
+    },
+    {
+      "type": "text",
+      "id": "crumb_parent",
+      "default": "Live",
+      "label": "t:sections.aria-live-watch.settings.crumb_parent.label"
+    },
+    {
+      "type": "url",
+      "id": "crumb_parent_url",
+      "label": "t:sections.aria-live-watch.settings.crumb_parent_url.label"
+    },
+    {
+      "type": "text",
+      "id": "crumb_current",
+      "label": "t:sections.aria-live-watch.settings.crumb_current.label",
+      "info": "t:sections.aria-live-watch.settings.crumb_current.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-live-watch.settings.video_header.content"
+    },
+    {
+      "type": "text",
+      "id": "play_label",
+      "default": "Play the show",
+      "label": "t:sections.aria-live-watch.settings.play_label.label"
+    },
+    {
+      "type": "text",
+      "id": "live_label",
+      "default": "Live now",
+      "label": "t:sections.aria-live-watch.settings.live_label.label"
+    },
+    {
+      "type": "text",
+      "id": "replay_label",
+      "default": "Latest replay",
+      "label": "t:sections.aria-live-watch.settings.replay_label.label"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "default": "No shows yet. The next one will appear here as soon as it is scheduled.",
+      "label": "t:sections.aria-live-watch.settings.empty_text.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-live-watch.settings.showing_header.content"
+    },
+    {
+      "type": "text",
+      "id": "showing_heading",
+      "default": "UP NEXT & JUST AIRED",
+      "label": "t:sections.aria-live-watch.settings.showing_heading.label"
+    },
+    {
+      "type": "range",
+      "id": "rows",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.aria-live-watch.settings.rows.label"
+    },
+    {
+      "type": "text",
+      "id": "watch_label",
+      "default": "Watch",
+      "label": "t:sections.aria-live-watch.settings.watch_label.label"
+    },
+    {
+      "type": "text",
+      "id": "watch_live_label",
+      "default": "Watch live",
+      "label": "t:sections.aria-live-watch.settings.watch_live_label.label"
+    },
+    {
+      "type": "text",
+      "id": "remind_label",
+      "default": "Remind me",
+      "label": "t:sections.aria-live-watch.settings.remind_label.label"
+    },
+    {
+      "type": "text",
+      "id": "shop_live_label",
+      "default": "Shop along live",
+      "label": "t:sections.aria-live-watch.settings.shop_live_label.label"
+    },
+    {
+      "type": "text",
+      "id": "shop_upcoming_label",
+      "default": "Remind me before it starts",
+      "label": "t:sections.aria-live-watch.settings.shop_upcoming_label.label"
+    },
+    {
+      "type": "text",
+      "id": "shop_replay_label",
+      "default": "Watch & shop the replay",
+      "label": "t:sections.aria-live-watch.settings.shop_replay_label.label"
+    },
+    {
+      "type": "text",
+      "id": "showing_note",
+      "default": "Everything she shows is in the player. Add it to your bag without leaving the video; nothing is charged until you check out.",
+      "label": "t:sections.aria-live-watch.settings.showing_note.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-live-watch.settings.ask_header.content"
+    },
+    {
+      "type": "text",
+      "id": "ask_heading",
+      "default": "ASK THE COMMUNITY",
+      "label": "t:sections.aria-live-watch.settings.ask_heading.label"
+    },
+    {
+      "type": "text",
+      "id": "ask_placeholder",
+      "default": "Type your question…",
+      "label": "t:sections.aria-live-watch.settings.ask_placeholder.label"
+    },
+    {
+      "type": "text",
+      "id": "ask_note",
+      "default": "She reads them out and answers by name. If you would rather not be named, say so and she will not.",
+      "label": "t:sections.aria-live-watch.settings.ask_note.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-live-watch.presets.name"
+    }
+  ]
+}
+{% endschema %}

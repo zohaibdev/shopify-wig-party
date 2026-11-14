@@ -1,0 +1,102 @@
+{%- comment -%}
+  Wig Party — consult banner ("Still not sure? Book fifteen minutes with Kristi"). Figma
+  internal file, node 7289:6522 (1440 x 592), on the Compare Shades page.
+  A rounded white -> cream card: pill, title, text and a button on the left, and a cutout
+  photo of Kristi at her desk bleeding off the card's right and bottom edges.
+  Styles in assets/section-aria-consult-banner.css.
+{%- endcomment -%}
+
+{{ 'section-aria-consult-banner.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # -- theme.liquid only font_faces the body regular/bold; the button is Poppins 500.
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+-%}
+{% style %}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-consult-banner">
+  <div class="aria-consult-banner__card">
+    <div class="aria-consult-banner__copy">
+      <div class="aria-consult-banner__text-group">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="aria-consult-banner__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="aria-consult-banner__title">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="aria-consult-banner__text">{{ section.settings.text }}</p>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.button_label != blank -%}
+        <a class="aria-consult-banner__btn" href="{{ section.settings.button_url | default: '#' }}">
+          {{- section.settings.button_label -}}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-consult-banner__photo{% if section.settings.photo != blank %} aria-consult-banner__photo--custom{% endif %}" aria-hidden="true">
+      {%- if section.settings.photo != blank -%}
+        {{
+          section.settings.photo
+          | image_url: width: 1100
+          | image_tag: widths: '566,850,1100', sizes: '566px', alt: '', loading: 'lazy'
+        }}
+      {%- else -%}
+        <img src="{{ 'wp-consult-kristi.png' | asset_url }}" alt="" width="930" height="739" loading="lazy">
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-consult-banner.name",
+  "tag": "section",
+  "class": "aria-consult-banner-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "STILL NOT SURE?",
+      "label": "t:sections.aria-consult-banner.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Book fifteen minutes with Kristi. Free.",
+      "label": "t:sections.aria-consult-banner.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "default": "Bring a photo of your own hair. She will tell you the colour and the cap, and she will tell you if the answer is “none of ours”.",
+      "label": "t:sections.aria-consult-banner.settings.text.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "BOOK A CONSULT",
+      "label": "t:sections.aria-consult-banner.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-consult-banner.settings.button_url.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "photo",
+      "label": "t:sections.aria-consult-banner.settings.photo.label",
+      "info": "t:sections.aria-consult-banner.settings.photo.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-consult-banner.presets.name"
+    }
+  ]
+}
+{% endschema %}

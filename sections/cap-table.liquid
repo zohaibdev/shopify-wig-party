@@ -1,0 +1,241 @@
+{%- comment -%}
+  Wig Party — Shop by Cap Construction page, "Side by side" comparison. Figma internal file,
+  node 6980:6966 (1440 x 1026).
+  A frosted 1360 card over a darkened hair photo: eyebrow and heading, then a table whose
+  four columns (section settings) head one `row` block each. On mobile (6982:7111) the
+  table shows one column at a time. Styles in assets/section-aria-cap-table.css.
+{%- endcomment -%}
+
+{{ 'section-aria-cap-table.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-cap-table.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign row_blocks = section.blocks | where: 'type', 'row'
+
+  # -- theme.liquid only font_faces the body regular/bold and the heading base weight; this
+  # -- frame also sets Poppins 500 (the first column), Montserrat 700 (the row labels) and,
+  # -- on mobile, Montserrat 600 (the row labels there).
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+  assign heading_font_bold = settings.type_header_font | font_modify: 'weight', '700'
+  assign heading_font_semibold = settings.type_header_font | font_modify: 'weight', '600'
+-%}
+{% style %}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if heading_font_bold -%}{{ heading_font_bold | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if heading_font_semibold -%}{{ heading_font_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-cap-table">
+  <div class="aria-cap-table__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '1440,2160,2880', sizes: '100vw', alt: '', loading: 'lazy', class: 'aria-cap-table__bg-img aria-cap-table__bg-img--custom'
+      }}
+    {%- else -%}
+      <img class="aria-cap-table__bg-img" src="{{ 'wp-cap-table-bg.jpg' | asset_url }}" alt="" width="531" height="606" loading="lazy">
+    {%- endif -%}
+  </div>
+
+  <div class="aria-cap-table__card">
+    <div class="aria-cap-table__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="aria-cap-table__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="aria-cap-table__title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-cap-table__table" role="table" aria-label="{{ section.settings.heading | escape }}" data-active="1">
+      <div class="aria-cap-table__row aria-cap-table__row--head" role="row">
+        <span class="aria-cap-table__corner" role="columnheader"></span>
+        <div class="aria-cap-table__cols">
+          {%- for i in (1..4) -%}
+            {%- liquid
+              assign label_key = 'column_' | append: i
+              assign icon_key = 'column_' | append: i | append: '_icon'
+              assign col_label = section.settings[label_key]
+              assign col_icon = section.settings[icon_key]
+            -%}
+            <div class="aria-cap-table__col" role="columnheader">
+              <span class="aria-cap-table__col-icon" aria-hidden="true">
+                {%- if col_icon != blank -%}
+                  {{ col_icon | image_url: width: 141 | image_tag: widths: '47,94,141', sizes: '47px', alt: '', loading: 'lazy' }}
+                {%- else -%}
+                  {{- 'wp-cap-table-icon.svg' | inline_asset_content -}}
+                {%- endif -%}
+              </span>
+              <span class="aria-cap-table__col-name">{{ col_label }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- for block in row_blocks -%}
+        <div
+          class="aria-cap-table__row{% if block.settings.label_weight == 'medium' %} aria-cap-table__row--medium{% endif %}"
+          role="row"
+          {{ block.shopify_attributes }}
+        >
+          <span class="aria-cap-table__label" role="rowheader">{{ block.settings.label }}</span>
+          <div class="aria-cap-table__cells">
+            {%- for i in (1..4) -%}
+              {%- assign value_key = 'value_' | append: i -%}
+              <span class="aria-cap-table__cell" role="cell">{{ block.settings[value_key] }}</span>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%}
+      Mobile only (6982:7111): one column at a time, switched by these indicators or a swipe
+      (assets/aria-cap-table.js). Hidden on desktop, where all four columns show.
+    {%- endcomment -%}
+    <div class="aria-cap-table__dots">
+      {%- for i in (1..4) -%}
+        {%- assign label_key = 'column_' | append: i -%}
+        <button
+          type="button"
+          class="aria-cap-table__dot{% if forloop.first %} is-active{% endif %}"
+          data-col="{{ i }}"
+          aria-label="{{ section.settings[label_key] | escape }}"
+          {% if forloop.first %}aria-current="true"{% endif %}
+        ></button>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-cap-table.name",
+  "tag": "section",
+  "class": "aria-cap-table-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-cap-table.settings.background.label",
+      "info": "t:sections.aria-cap-table.settings.background.info"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "SIDE BY SIDE",
+      "label": "t:sections.aria-cap-table.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "The same four facts, in a table",
+      "label": "t:sections.aria-cap-table.settings.heading.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-cap-table.settings.header_columns.content"
+    },
+    {
+      "type": "text",
+      "id": "column_1",
+      "default": "Hand-tied",
+      "label": "t:sections.aria-cap-table.settings.column_1.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "column_1_icon",
+      "label": "t:sections.aria-cap-table.settings.column_icon.label"
+    },
+    {
+      "type": "text",
+      "id": "column_2",
+      "default": "Extended lace",
+      "label": "t:sections.aria-cap-table.settings.column_2.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "column_2_icon",
+      "label": "t:sections.aria-cap-table.settings.column_icon.label"
+    },
+    {
+      "type": "text",
+      "id": "column_3",
+      "default": "Full mono",
+      "label": "t:sections.aria-cap-table.settings.column_3.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "column_3_icon",
+      "label": "t:sections.aria-cap-table.settings.column_icon.label"
+    },
+    {
+      "type": "text",
+      "id": "column_4",
+      "default": "Topper",
+      "label": "t:sections.aria-cap-table.settings.column_4.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "column_4_icon",
+      "label": "t:sections.aria-cap-table.settings.column_icon.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "t:sections.aria-cap-table.blocks.row.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "default": "Weight",
+          "label": "t:sections.aria-cap-table.blocks.row.settings.label.label"
+        },
+        {
+          "type": "select",
+          "id": "label_weight",
+          "default": "bold",
+          "label": "t:sections.aria-cap-table.blocks.row.settings.label_weight.label",
+          "options": [
+            { "value": "bold", "label": "t:sections.aria-cap-table.blocks.row.settings.label_weight.options__1.label" },
+            { "value": "medium", "label": "t:sections.aria-cap-table.blocks.row.settings.label_weight.options__2.label" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "value_1",
+          "default": "Lightest",
+          "label": "t:sections.aria-cap-table.blocks.row.settings.value_1.label"
+        },
+        {
+          "type": "text",
+          "id": "value_2",
+          "default": "Light",
+          "label": "t:sections.aria-cap-table.blocks.row.settings.value_2.label"
+        },
+        {
+          "type": "text",
+          "id": "value_3",
+          "default": "Medium",
+          "label": "t:sections.aria-cap-table.blocks.row.settings.value_3.label"
+        },
+        {
+          "type": "text",
+          "id": "value_4",
+          "default": "Lightest",
+          "label": "t:sections.aria-cap-table.blocks.row.settings.value_4.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-cap-table.presets.name",
+      "blocks": [{ "type": "row" }]
+    }
+  ]
+}
+{% endschema %}

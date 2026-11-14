@@ -207,3 +207,268 @@
     line-height: 28px;
   }
 }
+/* Long-arrow nav glyph: mobile only (below). Tablet/desktop keep the chevron icon. */
+.aria-best-sellers__nav-arrow {
+  display: none;
+}
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6576:11267 (375 x 702). Scoped under 750px, and every card override is
+ * prefixed with `.aria-best-sellers`, so the shared product card keeps its own design in
+ * New & Trending and on the PDP, and Best Sellers is untouched from 750px up.
+ *
+ * Vertical ladder (px, Figma): 48 pad / 32 pill / 8 / 46 heading / 8 / 52 subheading /
+ * 32 / 368 card / 12 / 48 controls / 48 pad = 702.
+ * Card (6576:11518, 169 x 368): 163 media / 8 / 14 rating / 8 / 26 name / 8 / 15 swatches
+ * / 24 / 28 price / 20 / 54 button.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-best-sellers {
+    background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+    /* The card row runs past the 16px gutter to the viewport edge (a sliver of the
+       third card shows at 370); the section is what clips it. */
+    overflow: hidden;
+  }
+
+  .aria-best-sellers__header {
+    gap: 8px;
+  }
+
+  /* Pill (6576:11900): 285 x 32, #FAF8F5, 1px #BC696B ring. Figma's stroke sits inside
+     its 4/8 padding, so CSS padding is 3/7 + the 1px border. */
+  .aria-best-sellers__rating-badge {
+    box-sizing: border-box;
+    padding: 3px 7px;
+    background: #faf8f5;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 0;
+  }
+
+  .aria-best-sellers__rating-stars .aria-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Mobile H1: Montserrat Medium 36/46 black. */
+  .aria-best-sellers__heading {
+    font-family: var(--font-heading-family);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 46px;
+    letter-spacing: 0;
+    color: var(--black, #000);
+  }
+
+  /* Poppins 16/26 #3F3E3E. */
+  .aria-best-sellers__subheading {
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  .aria-best-sellers__carousel-wrap {
+    gap: 12px;
+  }
+
+  /* Explicit width, not `auto`: as a flex item here an auto-width Swiper grows to its
+     slides' full length, which leaves nothing to scroll — Swiper then locks itself and
+     disables both buttons. The extra 16px runs the row into the right gutter. */
+  .aria-best-sellers__swiper {
+    width: calc(100% + 16px);
+    margin-right: -16px;
+  }
+
+  /* Fixed 169px cards, 8px apart (Swiper `auto` + data-space-between-mobile/-sm). */
+  .aria-best-sellers__slide {
+    width: 169px;
+  }
+
+  /* --- Card ---------------------------------------------------------------------- */
+
+  /* 8px media -> text; the 20px text -> button step is the actions' own top padding
+     (its `margin-top: auto` still absorbs any height difference between cards). */
+  .aria-best-sellers .aria-product-card {
+    gap: 8px;
+  }
+
+  .aria-best-sellers .aria-product-card__actions {
+    padding-top: 12px;
+  }
+
+  /* 169 x 163, white behind the photo, radius 4. */
+  .aria-best-sellers .aria-product-card__media {
+    height: 163px;
+    aspect-ratio: auto;
+    background: var(--white, #fff);
+    border-radius: 4px;
+  }
+
+  /* Figma parks the heart at x=291 inside a 169px box, i.e. off the card by design —
+     the same call the PDP carousel's mobile card makes. */
+  .aria-best-sellers .aria-product-card__wishlist {
+    display: none;
+  }
+
+  /* Chip (Chips): 9px from the left, 12px from the bottom, a fixed 18px tall. */
+  .aria-best-sellers .aria-product-card__badges {
+    left: 9px;
+    bottom: 12px;
+  }
+
+  .aria-best-sellers .aria-product-card__badge {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 8px;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  /* Rating: 12px stars 2 apart, 4px to "4.9 (212)" in Poppins 12/14 black. */
+  .aria-best-sellers .aria-product-card__stars .aria-icon {
+    display: block;
+  }
+
+  .aria-best-sellers .aria-product-card__rating-value {
+    font-family: var(--font-body-family);
+    color: var(--black, #000);
+  }
+
+  /* Name: Poppins 16/26 black, held to two lines so a long real title cannot push one
+     card's price and button below its neighbour's. */
+  .aria-best-sellers .aria-product-card__title {
+    font-family: var(--font-body-family);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Swatches: 15px discs 4px apart, then "+14" in Poppins 12/14 black. */
+  .aria-best-sellers .aria-product-card__swatches {
+    gap: 4px;
+    min-height: 15px;
+  }
+
+  .aria-best-sellers .aria-product-card__swatch {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+  }
+
+  .aria-best-sellers .aria-product-card__swatch::before {
+    inset: 0;
+  }
+
+  .aria-best-sellers .aria-product-card__swatch-more {
+    font-family: var(--font-body-family);
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--black, #000);
+  }
+
+  .aria-best-sellers .aria-product-card__swatch-more::after {
+    inset: -5px -6px;
+  }
+
+  /* Price: Montserrat Medium 20/28, current black and compare #3F3E3E struck, 6 apart;
+     24px below the swatches (8 body gap + 16). */
+  .aria-best-sellers .aria-product-card__price,
+  .aria-best-sellers .aria-product-card__price-current,
+  .aria-best-sellers .aria-product-card__price-compare {
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  /* Button: full-width outline "View Product", 1px black, Poppins 18/28 — no quick-add
+     beside it on this frame. */
+  .aria-best-sellers .aria-product-card__view-btn {
+    width: 100%;
+    background: transparent;
+    border-color: var(--black, #000);
+    color: var(--black, #000);
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  .aria-best-sellers .aria-product-card__quick-add {
+    display: none;
+  }
+
+  /* --- Controls (6576:11370): progress takes the rest of the row, 12px to two 48px
+     buttons 4px apart. ------------------------------------------------------------ */
+  .aria-best-sellers__controls {
+    gap: 12px;
+    height: 48px;
+  }
+
+  .aria-best-sellers__progress-track {
+    background: var(--qi, #bc696b);
+    opacity: 0.3;
+  }
+
+  .aria-best-sellers__progress-fill {
+    background: var(--py, #a64a4c);
+  }
+
+  .aria-best-sellers__nav {
+    gap: 4px;
+  }
+
+  .aria-best-sellers__prev,
+  .aria-best-sellers__next {
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+  .aria-best-sellers__prev {
+    color: var(--black, #000);
+  }
+
+  /* Figma draws both buttons at full strength in the resting state, when Previous is
+     already disabled; a disabled button keeps its look and only stops responding. */
+  .aria-best-sellers__prev:disabled,
+  .aria-best-sellers__next:disabled {
+    opacity: 1;
+  }
+
+  .aria-best-sellers__prev .aria-icon,
+  .aria-best-sellers__next .aria-icon {
+    display: none;
+  }
+
+  /* 28px icon box holding the Figma arrow, which is drawn pointing down. */
+  .aria-best-sellers__nav-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+  }
+
+  .aria-best-sellers__nav-arrow svg {
+    display: block;
+    width: 13.1667px;
+    height: 19.9622px;
+  }
+
+  .aria-best-sellers__prev .aria-best-sellers__nav-arrow svg {
+    transform: rotate(90deg);
+  }
+
+  .aria-best-sellers__next .aria-best-sellers__nav-arrow svg {
+    transform: rotate(-90deg);
+  }
+}

@@ -512,3 +512,9 @@
     padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* The closed panel waits translated off the right edge; clip it to this full-screen layer so
+   it never widens the page (sideways scroll at tablet widths). */
+.aria-wl-drawer {
+  overflow: hidden;
+}

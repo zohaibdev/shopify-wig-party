@@ -1,0 +1,448 @@
+/* Wig Party — Compare Shades, "Stated plainly" table (sections/compare-table.liquid).
+ *
+ * Desktop, Figma 7289:6419 (1440 x 1021, clipped, white):
+ *   background  a 1440 x 1013 box 5 from the top (full width beyond 1440): the hair photo at
+ *               123.58% of the box's width, -13.36% left, -286.2 top (Figma's crop, 1779.5 x
+ *               1990.2), under rgba(0,0,0,.29) and a 113.6deg wash
+ *               rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602%
+ *   card        1360 x 853 at 40 / 85: rgba(255,255,255,.4), 30.25 backdrop blur, r-32,
+ *               px-32 py-56, 56 between the heading block and the table
+ *   head        Montserrat Medium white, centred: eyebrow 14/22, 16, title 48/56
+ *   table       1296: a 107-tall head row, 32, then rows of 44, 24 apart.
+ *               Head: a 389 corner, 67, two column heads (408 and 406, 16 apart, p-10): a
+ *               47 icon, 8, the name (Montserrat Medium 24/32, one line).
+ *               Rows: the label in 494 (px-24 py-8, Helvetica Neue Medium 20/28), 67, then
+ *               two 198 cells spread across 629 (px-16 py-8, Poppins 20/28, one line,
+ *               centred). Figma's second head sits 8 left of its cells; kept.
+ * Mobile, Figma 7289:6084 (375 x 847): in the block at the end.
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-compare-table,
+.aria-compare-table *,
+.aria-compare-table *::before,
+.aria-compare-table *::after {
+  box-sizing: border-box;
+}
+
+.aria-compare-table {
+  position: relative;
+  overflow: hidden;
+  padding: 85px 40px 83px;
+  background: var(--white, #fff);
+}
+
+/* ---------- Background (7289:6420) ---------- */
+
+.aria-compare-table__bg {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: max(100%, 1440px);
+  height: 1013px;
+  overflow: hidden;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.aria-compare-table__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.29), rgba(0, 0, 0, 0.29)),
+    linear-gradient(113.59936614138714deg, rgba(47, 47, 47, 0.46) 12.738%, rgba(222, 222, 222, 0.46) 78.602%);
+}
+
+.aria-compare-table__bg-img {
+  position: absolute;
+  top: -286.2px;
+  left: -13.36%;
+  display: block;
+  width: 123.58%;
+  height: auto;
+  max-width: none;
+  aspect-ratio: 1779.5 / 1990.2;
+}
+
+.aria-compare-table__bg-img--custom {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+}
+
+/* ---------- Card (7289:6421) ---------- */
+
+.aria-compare-table__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 56px 32px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.4);
+  -webkit-backdrop-filter: blur(30.25px);
+  backdrop-filter: blur(30.25px);
+  color: var(--white, #fff);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.aria-compare-table__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  font-family: var(--font-heading-family);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.aria-compare-table__eyebrow {
+  width: 100%;
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  text-transform: uppercase;
+}
+
+.aria-compare-table__title {
+  width: 798px;
+  max-width: 100%;
+  margin: 0;
+  font-family: inherit;
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  color: inherit;
+}
+
+/* ---------- Table (7289:6425) ---------- */
+
+.aria-compare-table__table {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.aria-compare-table__row {
+  display: flex;
+  align-items: center;
+  gap: 67px;
+}
+
+.aria-compare-table__row--head {
+  margin-bottom: 8px; /* 32 after the head row, against the rows' 24. */
+}
+
+.aria-compare-table__corner {
+  flex: 0 0 389px;
+  height: 84px;
+}
+
+.aria-compare-table__cols {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 838px;
+}
+
+.aria-compare-table__col {
+  display: flex;
+  flex: 0 0 408px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 16px;
+}
+
+.aria-compare-table__col + .aria-compare-table__col {
+  flex-basis: 406px;
+}
+
+.aria-compare-table__col-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.aria-compare-table__icon {
+  position: relative;
+  display: block;
+  width: 47px;
+  height: 47px;
+  overflow: hidden;
+}
+
+/* Figma's group sits 9.38% from the left of the 47 box (4.41), not quite centred. */
+.aria-compare-table__icon svg {
+  position: absolute;
+  top: 0;
+  left: 4.41px;
+  display: block;
+}
+
+.aria-compare-table__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Montserrat 24/32 lands 1px higher in the browser than in Figma. */
+.aria-compare-table__col-name {
+  position: relative;
+  top: 1px;
+  font-family: var(--font-heading-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Chrome sets Helvetica Neue 3px lower in its line box than Figma; nudged without moving
+   the row. */
+.aria-compare-table__label {
+  position: relative;
+  top: -3px;
+  flex: 0 0 494px;
+  padding: 8px 24px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.aria-compare-table__cells {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 629px;
+}
+
+/* min-width 0: a longer value overflows its 198 cell, centred, as in Figma, instead of
+   widening it. */
+.aria-compare-table__cell {
+  display: flex;
+  flex: 0 0 198px;
+  justify-content: center;
+  min-width: 0;
+  padding: 8px 16px;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Mobile-only column indicators (see the mobile block). */
+.aria-compare-table__dots {
+  display: none;
+}
+
+/* ---------- Mobile (Figma 7289:6084, 375 x 847) ----------
+ * px-16 py-48, clipped. The photo box is 1440 x 1026, centred, 59 above the section, the
+ * photo covering it. Card 343: r-16, px-20 py-32, 32 apart. Head: eyebrow 12/20, 16, title
+ * 28/36. Table 303, 16 apart: the active column's head (125 wide, right-aligned: 47 icon, 8,
+ * the name Montserrat Medium 18/26, wrapping), then rows spread across: label Montserrat
+ * Medium 18/26 #F6F5F1 (py-8), value 125 wide, Poppins 16/26 #F6F5F1, centred, wrapping.
+ * Indicators: a 28 x 8 white pill and 8 x 8 #D9D9D9 dots, 2 apart, one per column.
+ */
+@media screen and (max-width: 749px) {
+  .aria-compare-table {
+    padding: 48px 16px;
+  }
+
+  .aria-compare-table__bg {
+    top: -59px;
+    width: 1440px;
+    height: 1026px;
+  }
+
+  .aria-compare-table__bg::after {
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.29), rgba(0, 0, 0, 0.29)),
+      linear-gradient(113.33249868524277deg, rgba(47, 47, 47, 0.46) 12.738%, rgba(222, 222, 222, 0.46) 78.602%);
+  }
+
+  .aria-compare-table__bg-img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+  }
+
+  .aria-compare-table__card {
+    gap: 32px;
+    padding: 32px 20px;
+    border-radius: 16px;
+  }
+
+  .aria-compare-table__eyebrow {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .aria-compare-table__title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .aria-compare-table__table {
+    gap: 16px;
+  }
+
+  .aria-compare-table__row {
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .aria-compare-table__row--head {
+    justify-content: flex-end;
+    margin-bottom: 0;
+  }
+
+  .aria-compare-table__corner {
+    display: none;
+  }
+
+  .aria-compare-table__cols {
+    width: auto;
+  }
+
+  .aria-compare-table__col,
+  .aria-compare-table__col + .aria-compare-table__col {
+    flex: 0 0 125px;
+    padding: 0;
+  }
+
+  .aria-compare-table__col-inner {
+    width: 125px;
+  }
+
+  .aria-compare-table__col-name {
+    top: 0;
+    font-size: 18px;
+    line-height: 26px;
+    white-space: normal;
+  }
+
+  .aria-compare-table__label {
+    top: 0;
+    flex: 0 1 auto;
+    padding: 8px 0;
+    font-family: var(--font-heading-family);
+    font-size: 18px;
+    line-height: 26px;
+    color: #f6f5f1;
+  }
+
+  .aria-compare-table__cells {
+    width: auto;
+  }
+
+  /* Poppins 16/26 lands 1px higher in the browser than in Figma. */
+  .aria-compare-table__cell {
+    position: relative;
+    top: 1px;
+    flex: 0 0 125px;
+    padding: 0;
+    font-size: 16px;
+    line-height: 26px;
+    white-space: normal;
+    color: #f6f5f1;
+  }
+
+  /* Only the active column (data-active, set by assets/aria-compare-table.js). */
+  .aria-compare-table__table[data-active='1'] .aria-compare-table__col:not(:nth-child(1)),
+  .aria-compare-table__table[data-active='1'] .aria-compare-table__cell:not(:nth-child(1)),
+  .aria-compare-table__table[data-active='2'] .aria-compare-table__col:not(:nth-child(2)),
+  .aria-compare-table__table[data-active='2'] .aria-compare-table__cell:not(:nth-child(2)) {
+    display: none;
+  }
+
+  .aria-compare-table__dots {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .aria-compare-table__dot {
+    width: 8px;
+    height: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: #d9d9d9;
+    cursor: pointer;
+    transition: width 0.2s ease, background-color 0.2s ease;
+  }
+
+  .aria-compare-table__dot.is-active {
+    width: 28px;
+    background: var(--white, #fff);
+  }
+}
+
+/* ---------- Third shade (ADD A THIRD, assets/aria-compare-table.js) ---------- */
+
+/* Hidden until the compare section announces a Shade C. */
+.aria-compare-table__card:not(.has-third) .aria-compare-table__col--c,
+.aria-compare-table__card:not(.has-third) .aria-compare-table__cell--c,
+.aria-compare-table__card:not(.has-third) .aria-compare-table__dot--c {
+  display: none;
+}
+
+/* Desktop: the label column narrows to the corner's 389 and the three value columns share
+   the 838 under their headers (16 apart), so each value sits under its own header. */
+@media screen and (min-width: 750px) {
+  .has-third .aria-compare-table__label {
+    flex-basis: 389px;
+    white-space: normal;
+  }
+
+  .has-third .aria-compare-table__col,
+  .has-third .aria-compare-table__col + .aria-compare-table__col {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .has-third .aria-compare-table__col-name {
+    white-space: normal;
+  }
+
+  .has-third .aria-compare-table__cells {
+    gap: 16px;
+    width: 838px;
+  }
+
+  .has-third .aria-compare-table__cell {
+    flex: 1 1 0;
+    white-space: normal;
+  }
+}
+
+/* Mobile: the third column is shown on its own, like the other two. */
+@media screen and (max-width: 749px) {
+  .aria-compare-table__table[data-active='3'] .aria-compare-table__col:not(:nth-child(3)),
+  .aria-compare-table__table[data-active='3'] .aria-compare-table__cell:not(:nth-child(3)) {
+    display: none;
+  }
+}

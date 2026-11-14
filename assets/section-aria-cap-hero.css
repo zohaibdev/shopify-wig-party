@@ -1,0 +1,288 @@
+/* Wig Party — Shop by Cap Construction hero (sections/cap-hero.liquid), Figma 6699:224.
+ *
+ * Desktop geometry (px, Figma, 1440 x 436): white -> #EADDD4 gradient (top to bottom),
+ * py-48 px-80; the copy column (flex 1, 537 at 1440) and a 463 x 340 panel 280 apart,
+ * vertically centred.
+ *   copy   breadcrumbs (Poppins 12/14 uppercase #3F3E3E, "  /  " separators, the current
+ *          crumb Bold), 16, title (Montserrat Medium 48/56 black), 12, intro (Poppins
+ *          15/22.5 #4A4A4A), 20, a 368 x 52 black button (Poppins 18/28 white, r-2)
+ *   panel  white, r-2, clipped: the slide image 174.415 x 271.355, centred at the top; the
+ *          dots 313.56 down, centred: 12 / 16 / 12 circles 2 apart, #EADDD4 with the
+ *          active one #A64A4C
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-cap-hero,
+.aria-cap-hero *,
+.aria-cap-hero *::before,
+.aria-cap-hero *::after {
+  box-sizing: border-box;
+}
+
+.aria-cap-hero {
+  padding: 48px 80px;
+  background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+}
+
+.aria-cap-hero__inner {
+  display: flex;
+  align-items: center;
+  gap: 280px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ---------- Copy (6699:223) ---------- */
+
+.aria-cap-hero__copy {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.aria-cap-hero__crumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--gray, #3f3e3e);
+}
+
+/* Figma's separator is "  /  " set in the same run, so it is drawn as preserved text. */
+.aria-cap-hero__crumbs-list li + li::before {
+  content: '  /  ';
+  white-space: pre;
+}
+
+.aria-cap-hero__crumbs-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.aria-cap-hero__crumbs-list a:hover,
+.aria-cap-hero__crumbs-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.aria-cap-hero__crumbs-list [aria-current='page'] {
+  font-weight: 700;
+}
+
+/* Only the crumb is Bold; its separator stays Regular. */
+.aria-cap-hero__crumbs-list [aria-current='page']::before {
+  font-weight: 400;
+}
+
+.aria-cap-hero__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.aria-cap-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.aria-cap-hero__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-cap-hero__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22.5px;
+  letter-spacing: 0;
+  color: #4a4a4a;
+}
+
+.aria-cap-hero__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 368px;
+  max-width: 100%;
+  height: 52px;
+  padding: 12px 24px;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-cap-hero__btn:hover,
+.aria-cap-hero__btn:focus-visible {
+  background: #2b2b2b;
+}
+
+/* ---------- Panel (6699:222) ---------- */
+
+.aria-cap-hero__panel {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 463px;
+  height: 340px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--white, #fff);
+}
+
+.aria-cap-hero__slide {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 174.415px;
+  height: 271.355px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%);
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.aria-cap-hero__slide.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.aria-cap-hero__slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-cap-hero__dots {
+  position: absolute;
+  top: 313.56px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 16px;
+  transform: translateX(-50%);
+}
+
+.aria-cap-hero__dot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cream, #eaddd4);
+  cursor: pointer;
+  transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+}
+
+.aria-cap-hero__dot.is-active {
+  width: 16px;
+  height: 16px;
+  background: var(--py, #a64a4c);
+}
+
+/* ---------- Below desktop (no Figma frame yet): narrow the gap, then stack ---------- */
+
+@media screen and (max-width: 1279px) {
+  .aria-cap-hero {
+    padding: 48px 40px;
+  }
+
+  .aria-cap-hero__inner {
+    gap: 64px;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-cap-hero__inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+  }
+
+  .aria-cap-hero__panel {
+    width: 100%;
+    max-width: 463px;
+    margin: 0 auto;
+  }
+}
+
+/* ---------- Mobile: Figma 6829:4086 (375 x 780) ----------
+ *
+ *   frame  the same white -> #EADDD4 gradient; the copy 20 from the top at px-16
+ *   copy   breadcrumbs (all Regular here, the current crumb included), 12, title
+ *          (Montserrat Medium 36/46), 12, intro (Poppins 15/22.5 #4A4A4A). No button.
+ *   panel  348 x 340, centred (13.5 in at 375), 150 below the copy, 50 above the bottom;
+ *          the photo and the dots sit 0.5 left of the panel's centre, as drawn
+ */
+@media screen and (max-width: 749px) {
+  .aria-cap-hero {
+    padding: 20px 0 50px;
+  }
+
+  .aria-cap-hero__inner {
+    gap: 150px;
+  }
+
+  .aria-cap-hero__copy {
+    gap: 12px;
+    padding: 0 16px;
+  }
+
+  .aria-cap-hero__crumbs-list [aria-current='page'] {
+    font-weight: 400;
+  }
+
+  .aria-cap-hero__body {
+    gap: 0;
+  }
+
+  .aria-cap-hero__title {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-cap-hero__btn {
+    display: none;
+  }
+
+  .aria-cap-hero__panel {
+    width: 348px;
+    max-width: calc(100% - 27px);
+  }
+
+  .aria-cap-hero__slide,
+  .aria-cap-hero__dots {
+    left: calc(50% - 0.5px);
+  }
+}

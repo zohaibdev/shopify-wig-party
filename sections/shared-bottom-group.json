@@ -1,0 +1,81 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "Shared bottom sections",
+  "type": "custom.shared_bottom",
+  "sections": {
+    "instagram-feed": {
+      "type": "instagram-feed",
+      "blocks": {
+        "ig-1": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/1_af33c142-389a-4934-bb10-f0ff5ad9a761.png",
+            "product": "city-collection-alicante-belle-tress-wig-in-stock",
+            "link": "",
+            "caption": ""
+          }
+        },
+        "ig-2": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/02_d6f70625-8cc7-4fbe-b713-daa32f165f6d.png",
+            "product": "amarettoe",
+            "link": "",
+            "caption": ""
+          }
+        },
+        "ig-3": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/2_c539a24e-6bdd-43ab-b615-9e29619ab06a.png",
+            "product": "lux-se-ht-ami-belle-tress-wig-in-stock",
+            "link": "",
+            "caption": ""
+          }
+        },
+        "ig-4": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/4_4723f73f-4512-43e5-857b-f74e7936af25.png",
+            "product": "belle-tress-adriana-wig-hand-tied-lux-se-collection-preorder-copy",
+            "link": "",
+            "caption": ""
+          }
+        },
+        "ig-5": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/6_29e750e8-f7ab-4eb0-b413-71be57a938be.png",
+            "product": "alicante-new-spanish-city-collection",
+            "link": "",
+            "caption": ""
+          }
+        }
+      },
+      "block_order": [
+        "ig-1",
+        "ig-2",
+        "ig-3",
+        "ig-4",
+        "ig-5"
+      ],
+      "settings": {
+        "heading": "Shop the looks",
+        "subheading": "More looks on Instagram @wigparty.shop",
+        "background_gradient_start": "#ffffff",
+        "background_gradient_end": "#eaddd4"
+      }
+    }
+  },
+  "order": [
+    "instagram-feed"
+  ]
+}

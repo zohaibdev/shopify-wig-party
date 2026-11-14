@@ -1,0 +1,93 @@
+{%- comment -%}
+  Wig Party — Sale reasons banner markup (Figma 7547:4702, desktop 1360 x 416).
+  Shared by sections/sale-reasons-banner.liquid and sections/sale-listing.liquid.
+  Copy is Figma text and needs approval (pricing / returns claims). Photo and signature: image_picker,
+  falling back to the Figma exports in assets. Uppercase comes from CSS.
+
+  Params:
+    section_id        (required) used for the element id
+    background_image  image_picker value or blank
+    signature         image_picker value or blank
+    blocks            section.blocks; only blocks of type "card" are rendered
+{%- endcomment -%}
+
+{{ 'section-sale-reasons-banner.css' | asset_url | stylesheet_tag }}
+
+{%- assign has_cards = false -%}
+{%- for block in blocks -%}
+  {%- if block.type == 'card' -%}
+    {%- assign has_cards = true -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<section class="wp-sale-reasons" id="wp-sale-reasons-{{ section_id }}">
+  {%- if background_image != blank -%}
+    <img
+      class="wp-sale-reasons__photo"
+      src="{{ background_image | image_url: width: 2720 }}"
+      alt=""
+      width="1360"
+      height="416"
+      loading="lazy"
+    >
+  {%- else -%}
+    <img
+      class="wp-sale-reasons__photo"
+      src="{{ 'sale-reasons-banner-bg.jpg' | asset_url }}"
+      alt=""
+      width="1264"
+      height="845"
+      loading="lazy"
+    >
+  {%- endif -%}
+
+  {%- if signature != blank -%}
+    <img
+      class="wp-sale-reasons__signature"
+      src="{{ signature | image_url: width: 478 }}"
+      alt=""
+      width="239"
+      height="92"
+      loading="lazy"
+    >
+  {%- else -%}
+    <img
+      class="wp-sale-reasons__signature"
+      src="{{ 'sale-reasons-banner-signature.svg' | asset_url }}"
+      alt=""
+      width="239"
+      height="92"
+      loading="lazy"
+    >
+  {%- endif -%}
+
+  {%- if has_cards -%}
+    <div class="wp-sale-reasons__cards">
+      {%- for block in blocks -%}
+        {%- if block.type == 'card' -%}
+          {%- if block.settings.link != blank -%}
+            <a class="wp-sale-reasons__card" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
+          {%- else -%}
+            <div class="wp-sale-reasons__card" {{ block.shopify_attributes }}>
+          {%- endif -%}
+            <div class="wp-sale-reasons__card-head">
+              {%- if block.settings.tag != blank -%}
+                <p class="wp-sale-reasons__tag">{{ block.settings.tag | escape }}</p>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h3 class="wp-sale-reasons__heading">{{ block.settings.heading | escape }}</h3>
+              {%- endif -%}
+            </div>
+            {%- if block.settings.text != blank -%}
+              <p class="wp-sale-reasons__text">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+          {%- if block.settings.link != blank -%}
+            </a>
+          {%- else -%}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</section>

@@ -1,0 +1,263 @@
+{%- comment -%}
+  Wig Party — Community page, first section. Figma internal file: intro 6989:910
+  (1440 x 436), cards 6849:22661 (1440 x 834) directly below it.
+
+  Top: eyebrow, title and JOIN THE GROUP / SEE THE GALLERY beside a white card holding the
+  intro text and the stats (one `stat` block each). Below: a heading and one `card` block
+  per community space (photo, title, text, link). Styles in
+  assets/section-aria-community-intro.css.
+{%- endcomment -%}
+
+{{ 'section-aria-community-intro.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign stat_blocks = section.blocks | where: 'type', 'stat'
+  assign card_blocks = section.blocks | where: 'type', 'card'
+
+  # -- Desktop (6989:910) and mobile (7000:4783) set the stat figures in Montserrat 500
+  # -- italic, a face theme.liquid does not declare.
+  assign heading_font_medium_italic = settings.type_header_font | font_modify: 'weight', '500' | font_modify: 'style', 'italic'
+-%}
+{% style %}
+  {%- if heading_font_medium_italic -%}{{ heading_font_medium_italic | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-community" style="--aria-community-bg: {{ section.settings.background_color }};">
+  <div class="aria-community__inner">
+    {%- comment -%}
+      Intro. Desktop is Figma 6989:910: the lead (eyebrow, title, buttons) on the left and
+      the panel (text, stats) as a white card on the right. Mobile (7000:4783) re-flows the
+      same pieces with `display: contents`, so the order inside each wrapper is free.
+    {%- endcomment -%}
+    {%- if section.settings.show_intro_hero -%}
+    <div class="aria-community__intro">
+      <div class="aria-community__lead">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="aria-community__eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h1 class="aria-community__title">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+        <div class="aria-community__actions">
+          {%- if section.settings.primary_label != blank -%}
+            <a class="aria-community__btn aria-community__btn--solid" href="{{ section.settings.primary_url | default: '#' }}">
+              {{- section.settings.primary_label -}}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.secondary_label != blank -%}
+            <a class="aria-community__btn aria-community__btn--outline" href="{{ section.settings.secondary_url | default: '#' }}">
+              {{- section.settings.secondary_label -}}
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="aria-community__panel">
+        {%- if section.settings.text != blank -%}
+          <p class="aria-community__text">{{ section.settings.text }}</p>
+        {%- endif -%}
+        {%- if stat_blocks.size > 0 -%}
+          <ul class="aria-community__stats" role="list">
+            {%- for block in stat_blocks -%}
+              <li class="aria-community__stat" {{ block.shopify_attributes }}>
+                <span class="aria-community__stat-value">{{ block.settings.value }}</span>
+                <span class="aria-community__stat-label">{{ block.settings.label }}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+    {%- endif -%}
+
+    {%- comment -%} Spaces (6849:22691). {%- endcomment -%}
+    <div class="aria-community__spaces">
+      {%- if section.settings.cards_heading != blank -%}
+        <h2 class="aria-community__cards-title">{{ section.settings.cards_heading }}</h2>
+      {%- endif -%}
+      {%- if card_blocks.size > 0 -%}
+        <ul class="aria-community__cards" role="list">
+          {%- for block in card_blocks -%}
+            {%- assign card_url = block.settings.url | default: '#' -%}
+            <li class="aria-community__card" {{ block.shopify_attributes }}>
+              <a class="aria-community__media" href="{{ card_url }}" tabindex="-1" aria-hidden="true">
+                {%- if block.settings.image != blank -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 1314
+                    | image_tag: widths: '343,438,686,876,1029,1314', sizes: '(max-width: 749px) calc(100vw - 32px), (min-width: 1440px) 438px, 31vw', alt: '', loading: 'lazy'
+                  }}
+                {%- else -%}
+                  {%- comment -%}
+                    Desktop (6849:22661) gives each of the first three cards its own photo,
+                    exported at 2x exactly as Figma crops it; later cards reuse the third.
+                    Mobile (6989:1051) draws one different portrait, cropped per card in CSS.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign fallback_index = forloop.index
+                    if fallback_index > 3
+                      assign fallback_index = 3
+                    endif
+                    assign fallback_file = 'wp-community-card-' | append: fallback_index | append: '.jpg'
+                  -%}
+                  <picture>
+                    <source media="(max-width: 749px)" srcset="{{ 'wp-community-card-mobile.jpg' | asset_url }}" width="1021" height="1360">
+                    <img class="aria-community__fallback" src="{{ fallback_file | asset_url }}" alt="" width="876" height="764" loading="lazy">
+                  </picture>
+                {%- endif -%}
+              </a>
+              <div class="aria-community__body">
+                <div class="aria-community__card-copy">
+                  <h3 class="aria-community__card-title">{{ block.settings.title }}</h3>
+                  {%- if block.settings.text != blank -%}
+                    <p class="aria-community__card-text">{{ block.settings.text }}</p>
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.button_label != blank -%}
+                  <a class="aria-community__card-link" href="{{ card_url }}">{{ block.settings.button_label }}</a>
+                {%- endif -%}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-community-intro.name",
+  "tag": "section",
+  "class": "aria-community-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_intro_hero",
+      "default": true,
+      "label": "Show intro hero"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-community-intro.settings.background_color.label"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "COMMUNITY",
+      "label": "t:sections.aria-community-intro.settings.eyebrow.label",
+      "info": "t:sections.aria-community-intro.settings.eyebrow.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "The part that is not about wigs",
+      "label": "t:sections.aria-community-intro.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "People who have been through some version of what you are going through, and who mostly talk about other things. You do not have to post, and you do not have to show your face.",
+      "label": "t:sections.aria-community-intro.settings.text.label"
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "default": "JOIN THE GROUP",
+      "label": "t:sections.aria-community-intro.settings.primary_label.label"
+    },
+    {
+      "type": "url",
+      "id": "primary_url",
+      "label": "t:sections.aria-community-intro.settings.primary_url.label"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "default": "SEE THE GALLERY",
+      "label": "t:sections.aria-community-intro.settings.secondary_label.label"
+    },
+    {
+      "type": "url",
+      "id": "secondary_url",
+      "label": "t:sections.aria-community-intro.settings.secondary_url.label"
+    },
+    {
+      "type": "text",
+      "id": "cards_heading",
+      "default": "Four things, none of them a shop",
+      "label": "t:sections.aria-community-intro.settings.cards_heading.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "t:sections.aria-community-intro.blocks.stat.name",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "value",
+          "default": "Free",
+          "label": "t:sections.aria-community-intro.blocks.stat.settings.value.label"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "default": "to join",
+          "label": "t:sections.aria-community-intro.blocks.stat.settings.label.label"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "name": "t:sections.aria-community-intro.blocks.card.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-community-intro.blocks.card.settings.image.label",
+          "info": "t:sections.aria-community-intro.blocks.card.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Real women, real wigs",
+          "label": "t:sections.aria-community-intro.blocks.card.settings.title.label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "Customer photos, with the style and colour named so you can find it.",
+          "label": "t:sections.aria-community-intro.blocks.card.settings.text.label"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "See the gallery",
+          "label": "t:sections.aria-community-intro.blocks.card.settings.button_label.label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "t:sections.aria-community-intro.blocks.card.settings.url.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-community-intro.presets.name",
+      "blocks": [
+        { "type": "stat", "settings": { "value": "Free", "label": "to join" } },
+        { "type": "card" },
+        { "type": "card" },
+        { "type": "card" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,140 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "guide-hero": {
+      "type": "guide-hero",
+      "settings": {
+        "home_label": "Home",
+        "parent_label": "Learn",
+        "parent_url": "/pages/learn",
+        "heading": "One tape measure, thirty seconds",
+        "text": "Measure your head once, then match it to a cap size. Below that, the four cap constructions explained in plain words, because every product title on this site uses them.",
+        "button_label": "SHOW ME HOW TO MEASURE",
+        "button_url": "#measure-steps",
+        "image_alt": ""
+      }
+    },
+    "guide-steps": {
+      "type": "guide-steps",
+      "blocks": {
+        "card-1": { "type": "card", "settings": { "chip": "MEASUREMENT 1", "title": "Circumference", "text": "Around your head, just above the ears and around the nape. Snug, not tight. This is the one that matters." } },
+        "card-2": { "type": "card", "settings": { "chip": "MEASUREMENT 2", "title": "Front to nape", "text": "From your natural hairline straight over the crown to the nape." } },
+        "card-3": { "type": "card", "settings": { "chip": "MEASUREMENT 3", "title": "Ear to ear", "text": "Over the top of the head, from the top of one ear to the other." } }
+      },
+      "block_order": ["card-1", "card-2", "card-3"],
+      "settings": {
+        "chip": "MEASURING",
+        "heading": "Around, front to back, ear to ear",
+        "description": "Use a soft tape measure and write each number down. Circumference is the number that picks your cap size.",
+        "no_image_text": "No image"
+      }
+    },
+    "guide-size-cards": {
+      "type": "guide-size-cards",
+      "blocks": {
+        "size-average": { "type": "card", "settings": { "default_art": "average", "size_title": "19 to 23 inches", "sublabel": "Average", "styles_count": "", "styles_label": "", "advice": "The cap size listed on nearly every style we carry." } }
+      },
+      "block_order": ["size-average"],
+      "settings": {
+        "heading": "What your number means",
+        "body": "Most Belle Tress styles we carry list cap size Average, which fits most heads from 19 to 23 inches. If your number is outside that, message Kristi's team before you order.",
+        "tip_title": "Not sure about your measurement?",
+        "tip_text": "Use a soft measuring tape around your head, just above your ears.",
+        "model_alt": ""
+      }
+    },
+    "guide-cap-table": {
+      "type": "guide-cap-table",
+      "blocks": {
+        "col-hand-tied": {
+          "type": "column",
+          "settings": {
+            "default_icon": "hand-tied",
+            "name": "Hand-tied",
+            "what_it_is": "Every hair tied by hand",
+            "feels": "Almost weightless",
+            "part_it": "Anywhere",
+            "best_for": "All-day, every day"
+          }
+        },
+        "col-extended-lace": {
+          "type": "column",
+          "settings": {
+            "default_icon": "extended-lace",
+            "name": "Extended lace front",
+            "what_it_is": "Deeper lace at the front, wefted behind",
+            "feels": "Light",
+            "part_it": "Front section only",
+            "best_for": "Styling variety, first wig"
+          }
+        },
+        "col-full-mono": {
+          "type": "column",
+          "settings": {
+            "default_icon": "full-mono",
+            "name": "Full mono",
+            "what_it_is": "Monofilament top, reads as scalp",
+            "feels": "Medium",
+            "part_it": "Anywhere",
+            "best_for": "Full hair loss"
+          }
+        },
+        "col-mono-topper": {
+          "type": "column",
+          "settings": {
+            "default_icon": "mono-topper",
+            "name": "Mono topper",
+            "what_it_is": "Partial piece for the crown",
+            "feels": "You forget it",
+            "part_it": "Crown only",
+            "best_for": "Thinning at the crown"
+          }
+        }
+      },
+      "block_order": ["col-hand-tied", "col-extended-lace", "col-full-mono", "col-mono-topper"],
+      "settings": {
+        "label": "THE FOUR CONSTRUCTIONS",
+        "heading": "In plain language, once",
+        "caption": "Comparison of the four cap constructions",
+        "row_1_label": "What it is",
+        "row_2_label": "Feels",
+        "row_3_label": "Part it",
+        "row_4_label": "Best for",
+        "row_5_label": "",
+        "row_6_label": ""
+      }
+    },
+    "guide-tips": {
+      "type": "guide-tips",
+      "blocks": {
+        "tip-1": { "type": "tip", "settings": { "tag": "Tip 1", "title": "A wig grip helps", "body": "A grip cap such as Kristi's Wig Panties sits under the wig and helps keep it in place.", "panel_min_height": 230 } },
+        "tip-2": { "type": "tip", "settings": { "tag": "Tip 2", "title": "Tight is not secure", "body": "Measure snug, not tight. If a wig feels tight, check the adjustable straps inside the cap before you decide the size is wrong.", "panel_min_height": 224 } },
+        "tip-3": { "type": "tip", "settings": { "tag": "Tip 3", "title": "Give it time", "body": "If you are new to wig wearing, you will look different and it may throw you off. Keep trying the wig. Put some make-up on and have a selfie photo shoot.", "panel_min_height": 224 } }
+      },
+      "block_order": ["tip-1", "tip-2", "tip-3"],
+      "settings": {
+        "background_color": "#1a1a1a",
+        "chip": "COMFORT",
+        "heading": "Three things that are not cap size"
+      }
+    },
+    "cap-consult": {
+      "type": "cap-consult",
+      "settings": {
+        "heading": "Message Kristi's team",
+        "text": "Tell us your measurement and the styles you are looking at, and Kristi's team will help you choose the cap.",
+        "button_label": "MESSAGE KRISTI'S TEAM",
+        "button_url": "/pages/contact"
+      }
+    }
+  },
+  "order": ["guide-hero", "guide-steps", "guide-size-cards", "guide-cap-table", "guide-tips", "cap-consult"]
+}

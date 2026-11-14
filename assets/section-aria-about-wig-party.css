@@ -315,3 +315,116 @@
     min-width: 0;
   }
 }
+
+/* Mobile-only social glyphs and <picture> wrapper (see below). */
+.aria-about__social-icon--mobile {
+  display: none;
+}
+
+.aria-about__media picture {
+  display: contents;
+}
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6578:13085 (375 x 1033). Scoped under 750px, so tablet and desktop are
+ * untouched.
+ *
+ * Copy first, then the photo (the base rule reverses them). Ladder (px, Figma):
+ * 48 pad / 18 chip / 15 / 48 heading / 16 / 196 body / 12 / 44 tagline / 47 / 52 button /
+ * 24 / 34 socials / 7.76 / 89.02 signature / 22.22 / 360 photo / 0 pad = 1033.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-about {
+    padding-block: 48px 0;
+  }
+
+  .aria-about__layout {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .aria-about__copy {
+    padding-bottom: 22.22px;
+  }
+
+  /* Chip: a fixed 18px tall (px-8 with the 1px ring), Poppins 12/14 uppercase. */
+  .aria-about__eyebrow {
+    box-sizing: border-box;
+    height: 18px;
+    padding: 0 8px;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  /* Mobile Title: Montserrat Medium 40/48 black. */
+  .aria-about__heading {
+    font-family: var(--font-heading-family);
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 48px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins 20/28 black. */
+  .aria-about__body,
+  .aria-about__body p {
+    max-width: none;
+    font-family: var(--font-body-family);
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  /* Poppins Italic 14/22, sentence case as written; 47px to the button. */
+  .aria-about__tagline {
+    margin-bottom: 47px;
+    font-family: var(--font-body-family);
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* Our Story: 211 x 52, Poppins 18/28 white on black. */
+  .aria-about__btn {
+    width: 211px;
+    height: 52px;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  /* 34px circles 12 apart, 16px marks. Figma draws a white ring on this white section,
+     which renders as the faint warm edge sampled from its frame (#F3EDE8). */
+  .aria-about__social-link {
+    width: 34px;
+    height: 34px;
+    border-color: #f3ede8;
+    background: rgba(255, 255, 255, 0.13);
+    color: var(--black, #000);
+  }
+
+  .aria-about__social-icon--has-mobile {
+    display: none;
+  }
+
+  .aria-about__social-icon--mobile {
+    display: flex;
+  }
+
+  /* The Figma marks carry their own fills and strokes (Instagram is an outline), so the
+     base rule's blanket `fill: currentColor` must not reach them. */
+  .aria-about__social-icon--mobile svg {
+    fill: none;
+  }
+
+  /* Signature (6578:13114): 229.2 wide, 7.76px under the socials (24 copy gap - 16.24). */
+  .aria-about__signature {
+    width: 229.195px;
+    max-width: none;
+    margin-top: -16.24px;
+  }
+
+  /* Photo (6578:13115): 343 x 360, radius 2. */
+  .aria-about__image {
+    aspect-ratio: 343 / 360;
+  }
+}

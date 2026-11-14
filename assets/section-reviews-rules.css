@@ -1,0 +1,214 @@
+/* Wig Party — Reviews "Four rules" (sections/reviews-rules.liquid), Figma 7664:18093 (desktop), 7732:15214 (mobile block at the end).
+ *
+ * Geometry (px, Figma):
+ *   section   1440 x 560, bg #f5ece4, padding 80 / 40, container 1360, column gap 56
+ *   heading   H2 Montserrat 500 48/56 black, centred (245 x 56)
+ *   cards     4 x 322 x 288, gap 24 (x 0 / 346 / 692 / 1038), rows stretch
+ *   card      white r-10, padding 24 / 16, column gap 20, centred: icon 84 x 84 at (119, 24);
+ *             copy (gap 4): title Poppins 500 18/28 black (28 high), text Poppins 400 16/26
+ *             #3f3e3e centred (290 wide)
+ *   Figma has a 1px white inside stroke on a white card: invisible, not copied.
+ */
+
+.reviews-rules,
+.reviews-rules *,
+.reviews-rules *::before,
+.reviews-rules *::after {
+  box-sizing: border-box;
+}
+
+@media (min-width: 750px) {
+  .reviews-rules {
+    background: var(--wp-rr-bg);
+    padding: var(--wp-rr-section-padding-y) var(--wp-rr-section-padding-x);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .reviews-rules__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-rr-heading-gap);
+    width: 100%;
+    max-width: var(--wp-rr-container-width);
+    margin: 0 auto;
+  }
+
+  .reviews-rules__heading {
+    margin: 0;
+    font-family: var(--wp-font-heading);
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 56px;
+    letter-spacing: 0;
+    color: var(--wp-color-black);
+    text-align: center;
+  }
+
+  .reviews-rules__grid {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: var(--wp-rr-card-gap);
+    width: 100%;
+  }
+
+  .reviews-rules__card {
+    display: flex;
+    flex: 1 0 0;
+    min-width: 1px;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-rr-card-inner-gap);
+    padding: var(--wp-rr-card-padding-y) var(--wp-rr-card-padding-x);
+    background: var(--wp-color-white);
+    border-radius: var(--wp-rr-card-radius);
+  }
+
+  .reviews-rules__icon {
+    flex-shrink: 0;
+    width: var(--wp-rr-icon-size);
+    height: var(--wp-rr-icon-size);
+  }
+
+  .reviews-rules__icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .reviews-rules__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-rr-text-gap);
+    width: 100%;
+  }
+
+  .reviews-rules__title {
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: 0;
+    color: var(--wp-color-black);
+    text-align: center;
+  }
+
+  .reviews-rules__text {
+    margin: 0;
+    width: 100%;
+    font-family: var(--wp-font-body);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+    color: var(--wp-color-gray);
+    text-align: center;
+  }
+}
+
+/* ---------- Mobile (max 749px). Figma 7732:15214 (375 x 1236). Tokens: --wp-m-rr-* ----------
+ *
+ * Spec (px, 375 frame):
+ *   section   375 x 1236 (content-driven), bg #f5ece4, padding 48 / 16
+ *   heading   "Four rules" 184 x 46 centred at y 48, Montserrat 500 36/46 #000; -> cards 32
+ *   cards     x 16, y 126, 343 wide, stacked, gap 16; heights 260 / 260 / 234 / 260 (text 3/3/2/3 lines)
+ *   card      white r 10, padding 24 / 16, column gap 20, centred
+ *   icon      84 x 84 centred at card y 24 (same art as desktop assets/reviews-rules-icon-*.svg)
+ *   title     card y 128, Montserrat 500 18/26 #000 centred (desktop is Poppins 500 18/28); -> text 4
+ *   text      311 wide, Poppins 400 16/26 #3f3e3e centred
+ *   1px white inside stroke on white card: invisible, not copied (same as desktop).
+ */
+@media (max-width: 749px) {
+  .reviews-rules {
+    background: var(--wp-rr-bg);
+    padding: var(--wp-m-rr-section-padding);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .reviews-rules__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-m-rr-heading-gap);
+    width: 100%;
+  }
+
+  .reviews-rules__heading {
+    margin: 0;
+    font-family: var(--wp-font-heading);
+    font-weight: 500;
+    font-size: var(--wp-m-rr-heading-size);
+    line-height: var(--wp-m-rr-heading-line-height);
+    letter-spacing: 0;
+    color: var(--wp-color-black);
+    text-align: center;
+  }
+
+  .reviews-rules__grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-m-rr-card-gap);
+    width: 100%;
+  }
+
+  .reviews-rules__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-rr-card-inner-gap);
+    width: 100%;
+    padding: var(--wp-rr-card-padding-y) var(--wp-rr-card-padding-x);
+    background: var(--wp-color-white);
+    border-radius: var(--wp-rr-card-radius);
+  }
+
+  .reviews-rules__icon {
+    flex-shrink: 0;
+    width: var(--wp-rr-icon-size);
+    height: var(--wp-rr-icon-size);
+  }
+
+  .reviews-rules__icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .reviews-rules__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--wp-rr-text-gap);
+    width: 100%;
+  }
+
+  .reviews-rules__title {
+    margin: 0;
+    font-family: var(--wp-font-heading);
+    font-weight: 500;
+    font-size: var(--wp-m-rr-title-size);
+    line-height: var(--wp-m-rr-title-line-height);
+    letter-spacing: 0;
+    color: var(--wp-color-black);
+    text-align: center;
+  }
+
+  .reviews-rules__text {
+    margin: 0;
+    width: 100%;
+    font-family: var(--wp-font-body);
+    font-weight: 400;
+    font-size: var(--wp-m-rr-text-size);
+    line-height: var(--wp-m-rr-text-line-height);
+    letter-spacing: 0;
+    color: var(--wp-color-gray);
+    text-align: center;
+  }
+}

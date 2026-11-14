@@ -1,0 +1,317 @@
+/* Wig Party — Watch Live steps (sections/live-steps.liquid), Figma 6849:21337.
+ *
+ * Desktop geometry (px, Figma, 1440 x 747): #1A1A1A, p-80, a 1328 column at x 56.
+ *   head   Montserrat Medium 56/64 white (two lines), 12, Helvetica Neue 20/28 white; centred
+ *   strip  48 below: 388-wide steps 24 apart, the row 371 tall with the steps 2 down; each
+ *          step is a 388 x 251 photo, 56, then title (Montserrat Medium 20/28 white) and
+ *          line (Helvetica Neue Medium 16/24 #DADADA, capitalised) 8 apart. The 33 x 32
+ *          #BC696B number sits 10 under the photo, on a 4px #D9D9D9 line whose top meets
+ *          the number's middle and which runs out past the page's right edge.
+ */
+
+.aria-live-steps,
+.aria-live-steps *,
+.aria-live-steps *::before,
+.aria-live-steps *::after {
+  box-sizing: border-box;
+}
+
+.aria-live-steps {
+  overflow: hidden;
+  padding: 80px 56px;
+  background: var(--aria-live-steps-bg, #1a1a1a);
+  color: var(--white, #fff);
+}
+
+.aria-live-steps__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  max-width: 1328px;
+  margin: 0 auto;
+}
+
+/* ---------- Head (6849:21340) ---------- */
+
+.aria-live-steps__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.aria-live-steps__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+.aria-live-steps__text {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+/* ---------- Strip (6849:21345) ---------- */
+
+/* Starts on the column's left edge and runs to the viewport's right edge. */
+.aria-live-steps__scroller {
+  margin-right: calc((100% - 100vw) / 2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  outline: 0;
+}
+
+.aria-live-steps__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.aria-live-steps__scroller.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.aria-live-steps__scroller:focus-visible {
+  outline: 2px solid var(--qi, #bc696b);
+  outline-offset: 4px;
+}
+
+.aria-live-steps__track {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  width: max-content;
+  margin: 0;
+  padding: 2px 56px 2px 0;
+  list-style: none;
+}
+
+/* The timeline: 4px #D9D9D9, its top at the numbers' middle (2 + 261 + 16). */
+.aria-live-steps__track::before {
+  content: '';
+  position: absolute;
+  top: 279px;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: #d9d9d9;
+}
+
+.aria-live-steps__step {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 56px;
+  width: 388px;
+}
+
+.aria-live-steps__media {
+  width: 388px;
+  height: 251px;
+  overflow: hidden;
+  background: #b3b3b3;
+}
+
+.aria-live-steps__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* 33 x 32 #BC696B, Helvetica Neue Medium 16/20 black, 10 under the photo. */
+.aria-live-steps__num {
+  position: absolute;
+  top: 261px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 33px;
+  height: 32px;
+  background: var(--qi, #bc696b);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-live-steps__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aria-live-steps__name {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+.aria-live-steps__desc {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  color: #dadada;
+}
+
+/* ---------- Below desktop (no Figma frame yet) ---------- */
+
+@media screen and (max-width: 989px) {
+  .aria-live-steps {
+    padding: 64px 24px;
+  }
+
+  .aria-live-steps__title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .aria-live-steps__title br {
+    display: none;
+  }
+
+  .aria-live-steps__track {
+    padding-right: 24px;
+  }
+}
+
+/* ---------- Mobile (Figma 6849:21832) ----------
+ * 375 artboard: #1A1A1A, py-48 px-16. Head: Montserrat Medium 24/32 white (two lines), 12,
+ * Helvetica Neue 16/28 white; 48 down to a vertical timeline 305 wide, 19 in from each side.
+ * Each step: the number (33 x 32) 14 from its title + line, then 32 down the 258 x 251 photo
+ * under the text column; steps 56 apart. The 4px #D9D9D9 line runs behind the numbers, 17
+ * in, from the first number's top to 2px below the last one's; drawn here as one segment per
+ * step (its height plus the 56 gap), the last just 2 tall.
+ */
+@media screen and (max-width: 749px) {
+  .aria-live-steps {
+    padding: 48px 16px;
+  }
+
+  .aria-live-steps__head {
+    gap: 12px;
+  }
+
+  .aria-live-steps__title {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .aria-live-steps__title br {
+    display: inline;
+  }
+
+  .aria-live-steps__text {
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  .aria-live-steps__scroller {
+    margin: 0 19px;
+    overflow: visible;
+    cursor: auto;
+  }
+
+  .aria-live-steps__track {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 56px;
+    width: auto;
+    padding: 0;
+  }
+
+  .aria-live-steps__track::before {
+    display: none;
+  }
+
+  .aria-live-steps__step {
+    display: grid;
+    grid-template-columns: 33px minmax(0, 1fr);
+    column-gap: 14px;
+    row-gap: 32px;
+    width: auto;
+  }
+
+  .aria-live-steps__step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 17px;
+    width: 4px;
+    height: calc(100% + 56px);
+    background: #d9d9d9;
+  }
+
+  .aria-live-steps__step:last-child::before {
+    height: 2px;
+  }
+
+  .aria-live-steps__num {
+    position: relative;
+    z-index: 1;
+    top: auto;
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .aria-live-steps__copy {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .aria-live-steps__media {
+    grid-row: 2;
+    grid-column: 2;
+    width: 100%;
+  }
+
+  /* Helvetica Neue Bold 20/32 white. */
+  .aria-live-steps__name {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    line-height: 32px;
+  }
+}
+
+/* ---------- Nov 6 QA: page grid ----------
+ * The other Live sections (watch, schedule, replays) sit in the theme's 1360 container with
+ * 40px sides; this one used a 1328 column with 56px sides, so its heading and first photo
+ * landed 16px in from everything above and below. Same grid as its neighbours now; the
+ * strip still bleeds off the right edge. */
+@media screen and (min-width: 990px) {
+  .aria-live-steps {
+    padding: 80px 40px;
+  }
+
+  .aria-live-steps__inner {
+    max-width: var(--container, 1360px);
+  }
+
+  .aria-live-steps__track {
+    padding-right: 40px;
+  }
+}

@@ -1,0 +1,289 @@
+/* Wig Party — Measure & cap guide tips (sections/guide-tips.liquid), Figma 7368:332. Desktop only.
+ *
+ * Geometry (px, Figma, 1440 x 809):
+ *   section     #1a1a1a, pt-80 pb-80 px-40, inner 1360, overflow hidden
+ *   head        chip 83x26, 12, heading 56/64 Montserrat 400 white, centered
+ *   head->cards 48
+ *   cards       3 x 437.33, gap 24, 499 high, radius 0, overflow hidden
+ *   frame       440 x 501 at (-1, -2) in the card (card 3: 439 wide at -1.665), bg #b3b3b3, photo cover
+ *   glass       bottom of frame, 440 wide, min 230 (card 1) / 224 (cards 2, 3), p 20/16, gap 16,
+ *               gradient to top rgba(0,0,0,.5) -> rgba(102,102,102,.5), backdrop blur (fitted, ~21px)
+ *   tag         #bc696b, h 32, px 10, Poppins 500 16/20 white, capitalize
+ *   text        gap 8: title Montserrat 700 20/32, body Poppins 500 16/24 capitalize, white
+ */
+
+.guide-tips,
+.guide-tips *,
+.guide-tips *::before,
+.guide-tips *::after {
+  box-sizing: border-box;
+}
+
+.guide-tips {
+  overflow: hidden;
+  padding: var(--wp-gtips-pad);
+  background: var(--wp-gtips-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.guide-tips__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-gtips-head-to-cards);
+  width: 100%;
+  max-width: var(--wp-gtips-max-width);
+  margin: 0 auto;
+}
+
+/* ---------- Head (7368:335) ---------- */
+
+.guide-tips__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-gtips-head-gap);
+  text-align: center;
+}
+
+.guide-tips__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: var(--wp-gtips-chip-padding);
+  border-radius: var(--wp-gtips-chip-radius);
+  background: var(--wp-gtips-chip-bg);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-tag-size);
+  font-weight: var(--wp-tag-weight);
+  line-height: var(--wp-tag-line-height);
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--wp-color-black);
+}
+
+.guide-tips__title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h1-size);
+  font-weight: 400; /* Figma: Montserrat Regular, not the H1 token's 500 */
+  line-height: var(--wp-h1-line-height);
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--wp-color-white);
+}
+
+/* ---------- Cards (7368:340) ---------- */
+
+.guide-tips__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--wp-gtips-card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-tips__card {
+  position: relative;
+  height: var(--wp-gtips-card-height);
+  overflow: hidden;
+  background: var(--wp-color-white);
+}
+
+/* Overscan frame, clipped by the card */
+.guide-tips__frame {
+  position: absolute;
+  top: -2px;
+  left: calc(50% + 0.33px);
+  width: 440px;
+  height: 501px;
+  overflow: hidden;
+  transform: translateX(-50%);
+  background: var(--wp-gtips-frame-bg);
+}
+
+.guide-tips__card:nth-child(3) .guide-tips__frame {
+  left: calc(50% - 0.83px);
+  width: 439px;
+}
+
+.guide-tips__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Glass panel (7368:343) ---------- */
+
+.guide-tips__glass {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--wp-gtips-glass-gap);
+  width: 440px;
+  min-height: var(--wp-gtips-glass-min-height, 224px);
+  padding: var(--wp-gtips-glass-padding);
+  background: var(--wp-gtips-glass-bg-fallback);
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .guide-tips__glass {
+    background: var(--wp-gtips-glass-bg);
+    -webkit-backdrop-filter: blur(var(--wp-gtips-glass-blur));
+    backdrop-filter: blur(var(--wp-gtips-glass-blur));
+  }
+}
+
+.guide-tips__card:nth-child(2) .guide-tips__glass {
+  left: -0.33px;
+}
+
+.guide-tips__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: var(--wp-gtips-tag-height);
+  padding: 0 var(--wp-gtips-tag-padding); /* Figma p-10; 20px line in a 32px box, centered */
+  background: var(--wp-gtips-tag-bg);
+  font-family: var(--wp-font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  white-space: nowrap;
+  color: var(--wp-color-white);
+}
+
+.guide-tips__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-gtips-text-gap);
+  width: 100%;
+  color: var(--wp-color-white);
+  overflow-wrap: break-word;
+}
+
+.guide-tips__card-title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.guide-tips__body {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: capitalize; /* Figma: typed sentence case, shown in Title Case. Needs design confirmation. */
+  color: inherit;
+}
+
+/*
+ * Mobile (Figma 7732:12819, 375 x 1642; card 7732:12828). Tokens: --wp-m-gtips-* in design-tokens.css.
+ * Cards stack 343 x 440, photo fills the card, glass panel stays at the bottom (same gradient + blur).
+ */
+@media (max-width: 749px) {
+  .guide-tips {
+    padding: var(--wp-m-gtips-pad);
+  }
+
+  .guide-tips__inner {
+    gap: var(--wp-m-gtips-head-to-cards);
+  }
+
+  .guide-tips__title {
+    width: 100%;
+    font-size: var(--wp-m-gtips-title-size);
+    font-weight: 500;
+    line-height: var(--wp-m-gtips-title-line-height);
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  .guide-tips__cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wp-m-gtips-card-gap);
+  }
+
+  .guide-tips__card {
+    height: var(--wp-m-gtips-card-height);
+  }
+
+  /* No overscan on mobile: the frame is the card */
+  .guide-tips__frame,
+  .guide-tips__card:nth-child(3) .guide-tips__frame {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+  }
+
+  /* Default assets only: Figma mobile crops (card 1 stretched window, cards 2-3 cover at 343 x 440). */
+  .guide-tips__frame:has(> .guide-tips__img[src*='guide-tips-1.jpg']) {
+    background: url('guide-tips-1-mobile.jpg') center / 100% 100% no-repeat;
+  }
+
+  .guide-tips__frame:has(> .guide-tips__img[src*='guide-tips-2.jpg']) {
+    background: url('guide-tips-2-mobile.jpg') center / cover no-repeat;
+  }
+
+  .guide-tips__frame:has(> .guide-tips__img[src*='guide-tips-3.jpg']) {
+    background: url('guide-tips-3-mobile.jpg') center / cover no-repeat;
+  }
+
+  .guide-tips__img[src*='guide-tips-1.jpg'],
+  .guide-tips__img[src*='guide-tips-2.jpg'],
+  .guide-tips__img[src*='guide-tips-3.jpg'] {
+    display: none;
+  }
+
+  /* Glass: full card width, hug height (desktop min-height setting not used on mobile) */
+  .guide-tips__glass,
+  .guide-tips__card:nth-child(2) .guide-tips__glass {
+    left: 0;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .guide-tips__card:nth-child(3) .guide-tips__glass {
+    min-height: var(--wp-m-gtips-glass-min-height-3);
+  }
+
+  .guide-tips__tag {
+    font-size: var(--wp-m-gtips-tag-size);
+    font-weight: 400;
+    line-height: var(--wp-m-gtips-tag-line-height);
+    text-transform: uppercase;
+  }
+
+  .guide-tips__card-title {
+    font-size: var(--wp-m-gtips-card-title-size);
+    font-weight: 600;
+    line-height: var(--wp-m-gtips-card-title-line-height);
+  }
+
+  .guide-tips__body {
+    font-size: var(--wp-m-gtips-body-size);
+    font-weight: 400;
+    line-height: var(--wp-m-gtips-body-line-height);
+    text-transform: none; /* mobile Figma: sentence case */
+  }
+}

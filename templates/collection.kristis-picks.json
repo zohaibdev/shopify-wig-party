@@ -1,0 +1,132 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections":  {
+                     "picks-hero":  {
+                                        "type":  "picks-hero",
+                                        "settings":  {
+                                                         "heading":  "Kristi\u0027s picks",
+                                                         "text":  "Wigs Kristi has picked for the Wig Party community, many of them tried on during Wig Party Live. Watch the replays to see them on.",
+                                                         "button_label":  "SHOP THE PICKS",
+                                                         "button_url":  "#kristis-picks",
+                                                         "button_2_label":  "WATCH THE REPLAYS",
+                                                         "button_2_url":  "/pages/replays"
+                                                     }
+                                    },
+                     "kristis-picks-list":  {
+                                                "type":  "kristis-picks-list",
+                                                "blocks":  {
+                                                               "pick-1":  {
+                                                                              "type":  "pick",
+                                                                              "settings":  {
+                                                                                               "product":  "rebecca-belle-tress-lux-se-collection-in-stock",
+                                                                                               "chip":  "IN STOCK",
+                                                                                               "subline":  "LUX SE · 100% hand-tied · full mono · 12.5 in",
+                                                                                               "quote":  ""
+                                                                                           }
+                                                                          },
+                                                               "pick-2":  {
+                                                                              "type":  "pick",
+                                                                              "settings":  {
+                                                                                               "product":  "city-collection-monoco-belle-tress-wig-preorder-copy",
+                                                                                               "chip":  "PRE-ORDER",
+                                                                                               "subline":  "CITY · extended lace front · 10 to 15 in",
+                                                                                               "quote":  ""
+                                                                                           }
+                                                                          },
+                                                               "pick-3":  {
+                                                                              "type":  "pick",
+                                                                              "settings":  {
+                                                                                               "product":  "wig-belle-tress-lux-se-collection-preorder-copy-copy",
+                                                                                               "chip":  "PRE-ORDER",
+                                                                                               "subline":  "LUX SE · 100% hand-tied · full mono · 17 to 21 in",
+                                                                                               "quote":  ""
+                                                                                           }
+                                                                          }
+                                                           },
+                                                "block_order":  [
+                                                                    "pick-1",
+                                                                    "pick-2",
+                                                                    "pick-3"
+                                                                ],
+                                                "settings":  {
+                                                                 "source":  "collection",
+                                                                 "link_label":  "See the details",
+                                                                 "empty_link_url":  "/pages/replays"
+                                                             }
+                                            },
+                     "from-kristi":  {
+                                         "type":  "picks-from-kristi",
+                                         "settings":  {
+                                                          "quote":  "“Our mission is to help women feel confident in their own skin while wearing alternative hair. We believe beauty should feel effortless, empowering, and true to you, every single day.”",
+                                                          "attribution":  "Kristi",
+                                                          "facebook_url":  "https://www.facebook.com/groups/wigpartyshop",
+                                                          "instagram_url":  "https://www.instagram.com/wigparty.shop/",
+                                                          "tiktok_url":  "https://www.tiktok.com/@kristi.dailey"
+                                                      }
+                                     },
+                     "trust-strip":  {
+                                         "type":  "cart-trust-strip",
+                                         "blocks":  {
+                                                        "trust-approved-1":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "live",
+                                                                                                  "heading":  "Tried on Live by Kristi",
+                                                                                                  "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-2":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "packaging",
+                                                                                                  "heading":  "Processed in 1 to 3 business days",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-3":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "shipping",
+                                                                                                  "heading":  "Tracking within 24 to 48 hours",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-4":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "consult",
+                                                                                                  "heading":  "All sales final, ask us first",
+                                                                                                  "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             }
+                                                    },
+                                         "block_order":  [
+                                                             "trust-approved-1",
+                                                             "trust-approved-2",
+                                                             "trust-approved-3",
+                                                             "trust-approved-4"
+                                                         ],
+                                         "settings":  {
+                                                          "background_color":  "#ffffff"
+                                                      }
+                                     }
+                 },
+    "order":  [
+                  "picks-hero",
+                  "kristis-picks-list",
+                  "from-kristi",
+                  "trust-strip"
+              ]
+}

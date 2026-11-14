@@ -1,0 +1,196 @@
+{%- comment -%}
+  Wig Party — About Kristi page, hero. Figma internal file, desktop node 7841:3532 (1440 x 448),
+  mobile node 7841:4502 (375 x 694).
+  A hair photo under a grey wash, with a frosted, white-ringed panel holding breadcrumbs, the
+  title, an intro and two buttons, and Kristi's cut-out portrait over the panel's right end
+  (below the panel on mobile).
+  Styles in assets/section-aria-about-hero.css.
+{%- endcomment -%}
+
+{{ 'section-aria-about-hero.css' | asset_url | stylesheet_tag }}
+
+{%- assign current_label = section.settings.current_label | default: page.title -%}
+
+<div class="aria-about-hero" style="--about-hero-bg: {{ section.settings.background_color }};">
+  <div class="aria-about-hero__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1100,1440,2160,2880', sizes: '100vw', alt: '', loading: 'eager'
+      }}
+    {%- else -%}
+      <img
+        class="aria-about-hero__bg-fallback"
+        src="{{ 'new-in-hero-bg.png' | asset_url }}"
+        alt=""
+        width="531"
+        height="606"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="aria-about-hero__panel">
+    <nav class="aria-about-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+      <ol class="aria-about-hero__crumbs-list" role="list">
+        <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+        {%- if section.settings.parent_label != blank -%}
+          <li><a href="{{ section.settings.parent_url | default: '/pages/community' }}">{{ section.settings.parent_label }}</a></li>
+        {%- endif -%}
+        <li aria-current="page"><span class="aria-about-hero__crumb-space"> </span>{{ current_label }}</li>
+      </ol>
+    </nav>
+
+    <div class="aria-about-hero__body">
+      <div class="aria-about-hero__text-group">
+        {%- if section.settings.heading != blank -%}
+          <h1 class="aria-about-hero__title">{{ section.settings.heading }}</h1>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <p class="aria-about-hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.button_label != blank or section.settings.button_2_label != blank -%}
+        <div class="aria-about-hero__buttons">
+          {%- if section.settings.button_label != blank -%}
+            <a class="aria-about-hero__btn" href="{{ section.settings.button_url | default: '/pages/live' }}">
+              {{- section.settings.button_label -}}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.button_2_label != blank -%}
+            <a
+              class="aria-about-hero__btn aria-about-hero__btn--outline"
+              href="{{ section.settings.button_2_url | default: '/pages/contact' }}"
+            >
+              {{- section.settings.button_2_label -}}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-about-hero__portrait">
+      {%- if section.settings.portrait != blank -%}
+        {{
+          section.settings.portrait
+          | image_url: width: 1080
+          | image_tag: widths: '540,720,1080', sizes: '(min-width: 750px) 465px, 333px', alt: section.settings.portrait.alt, loading: 'eager'
+        }}
+      {%- else -%}
+        <img
+          src="{{ 'wp-about-kristi.png' | asset_url }}"
+          alt="{{ section.settings.portrait_alt | escape }}"
+          width="537"
+          height="682"
+        >
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-about-hero.name",
+  "tag": "section",
+  "class": "aria-about-hero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-about-hero.settings.background.label",
+      "info": "t:sections.aria-about-hero.settings.background.info"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-about-hero.settings.background_color.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "portrait",
+      "label": "t:sections.aria-about-hero.settings.portrait.label",
+      "info": "t:sections.aria-about-hero.settings.portrait.info"
+    },
+    {
+      "type": "text",
+      "id": "portrait_alt",
+      "default": "Kristi",
+      "label": "t:sections.aria-about-hero.settings.portrait_alt.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-about-hero.settings.crumbs_header.content"
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "t:sections.aria-about-hero.settings.home_label.label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "Community",
+      "label": "t:sections.aria-about-hero.settings.parent_label.label"
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "t:sections.aria-about-hero.settings.parent_url.label"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "About Kristi",
+      "label": "t:sections.aria-about-hero.settings.current_label.label",
+      "info": "t:sections.aria-about-hero.settings.current_label.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.aria-about-hero.settings.content_header.content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Hi I’m Kristi",
+      "label": "t:sections.aria-about-hero.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "I sell Belle Tress wigs from a studio, mostly on camera, mostly in the\nevening. I answer my own messages and I am in the group every day. This\npage is the longer version, if you want it.",
+      "label": "t:sections.aria-about-hero.settings.text.label",
+      "info": "t:sections.aria-about-hero.settings.text.info"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "WATCH A LIVE",
+      "label": "t:sections.aria-about-hero.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-about-hero.settings.button_url.label"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "default": "BOOK FIFTEEN MINUTES",
+      "label": "t:sections.aria-about-hero.settings.button_2_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_2_url",
+      "label": "t:sections.aria-about-hero.settings.button_2_url.label"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-about-hero.presets.name"
+    }
+  ]
+}
+{% endschema %}

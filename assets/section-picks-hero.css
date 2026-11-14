@@ -1,0 +1,351 @@
+/* Wig Party — Kristi's Picks hero (sections/picks-hero.liquid), Figma 7546:32817. Desktop only.
+ *
+ * Geometry (px, Figma, 1440 x 448, clipped):
+ *   background  1440 x 448. Built-in photo cropped as Figma does: 100.18% wide, -0.09% left,
+ *               368.49% tall, -100.71% top; under a 134.65deg wash
+ *               rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602%
+ *   panel       1360 x 384 centred: rgba(255,255,255,.13), 50 backdrop blur, 1px white ring,
+ *               pt-16 px-40 pb-40, 62 between crumbs and copy
+ *   crumbs      Poppins 12/14 uppercase white, current crumb Bold
+ *   copy        title Montserrat Medium 48/56 (703.198 wide), 12, text Poppins 15/22.5 (557 wide),
+ *               32, buttons 224 x 54 each (px-24 py-12, Poppins 18/28), 16 apart, r-2
+ *   photo       403 x 426 at left 928 / top 2.5 inside the panel; built-in artwork crop 134.71%
+ *               tall, -2.39% top
+ * No global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.picks-hero,
+.picks-hero *,
+.picks-hero *::before,
+.picks-hero *::after {
+  box-sizing: border-box;
+}
+
+.picks-hero {
+  position: relative;
+  height: 448px;
+  overflow: hidden;
+  background: #f5ebe2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Background (7546:32819) ---------- */
+
+.picks-hero__bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.picks-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    134.64971909113112deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+.picks-hero__bg img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.picks-hero__bg img.picks-hero__bg-fallback {
+  inset: auto;
+  top: -100.71%;
+  left: -0.09%;
+  width: 100.18%;
+  height: 368.49%;
+  object-fit: fill;
+}
+
+/* ---------- Panel (7546:32820) ---------- */
+
+.picks-hero__panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 62px;
+  width: 1360px;
+  max-width: 100%;
+  height: 384px;
+  padding: 16px 40px 40px;
+  border: 1px solid var(--wp-color-white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+  transform: translate(-50%, -50%);
+}
+
+.picks-hero__crumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--wp-color-white, #fff);
+}
+
+.picks-hero__crumbs-list li + li::before {
+  content: '  /  ';
+  white-space: pre;
+}
+
+.picks-hero__crumbs-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.picks-hero__crumbs-list a:hover,
+.picks-hero__crumbs-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.picks-hero__crumbs-list [aria-current='page'] {
+  font-weight: 700;
+  white-space: pre;
+}
+
+.picks-hero__crumbs-list [aria-current='page']::before {
+  content: '  / ';
+  font-weight: 400;
+}
+
+/* ---------- Copy (7546:32822) ---------- */
+
+.picks-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.picks-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--wp-color-white, #fff);
+}
+
+.picks-hero__title {
+  width: 703.198px;
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.picks-hero__text {
+  width: 557px;
+  max-width: 100%;
+  margin: 0;
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22.5px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.picks-hero__buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.picks-hero__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 224px;
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  border-radius: var(--wp-radius-sm, 2px);
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.picks-hero__btn--solid {
+  border-color: var(--wp-color-black, #000);
+  background: var(--wp-color-black, #000);
+  color: var(--wp-color-white, #fff);
+}
+
+.picks-hero__btn--solid:hover,
+.picks-hero__btn--solid:focus-visible {
+  border-color: #2b2b2b;
+  background: #2b2b2b;
+}
+
+.picks-hero__btn--outline {
+  border-color: var(--wp-color-black, #000);
+  background: transparent;
+  color: var(--wp-color-black, #000);
+}
+
+.picks-hero__btn--outline:hover,
+.picks-hero__btn--outline:focus-visible {
+  background: var(--wp-color-black, #000);
+  color: var(--wp-color-white, #fff);
+}
+
+/* ---------- Photo (7546:32831) ---------- */
+
+.picks-hero__photo {
+  position: absolute;
+  top: 2.5px;
+  left: 928px;
+  width: 403px;
+  height: 426px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.picks-hero__photo-img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: top;
+}
+
+.picks-hero__photo-img.picks-hero__photo-fallback {
+  inset: auto;
+  top: -2.39%;
+  left: 0;
+  width: 100%;
+  height: 134.71%;
+  object-fit: fill;
+}
+
+/* ---------- Mobile (Figma 7546:33702, 375 x 776) ----------
+ * Bg 377 wide at x -2 under a 98.49deg wash; panel 343 (margin 23/16), p-12, gap 12;
+ * crumbs 14/22 as typed (not uppercase, all regular, like the Sale hero); title 28/39, 8,
+ * text 16/26; 24; buttons stacked full width (56 solid, outline 52 + border), 16 apart;
+ * photo 307 x 327 at x 32, overlapping the panel by 26 and ending the hero.
+ */
+@media (max-width: 749px) {
+  .picks-hero {
+    height: auto;
+  }
+
+  .picks-hero__bg {
+    inset: 0 0 0 var(--wp-m-picks-hero-bg-left);
+  }
+
+  .picks-hero__bg::after {
+    background: linear-gradient(
+      var(--wp-m-picks-hero-wash-angle),
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .picks-hero__bg img.picks-hero__bg-fallback {
+    top: var(--wp-m-picks-hero-bg-top);
+    left: var(--wp-m-picks-hero-bg-left-pct);
+    width: var(--wp-m-picks-hero-bg-width);
+    height: var(--wp-m-picks-hero-bg-height);
+  }
+
+  .picks-hero__panel {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto;
+    height: auto;
+    margin: var(--wp-m-picks-hero-margin);
+    padding: var(--wp-m-picks-hero-panel-padding);
+    gap: var(--wp-m-picks-hero-panel-gap);
+    transform: none;
+  }
+
+  .picks-hero__crumbs-list {
+    font-size: 14px;
+    line-height: 22px;
+    text-transform: none;
+  }
+
+  .picks-hero__crumbs-list [aria-current='page'] {
+    font-weight: 400;
+  }
+
+  .picks-hero__copy {
+    gap: var(--wp-m-picks-hero-copy-gap);
+    align-self: stretch;
+  }
+
+  .picks-hero__text-group {
+    gap: var(--wp-m-picks-hero-text-gap);
+  }
+
+  .picks-hero__title {
+    width: 100%;
+    font-size: 28px;
+    line-height: 39px;
+  }
+
+  .picks-hero__text {
+    width: 100%;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .picks-hero__buttons {
+    flex-direction: column;
+    gap: var(--wp-m-picks-hero-buttons-gap);
+    width: 100%;
+  }
+
+  .picks-hero__btn {
+    width: 100%;
+  }
+
+  .picks-hero__btn--solid {
+    height: var(--wp-m-picks-hero-solid-height);
+  }
+
+  .picks-hero__photo {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: var(--wp-m-picks-hero-photo-width);
+    max-width: calc(100% - 32px);
+    height: var(--wp-m-picks-hero-photo-height);
+    margin: var(--wp-m-picks-hero-photo-margin);
+  }
+}

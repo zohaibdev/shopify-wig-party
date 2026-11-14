@@ -1,0 +1,115 @@
+/*
+ * Shipping & Returns, "The short version". Figma node 7899:452 (1440 x 778), desktop only.
+ * Panel 7900:729: 1360 wide, pink gradient, 2x3 grid of equal-width "Policy / Summary Card" (7899:456).
+ */
+.wp-sr-sv {
+  background: var(--wp-color-white);
+  padding: var(--wp-sr-shortver-padding);
+}
+
+.wp-sr-sv__panel {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: var(--wp-sr-shortver-panel-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-sr-shortver-panel-gap);
+  border-radius: var(--wp-radius-04);
+  background: var(--wp-sr-shortver-gradient);
+}
+
+.wp-sr-sv__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-sr-shortver-heading-gap);
+}
+
+.wp-sr-sv__eyebrow {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-eyebrow-size);
+  font-weight: var(--wp-eyebrow-weight);
+  line-height: var(--wp-eyebrow-line-height);
+  color: var(--wp-color-white);
+}
+
+.wp-sr-sv__title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h2-size);
+  font-weight: var(--wp-weight-medium);
+  line-height: var(--wp-h2-line-height);
+  color: var(--wp-color-white);
+}
+
+.wp-sr-sv__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--wp-sr-shortver-grid-gap);
+}
+
+.wp-sr-sv__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-sr-card-gap);
+  padding: var(--wp-sr-card-padding);
+  border-radius: var(--wp-radius-04);
+  background: var(--wp-color-white);
+}
+
+.wp-sr-sv__card-icon img {
+  display: block;
+  width: var(--wp-sr-card-icon-size);
+  height: var(--wp-sr-card-icon-size);
+}
+
+.wp-sr-sv__card-title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h6-size);
+  font-weight: var(--wp-weight-medium);
+  line-height: var(--wp-h6-line-height);
+  color: var(--wp-color-black);
+}
+
+.wp-sr-sv__card-text {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-body-small-weight);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-gray);
+}
+
+@media (max-width: 749px) {
+  .wp-sr-sv {
+    padding: var(--wp-m-sr-shortver-padding);
+  }
+
+  .wp-sr-sv__panel {
+    padding: var(--wp-m-sr-panel-padding);
+    gap: var(--wp-m-sr-panel-gap);
+  }
+
+  .wp-sr-sv__eyebrow {
+    font-size: var(--wp-m-sr-eyebrow-size);
+    line-height: var(--wp-m-sr-eyebrow-line-height);
+  }
+
+  .wp-sr-sv__title {
+    font-size: var(--wp-m-sr-title-size);
+    line-height: var(--wp-m-sr-title-line-height);
+  }
+
+  .wp-sr-sv__grid {
+    grid-template-columns: 1fr;
+    gap: var(--wp-m-sr-grid-gap);
+  }
+
+  .wp-sr-sv__card {
+    padding: var(--wp-m-sr-card-padding);
+  }
+}

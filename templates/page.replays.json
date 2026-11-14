@@ -1,0 +1,114 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "replays-hero": {
+      "type": "replays-hero",
+      "blocks": {
+        "stat-1": {
+          "type": "stat",
+          "settings": {
+            "icon": "replays",
+            "value": "",
+            "label": "replays",
+            "source": "replay_count"
+          }
+        },
+        "stat-2": {
+          "type": "stat",
+          "settings": {
+            "icon": "styles",
+            "value": "",
+            "label": "latest show",
+            "source": "latest_replay"
+          }
+        },
+        "stat-3": {
+          "type": "stat",
+          "settings": {
+            "icon": "never",
+            "value": "Free",
+            "label": "to watch",
+            "source": "custom"
+          }
+        }
+      },
+      "block_order": [
+        "stat-1",
+        "stat-2",
+        "stat-3"
+      ],
+      "settings": {
+        "crumb_parent": "Live",
+        "crumb_parent_url": "/pages/live",
+        "crumb_current": "Replays",
+        "heading": "Every LIVE, saved for you",
+        "text": "Missed a show? Kristi's LIVE shows are saved here, newest first. Search by style or deal, press play and shop the wigs she shows.",
+        "button_label": "BROWSE BY STYLE",
+        "button_url": "/collections/all"
+      }
+    },
+    "replays-grid": {
+      "type": "replays-grid",
+      "blocks": {
+        "filter_lmu_1": {
+          "type": "filter",
+          "settings": {
+            "label": "Sample sales",
+            "keywords": "sample sale"
+          }
+        },
+        "filter_lmu_2": {
+          "type": "filter",
+          "settings": {
+            "label": "Café collection",
+            "keywords": "cafe, café"
+          }
+        },
+        "filter_lmu_3": {
+          "type": "filter",
+          "settings": {
+            "label": "Blowout sales",
+            "keywords": "blowout, blow out, % off"
+          }
+        },
+        "filter_lmu_4": {
+          "type": "filter",
+          "settings": {
+            "label": "With Nancy",
+            "keywords": "nancy"
+          }
+        }
+      },
+      "block_order": [
+        "filter_lmu_1",
+        "filter_lmu_2",
+        "filter_lmu_3",
+        "filter_lmu_4"
+      ],
+      "settings": {
+        "background_color": "#FFFFFF",
+        "initial_count": 12,
+        "step": 24
+      }
+    },
+    "replay-chapters": {
+      "type": "replay-chapters",
+      "settings": {
+        "background_color": "#F5EBE2"
+      }
+    }
+  },
+  "order": [
+    "replays-hero",
+    "replays-grid",
+    "replay-chapters"
+  ]
+}

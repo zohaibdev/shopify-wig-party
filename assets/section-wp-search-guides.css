@@ -1,0 +1,235 @@
+.wp-guides {
+  background: var(--wp-color-guides-bg);
+  padding: var(--wp-guides-pad-top) var(--wp-guides-pad-x) var(--wp-guides-pad-bottom);
+  box-sizing: border-box;
+}
+
+.wp-guides[hidden] {
+  display: none;
+}
+
+.wp-guides__inner {
+  max-width: var(--wp-guides-container);
+  margin: 0 auto;
+}
+
+.wp-guides__title {
+  margin: 0 0 var(--wp-guides-heading-gap);
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h1-size);
+  font-weight: var(--wp-h1-weight);
+  line-height: var(--wp-h1-line-height);
+  color: var(--wp-color-black);
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.wp-guides__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, var(--wp-guides-card-width)));
+  gap: var(--wp-guides-card-gap);
+  align-items: stretch;
+  justify-content: start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wp-guides__card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--wp-radius-card-lg);
+  background: var(--wp-color-white);
+}
+
+/* Tokens local to this section (shared design-tokens.css not edited). */
+.wp-guides {
+  --wp-guides-media-pad: calc(382 / 438 * 100%); /* desktop 438x382 */
+  --wp-guides-placeholder-color: #a8a29e;
+  --wp-guides-placeholder-gap: 8px;
+  --wp-guides-placeholder-icon: 48px;
+}
+
+/* base.css:483 `a:empty { display: none }` (0,1,1) beat the old class rule (0,1,0) and hid the
+   empty media link. The wrapper now always has a child, and display is pinned at higher specificity. */
+.wp-guides__card > a.wp-guides__media {
+  position: relative;
+  display: block;
+  flex: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 0;
+  padding-top: var(--wp-guides-media-pad);
+  background: var(--wp-color-gray-25);
+  overflow: hidden;
+}
+
+.wp-guides__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--wp-guides-placeholder-gap);
+  background: var(--wp-color-gray-25);
+  color: var(--wp-guides-placeholder-color);
+  text-align: center;
+}
+
+.wp-guides__placeholder-icon {
+  display: block;
+  flex: none;
+  width: var(--wp-guides-placeholder-icon);
+  height: var(--wp-guides-placeholder-icon);
+}
+
+.wp-guides__placeholder-text {
+  font-family: var(--wp-font-body);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.wp-guides__media img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--wp-guides-media-transition);
+}
+
+.wp-guides__media:hover img {
+  transform: scale(var(--wp-guides-media-hover-scale));
+}
+
+.wp-guides__body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-guides-body-gap);
+  padding: var(--wp-guides-body-padding);
+  background: var(--wp-color-white);
+}
+
+.wp-guides__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wp-guides-text-gap);
+}
+
+.wp-guides__card-title {
+  margin: 0;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-h4-size);
+  font-weight: var(--wp-h4-weight);
+  line-height: var(--wp-h4-line-height);
+  color: var(--wp-color-black);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.wp-guides__desc {
+  margin: 0;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-body-small-weight);
+  line-height: var(--wp-body-small-line-height);
+  color: var(--wp-color-gray);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.wp-guides__link,
+.wp-guides__link:link,
+.wp-guides__link:visited {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--wp-guides-link-height);
+  padding: 0 var(--wp-guides-link-padding-x);
+  background: var(--wp-guides-link-bg);
+  color: var(--wp-guides-link-color);
+  border: var(--wp-guides-link-border);
+  border-radius: var(--wp-guides-link-radius);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-small-size);
+  font-weight: var(--wp-body-small-weight);
+  line-height: var(--wp-body-small-line-height);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ---------- Mobile (375px). Figma 7453:18856, 7453:18858. Tokens: --wp-m-guides-* ---------- */
+@media (max-width: 749px) {
+  .wp-guides {
+    padding-left: var(--wp-m-search-b-pad-x);
+    padding-right: var(--wp-m-search-b-pad-x);
+  }
+
+  .wp-guides__title {
+    font-size: var(--wp-m-h1-size);
+    line-height: var(--wp-m-h1-line-height);
+  }
+
+  .wp-guides__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wp-m-search-b-card-gap);
+  }
+
+  .wp-guides__card {
+    gap: var(--wp-m-guides-media-body-gap);
+    border-radius: var(--wp-m-guides-card-radius);
+  }
+
+  /* Gray box stays (aspect ratio) when a card has no image */
+  .wp-guides {
+    --wp-m-guides-media-pad: calc(360 / 343 * 100%); /* mobile 343x360 */
+  }
+
+  .wp-guides__card > a.wp-guides__media {
+    padding-top: var(--wp-m-guides-media-pad);
+    border-radius: var(--wp-m-guides-media-radius);
+  }
+
+  .wp-guides__placeholder {
+    border-radius: var(--wp-m-guides-media-radius);
+  }
+
+  .wp-guides__body {
+    padding: var(--wp-m-guides-body-padding);
+  }
+
+  .wp-guides__card-title {
+    -webkit-line-clamp: var(--wp-m-guides-title-lines);
+    line-clamp: var(--wp-m-guides-title-lines);
+  }
+
+  .wp-guides__desc {
+    -webkit-line-clamp: var(--wp-m-guides-desc-lines);
+    line-clamp: var(--wp-m-guides-desc-lines);
+  }
+
+  .wp-guides__link,
+  .wp-guides__link:link,
+  .wp-guides__link:visited {
+    height: var(--wp-m-guides-link-height);
+    padding: var(--wp-m-guides-link-padding);
+    font-size: var(--wp-m-guides-link-size);
+    line-height: var(--wp-m-guides-link-line-height);
+    text-transform: uppercase;
+  }
+}

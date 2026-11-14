@@ -1,0 +1,170 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "colour-hero": {
+      "type": "colour-hero",
+      "settings": {
+        "home_label": "Home",
+        "parent_label": "Learn",
+        "parent_url": "/pages/learn",
+        "current_label": "Find your colour",
+        "heading": "Screens lie about hair colour. Here is how to work around it.",
+        "text": "Every monitor and every room shows colour a little differently. This page explains how Belle Tress names its shades, lets you browse every wig by shade, and gives you three ways to be sure before you buy.",
+        "button_label": "SEE EVERY SHADE",
+        "button_label_mobile": "",
+        "button_url": "/collections/all-in-stock-wigs",
+        "button_2_label": "BROWSE BY STYLE",
+        "button_2_url": "/pages/find-my-wig"
+      }
+    },
+    "colour-naming": {
+      "type": "colour-naming",
+      "blocks": {
+        "part-1": { "type": "part", "settings": { "tag": "THE SHADE", "title": "The colour itself", "text": "The words are the shade, for example Chocolate Buttercream. This is the part that tells you the colour." } },
+        "part-2": { "type": "part", "settings": { "tag": "THE R", "title": "Rooted or not", "text": "A shade ending in R is rooted: a darker root that blends into the length. Kristi marks shades without it as unrooted." } },
+        "part-3": { "type": "part", "settings": { "tag": "THE ETA", "title": "When it ships", "text": "Some shades carry a note such as ETA 12/2027 or ETA TBD. That shade is on back order from Belle Tress and ships when it arrives." } }
+      },
+      "block_order": ["part-1", "part-2", "part-3"],
+      "settings": {
+        "eyebrow": "HOW BELLE TRESS NAMES COLOURS",
+        "heading": "How to read a shade name",
+        "text": "A Belle Tress shade name can carry up to three parts. Here is what each one tells you.",
+        "example": "Chocolate Buttercream - R"
+      }
+    },
+    "colour-shades": {
+      "type": "colour-shades",
+      "blocks": {
+        "chip-all": {
+          "type": "chip",
+          "settings": {
+            "label": "Everything",
+            "rule": "all",
+            "keys": "",
+            "amount": 300,
+            "days": 60
+          }
+        },
+        "chip-shelf": {
+          "type": "chip",
+          "settings": {
+            "label": "On our shelf",
+            "rule": "shelf",
+            "keys": "",
+            "amount": 300,
+            "days": 60
+          }
+        },
+        "chip-handtied": {
+          "type": "chip",
+          "settings": {
+            "label": "Hand-tied",
+            "rule": "type",
+            "keys": "hand tied, hand-tied",
+            "amount": 300,
+            "days": 60
+          }
+        },
+        "chip-under300": {
+          "type": "chip",
+          "settings": {
+            "label": "Under $300",
+            "rule": "price",
+            "keys": "",
+            "amount": 300,
+            "days": 60
+          }
+        },
+        "chip-rooted": {
+          "type": "chip",
+          "settings": {
+            "label": "Rooted",
+            "rule": "colour",
+            "keys": "rooted, re:(^|[\\s-])r($|[\\s-(])",
+            "amount": 300,
+            "days": 60
+          }
+        },
+        "chip-new": {
+          "type": "chip",
+          "settings": {
+            "label": "New in",
+            "rule": "new",
+            "keys": "",
+            "amount": 300,
+            "days": 60
+          }
+        },
+        "chip-sale": {
+          "type": "chip",
+          "settings": {
+            "label": "Sale",
+            "rule": "tags",
+            "keys": "clearance, daileydeals, discount",
+            "amount": 300,
+            "days": 60
+          }
+        }
+      },
+      "block_order": [
+        "chip-all",
+        "chip-shelf",
+        "chip-handtied",
+        "chip-under300",
+        "chip-rooted",
+        "chip-new",
+        "chip-sale"
+      ],
+      "settings": {
+        "eyebrow": "EVERY SHADE",
+        "heading": "Every wig, with its shades",
+        "text": "Filter by what is on the shelf, cap, price or rooted shades, or search for a shade name.",
+        "collection": "",
+        "exclude_types": "Wig Supplies",
+        "quick_label": "QUICK",
+        "search_label": "Search",
+        "initial_count": 12,
+        "initial_count_mobile": 6,
+        "step_count": 24,
+        "more_label": "SHOW [count] MORE",
+        "empty_label": "No styles match. Try another filter or search."
+      }
+    },
+    "colour-ways": {
+      "type": "colour-ways",
+      "blocks": {
+        "way-1": { "type": "way", "settings": { "tag": "BY MESSAGE", "title": "Ask Kristi's team", "text": "Send a photo of your own hair and the shades you are considering, and ask which one is closest.", "button_label": "MESSAGE KRISTI'S TEAM", "button_url": "/pages/contact" } },
+        "way-2": { "type": "way", "settings": { "tag": "INSTANT", "title": "Compare side by side", "text": "Two shades of the same wig next to each other, with their photos, price and availability.", "button_label": "COMPARE SHADES", "button_url": "/pages/compare-shades" } },
+        "way-3": { "type": "way", "settings": { "tag": "LIVE SHOWS", "title": "See it on a live", "text": "Kristi tries wigs on during her live shows. Watch a replay and see the colour on a real head.", "button_label": "WATCH THE REPLAYS", "button_url": "/pages/replays" } }
+      },
+      "block_order": ["way-1", "way-2", "way-3"],
+      "settings": {
+        "eyebrow": "THREE WAYS TO BE SURE",
+        "heading": "All sales are final, so be sure first"
+      }
+    },
+    "colour-tips": {
+      "type": "colour-tips",
+      "blocks": {
+        "tip-1": { "type": "tip", "settings": { "tag": "Tip 1", "title": "Look for the R", "text": "Rooted shades have a darker root that blends into the length, so the colour reads more like grown hair." } },
+        "tip-2": { "type": "tip", "settings": { "tag": "Tip 2", "title": "Check the ETA", "text": "A shade with an ETA is on back order and ships when Belle Tress sends it." } },
+        "tip-3": { "type": "tip", "settings": { "tag": "Tip 3", "title": "Check the cap size", "text": "Most styles are cap size Average, which fits most heads from 19 to 23 inches. Measure before you choose." } },
+        "tip-4": { "type": "tip", "settings": { "tag": "Tip 4", "title": "Order with care", "text": "All sales are final and orders cannot be changed after payment, so double check the shade before you check out." } }
+      },
+      "block_order": ["tip-1", "tip-2", "tip-3", "tip-4"],
+      "settings": {
+        "eyebrow": "IF YOU ARE NEW",
+        "heading": "Four things to know before you choose"
+      }
+    }
+  },
+  "order": ["colour-hero", "colour-naming", "colour-shades", "colour-ways", "colour-tips"]
+}

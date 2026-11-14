@@ -1,0 +1,422 @@
+/* Wig Party — Watch Live schedule (sections/live-schedule.liquid), Figma 6849:21242.
+ *
+ * Desktop geometry (px, Figma, 1440 x 730): #F5EBE2, py-100 px-40, 48 between the head, the
+ * cards and the buttons.
+ *   head   765 wide (set by the one-line heading), Montserrat Medium 56/64, 16 to Poppins
+ *          20/28 #3F3E3E, centred
+ *   cards  262 wide, 14 apart, white, p-20: day pill, 32, name + description (4 apart),
+ *          16, a #E5E5E5 rule, 16, the time. Five of them need 1366, so in Figma the row
+ *          runs 6px past the 1360 container on the right; that is kept as drawn.
+ *   buttons (6927:1781) centred, 12 apart, top-aligned: black 52-tall px-20 Poppins 20/28
+ *          white, then a 54-tall white px-24 outline (1px black) in Poppins 18/28; both r-2.
+ * The cards use Helvetica Neue (a system face, not a theme font).
+ */
+
+.aria-live-sched,
+.aria-live-sched *,
+.aria-live-sched *::before,
+.aria-live-sched *::after {
+  box-sizing: border-box;
+}
+
+.aria-live-sched {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding: 100px 40px;
+  background: var(--aria-live-sched-bg, #f5ebe2);
+}
+
+/* ---------- Head (6849:21243) ---------- */
+
+/* min-content: the one-line heading sets the width and the intro wraps inside it. */
+.aria-live-sched__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min-content;
+  max-width: 100%;
+  text-align: center;
+}
+
+.aria-live-sched__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+/* pre-wrap keeps the double space Figma has after "once,". */
+.aria-live-sched__text {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  white-space: pre-wrap;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-live-sched__text--mob {
+  display: none;
+}
+
+/* ---------- Cards (6849:21246) ---------- */
+
+.aria-live-sched__cards {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+  max-width: var(--container, 1360px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-live-sched__card {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 32px;
+  width: 262px;
+  padding: 20px;
+  background: var(--white, #fff);
+}
+
+/* Day: #F79510 pill, px-8 py-4, r-90; 16px calendar 4 from Helvetica Neue 12/15
+   uppercase black, bottom-aligned. */
+.aria-live-sched__day {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 90px;
+  background: #f79510;
+  color: var(--black, #000);
+}
+
+.aria-live-sched__day-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.aria-live-sched__day-icon svg {
+  display: block;
+  width: 13.2px;
+  height: 14.005px;
+}
+
+.aria-live-sched__day-label {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.aria-live-sched__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.aria-live-sched__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Helvetica Neue Medium 20/32 #1A1A1A. */
+.aria-live-sched__name {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+}
+
+/* Helvetica Neue 16/24 #787878, capitalised; two lines reserved so every rule lines up
+   (Figma pads the one-line Thursday copy to the same 48). */
+.aria-live-sched__desc {
+  min-height: 48px;
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  color: #787878;
+}
+
+/* 1px #E5E5E5, drawn over the last pixel of the 16px gap above it as in Figma. */
+.aria-live-sched__rule {
+  height: 1px;
+  margin: -1px 0 0;
+  border: 0;
+  background: #e5e5e5;
+}
+
+/* Time: py-4, 16px clock 4 from Helvetica Neue 14/24 #787878. */
+.aria-live-sched__time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 4px 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  color: #787878;
+}
+
+.aria-live-sched__time-icon {
+  display: block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.aria-live-sched__time-icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Buttons (6927:1781) ---------- */
+
+.aria-live-sched__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+}
+
+.aria-live-sched__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 2px;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* min-widths are Figma's whole-pixel boxes; the browser's text runs a fraction narrower. */
+.aria-live-sched__btn--fill {
+  min-width: 361px;
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+.aria-live-sched__btn--fill:hover,
+.aria-live-sched__btn--fill:focus-visible {
+  background: var(--gray, #3f3e3e);
+}
+
+.aria-live-sched__btn--outline {
+  min-width: 244px;
+  padding: 12px 24px;
+  border: 1px solid var(--black, #000);
+  background: var(--white, #fff);
+  font-size: 18px;
+  color: var(--black, #000);
+}
+
+.aria-live-sched__btn--outline:hover,
+.aria-live-sched__btn--outline:focus-visible {
+  background: var(--black, #000);
+  color: var(--white, #fff);
+}
+
+/* ---------- Below desktop (no Figma frame yet): scroll the row, let the heading wrap ---------- */
+
+/* The 1366 row fits (overhanging into the right padding) down to a 1406 viewport. */
+@media screen and (max-width: 1405px) {
+  .aria-live-sched__cards {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .aria-live-sched__cards::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-live-sched {
+    padding: 64px 24px;
+  }
+
+  .aria-live-sched__head {
+    width: auto;
+  }
+
+  .aria-live-sched__title {
+    font-size: 40px;
+    line-height: 48px;
+    white-space: normal;
+  }
+}
+
+/* ---------- Mobile (Figma 6849:21735) ----------
+ * 375 artboard: #F5EBE2, pb-48 px-16 (no top padding: it follows the stream section's own
+ * 48), 32 between the head and the cards.
+ *   head   343 wide: Montserrat Medium 24/32, 12, Poppins 16/28 #3F3E3E broken after "once,"
+ *   cards  two columns of 169, 14 apart both ways, in a 352 grid at x 11 (5 past the 16px
+ *          padding on the left, 4 on the right); an odd last card spans both columns at 353.
+ *          px-16 py-20, the rest as desktop.
+ * Figma's Thursday copy ends in a stray blank line, which makes its row 24 taller (268) and
+ * floats Friday's rule to the middle; every card here reserves the same two lines instead, so
+ * both rows are 244. Its full-width Sunday rule is also full width here (Figma left it at the
+ * desktop 222).
+ * The mobile frame has no buttons yet; here they stack full width at 16/28 so the 361-wide
+ * desktop label fits the 343 column.
+ */
+@media screen and (max-width: 749px) {
+  .aria-live-sched {
+    gap: 32px;
+    padding: 0 16px 48px;
+  }
+
+  .aria-live-sched__head {
+    gap: 12px;
+    width: 100%;
+  }
+
+  .aria-live-sched__title {
+    font-size: 24px;
+    line-height: 32px;
+    /* 2026-11-06: was nowrap; "We go LIVE throughout the week" sets 407px wide at 24px and
+       pushed 390px phones to a 398px document. It now wraps inside the 358px column. */
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  .aria-live-sched__text {
+    display: none;
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  .aria-live-sched__text--mob {
+    display: block;
+    white-space: normal;
+  }
+
+  .aria-live-sched__cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-self: flex-start;
+    width: calc(100% + 9px);
+    max-width: none;
+    margin-left: -5px;
+    overflow: visible;
+  }
+
+  .aria-live-sched__card {
+    width: auto;
+    padding: 20px 16px;
+  }
+
+  .aria-live-sched__card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    margin-right: -1px;
+  }
+
+  .aria-live-sched__card:last-child:nth-child(odd) .aria-live-sched__desc {
+    min-height: 0;
+  }
+
+  .aria-live-sched__actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .aria-live-sched__btn {
+    min-width: 0;
+    font-size: 16px;
+  }
+}
+
+/* ---------- LiveMeUp feed (assets/aria-livemeup.js) ---------- */
+
+.aria-live-sched__list {
+  width: 100%;
+  max-width: var(--container, 1360px);
+}
+
+/* Fewer than the five Figma draws: keep the row centred under the heading. */
+.aria-live-sched__list:not([data-lmu-count='5']):not([data-lmu-count='6']):not([data-lmu-count='7']) .aria-live-sched__cards {
+  justify-content: safe center;
+}
+
+/* Descriptions come from LiveMeUp as sentences, so they keep their own case and stop at
+   the two lines every card reserves. */
+.aria-live-sched__desc {
+  display: -webkit-box;
+  overflow: hidden;
+  text-transform: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.aria-live-sched__btn {
+  cursor: pointer;
+}
+
+.aria-live-sched__btn--fill {
+  border: 0;
+}
+
+.aria-live-sched__btn[hidden] {
+  display: none;
+}
+
+/* Empty state (QA 2026-11-06): text plus links to replays and the group */
+.aria-live-sched__empty {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.aria-live-sched__empty .aria-live-sched__actions {
+  margin-top: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}

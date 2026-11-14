@@ -1,0 +1,189 @@
+{%- comment -%}
+  Wig Party — Compare Shades page, "The difference / Stated plainly" table. Figma internal
+  file: desktop 7289:6419 (1440 x 1021), mobile 7289:6084 (375 x 847).
+  A frosted card over a darkened hair photo: eyebrow and heading, then a table whose two shade
+  columns (section settings) head one `row` block each. Mobile shows one column at a time,
+  switched by the indicators or a horizontal swipe (assets/aria-compare-table.js).
+  Styles in assets/section-aria-compare-table.css.
+
+  Live data: the column names and the first 7 rows' values start from this section's own
+  settings/blocks (so the table is never blank and there is no layout shift), then
+  assets/aria-compare-table.js listens for "aria-compare:change" (dispatched by
+  sections/compare-shades.liquid; same request/response pattern as the slider) and overwrites
+  them from the selected shades' table_name/root/length/undertone/reads_as/best_with/
+  noticeable/available_in fields, in that fixed order, matched to this table's rows by position
+  (data-field below). A row past the 7th, or a blank field, keeps/shows "—"; a page with no
+  compare-shades section leaves this table on its static block content, unchanged (the 3s
+  fallback below reveals it anyway). The header icon is fixed and never changes with the
+  selection.
+
+  Third shade: a third column (header, one cell per row, a third mobile dot) is always in the
+  markup but hidden until the compare section announces a Shade C (the slider's ADD A THIRD);
+  assets/aria-compare-table.js then puts `has-third` on the card, which shows it and splits
+  the value area three ways.
+
+  First paint: `.is-pending` on .aria-compare-table__table below hides the two value columns
+  (visibility, not display: none — see sections/compare-shades.liquid's {% style %} for the CSS
+  and the "why hide at all" note) until aria-compare-table.js applies the first real pair and
+  removes the class, or a pure-CSS ~3s fallback reveals the static values if nothing ever
+  answers. This section cannot read compare-shades' settings, so it cannot know in advance
+  whether the static column_1/column_2 + row values already match the real default pair.
+{%- endcomment -%}
+
+{{ 'section-aria-compare-table.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-compare-table.js' | asset_url }}" defer="defer"></script>
+
+{%- assign row_blocks = section.blocks | where: 'type', 'row' -%}
+{%- assign table_fields = 'wig,collection,cap,price,status' | split: ',' -%}
+
+<div class="aria-compare-table">
+  <div class="aria-compare-table__bg" aria-hidden="true">
+    {%- if section.settings.background != blank -%}
+      {{
+        section.settings.background
+        | image_url: width: 2880
+        | image_tag: widths: '750,1440,2160,2880', sizes: '100vw', alt: '', loading: 'lazy', class: 'aria-compare-table__bg-img aria-compare-table__bg-img--custom'
+      }}
+    {%- else -%}
+      <img class="aria-compare-table__bg-img" src="{{ 'wp-colour-hero.jpg' | asset_url }}" alt="" width="531" height="606" loading="lazy">
+    {%- endif -%}
+  </div>
+
+  <div class="aria-compare-table__card">
+    <div class="aria-compare-table__head">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="aria-compare-table__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="aria-compare-table__title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    <div class="aria-compare-table__table is-pending" role="table" aria-label="{{ section.settings.heading | escape }}" data-active="1">
+      <div class="aria-compare-table__row aria-compare-table__row--head" role="row">
+        <span class="aria-compare-table__corner" role="columnheader"></span>
+        <div class="aria-compare-table__cols">
+          {%- for i in (1..3) -%}
+            {%- assign col_key = 'column_' | append: i -%}
+            <div class="aria-compare-table__col{% if i == 3 %} aria-compare-table__col--c{% endif %}" role="columnheader">
+              <span class="aria-compare-table__col-inner">
+                <span class="aria-compare-table__icon">
+                  {%- if section.settings.icon != blank -%}
+                    {{ section.settings.icon | image_url: width: 94 | image_tag: width: 47, height: 47, alt: '', loading: 'lazy' }}
+                  {%- else -%}
+                    {{- 'icon-compare-shade.svg' | inline_asset_content -}}
+                  {%- endif -%}
+                </span>
+                <span class="aria-compare-table__col-name">{{ section.settings[col_key] | default: '—' }}</span>
+              </span>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- for block in row_blocks -%}
+        {%- assign table_field = table_fields[forloop.index0] -%}
+        <div class="aria-compare-table__row" role="row" {% if table_field %}data-field="{{ table_field }}"{% endif %} {{ block.shopify_attributes }}>
+          <span class="aria-compare-table__label" role="rowheader">{{ block.settings.label }}</span>
+          <div class="aria-compare-table__cells">
+            <span class="aria-compare-table__cell" role="cell">{{ block.settings.value_1 }}</span>
+            <span class="aria-compare-table__cell" role="cell">{{ block.settings.value_2 }}</span>
+            <span class="aria-compare-table__cell aria-compare-table__cell--c" role="cell">—</span>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="aria-compare-table__dots">
+      {%- for i in (1..3) -%}
+        {%- assign col_key = 'column_' | append: i -%}
+        <button
+          type="button"
+          class="aria-compare-table__dot{% if forloop.first %} is-active{% endif %}{% if i == 3 %} aria-compare-table__dot--c{% endif %}"
+          data-col="{{ i }}"
+          aria-label="{{ section.settings[col_key] | default: 'Shade C' | escape }}"
+          {% if forloop.first %}aria-current="true"{% endif %}
+        ></button>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-compare-table.name",
+  "tag": "section",
+  "class": "aria-compare-table-section",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background",
+      "label": "t:sections.aria-compare-table.settings.background.label",
+      "info": "t:sections.aria-compare-table.settings.background.info"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "THE DIFFERENCE",
+      "label": "t:sections.aria-compare-table.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Stated plainly",
+      "label": "t:sections.aria-compare-table.settings.heading.label"
+    },
+    {
+      "type": "text",
+      "id": "column_1",
+      "default": "Chocolate Buttercream",
+      "label": "t:sections.aria-compare-table.settings.column_1.label"
+    },
+    {
+      "type": "text",
+      "id": "column_2",
+      "default": "Ginger Cream",
+      "label": "t:sections.aria-compare-table.settings.column_2.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon",
+      "label": "t:sections.aria-compare-table.settings.icon.label",
+      "info": "t:sections.aria-compare-table.settings.icon.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "t:sections.aria-compare-table.blocks.row.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "default": "Root",
+          "label": "t:sections.aria-compare-table.blocks.row.settings.label.label"
+        },
+        {
+          "type": "text",
+          "id": "value_1",
+          "default": "Dark brown",
+          "label": "t:sections.aria-compare-table.blocks.row.settings.value_1.label"
+        },
+        {
+          "type": "text",
+          "id": "value_2",
+          "default": "Dark brown — the same",
+          "label": "t:sections.aria-compare-table.blocks.row.settings.value_2.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-compare-table.presets.name",
+      "blocks": [{ "type": "row" }]
+    }
+  ]
+}
+{% endschema %}

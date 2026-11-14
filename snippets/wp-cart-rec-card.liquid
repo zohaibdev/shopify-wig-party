@@ -1,0 +1,48 @@
+{%- comment -%}
+  Wig Party cart page: recommendation card. Params: product.
+  Add to Cart posts the first available variant to /cart/add.js (assets/main-cart.js); no available variant = disabled "Sold out".
+  Title and subtitle follow the cart drawer: short style name; product type, else vendor
+  (supplier names hidden via aria-strip-supplier).
+{%- endcomment -%}
+{%- liquid
+  assign first_variant = product.selected_or_first_available_variant
+  assign add_variant = product.variants | where: 'available' | first
+  assign show_chip = false
+  if product.tags contains 'New Arrival'
+    assign show_chip = true
+  endif
+
+  capture short_name
+    render 'aria-product-short-name', product: product
+  endcapture
+  assign short_name = short_name | strip
+
+  assign card_sub = product.type
+  if card_sub == blank
+    capture card_sub
+      render 'aria-strip-supplier', text: product.vendor
+    endcapture
+    assign card_sub = card_sub | strip
+  endif
+-%}
+<div class="wp-cart__rec" data-product-id="{{ product.id }}">
+  <div class="wp-cart__rec-info">
+    <div class="wp-cart__rec-media">
+      {%- if product.featured_image -%}
+        <a href="{{ product.url }}">{{ product.featured_image | image_url: width: 440 | image_tag: loading: 'lazy', alt: product.featured_image.alt }}</a>
+      {%- endif -%}
+      {%- if show_chip -%}<span class="wp-cart__chip">New Arrival</span>{%- endif -%}
+    </div>
+    <a class="wp-cart__rec-title" href="{{ product.url }}">{{ short_name | escape }}</a>
+    {%- if card_sub != blank -%}<p class="wp-cart__rec-sub">{{ card_sub | escape }}</p>{%- endif -%}
+    <p class="wp-cart__rec-price">
+      <span>{{ first_variant.price | money }}</span>
+      {%- if first_variant.compare_at_price > first_variant.price -%}<s>{{ first_variant.compare_at_price | money }}</s>{%- endif -%}
+    </p>
+  </div>
+  {%- if add_variant != blank -%}
+    <button type="button" class="wp-cart__rec-btn" data-wp-add data-variant-id="{{ add_variant.id }}">Add to Cart <img src="{{ 'cart-page-add-to-cart-icon.svg' | asset_url }}" alt="" width="20" height="20"></button>
+  {%- else -%}
+    <button type="button" class="wp-cart__rec-btn" disabled aria-disabled="true">Sold out</button>
+  {%- endif -%}
+</div>

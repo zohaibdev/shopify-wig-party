@@ -1,0 +1,813 @@
+/* Wig Party — PDP customer reviews, Figma node 6356:922.
+ *
+ * Frame is 1440 wide with 80px padding all round, giving a 1280 column. Vertical rhythm:
+ * summary block, 32px, divider, 32px, review list, 32px, divider, 32px, Load more.
+ *
+ * Two star treatments are intentional and both come from the node: the aggregate and the
+ * histogram use gold (#FEC600), individual review rows use dark pink (#A64A4C).
+ */
+
+.aria-reviews,
+.aria-reviews *,
+.aria-reviews *::before,
+.aria-reviews *::after {
+  box-sizing: border-box;
+}
+
+.aria-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 80px;
+  background: linear-gradient(
+    180deg,
+    var(--aria-reviews-from, #fff) 0%,
+    var(--aria-reviews-to, #eaddd4) 100%
+  );
+}
+
+.aria-reviews__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  width: 100%;
+  max-width: 1280px;
+}
+
+/* --- Summary (6356:926) — 705 left column, 288 right ---------------- */
+
+.aria-reviews__summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.aria-reviews__summary-main {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 705px;
+  min-width: 0;
+}
+
+/* Montserrat Medium 56/64. Figma caps the heading box at 301px so it breaks after
+   "Customer"; the line break is part of the composition. */
+.aria-reviews__heading {
+  max-width: 301px;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  color: #000001;
+}
+
+.aria-reviews__score-block {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.aria-reviews__score-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.aria-reviews__score {
+  width: 68px;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 38px;
+  color: #000001;
+}
+
+.aria-reviews__score-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Five 20px stars butted together — Figma's strip is exactly 100x20 with no gap. */
+.aria-reviews__stars {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.aria-reviews__stars--gold {
+  color: #fec600;
+}
+
+.aria-reviews__stars svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.aria-reviews__score-caption {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--charcoal, #36393c);
+}
+
+/* --- Histogram (6356:942) — five 22px rows on a 16px gap ----------- */
+
+.aria-reviews__histogram {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-reviews__hist-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 22px;
+}
+
+/* Figma: the "5 ★" label group is 25px wide, then the bar starts at x=49 — a 24px gap
+   between label and bar, matching the design's own spacing token. */
+.aria-reviews__hist-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  width: 25px;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--charcoal, #36393c);
+}
+
+.aria-reviews__hist-label svg {
+  display: block;
+  width: 14px;
+  height: 13.406px;
+  color: #fec600;
+}
+
+/* 623 x 12, radius 25, on a 10% black track. */
+.aria-reviews__hist-bar {
+  position: relative;
+  flex: 1 1 auto;
+  margin-left: 24px;
+  height: 12px;
+  border-radius: 25px;
+  background: rgba(0, 0, 1, 0.1);
+  overflow: hidden;
+}
+
+.aria-reviews__hist-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 12px;
+  border-radius: 25px;
+  background: #000001;
+}
+
+.aria-reviews__hist-count {
+  flex: none;
+  min-width: 17px;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--charcoal, #36393c);
+  text-align: right;
+}
+
+/* --- Right rail (6356:980) — button then signature ----------------- */
+
+.aria-reviews__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 102px;
+  width: 288px;
+  flex: none;
+  padding-top: 78px;
+}
+
+/* Figma gives this an inset highlight rather than a border. */
+.aria-reviews__write {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #000001;
+  box-shadow: inset 0 4px 7.6px rgba(255, 255, 255, 0.25);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--white, #fff);
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.aria-reviews__write:hover {
+  background: var(--py, #a64a4c);
+}
+
+.aria-reviews__signature {
+  display: block;
+  width: 288px;
+  height: auto;
+}
+
+/* --- Customer photos (6356:984) ------------------------------------ */
+
+.aria-reviews__photos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.aria-reviews__photos-title {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  text-transform: uppercase;
+  color: #000001;
+}
+
+/* Nav buttons sit over the strip and bleed 16px past its edges, per Figma's -16/1316. */
+.aria-reviews__photos-carousel {
+  position: relative;
+  width: 100%;
+}
+
+.aria-reviews__photos-swiper {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* 150x150 tiles on a 12px gap; slidesPerView is 'auto' so the width lives here. */
+.aria-reviews__photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #b6b3b3;
+}
+
+.aria-reviews__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-reviews__photos-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.aria-reviews__photos-nav--prev {
+  left: -16px;
+  background: var(--silver, #b2b6b6);
+}
+
+.aria-reviews__photos-nav--next {
+  right: -16px;
+  background: var(--py, #a64a4c);
+}
+
+.aria-reviews__photos-nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.aria-reviews__photos-nav svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Divider ------------------------------------------------------- */
+
+.aria-reviews__rule {
+  width: 100%;
+  max-width: 1280px;
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: var(--silver, #b2b6b6);
+}
+
+/* --- Review list (6356:1027) — 48px between reviews ---------------- */
+
+.aria-reviews__list {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-reviews__item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.aria-reviews__item[hidden] {
+  display: none;
+}
+
+/* Author rail: 294 wide, 100px avatar, 12px gap. */
+.aria-reviews__author {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 294px;
+  flex: none;
+}
+
+.aria-reviews__avatar {
+  flex: none;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--cream, #eaddd4);
+}
+
+.aria-reviews__avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-reviews__author-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.aria-reviews__author-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  color: #000001;
+}
+
+.aria-reviews__verified {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.aria-reviews__verified svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-reviews__author-role {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 22px;
+  text-transform: capitalize;
+  color: #000001;
+}
+
+.aria-reviews__date {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 20px;
+  color: #000001;
+}
+
+/* Review body: 940 wide, 8px under the stars. */
+.aria-reviews__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 940px;
+  min-width: 0;
+}
+
+/* Review rows use the pink star; the aggregate above uses gold. */
+.aria-reviews__stars--pink {
+  color: var(--py, #a64a4c);
+}
+
+.aria-reviews__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.aria-reviews__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aria-reviews__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  color: #000001;
+}
+
+.aria-reviews__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--black, #000);
+}
+
+.aria-reviews__text p {
+  margin: 0;
+}
+
+.aria-reviews__text p + p {
+  margin-top: 12px;
+}
+
+/* Figma shows long bodies clamped to three lines with a "Read More" affordance; the
+   clamp is released when that control is used. */
+.aria-reviews__text--clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.aria-reviews__text--clamped.is-expanded {
+  display: block;
+  overflow: visible;
+}
+
+.aria-reviews__read-more {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--py, #a64a4c);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Review photos: 228 x 240 on a 24px gap. */
+.aria-reviews__media {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-reviews__media-item {
+  width: 228px;
+  height: 240px;
+  overflow: hidden;
+  background: var(--cream, #eaddd4);
+}
+
+.aria-reviews__media-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Load more (6356:1122) ----------------------------------------- */
+
+.aria-reviews__more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 47px;
+  padding: 15px 24px;
+  border: 1px solid #b1b1b1;
+  border-radius: 2px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+  text-transform: uppercase;
+  color: #404040;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.aria-reviews__more:hover {
+  background: var(--py, #a64a4c);
+  border-color: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-reviews__more[hidden] {
+  display: none;
+}
+
+/* --- Empty state --------------------------------------------------- */
+
+.aria-reviews__empty {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--charcoal, #36393c);
+}
+
+/* ------------------------------------------------------------------ *
+ * Reflow — desktop (1440) is the design of record.
+ * ------------------------------------------------------------------ */
+
+@media screen and (max-width: 1439px) {
+  .aria-reviews {
+    padding: 64px 40px;
+  }
+
+  .aria-reviews__summary-main {
+    width: auto;
+    flex: 1 1 auto;
+  }
+
+  .aria-reviews__body {
+    width: auto;
+    flex: 1 1 auto;
+    margin-left: 46px;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-reviews {
+    padding: 48px 24px;
+    gap: 24px;
+  }
+
+  .aria-reviews__inner {
+    gap: 32px;
+  }
+
+  .aria-reviews__heading {
+    max-width: none;
+    font-size: 36px;
+    line-height: 44px;
+  }
+
+  .aria-reviews__summary {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .aria-reviews__aside {
+    align-items: flex-start;
+    gap: 32px;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .aria-reviews__signature {
+    width: 220px;
+  }
+
+  .aria-reviews__item {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .aria-reviews__author,
+  .aria-reviews__body {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .aria-reviews__avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .aria-reviews__media-item {
+    width: 160px;
+    height: 168px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:3992 — its own 375px frame). Verified against the raw node
+ * coordinates, not the screenshot: every top-level block (summary,
+ * dividers, each review, load more) sits exactly 24px apart, confirmed
+ * by walking their y-offsets, so that is this frame's true outer rhythm
+ * rather than the desktop 32px inherited by default.
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-reviews {
+    padding: 48px 16px;
+    gap: 24px;
+  }
+
+  /* Mobile/Heading/H1 token: 36/46 — not the previous 28/36 guess. */
+  .aria-reviews__heading {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  /* Heading -> score-block gap on this frame (was inheriting desktop's 40px). */
+  .aria-reviews__summary-main {
+    gap: 24px;
+  }
+
+  /* Score-row -> histogram gap (was inheriting desktop's 32px). */
+  .aria-reviews__score-block {
+    gap: 24px;
+  }
+
+  /* Score number -> stars/caption gap (was inheriting desktop's 24px). */
+  .aria-reviews__score-row {
+    gap: 12px;
+  }
+
+  /* "4.93" keeps its 28px size but the node's own line-height is 46px, not
+     the base rule's 38px. */
+  .aria-reviews__score {
+    line-height: 46px;
+  }
+
+  /* Mobile/Mobile/Small/Small token: 16/26 — not the base rule's 18/28. */
+  .aria-reviews__score-caption {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  /* Row-to-row gap in the star histogram (was inheriting desktop's 16px). */
+  .aria-reviews__histogram {
+    gap: 12px;
+  }
+
+  /* Row height matches the 16/26 label text below, not the base rule's
+     22px (sized for the desktop 14/22 label). */
+  .aria-reviews__hist-row {
+    height: 26px;
+  }
+
+  /* The "5 ★" label is Poppins REGULAR 16/26 here, not the base rule's
+     bold 14/22 — width follows from the wider glyph + star (11 + 4 + 14 = 29,
+     not the base rule's 25px). */
+  .aria-reviews__hist-label {
+    width: 29px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  /* Figma's label -> bar gap is 24px total; the row's own 16px `gap`
+     already supplies part of that, so only the remainder needs adding here
+     (16 + 8 = 24) — not the previous 12px, which produced 28px, and not
+     the desktop 24px margin, which would double up to 40px on top of this
+     row's gap. */
+  .aria-reviews__hist-bar {
+    margin-left: 8px;
+  }
+
+  /* This frame stacks the write button above the signature with a 24px
+     gap, centered — not the 989px block's 32px / flex-start (which fits
+     the wider tablet card where the signature sits left-aligned). */
+  .aria-reviews__aside {
+    gap: 24px;
+    align-items: center;
+  }
+
+  .aria-reviews__write {
+    width: 100%;
+  }
+
+  /* This node's own signature size (167.654px), not the 989px block's
+     220px guess for the wider tablet card. */
+  .aria-reviews__signature {
+    width: 167.654px;
+  }
+
+  /* The nav row is centered and inset 8px from each edge on this frame —
+     it does not bleed -16px past the photo strip the way the desktop
+     nav does. */
+  .aria-reviews__photos-nav--prev {
+    left: 8px;
+  }
+
+  .aria-reviews__photos-nav--next {
+    right: 8px;
+  }
+
+  /* This frame's author rail keeps its original 294px content width and a
+     full-size 100x100 avatar — the 989px block's width:100%/64px shrink is
+     for the wider tablet card, not this one. */
+  .aria-reviews__author {
+    width: 294px;
+  }
+
+  .aria-reviews__avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* "Nina" is Poppins REGULAR 16/26 here, not the base rule's Medium 18/28. */
+  .aria-reviews__author-name {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  /* Review photo pair: 8px gap (not the base rule's 24px). `nowrap`
+     replaces the base rule's `wrap`: this list is always exactly 2 items
+     (sections/pdp-reviews.liquid loops image_1/image_2 only), and Figma's
+     own numbers for two fixed 168px tiles plus an 8px gap total 344px — 1px
+     over this frame's 343px column. That's sub-pixel rounding in the
+     design file, but with `wrap` still active it was enough to push the
+     second photo onto its own row instead of sitting beside the first. */
+  .aria-reviews__media {
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  /* Flexible width (rather than the 168px this frame nominally measures)
+     is what actually keeps two tiles plus the 8px gap inside the 343px
+     column without relying on sub-pixel rounding to happen to work out;
+     aspect-ratio preserves this frame's own 168/176.842 proportions. */
+  .aria-reviews__media-item {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    height: auto;
+    aspect-ratio: 168 / 176.842;
+  }
+}
+
+/* "Load more" keeps its Figma treatment and its place in the stack; "Show less" sits
+   quietly under it as a text control rather than a second competing button. */
+.aria-reviews__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+

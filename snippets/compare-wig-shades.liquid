@@ -1,0 +1,78 @@
+{%- comment -%}
+  Wig Party: one wig's shades as JSON, built from the product's own variants (shade = the
+  colour option value, ETA text stripped for display) and each variant's image. Used only by
+  sections/compare-shades.liquid (first paint) and sections/compare-product-shades.liquid
+  (the Section Rendering API call made when a shopper picks another wig).
+
+  Usage: {% render 'compare-wig-shades', wig: product %}
+  Output: {"title": ..., "handle": ..., "shades": [ {name, slug, photo, ...}, ... ]}
+{%- endcomment -%}
+{%- liquid
+  assign colour_index = 0
+  for option in wig.options_with_values
+    assign option_name = option.name | downcase
+    if option_name contains 'colo'
+      assign colour_index = forloop.index0
+      break
+    endif
+  endfor
+
+  assign wig_name = wig.title | split: '|' | first | strip
+  assign title_parts = wig.title | split: '|'
+  assign wig_collection = ''
+  for part in title_parts
+    if part contains 'Collection'
+      assign wig_collection = part | strip
+      break
+    endif
+  endfor
+  assign wig_cap = wig.type | strip
+-%}
+{"title": {{ wig.title | json }}, "wig": {{ wig_name | json }}, "handle": {{ wig.handle | json }}, "shades": [
+{%- assign seen = '|' -%}
+{%- assign emitted = 0 -%}
+{%- for variant in wig.variants -%}
+  {%- liquid
+    assign raw = variant.options[colour_index] | default: variant.title
+    assign clean = raw | split: 'ETA' | first | strip
+    assign last_char = clean | slice: -1
+    if last_char == '('
+      assign clean = clean | remove_last: '(' | strip
+    endif
+    assign last_char = clean | slice: -1
+    if last_char == '-'
+      assign clean = clean | remove_last: '-' | strip
+    endif
+    assign clean = clean | replace: '  ', ' '
+    assign clean_key = clean | downcase
+    if clean == blank or clean_key contains 'choose' or clean_key contains 'drop down' or clean_key contains 'dropdown'
+      continue
+    endif
+    assign slug = clean | handleize
+    assign key = '|' | append: slug | append: '|'
+    if seen contains key
+      continue
+    endif
+    assign seen = seen | append: slug | append: '|'
+    assign image = variant.featured_image | default: wig.featured_image
+    if image != blank
+      assign photo = image | image_url: width: 1212
+      assign swatch = image | image_url: width: 400
+    else
+      assign photo = ''
+      assign swatch = ''
+    endif
+    if raw contains 'ETA'
+      assign status = raw | split: 'ETA' | last | prepend: 'ETA' | remove: ')' | strip
+    elsif variant.available
+      assign status = 'Available'
+    else
+      assign status = 'Sold out'
+    endif
+    assign price = variant.price | money
+  -%}
+  {%- if emitted > 0 -%},{%- endif -%}
+  {"name": {{ clean | json }}, "slug": {{ slug | json }}, "variant": {{ variant.id | json }}, "url": {{ variant.url | json }}, "photo": {{ photo | json }}, "own_photo": {% if image != blank %}true{% else %}false{% endif %}, "comparison_image": "", "alt": {{ image.alt | default: clean | json }}, "daylight": {{ swatch | json }}, "indoor": {{ swatch | json }}, "evening": {{ swatch | json }}, "lead": "", "text": "", "table_name": {{ clean | json }}, "wig": {{ wig_name | json }}, "collection": {{ wig_collection | json }}, "cap": {{ wig_cap | json }}, "price": {{ price | json }}, "status": {{ status | json }}}
+  {%- assign emitted = emitted | plus: 1 -%}
+{%- endfor -%}
+]}

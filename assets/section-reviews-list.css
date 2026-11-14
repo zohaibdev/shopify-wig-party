@@ -1,0 +1,1234 @@
+/* Wig Party — Reviews list (sections/reviews-list.liquid), Figma 7664:17841. Desktop only.
+ *
+ * Geometry (px, Figma):
+ *   section     padding 80 / 80, container 1280: sidebar 348 at x 0, main 849 at x 431
+ *   sidebar     column gap 20: [main (gap 32): [top (gap 32): [summary wrap (gap 40), filter],
+ *               button], note]
+ *   summary     heading (301 wrap) H4 24/32 #000001; 40; rating block (gap 32):
+ *               value H3 28/38 (68 wide), 24, stars 100 x 20, 8, text Poppins 18/28 #36393c
+ *               (31.998 box); distribution rows gap 16
+ *   row         flex gap 16: [label (num 16/26 + 4 + star 14 x 13.406), 24, track flex 1 x 12
+ *               rgba(0,0,1,.1) r-25, fill #000001 r-25], count 14/22 #36393c
+ *   filter      label Poppins Bold 11/16.5, 1.76 tracking, uppercase #4a4a4a; 16; items
+ *               Poppins 14/22 #4a4a4a gap 12
+ *   button      348 x 56 black r-8 px-20 py-14, Poppins 18/28 white
+ *   note        Poppins 14/22 black, centred
+ */
+
+.reviews-list,
+.reviews-list *,
+.reviews-list *::before,
+.reviews-list *::after {
+  box-sizing: border-box;
+}
+
+@media (min-width: 750px) {
+  .reviews-list {
+    padding: var(--wp-rl-section-padding-y) var(--wp-rl-section-padding-x);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .reviews-list__container {
+    display: grid;
+    grid-template-columns: var(--wp-rl-sidebar-width) var(--wp-rl-main-width);
+    align-items: start;
+    justify-content: space-between;
+    max-width: var(--wp-rl-container-width);
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar (7664:17844) ---------- */
+
+  .reviews-list__sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--wp-spacing-20, 20px);
+    width: var(--wp-rl-sidebar-width);
+  }
+
+  .reviews-list__side-main,
+  .reviews-list__side-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .reviews-list__summary-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+    width: 100%;
+  }
+
+  .reviews-list__heading-wrap {
+    width: 301px;
+  }
+
+  .reviews-list__heading {
+    margin: 0;
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-size: var(--wp-h4-size, 24px);
+    font-weight: var(--wp-h4-weight, 500);
+    line-height: var(--wp-h4-line-height, 32px);
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__rating-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .reviews-list__summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .reviews-list__rating {
+    width: 68px;
+    margin: 0;
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-size: var(--wp-h3-size, 28px);
+    font-weight: var(--wp-h3-weight, 500);
+    line-height: var(--wp-h3-line-height, 38px);
+    letter-spacing: 0;
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__stars-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--wp-spacing-md, 8px);
+  }
+
+  /* Value-based stars: empty stars as a mask, filled artwork clipped to the rating. */
+  .reviews-list__stars {
+    position: relative;
+    display: block;
+    width: 100px;
+    height: 20px;
+  }
+
+  .reviews-list__stars::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--wp-rl-star-empty);
+    -webkit-mask: var(--rl-stars-mask) no-repeat 0 0 / 100% 100%;
+    mask: var(--rl-stars-mask) no-repeat 0 0 / 100% 100%;
+  }
+
+  .reviews-list__stars-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--rl-rating, 100%);
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .reviews-list__stars-fill img {
+    display: block;
+    width: 100px;
+    height: 20px;
+    max-width: none;
+  }
+
+  .reviews-list__rating-text-box {
+    display: flex;
+    align-items: center;
+    height: 31.998px;
+  }
+
+  .reviews-list__rating-text {
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-medium-size, 18px);
+    font-weight: 400;
+    line-height: var(--wp-body-medium-line-height, 28px);
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: var(--wp-color-charcoal);
+  }
+
+  /* ---------- Distribution (7664:17862) ---------- */
+
+  .reviews-list__dist {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .reviews-list__dist-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .reviews-list__dist-main {
+    display: flex;
+    flex: 1 0 0;
+    align-items: center;
+    gap: 24px;
+    min-width: 1px;
+  }
+
+  .reviews-list__dist-label {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .reviews-list__dist-num {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-small-size, 16px);
+    font-weight: 400;
+    line-height: var(--wp-body-small-line-height, 26px);
+    white-space: nowrap;
+    color: var(--wp-color-black, #000);
+  }
+
+  .reviews-list__dist-star {
+    display: block;
+    flex: none;
+    width: 14px;
+    height: 13.406px;
+    max-width: none;
+  }
+
+  .reviews-list__dist-track {
+    position: relative;
+    display: block;
+    flex: 1 0 0;
+    min-width: 1px;
+    height: 12px;
+    overflow: hidden;
+    border-radius: 25px;
+    background: var(--wp-rl-track);
+  }
+
+  .reviews-list__dist-fill {
+    display: block;
+    height: 12px;
+    border-radius: 25px;
+    background: var(--wp-rl-ink);
+  }
+
+  /* Figma: Neue Haas Grotesk Display Pro 55 Roman (not a theme font), Poppins used. */
+  .reviews-list__dist-count {
+    flex: none;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-body-xs-line-height, 22px);
+    white-space: nowrap;
+    color: var(--wp-color-charcoal);
+  }
+
+  /* ---------- Filter (7664:17900) ---------- */
+
+  .reviews-list__filter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    color: var(--wp-rl-text-muted);
+  }
+
+  .reviews-list__filter-label {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16.5px;
+    letter-spacing: 1.76px;
+    text-transform: uppercase;
+  }
+
+  .reviews-list__filter-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-body-xs-line-height, 22px);
+    letter-spacing: 0;
+  }
+
+  .reviews-list__filter-item {
+    width: 100%;
+  }
+
+  /* ---------- Button + note (7664:17909, 7664:17912) ---------- */
+
+  .reviews-list__btn-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  .reviews-list__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 56px;
+    padding: 14px 20px;
+    border-radius: var(--wp-radius-08, 8px);
+    background: var(--wp-color-black, #000);
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-medium-size, 18px);
+    font-weight: 400;
+    line-height: var(--wp-body-medium-line-height, 28px);
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+    color: var(--wp-color-white, #fff);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .reviews-list__btn:hover,
+  .reviews-list__btn:focus-visible {
+    background: #2b2b2b;
+  }
+
+  .reviews-list__note {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-body-xs-line-height, 22px);
+    letter-spacing: 0;
+    text-align: center;
+    color: var(--wp-color-black, #000);
+  }
+
+  /* ---------- Main column (7664:17913) ----------
+   * Gap between chips row, card grid and LOAD MORE is not in the given nodes: 32 used, LOAD MORE
+   * centred (confirm with design). Figma strokes are inside, so CSS padding = Figma padding - 1. */
+
+  .reviews-list__main {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: var(--wp-rl-main-width);
+    min-width: 0;
+  }
+
+  /* Sort chips (7664:17914): static labels, first one shown active */
+  .reviews-list__sort {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .reviews-list__sort-label {
+    flex: none;
+    padding-right: 8px;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-small-size, 16px);
+    font-weight: 400;
+    line-height: var(--wp-body-small-line-height, 26px);
+    white-space: nowrap;
+    color: var(--wp-rl-sort-label);
+  }
+
+  .reviews-list__chips {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .reviews-list__chip {
+    display: block;
+    flex: none;
+    height: 34px;
+    padding: 5px 12px;
+    border: 1px solid var(--wp-color-gray, #3f3e3e);
+    border-radius: var(--wp-radius-96, 96px);
+    background: var(--wp-color-white, #fff);
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-body-xs-line-height, 22px);
+    white-space: nowrap;
+    color: var(--wp-rl-chip-text);
+  }
+
+  .reviews-list__chip--active {
+    border-color: var(--wp-color-cream, #eaddd4);
+    background: var(--wp-color-dark-pink, #a64a4c);
+    color: var(--wp-color-white, #fff);
+  }
+
+  /* Card grid: 2 x 414.5, gap 20; rows stretch so cards in a row share a height */
+  .reviews-list__cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--wp-rl-card-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Card (7664:17932, 7664:17958) */
+  .reviews-list__card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid var(--wp-color-cream, #eaddd4);
+    background: var(--wp-color-white, #fff);
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .reviews-list__author {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .reviews-list__avatar {
+    display: block;
+    flex: none;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .reviews-list__avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+
+  .reviews-list__author-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .reviews-list__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .reviews-list__name {
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-small-size, 16px);
+    font-weight: 400;
+    line-height: var(--wp-body-small-line-height, 26px);
+    white-space: nowrap;
+  }
+
+  .reviews-list__verified-icon {
+    display: block;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    max-width: none;
+  }
+
+  /* Figma: Neue Haas Grotesk Display Pro 45 Light (not a theme font), Poppins used. */
+  .reviews-list__verified-label,
+  .reviews-list__date {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .reviews-list__verified-label {
+    font-size: var(--wp-body-xs-size, 14px);
+    line-height: var(--wp-body-xs-line-height, 22px);
+    text-transform: capitalize;
+  }
+
+  .reviews-list__date {
+    font-size: var(--wp-tag-size, 12px);
+    line-height: 20px;
+  }
+
+  .reviews-list__card-stars {
+    flex: none;
+  }
+
+  .reviews-list__card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .reviews-list__card-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .reviews-list__card-title {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-size: var(--wp-h5-size, 20px);
+    font-weight: var(--wp-h5-weight, 500);
+    line-height: var(--wp-h5-line-height, 28px);
+    letter-spacing: 0;
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__card-text {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-body-xs-line-height, 22px);
+    letter-spacing: 0;
+    color: var(--wp-color-black, #000);
+  }
+
+  .reviews-list__photos {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .reviews-list__photo {
+    display: block;
+    flex: none;
+    width: 155px;
+    height: 164px;
+    overflow: hidden;
+  }
+
+  .reviews-list__photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .reviews-list__card-meta {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-tag-size, 12px);
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    overflow-wrap: break-word;
+    color: var(--wp-color-pink, #bc696b);
+  }
+
+  /* Kristi reply (7664:17982) */
+  .reviews-list__reply {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    background: var(--wp-rl-reply-bg);
+  }
+
+  .reviews-list__reply-text {
+    flex: 1 0 0;
+    min-width: 1px;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 11.5px;
+    font-weight: 400;
+    line-height: 17.25px;
+    letter-spacing: 0;
+    overflow-wrap: break-word;
+    color: var(--wp-color-black, #000);
+  }
+
+  .reviews-list__reply-text strong {
+    font-weight: 700;
+  }
+
+  /* LOAD MORE (7664:18090): 141 x 47 link */
+  .reviews-list__more-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .reviews-list__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 47px;
+    padding: 0 23px;
+    border: 1px solid var(--wp-color-btn-secondary-border, #b1b1b1);
+    border-radius: 2px;
+    background: var(--wp-color-white, #fff);
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-body-small-size, 16px);
+    font-weight: var(--wp-weight-semibold, 600);
+    line-height: var(--wp-body-small-line-height, 26px);
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--wp-color-btn-secondary-text, #404040);
+    text-decoration: none;
+  }
+}
+
+/* Filter dropdown trigger exists only on mobile (desktop shows the filter list). */
+.reviews-list__filter-trigger {
+  display: none;
+}
+
+/* ===================== MOBILE (375 frame, container 343 at x 16, y 40) =====================
+ * Spec (px, Figma 7732:14971 summary, 15024 trigger, 15035 sort, 15053 photo card,
+ * 15079 reply card, 15211 LOAD MORE). Strokes are inside: CSS padding = Figma - 1.
+ *   element         x/w          h      font                         colour        gaps
+ *   heading         0 / 343      32     Montserrat 500 24/32         #000001       24 below
+ *   rating          0 / 68       36     Montserrat 500 28/36         #000001       24 below
+ *   stars           0 / 100      20     svg                          #A64A4C       8 below
+ *   rating text     0 / 236.366  29.561 Poppins 400 16/26 nowrap     #36393c       32 below
+ *   dist row        0 / 343      26     num 16/26 #000, star 14x13.406, 24, track flex x 12
+ *                                       r25, count 14/22 #36393c     pitch 42 (gap 16)
+ *   filter trigger  0 / 343      46     Poppins 400 14/22            #000          pad 12/16,
+ *                                       border 1 #eaddd4 r2 white, chevron 16 (up, rotated 180)
+ *   button          0 / 343      56     Poppins 400 18/28            white on #000 r8
+ *   note            0 / 343      22     Poppins 400 14/22 centred    #000
+ *   sort row        wrap, gap 9 (row) / 7 (col); label 50 wide pr 8, 16/26 #91837e;
+ *                   chip 34 high px 13 py 6, r96, 14/22; active #a64a4c / #eaddd4 / white,
+ *                   others white / #3f3e3e / #241f1e
+ *   card            343, pad 16, border 1 #eaddd4, white, gap 16
+ *     head          avatar 56 round, 12, info gap 4: name Poppins 500 16/26 + 8 + verified 16;
+ *                   label 14/22; date 12/14 uppercase (all #000001); stars 100 x 20 right
+ *     body          gap 24: copy gap 8 (title Montserrat 500 20/28 #000001, text 14/22 #000);
+ *                   photos 2 x 143.5 x 151 (228/240), gap 24, cover centre
+ *     meta          Poppins 12/14 uppercase #bc696b
+ *     reply         pad 12, gradient #cd8080 57.386% to transparent; 14/22, label 600
+ *   LOAD MORE       140 x 47 centred, px 24 py 15, border 1 #b1b1b1 r2, Poppins 500 16/26
+ *                   uppercase #404040
+ * Not in the given nodes (assumed): section bottom 40, sidebar to sort 32, sort to cards to LOAD
+ * MORE 32, card gap 20 (desktop token), summary to trigger 32, trigger to button 32, note 20
+ * (desktop sidebar gaps). */
+@media (max-width: 749px) {
+  .reviews-list {
+    padding: var(--wp-m-rl-section-padding);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .reviews-list__container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-m-rl-column-gap);
+    width: 100%;
+    max-width: var(--wp-m-content-width, 343px);
+    margin: 0 auto;
+  }
+
+  /* ---------- Sidebar ---------- */
+
+  .reviews-list__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-spacing-20, 20px);
+    width: 100%;
+  }
+
+  .reviews-list__side-main,
+  .reviews-list__side-top,
+  .reviews-list__rating-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .reviews-list__summary-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--wp-m-rl-summary-gap);
+    width: 100%;
+  }
+
+  .reviews-list__heading {
+    margin: 0;
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-size: var(--wp-m-h3-size, 24px);
+    font-weight: 500;
+    line-height: var(--wp-m-h3-line-height, 32px);
+    letter-spacing: 0;
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .reviews-list__rating {
+    width: 68px;
+    margin: 0;
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: var(--wp-m-rl-rating-line-height);
+    letter-spacing: 0;
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__stars-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--wp-spacing-md, 8px);
+  }
+
+  /* Value-based stars (same technique as desktop) */
+  .reviews-list__stars {
+    position: relative;
+    display: block;
+    flex: none;
+    width: 100px;
+    height: 20px;
+  }
+
+  .reviews-list__stars::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--wp-rl-star-empty);
+    -webkit-mask: var(--rl-stars-mask) no-repeat 0 0 / 100% 100%;
+    mask: var(--rl-stars-mask) no-repeat 0 0 / 100% 100%;
+  }
+
+  .reviews-list__stars-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--rl-rating, 100%);
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .reviews-list__stars-fill img {
+    display: block;
+    width: 100px;
+    height: 20px;
+    max-width: none;
+  }
+
+  .reviews-list__rating-text-box {
+    display: flex;
+    align-items: center;
+    height: var(--wp-m-rl-rating-text-box);
+  }
+
+  .reviews-list__rating-text {
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-small-size, 16px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-small-line-height, 26px);
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: var(--wp-color-charcoal);
+  }
+
+  /* Distribution: rows 26 high, gap 16 (pitch 42), track full width */
+  .reviews-list__dist {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .reviews-list__dist-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .reviews-list__dist-main {
+    display: flex;
+    flex: 1 0 0;
+    align-items: center;
+    gap: 24px;
+    min-width: 1px;
+  }
+
+  .reviews-list__dist-label {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .reviews-list__dist-num {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-small-size, 16px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-small-line-height, 26px);
+    white-space: nowrap;
+    color: var(--wp-color-black, #000);
+  }
+
+  .reviews-list__dist-star {
+    display: block;
+    flex: none;
+    width: 14px;
+    height: 13.406px;
+    max-width: none;
+  }
+
+  .reviews-list__dist-track {
+    display: block;
+    flex: 1 0 0;
+    min-width: 1px;
+    height: 12px;
+    overflow: hidden;
+    border-radius: 25px;
+    background: var(--wp-rl-track);
+  }
+
+  .reviews-list__dist-fill {
+    display: block;
+    height: 12px;
+    border-radius: 25px;
+    background: var(--wp-rl-ink);
+  }
+
+  .reviews-list__dist-count {
+    flex: none;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-xs-line-height, 22px);
+    white-space: nowrap;
+    color: var(--wp-color-charcoal);
+  }
+
+  /* Filter: desktop label + list hidden, static dropdown trigger shown */
+  .reviews-list__filter {
+    width: 100%;
+  }
+
+  .reviews-list__filter-label,
+  .reviews-list__filter-list {
+    display: none;
+  }
+
+  .reviews-list__filter-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 46px;
+    padding: var(--wp-m-rl-trigger-padding);
+    border: 1px solid var(--wp-color-cream, #eaddd4);
+    border-radius: 2px;
+    background: var(--wp-color-white, #fff);
+  }
+
+  .reviews-list__filter-trigger-text {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-xs-line-height, 22px);
+    white-space: nowrap;
+    color: var(--wp-color-black, #000);
+  }
+
+  .reviews-list__filter-chevron {
+    display: block;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    max-width: none;
+    transform: rotate(180deg);
+  }
+
+  /* Button 343 x 56 + note */
+  .reviews-list__btn-wrap {
+    width: 100%;
+  }
+
+  .reviews-list__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 56px;
+    padding: 14px 20px;
+    border-radius: var(--wp-radius-08, 8px);
+    background: var(--wp-color-black, #000);
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+    color: var(--wp-color-white, #fff);
+    text-decoration: none;
+  }
+
+  .reviews-list__note {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-xs-line-height, 22px);
+    text-align: center;
+    color: var(--wp-color-black, #000);
+  }
+
+  /* ---------- Main column ---------- */
+
+  .reviews-list__main {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Sort: label + chips wrap as one flow (chips wrapper flattened) */
+  .reviews-list__sort {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--wp-m-rl-sort-gap);
+  }
+
+  .reviews-list__chips {
+    display: contents;
+  }
+
+  .reviews-list__sort-label {
+    flex: none;
+    width: var(--wp-m-rl-sort-label-width);
+    padding-right: 8px;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-small-size, 16px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-small-line-height, 26px);
+    white-space: nowrap;
+    color: var(--wp-m-rl-sort-label);
+  }
+
+  .reviews-list__chip {
+    display: block;
+    flex: none;
+    height: 34px;
+    padding: 5px 12px;
+    border: 1px solid var(--wp-color-gray, #3f3e3e);
+    border-radius: var(--wp-radius-96, 96px);
+    background: var(--wp-color-white, #fff);
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-xs-line-height, 22px);
+    white-space: nowrap;
+    color: var(--wp-m-rl-chip-text);
+  }
+
+  .reviews-list__chip--active {
+    border-color: var(--wp-color-cream, #eaddd4);
+    background: var(--wp-color-dark-pink, #a64a4c);
+    color: var(--wp-color-white, #fff);
+  }
+
+  /* Cards: single column 343 */
+  .reviews-list__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wp-rl-card-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .reviews-list__card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    padding: 15px;
+    border: 1px solid var(--wp-color-cream, #eaddd4);
+    background: var(--wp-color-white, #fff);
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .reviews-list__author {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .reviews-list__avatar {
+    display: block;
+    flex: none;
+    width: var(--wp-m-rl-avatar);
+    height: var(--wp-m-rl-avatar);
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .reviews-list__avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+
+  .reviews-list__author-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .reviews-list__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .reviews-list__name {
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-small-size, 16px);
+    font-weight: 500;
+    line-height: var(--wp-m-body-small-line-height, 26px);
+    white-space: nowrap;
+  }
+
+  .reviews-list__verified-icon {
+    display: block;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    max-width: none;
+  }
+
+  .reviews-list__verified-label,
+  .reviews-list__date {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .reviews-list__verified-label {
+    font-size: var(--wp-m-body-xs-size, 14px);
+    line-height: var(--wp-m-body-xs-line-height, 22px);
+  }
+
+  .reviews-list__date {
+    font-size: var(--wp-m-tag-size, 12px);
+    line-height: var(--wp-m-tag-line-height, 14px);
+    text-transform: uppercase;
+  }
+
+  .reviews-list__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .reviews-list__card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .reviews-list__card-title {
+    margin: 0;
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-size: var(--wp-m-h4-size, 20px);
+    font-weight: 500;
+    line-height: var(--wp-m-h4-line-height, 28px);
+    letter-spacing: 0;
+    color: var(--wp-rl-ink);
+  }
+
+  .reviews-list__card-text {
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-xs-line-height, 22px);
+    letter-spacing: 0;
+    color: var(--wp-color-black, #000);
+  }
+
+  .reviews-list__photos {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .reviews-list__photo {
+    display: block;
+    flex: 1 0 0;
+    min-width: 1px;
+    aspect-ratio: var(--wp-m-rl-photo-ratio);
+    overflow: hidden;
+  }
+
+  .reviews-list__photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .reviews-list__card-meta {
+    width: 100%;
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-tag-size, 12px);
+    font-weight: 400;
+    line-height: var(--wp-m-tag-line-height, 14px);
+    text-transform: uppercase;
+    overflow-wrap: break-word;
+    color: var(--wp-color-pink, #bc696b);
+  }
+
+  .reviews-list__reply {
+    width: 100%;
+    padding: 12px;
+    background: var(--wp-rl-reply-bg);
+  }
+
+  .reviews-list__reply-text {
+    margin: 0;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-xs-size, 14px);
+    font-weight: 400;
+    line-height: var(--wp-m-body-xs-line-height, 22px);
+    overflow-wrap: break-word;
+    color: var(--wp-color-black, #000);
+  }
+
+  .reviews-list__reply-text strong {
+    font-weight: 600;
+  }
+
+  /* LOAD MORE 140 x 47, centred */
+  .reviews-list__more-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .reviews-list__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--wp-m-rl-more-height);
+    padding: 0 23px;
+    border: 1px solid var(--wp-color-btn-secondary-border, #b1b1b1);
+    border-radius: 2px;
+    background: var(--wp-color-white, #fff);
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: var(--wp-m-body-small-size, 16px);
+    font-weight: 500;
+    line-height: var(--wp-m-body-small-line-height, 26px);
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--wp-color-btn-secondary-text, #404040);
+    text-decoration: none;
+  }
+}

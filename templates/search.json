@@ -8,28 +8,82 @@
  * ------------------------------------------------------------
  */
 {
-  "sections": {
-    "main": {
-      "type": "main-search",
-      "settings": {
-        "columns_desktop": 4,
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": false,
-        "show_vendor": false,
-        "show_rating": false,
-        "enable_filtering": true,
-        "filter_type": "horizontal",
-        "enable_sorting": true,
-        "article_show_date": true,
-        "article_show_author": false,
-        "columns_mobile": "2",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    }
-  },
-  "order": [
-    "main"
-  ]
+    "sections":  {
+                     "main":  {
+                                  "type":  "wp-search-results",
+                                  "settings":  {
+                                                   "empty_btn1_url":  "shopify://pages/compare-shades",
+                                                   "empty_btn2_url":  "shopify://pages/contact"
+                                               }
+                              },
+                     "wp-search-guides":  {
+                                              "type":  "wp-search-guides",
+                                              "settings":  {
+                                                               "no_image_text":  "",
+                                                               "fallback_image":  "shopify://shop_images/image-3.jpg"
+                                                           }
+                                          },
+                     "wp-search-collections":  {
+                                                   "type":  "wp-search-collections",
+                                                   "settings":  {
+
+                                                                }
+                                               },
+                     "trust-strip":  {
+                                         "type":  "cart-trust-strip",
+                                         "blocks":  {
+                                                        "trust-approved-1":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "live",
+                                                                                                  "heading":  "Tried on Live by Kristi",
+                                                                                                  "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-2":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "packaging",
+                                                                                                  "heading":  "Processed in 1 to 3 business days",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-3":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "shipping",
+                                                                                                  "heading":  "Tracking within 24 to 48 hours",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-4":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "consult",
+                                                                                                  "heading":  "All sales final, ask us first",
+                                                                                                  "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             }
+                                                    },
+                                         "block_order":  [
+                                                             "trust-approved-1",
+                                                             "trust-approved-2",
+                                                             "trust-approved-3",
+                                                             "trust-approved-4"
+                                                         ],
+                                         "settings":  {
+                                                          "background_color":  "#ffffff"
+                                                      }
+                                     }
+                 },
+    "order":  [
+                  "main",
+                  "wp-search-guides",
+                  "wp-search-collections",
+                  "trust-strip"
+              ]
 }

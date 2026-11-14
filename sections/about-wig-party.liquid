@@ -69,9 +69,26 @@
                     rel="noopener"
                   {% endif %}
                 >
-                  <span class="aria-about__social-icon">
+                  {%- comment -%}
+                    Mobile (Figma 6578:13099) draws its own 16px marks for these four
+                    platforms, kept as wp-social-<platform>.svg; CSS shows them below 750px
+                    and Dawn's glyph everywhere else, so desktop is unchanged. Any other
+                    platform keeps Dawn's glyph at every width.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign has_mobile_glyph = false
+                    if platform == 'facebook' or platform == 'instagram' or platform == 'tiktok' or platform == 'youtube'
+                      assign has_mobile_glyph = true
+                    endif
+                  -%}
+                  <span class="aria-about__social-icon{% if has_mobile_glyph %} aria-about__social-icon--has-mobile{% endif %}">
                     {{- icon_asset | inline_asset_content -}}
                   </span>
+                  {%- if has_mobile_glyph -%}
+                    <span class="aria-about__social-icon aria-about__social-icon--mobile">
+                      {{- 'wp-social-' | append: platform | append: '.svg' | inline_asset_content -}}
+                    </span>
+                  {%- endif -%}
                   <span class="visually-hidden">{{ platform_name }}</span>
                 </a>
               </li>
@@ -106,6 +123,29 @@
       </div>
 
       <div class="aria-about__media">
+        {%- comment -%}
+          Mobile (Figma 6578:13115) frames its own 343x360 crop of the portrait, kept as
+          wp-about-mobile.jpg; a <picture> source swaps it in below 750px only, so the
+          desktop <img> is unchanged. A merchant-picked mobile image overrides it.
+        {%- endcomment -%}
+        <picture>
+          {%- if section.settings.mobile_image != blank -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ section.settings.mobile_image | image_url: width: 375 }} 375w, {{ section.settings.mobile_image | image_url: width: 750 }} 750w, {{ section.settings.mobile_image | image_url: width: 1100 }} 1100w"
+              sizes="calc(100vw - 32px)"
+              width="{{ section.settings.mobile_image.width }}"
+              height="{{ section.settings.mobile_image.height }}"
+            >
+          {%- else -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ 'wp-about-mobile.jpg' | asset_img_url: '375x' }} 375w, {{ 'wp-about-mobile.jpg' | asset_img_url: '750x' }} 750w, {{ 'wp-about-mobile.jpg' | asset_url }} 1029w"
+              sizes="calc(100vw - 32px)"
+              width="1029"
+              height="1080"
+            >
+          {%- endif -%}
         {%- if section.settings.image != blank -%}
           {{
             section.settings.image
@@ -127,6 +167,7 @@
             class="aria-about__image"
           >
         {%- endif -%}
+        </picture>
       </div>
     </div>
   </div>
@@ -181,6 +222,12 @@
       "type": "image_picker",
       "id": "image",
       "label": "t:sections.aria-about-wig-party.settings.image.label"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image",
+      "info": "Shown below 750px instead of the image above, cropped to 343 x 360. Empty uses the theme's default mobile crop of Kristi's portrait."
     },
     {
       "type": "header",

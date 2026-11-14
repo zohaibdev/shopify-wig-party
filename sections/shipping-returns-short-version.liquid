@@ -1,0 +1,141 @@
+{%- comment -%}
+  Wig Party — Shipping & Returns page, "The short version". Figma node 7899:452
+  (1440 x 778): pink gradient panel, eyebrow + H2, 2x3 grid of "Policy / Summary Card"
+  blocks (check-circle icon, H6 title, body-small description). Desktop only.
+  Styles in assets/section-shipping-returns-short-version.css.
+{%- endcomment -%}
+
+{{ 'section-shipping-returns-short-version.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign card_blocks = section.blocks | where: 'type', 'card'
+-%}
+
+<div class="wp-sr-sv">
+  <div class="wp-sr-sv__panel">
+    <div class="wp-sr-sv__heading">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="wp-sr-sv__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="wp-sr-sv__title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if card_blocks.size > 0 -%}
+      <ul class="wp-sr-sv__grid" role="list">
+        {%- for block in card_blocks -%}
+          <li class="wp-sr-sv__card" {{ block.shopify_attributes }}>
+            <span class="wp-sr-sv__card-icon">
+              <img
+                src="{{ 'icon-check-circle.svg' | asset_url }}"
+                alt=""
+                width="40"
+                height="40"
+                loading="lazy"
+              >
+            </span>
+            {%- if block.settings.title != blank -%}
+              <h3 class="wp-sr-sv__card-title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <p class="wp-sr-sv__card-text">{{ block.settings.description }}</p>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Shipping: Short version",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "THE SHORT VERSION",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Six things to know",
+      "label": "Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Summary card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "45 days to return an in-stock wig"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Tags attached, not cut, not coloured, not worn out."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shipping & Returns: short version",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "title": "45 days to return an in-stock wig",
+            "description": "Tags attached, not cut, not coloured, not worn out."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "All sales final",
+            "description": "No returns, exchanges or cancellations."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Processed in 1 to 3 business days",
+            "description": "Tracking within 24 to 48 hours."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Ask us first",
+            "description": "Email shopwigparty@gmail.com before you order."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Discreet packaging on everything",
+            "description": "The word \"wig\" never appears on the outside."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Sample sale and clearance are returnable too",
+            "description": "We just tell you their condition up front."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

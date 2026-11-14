@@ -468,12 +468,40 @@
  * `width: 323px`.
  */
 @media screen and (min-width: 990px) and (max-width: 1279px) {
+  /*
+   * The desktop rule drops the side padding (padding: 56px 0 0) because at 1280+ the
+   * 1215px row is centred with room either side. In this band the row fills the viewport,
+   * so without padding the link columns sat flush against the left edge (measured at
+   * 1045px) — restored to the tablet gutter.
+   */
+  .aria-footer__inner {
+    padding-inline: 40px;
+  }
+
+  /*
+   * With the gutter back, the row still did not fit: three fixed 203px columns plus the
+   * newsletter column needed ~1009px against 965px at 1045, and the newsletter was clipped
+   * on the right. The link columns may now give back width (never more than V4's 203px
+   * each, spread evenly with a 24px minimum gap), and the newsletter shrinks toward a
+   * 280px floor that still holds its heading, field and button.
+   */
   .aria-footer__columns {
-    gap: 32px;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 769px;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .aria-footer__column {
+    flex: 0 1 203px;
+    width: auto;
+    min-width: 0;
   }
 
   .aria-footer__signup {
     flex: 0 1 323px;
     width: auto;
+    min-width: 280px;
   }
 }

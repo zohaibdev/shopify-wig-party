@@ -1,0 +1,82 @@
+{%- layout none -%}
+{%- comment -%}
+  Wig Party — product index for the theme's own collection filters (?view=aria-index).
+
+  assets/aria-collection.js fetches this with the page's own query string, so Shopify's
+  filters (availability, price) and sort already apply; it then works out the theme filters
+  (cap construction, colour family, length, collection…) from these fields. 250 per page,
+  the most Shopify pages a collection by; the script walks ?page= until the last page.
+
+  Fields: h handle, t product type, n title, g tags, a available, s on the shelf (tagged
+  "in stock"), c colour names, p lowest price (cents), d published, k created (unix seconds), i photo, z cap sizes
+  (648 wide; sections/colour-shades.liquid draws its cards from these). Most styles are sold in every shade, so c is the shades on
+  the shelf when there are any, else every shade (made to order); "Choose color…"
+  placeholder variants are left out.
+{%- endcomment -%}
+{%- paginate collection.products by 250 -%}
+  {
+  "page": {{ paginate.current_page }},
+  "pages": {{ paginate.pages }},
+  "products": [
+  {%- for product in collection.products -%}
+    {%- liquid
+      assign colour_index = -1
+      for option in product.options_with_values
+        assign option_name = option.name | downcase
+        if option_name contains 'colo'
+          assign colour_index = forloop.index0
+        endif
+      endfor
+
+      assign shelf = ''
+      assign every = ''
+      for variant in product.variants
+        assign shade = ''
+        if colour_index >= 0
+          assign shade = variant.options[colour_index] | strip
+        endif
+        assign shade_key = shade | downcase
+        if shade == blank or shade_key contains 'choose' or shade_key contains 'drop down' or shade_key contains 'dropdown'
+          assign shade = ''
+        endif
+        assign in_stock = false
+        if variant.inventory_management != blank and variant.inventory_quantity > 0
+          assign in_stock = true
+        endif
+        if shade != ''
+          assign every = every | append: shade | append: '||'
+          if in_stock
+            assign shelf = shelf | append: shade | append: '||'
+          endif
+        endif
+      endfor
+      # -- On the shelf: the store tags ready-to-ship wigs "in stock" (pre-orders carry
+      # -- drop-ship stock too, so inventory alone cannot tell them apart).
+      assign tags_down = product.tags | join: '||' | downcase | split: '||'
+      assign product_on_shelf = false
+      if tags_down contains 'in stock'
+        assign product_on_shelf = true
+      endif
+      # -- Cap sizes: the theme's own wigparty.cap_sizes entries and Shopify's category
+      # -- cap-size attribute, whichever the product has.
+      assign cap_sizes = ''
+      for entry in product.metafields.wigparty.cap_sizes.value
+        assign cap_sizes = cap_sizes | append: entry.name | append: '||'
+      endfor
+      for entry in product.metafields.shopify['cap-size'].value
+        assign cap_sizes = cap_sizes | append: entry.label | append: '||'
+      endfor
+      assign cap_sizes = cap_sizes | split: '||' | uniq
+
+      if shelf != ''
+        assign colours = shelf | split: '||' | uniq
+      else
+        assign colours = every | split: '||' | uniq
+      endif
+    -%}
+    {"h": {{ product.handle | json }}, "t": {{ product.type | json }}, "n": {{ product.title | json }}, "g": {{ product.tags | json }}, "a": {{ product.available | json }}, "s": {{ product_on_shelf | json }}, "c": {{ colours | json }}, "z": {{ cap_sizes | json }}, "p": {{ product.price_min | json }}, "d": {{ product.published_at | date: '%s' | default: 0 }}, "k": {{ product.created_at | date: '%s' | default: 0 }}, "i": {% if product.featured_image %}{{ product.featured_image | image_url: width: 648 | json }}{% else %}null{% endif %}}
+    {%- unless forloop.last %},{% endunless -%}
+  {%- endfor -%}
+  ]
+  }
+{%- endpaginate -%}

@@ -216,8 +216,20 @@
             {%- comment -%}
               The parent's own destination. The level-1 row is a <button> that opens this
               panel, so without this the parent link itself would be unreachable on mobile.
+              Not for the header's menu-only parents (Start Here), which have no page.
             {%- endcomment -%}
-            {%- if link.url != blank and link.url != '#' -%}
+            {%- liquid
+              assign menu_only = false
+              assign menu_only_list = section.settings.menu_only_items | split: ','
+              for menu_only_raw in menu_only_list
+                assign menu_only_name = menu_only_raw | strip
+                if menu_only_name == link.title
+                  assign menu_only = true
+                  break
+                endif
+              endfor
+            -%}
+            {%- if link.url != blank and link.url != '#' and menu_only == false -%}
               <a href="{{ link.url }}" class="aria-mnav__viewall">
                 {{ 'aria_theme.header.view_all' | t }}
                 {{ link.title }}

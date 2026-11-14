@@ -1,0 +1,1290 @@
+{%- comment -%}
+  Wig Party — Find My Wig quiz. Figma hf0beCVyuHCECkNQfaOm2q, ready-to-dev node 7613:1266
+  (Quiz 7660:16889, Results 7660:17652). Desktop only.
+
+  One block = one question. Each block's `options` setting is a newline-delimited textarea,
+  one option per line: "Label | Description | value". `value` is blank for a no-filter /
+  static option, "link:<url>" for an option that opens an external link instead of selecting
+  (e.g. Q4's "Measure it now" — opens in a new tab so the quiz's own tab/state is untouched),
+  "reveal:<key>" for an option that selects normally but also shows this block's reveal panel
+  (reveal_text / reveal_cta_label / reveal_cta_url — Q5's "Not sure yet"), or one or more
+  comma-separated af_ filter values (OR within the option) for a normal filter answer.
+
+  Step 1 is rendered here in Liquid (SSR, works with no JS). Steps 2-N are built by
+  assets/find-my-wig.js from the JSON config script below, the first time each is visited,
+  and then cached in the DOM so Back never loses a prior answer.
+
+  Optional 4th field per option line: an image URL ("Label | Description | value | image URL",
+  e.g. a cdn.shopify.com product photo) or a theme asset as "asset:<filename>". When present the card shows that photo on its right
+  (Q3 cap construction uses real product photos of a wig of the matching cap type).
+
+  Results (Stage 2): assets/find-my-wig.js fetches /collections/all's ?view=aria-index and
+  ?view=aria-cards, matching with the exact same semantics as assets/aria-collection.js
+  (never edited, never imported — see that file's own header). The results markup below is
+  filled in entirely by JS (loading skeleton, cards, "Matches your answers" line, "SEE ALL
+  SIX", 0-match and fetch-failure states); the heading/empty/consult copy is the only part
+  server-rendered from section settings, so a merchant can edit it without touching JS.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Results reuse the shared aria-product-card (same markup as collections, fetched via
+  ?view=aria-cards — see find-my-wig.js's own header). That card ships no CSS of its own and
+  is normally styled by whichever section renders it (sections/collection-results.liquid is
+  the other call site); this section needs its own copy of the same two tags for the same
+  reason. aria-product-card.js / aria-wishlist.js / aria-discount-price.js are already global
+  (layout/theme.liquid) and delegate on `document`, so the cloned cards work with no further
+  init — only the CSS and the quick-add form's custom element are section-scoped.
+{%- endcomment -%}
+{{ 'component-aria-product-card.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign blocks = section.blocks
+  assign total_steps = blocks.size
+  assign first_block = blocks.first
+-%}
+
+<div class="wp-fmw">
+  <nav class="wp-fmw__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+    <ol class="wp-fmw__crumbs-list" role="list">
+      <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+      {%- if section.settings.parent_label != blank -%}
+        <li><a href="{{ section.settings.parent_url | default: '/#start-here' }}">{{ section.settings.parent_label }}</a></li>
+      {%- endif -%}
+      <li aria-current="page">{{ section.settings.current_label | default: page.title }}</li>
+    </ol>
+  </nav>
+
+  {%- if total_steps == 0 -%}
+    <p class="wp-fmw__empty">This quiz has no questions yet. Add a question block in the theme editor.</p>
+  {%- else -%}
+    <find-my-wig-quiz class="wp-fmw__app" data-total-steps="{{ total_steps }}">
+      <div class="wp-fmw__container">
+        <div class="wp-fmw__progress" data-fmw-progress>
+          <div class="wp-fmw__progress-meta">
+            <p class="wp-fmw__progress-count" data-fmw-count>QUESTION 1 OF {{ total_steps }}</p>
+            <div class="wp-fmw__progress-right">
+              <p class="wp-fmw__progress-time" data-fmw-time>{{ first_block.settings.time_left }}</p>
+              <p class="wp-fmw__progress-dot" aria-hidden="true">·</p>
+              <button type="button" class="wp-fmw__progress-skip" data-fmw-skip>skip to the results</button>
+            </div>
+          </div>
+          <div
+            class="wp-fmw__progress-track"
+            data-fmw-track
+            role="progressbar"
+            aria-valuemin="1"
+            aria-valuemax="{{ total_steps }}"
+            aria-valuenow="1"
+            aria-valuetext="Question 1 of {{ total_steps }}"
+          >
+            <div class="wp-fmw__progress-fill" data-fmw-fill style="--fmw-progress: {{ 1.0 | divided_by: total_steps | round: 4 }};"></div>
+          </div>
+        </div>
+
+        <p class="wp-fmw__status visually-hidden" role="status" aria-live="polite" data-fmw-status></p>
+
+        <div class="wp-fmw__stepper" data-fmw-stepper>
+          {%- comment -%} Step 1, SSR. Steps 2-N: JS, from data-fmw-config below. {%- endcomment -%}
+          <div class="wp-fmw__step" data-fmw-step data-step-index="0" data-block-id="{{ first_block.id }}">
+            <h1 class="wp-fmw__heading" tabindex="-1" data-fmw-heading id="FmwHeading-{{ section.id }}">{{ first_block.settings.heading }}</h1>
+            {%- if first_block.settings.subheading != blank -%}
+              <p class="wp-fmw__subheading">{{ first_block.settings.subheading }}</p>
+            {%- endif -%}
+
+            <ul class="wp-fmw__options" role="radiogroup" aria-labelledby="FmwHeading-{{ section.id }}" data-fmw-options>
+              {%- liquid
+                assign opt_lines = first_block.settings.options | newline_to_br | split: '<br />'
+                assign opt_index = 0
+                assign radio_tabindex_assigned = false
+              -%}
+              {%- for line in opt_lines -%}
+                {%- liquid
+                  assign clean_line = line | strip
+                  if clean_line == blank
+                    continue
+                  endif
+                  assign opt_index = opt_index | plus: 1
+                  assign line_parts = clean_line | split: '|'
+                  assign opt_label = line_parts[0] | strip
+                  assign opt_desc = ''
+                  assign opt_value = ''
+                  if line_parts.size > 1
+                    assign opt_desc = line_parts[1] | strip
+                  endif
+                  if line_parts.size > 2
+                    assign opt_value = line_parts[2] | strip
+                  endif
+                  assign opt_image = ''
+                  if line_parts.size > 3
+                    assign opt_image = line_parts[3] | strip
+                  endif
+                  # -- "asset:<file>" points at a theme asset (e.g. asset:wp-find-cap.png).
+                  if opt_image contains 'asset:'
+                    assign opt_image = opt_image | remove_first: 'asset:' | strip | asset_url
+                  endif
+                  assign input_id = 'FmwOpt-' | append: section.id | append: '-' | append: first_block.id | append: '-' | append: opt_index
+                  assign opt_dom_index = opt_index | minus: 1
+                -%}
+                {%- if opt_value contains 'link:' -%}
+                  <li class="wp-fmw__option wp-fmw__option--link">
+                    <a class="wp-fmw__option-card" href="{{ opt_value | remove_first: 'link:' }}" target="_blank" rel="noopener">
+                      <span class="wp-fmw__option-text">
+                        <span class="wp-fmw__option-title">{{ opt_label }}</span>
+                        {%- if opt_desc != blank -%}<span class="wp-fmw__option-desc">{{ opt_desc }}</span>{%- endif -%}
+                      </span>
+                    </a>
+                  </li>
+                {%- else -%}
+                  {%- liquid
+                    if radio_tabindex_assigned
+                      assign option_tabindex = -1
+                    else
+                      assign option_tabindex = 0
+                      assign radio_tabindex_assigned = true
+                    endif
+                  -%}
+                  <li class="wp-fmw__option">
+                    <div
+                      role="radio"
+                      aria-checked="false"
+                      tabindex="{{ option_tabindex }}"
+                      id="{{ input_id }}"
+                      data-value="{{ opt_value | escape }}"
+                      data-option-index="{{ opt_dom_index }}"
+                      class="wp-fmw__option-card"
+                      data-fmw-option
+                    >
+                      <span class="wp-fmw__option-radio" aria-hidden="true"></span>
+                      <span class="wp-fmw__option-text">
+                        <span class="wp-fmw__option-title">{{ opt_label }}</span>
+                        {%- if opt_desc != blank -%}<span class="wp-fmw__option-desc">{{ opt_desc }}</span>{%- endif -%}
+                      </span>
+                      {%- if opt_image != blank -%}
+                        <span class="wp-fmw__option-media"><img src="{{ opt_image | escape }}" alt="" loading="lazy" width="240" height="320"></span>
+                      {%- endif -%}
+                    </div>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+
+            {%- if first_block.settings.reveal_text != blank -%}
+              <div class="wp-fmw__reveal" data-fmw-reveal hidden>
+                <p class="wp-fmw__reveal-text">{{ first_block.settings.reveal_text }}</p>
+                {%- if first_block.settings.reveal_cta_url != blank and first_block.settings.reveal_cta_label != blank -%}
+                  <a class="wp-fmw__reveal-cta" href="{{ first_block.settings.reveal_cta_url }}">{{ first_block.settings.reveal_cta_label }}</a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <div class="wp-fmw__actions" data-fmw-actions>
+          <button type="button" class="wp-fmw__back" data-fmw-back hidden>← BACK</button>
+          <button type="button" class="wp-fmw__next" data-fmw-next disabled>NEXT</button>
+        </div>
+
+        <p class="wp-fmw__privacy" data-fmw-privacy>
+          <span class="wp-fmw__privacy-icon" aria-hidden="true">{{ 'find-my-wig-privacy-lock.svg' | inline_asset_content }}</span>
+          We do not ask for your email and there is nothing at the end you have to sign up for.
+        </p>
+
+        <div class="wp-fmw__results" data-fmw-results hidden>
+          <h1 class="wp-fmw__results-heading" tabindex="-1" data-fmw-results-heading id="FmwResultsHeading-{{ section.id }}">{{ section.settings.results_heading }}</h1>
+
+          <div class="wp-fmw__results-loading" data-fmw-results-loading>
+            <p class="wp-fmw__results-loading-text">Finding your matches…</p>
+            <div class="wp-fmw__skeleton" aria-hidden="true">
+              <div class="wp-fmw__skeleton-card"></div>
+              <div class="wp-fmw__skeleton-card"></div>
+              <div class="wp-fmw__skeleton-card"></div>
+            </div>
+          </div>
+
+          {%- comment -%} Filled in by JS: shared cards (templates/collection.aria-cards.liquid's own markup, imported as-is) plus a per-card "Matches your answers" line. {%- endcomment -%}
+          <ul class="wp-fmw__results-grid" data-fmw-results-grid role="list" hidden></ul>
+
+          <button type="button" class="wp-fmw__results-more" data-fmw-results-more aria-expanded="false" hidden>SEE ALL</button>
+
+          <p class="wp-fmw__results-browse" data-fmw-results-browse hidden>
+            <a class="wp-fmw__results-browse-link" data-fmw-results-browse-link href="/collections/all"></a>
+          </p>
+
+          <div class="wp-fmw__results-empty" data-fmw-results-empty hidden>
+            <h2 class="wp-fmw__results-empty-heading" data-fmw-results-empty-heading>{{ section.settings.nothing_fits_heading }}</h2>
+            <p class="wp-fmw__results-empty-text">{{ section.settings.nothing_fits_text }}</p>
+          </div>
+
+          <div class="wp-fmw__results-error" data-fmw-results-error hidden>
+            <p class="wp-fmw__results-error-text">Something went wrong loading your results.</p>
+            <a class="wp-fmw__results-error-link" href="/collections/all">Browse all wigs</a>
+          </div>
+
+          <div class="wp-fmw__results-actions" data-fmw-results-actions hidden>
+            {%- if section.settings.results_consult_url != blank -%}
+              <a class="wp-fmw__back wp-fmw__results-consult" data-fmw-results-consult href="{{ section.settings.results_consult_url }}">{{ section.settings.results_consult_label }}</a>
+            {%- endif -%}
+            <button type="button" class="wp-fmw__back" data-fmw-change-answers>CHANGE MY ANSWERS</button>
+            <button type="button" class="wp-fmw__back" data-fmw-start-over>START OVER</button>
+          </div>
+        </div>
+      </div>
+
+      <script type="application/json" data-fmw-config>
+        [
+          {%- for block in blocks -%}
+            {%- liquid
+              assign opt_lines = block.settings.options | newline_to_br | split: '<br />'
+              assign options_json = ''
+            -%}
+            {%- for line in opt_lines -%}
+              {%- liquid
+                assign clean_line = line | strip
+                if clean_line == blank
+                  continue
+                endif
+                assign line_parts = clean_line | split: '|'
+                assign opt_label = line_parts[0] | strip
+                assign opt_desc = ''
+                assign opt_value = ''
+                if line_parts.size > 1
+                  assign opt_desc = line_parts[1] | strip
+                endif
+                if line_parts.size > 2
+                  assign opt_value = line_parts[2] | strip
+                endif
+                assign opt_image = ''
+                if line_parts.size > 3
+                  assign opt_image = line_parts[3] | strip
+                endif
+                # -- "asset:<file>" points at a theme asset (e.g. asset:wp-find-cap.png).
+                if opt_image contains 'asset:'
+                  assign opt_image = opt_image | remove_first: 'asset:' | strip | asset_url
+                endif
+              -%}
+              {%- capture opt_entry -%}
+                {"label":{{ opt_label | json }},"desc":{{ opt_desc | json }},"value":{{ opt_value | json }},"image":{{ opt_image | json }}},
+              {%- endcapture -%}
+              {%- assign options_json = options_json | append: opt_entry -%}
+            {%- endfor -%}
+            {%- assign options_json = options_json | remove_last: ',' -%}
+            {
+              "id": {{ block.id | json }},
+              "type": {{ block.settings.question_type | json }},
+              "filterKey": {{ block.settings.filter_key | json }},
+              "heading": {{ block.settings.heading | json }},
+              "subheading": {{ block.settings.subheading | json }},
+              "timeLeft": {{ block.settings.time_left | json }},
+              "private": {{ block.settings.private_answer | json }},
+              "revealText": {{ block.settings.reveal_text | json }},
+              "revealCtaLabel": {{ block.settings.reveal_cta_label | json }},
+              "revealCtaUrl": {{ block.settings.reveal_cta_url | json }},
+              "options": [{{ options_json }}]
+            }{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+        ]
+      </script>
+    </find-my-wig-quiz>
+  {%- endif -%}
+</div>
+
+{{ 'find-my-wig.js' | asset_url | script_tag }}
+
+{% style %}
+  #shopify-section-{{ section.id }} .wp-fmw {
+    /* Figma 7613:1311 (page frame): own bg Primary/Cream, not white. */
+    background: var(--wp-color-cream);
+    /* Top is the page-gutter-to-breadcrumb gap (Figma 7613:1266 breadcrumb y=40); left/right
+       and bottom are unrelated to that gap and stay as they were. */
+    padding: 40px 40px 80px;
+  }
+
+  /* Figma 7660:16889 (desktop quiz frame): own bg Secondary/Blush, padding 80/64/64, gap 40
+     (--wp-fmw__progress's own 40px margin-bottom). box-sizing so the 64px inset doesn't
+     widen past 1360. */
+  #shopify-section-{{ section.id }} .wp-fmw__container {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 80px 64px 64px;
+    background: var(--wp-color-blush);
+    box-sizing: border-box;
+  }
+
+  /* Figma 7613:1311: breadcrumb (7649:7815) and quiz card (7660:16889) are siblings at the
+     same x=40, both 1360px wide — same container/max-width as .wp-fmw__container, no inner
+     padding, so the left edges coincide at the card's OUTER edge, not its 64px content inset.
+     Gap below is the frame's own 48px (7613:1311 gap-48) to the card. */
+  #shopify-section-{{ section.id }} .wp-fmw__crumbs {
+    max-width: 1360px;
+    margin: 0 auto 48px;
+  }
+
+  /* `<ol>` ships a UA-stylesheet `padding-inline-start` (~40px, list-marker indent) that
+     `display: flex` does not clear — left uncleared, it shifted the whole breadcrumb row
+     ~40px right of the page gutter the quiz content and crumbs are both meant to share. */
+  #shopify-section-{{ section.id }} .wp-fmw__crumbs-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-xs-size);
+    line-height: var(--wp-body-xs-line-height);
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__crumbs-list li + li::before {
+    content: '/';
+    margin-right: 8px;
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__crumbs-list li {
+    display: flex;
+    gap: 8px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__crumbs-list a {
+    color: var(--wp-color-gray);
+    text-decoration: none;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__crumbs-list a:hover {
+    text-decoration: underline;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__crumbs-list [aria-current='page'] {
+    color: var(--wp-color-black);
+  }
+
+  /* Progress — Figma 7660:16890 */
+  #shopify-section-{{ section.id }} .wp-fmw__progress {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__progress-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__progress-count {
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-size: 16px;
+    font-weight: var(--wp-weight-medium);
+    line-height: 26px;
+    text-transform: uppercase;
+    color: var(--wp-color-black);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__progress-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--wp-font-body);
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__progress-time,
+  #shopify-section-{{ section.id }} .wp-fmw__progress-dot {
+    margin: 0;
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__progress-skip {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding-block: 11px;
+    margin-block: -11px;
+    padding-inline: 0;
+    font: inherit;
+    color: var(--wp-color-black);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__progress-track {
+    height: 14px;
+    border-radius: var(--wp-radius-08);
+    background: var(--wp-color-cream);
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__progress-fill {
+    height: 100%;
+    width: calc(var(--fmw-progress, 0) * 100%);
+    border-radius: var(--wp-radius-08);
+    background: var(--wp-color-pink);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    #shopify-section-{{ section.id }} .wp-fmw__progress-fill {
+      transition: width 200ms ease;
+    }
+  }
+
+  /* Question heading/subheading — ESTIMATED sizes, see PROGRESS.md spec table */
+  #shopify-section-{{ section.id }} .wp-fmw__heading {
+    margin: 0 0 16px;
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-h1-size);
+    font-weight: var(--wp-h3-weight);
+    line-height: var(--wp-h1-line-height, 64px);
+    color: var(--wp-color-black);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__heading:focus-visible {
+    outline: none;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__subheading {
+    margin: 0 0 32px;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-medium-size);
+    font-weight: var(--wp-body-medium-weight);
+    line-height: var(--wp-body-medium-line-height);
+    color: var(--wp-color-gray);
+  }
+
+  /* Options grid — Figma 7660:16978 (selected), 7660:16905 (default) */
+  #shopify-section-{{ section.id }} .wp-fmw__options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    width: 100%;
+    min-height: 44px;
+    padding: 32px 16px 32px 32px;
+    background: var(--wp-color-white);
+    border: 1.5px solid var(--wp-color-cream);
+    border-radius: var(--wp-radius-16);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-card[aria-checked='true'] {
+    border-color: var(--wp-color-pink);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-card:focus-visible {
+    outline: var(--focused-base-outline, 0.2rem solid rgba(0, 0, 0, 0.5));
+    outline-offset: 2px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-radio {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    border: 2.5px solid #121212;
+    background: var(--wp-color-white);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-radio::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--wp-color-pink);
+    opacity: 0;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-card[aria-checked='true'] .wp-fmw__option-radio::after {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    #shopify-section-{{ section.id }} .wp-fmw__option-card {
+      transition: border-color 150ms ease;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-radio::after {
+      transition: opacity 150ms ease;
+    }
+  }
+
+  @media (forced-colors: active) {
+    #shopify-section-{{ section.id }} .wp-fmw__option-card[aria-checked='true'] {
+      border-color: Highlight;
+      forced-color-adjust: none;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-radio::after {
+      background: Highlight;
+      forced-color-adjust: none;
+    }
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-title {
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-h4-size);
+    font-weight: var(--wp-h4-weight);
+    line-height: var(--wp-h4-line-height);
+    color: var(--wp-color-black);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-desc {
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-small-size);
+    font-weight: var(--wp-body-small-weight);
+    line-height: var(--wp-body-small-line-height);
+    color: var(--wp-color-gray);
+  }
+
+  /* Optional per-option photo (4th field of an option line). Figma (7613:1266) shows a cut-out
+     cap photo on the card's right, no tile behind it, so the image is contained, not cropped. */
+  #shopify-section-{{ section.id }} .wp-fmw__option-media {
+    flex: 0 0 140px;
+    width: 140px;
+    margin-left: auto;
+    align-self: center;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__option-card .wp-fmw__option-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Reveal panel — Q5 "Not sure yet" */
+  #shopify-section-{{ section.id }} .wp-fmw__reveal {
+    margin: 0 0 24px;
+    padding: 24px;
+    background: var(--wp-color-cream);
+    border-radius: var(--wp-radius-16);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__reveal-text {
+    margin: 0 0 16px;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-small-size);
+    line-height: var(--wp-body-small-line-height);
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__reveal-cta {
+    color: var(--wp-color-dark-pink);
+    font-weight: var(--wp-weight-medium);
+  }
+
+  /* Actions — Figma 7890:6809 (primary); BACK is ESTIMATED, see PROGRESS.md */
+  #shopify-section-{{ section.id }} .wp-fmw__actions {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__back,
+  #shopify-section-{{ section.id }} .wp-fmw__next {
+    flex: 1;
+    min-height: 44px;
+    padding: 12px 24px;
+    font-family: var(--wp-font-body);
+    font-size: 18px;
+    line-height: 28px;
+    border-radius: var(--wp-radius-sm);
+    cursor: pointer;
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__next {
+    background: var(--wp-color-black);
+    color: var(--wp-color-white);
+    border: 0;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__next:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__back {
+    background: var(--wp-color-white);
+    color: var(--wp-color-black);
+    border: 1px solid var(--wp-color-black);
+    text-transform: uppercase;
+  }
+
+  /* Privacy note — Figma 7660:16918 */
+  #shopify-section-{{ section.id }} .wp-fmw__privacy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-xs-size);
+    line-height: var(--wp-body-xs-line-height);
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__privacy-icon svg {
+    display: block;
+    width: 22px;
+    height: 22px;
+  }
+
+  /* `hidden` has to beat this section's own flex/grid/block display rules below (same
+     convention as assets/section-aria-collection-results.css's `.aria-coll [hidden]`) — a
+     plain `display: none` on one selector cannot win against every rule that gives a
+     hidden-toggled element its own `display`, which is what let the results grid, the
+     "SEE ALL SIX" button and the privacy note render at the same time as the empty state. */
+  #shopify-section-{{ section.id }} [hidden] {
+    display: none !important;
+  }
+
+  /* Results — ESTIMATED grid/skeleton sizing, not fetched this stage (no new Figma node
+     approved for Stage 2); confirm against 7660:17652 before publish. */
+  #shopify-section-{{ section.id }} .wp-fmw__results-heading {
+    margin: 0 0 32px;
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-h1-size);
+    font-weight: var(--wp-h3-weight);
+    line-height: var(--wp-h1-line-height, 64px);
+    color: var(--wp-color-black);
+    /* JS focuses this heading on arrival (find-my-wig.js); without an offset the sticky
+       header (assets/section-aria-header.css) covers its top few pixels. Same token the
+       theme already uses for this exact problem (assets/section-guide-steps.css). */
+    scroll-margin-top: var(--wp-steps-scroll-offset, 120px);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-heading:focus-visible {
+    outline: none;
+  }
+
+  /* min-height reserves space only for the loading skeleton; the real grid gets its height
+     from `.wp-fmw__result-card`'s own min-height, so a 0-card grid never reserves a box. */
+  #shopify-section-{{ section.id }} .wp-fmw__results-loading {
+    min-height: 420px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-loading-text {
+    margin: 0 0 24px;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-medium-size);
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__skeleton,
+  #shopify-section-{{ section.id }} .wp-fmw__results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__skeleton-card,
+  #shopify-section-{{ section.id }} .wp-fmw__result-card {
+    min-height: 420px;
+    border-radius: var(--wp-radius-16);
+  }
+
+  /* The shared aria-product-card relies on `height: 100%` to match its tallest row sibling
+     (its own comment in assets/component-aria-product-card.css) — a no-op unless its direct
+     parent is itself stretched to a definite height. The collection grid gets this from
+     `.aria-coll__item { display: flex }` (assets/section-aria-collection-results.css); same
+     fix here, plus `flex: 1 1 auto` so the card grows to fill `.wp-fmw__result`'s height
+     (card + "Matches your answers" line) rather than just the min-height floor. */
+  #shopify-section-{{ section.id }} .wp-fmw__result-card {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__skeleton-card {
+    background: linear-gradient(
+      100deg,
+      var(--wp-color-cream) 30%,
+      #f4ede4 50%,
+      var(--wp-color-cream) 70%
+    );
+    background-size: 200% 100%;
+    animation: wp-fmw-shimmer 1.6s ease-in-out infinite;
+  }
+
+  @keyframes wp-fmw-shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -100% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .wp-fmw__skeleton-card {
+      animation: none;
+      background: var(--wp-color-cream);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__result {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__result-match {
+    margin: 0;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-xs-size);
+    line-height: var(--wp-body-xs-line-height);
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-more {
+    appearance: none;
+    display: block;
+    margin: 32px auto 0;
+    background: none;
+    border: 1px solid var(--wp-color-black);
+    border-radius: var(--wp-radius-sm);
+    padding: 12px 24px;
+    font-family: var(--wp-font-body);
+    font-size: 18px;
+    line-height: 28px;
+    color: var(--wp-color-black);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-browse {
+    margin: 24px 0 0;
+    text-align: center;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-browse-link {
+    color: var(--wp-color-black);
+    text-decoration: underline;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-empty,
+  #shopify-section-{{ section.id }} .wp-fmw__results-error {
+    min-height: 200px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-empty-heading {
+    margin: 0 0 16px;
+    font-family: var(--wp-font-heading);
+    font-size: var(--wp-h4-size);
+    font-weight: var(--wp-h4-weight);
+    line-height: var(--wp-h4-line-height);
+    color: var(--wp-color-black);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-empty-text,
+  #shopify-section-{{ section.id }} .wp-fmw__results-error-text {
+    margin: 0 0 24px;
+    font-family: var(--wp-font-body);
+    font-size: var(--wp-body-medium-size);
+    color: var(--wp-color-gray);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-error-link {
+    color: var(--wp-color-dark-pink);
+    font-weight: var(--wp-weight-medium);
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-actions .wp-fmw__back {
+    flex: 1;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #shopify-section-{{ section.id }} .wp-fmw__results-consult {
+    background: var(--wp-color-black);
+    color: var(--wp-color-white);
+    border-color: var(--wp-color-black);
+  }
+
+  @media (max-width: 749px) {
+    /* ============================================================
+       MOBILE (<=749px) — Figma hf0beCVyuHCECkNQfaOm2q, node 7894:1150 (Quiz Mobile),
+       7894:1205 (Recommended Mobile). Desktop rules above are untouched; everything in this
+       block is additive and only ever applies below 750px. Tokens: assets/design-tokens.css
+       --wp-m-fmw-*. Matching/selection/results JS logic is not touched by this block.
+       ============================================================ */
+    #shopify-section-{{ section.id }} .wp-fmw {
+      background: var(--wp-m-fmw-wrapper-bg);
+      padding-top: 24px;
+      padding-right: 16px;
+      padding-bottom: var(--wp-m-fmw-wrapper-pad-bottom);
+      padding-left: 16px;
+    }
+
+    /* Figma 7894:1153 (mobile quiz frame): x=16/width=343 matches the gutter above; inner
+       content is a further 16px in (abs x=32, width 311). Horizontal inset only, same
+       reasoning as the desktop rule above. */
+    #shopify-section-{{ section.id }} .wp-fmw__container {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    /* Progress — Figma 7894:1154. Meta (step | skip) row, bar, then "time left" text BELOW
+       the bar (desktop keeps time inline next to Skip). display:contents promotes the two
+       wrapper divs into grid items so count/skip/time land in named areas regardless of DOM
+       order — no markup change. */
+    #shopify-section-{{ section.id }} .wp-fmw__progress {
+      display: grid;
+      grid-template-areas:
+        'count skip'
+        'track track'
+        'time time';
+      grid-template-columns: 1fr auto;
+      gap: var(--wp-m-fmw-progress-gap);
+      margin-bottom: var(--wp-m-fmw-section-gap);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__progress-meta,
+    #shopify-section-{{ section.id }} .wp-fmw__progress-right {
+      display: contents;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__progress-count {
+      grid-area: count;
+      font-size: var(--wp-m-fmw-progress-count-size);
+      line-height: var(--wp-m-fmw-progress-count-line-height);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__progress-skip {
+      grid-area: skip;
+      font-size: var(--wp-m-fmw-progress-skip-size);
+      line-height: var(--wp-m-fmw-progress-skip-line-height);
+    }
+
+    /* The dot only separates time+skip when they share a line (desktop); they no longer do. */
+    #shopify-section-{{ section.id }} .wp-fmw__progress-dot {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__progress-time {
+      grid-area: time;
+      font-size: var(--wp-m-fmw-progress-time-size);
+      line-height: var(--wp-m-fmw-progress-time-line-height);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__progress-track {
+      grid-area: track;
+      height: var(--wp-m-fmw-progress-track-h);
+    }
+
+    /* Question — Figma 7894:1161 */
+    #shopify-section-{{ section.id }} .wp-fmw__heading {
+      margin: 0 0 var(--wp-m-fmw-heading-gap);
+      font-size: var(--wp-m-fmw-heading-size);
+      font-weight: var(--wp-weight-medium);
+      line-height: var(--wp-m-fmw-heading-line-height);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__subheading {
+      margin: 0 0 var(--wp-m-fmw-section-gap);
+      font-size: var(--wp-m-fmw-subheading-size);
+      line-height: var(--wp-m-fmw-subheading-line-height);
+    }
+
+    /* Options — Figma 7894:1537 (selected) / 7894:1544 (default). 1 column, stacked, full
+       width. Optional per-option photo shrinks to 88px here. */
+    #shopify-section-{{ section.id }} .wp-fmw__options {
+      grid-template-columns: 1fr;
+      gap: var(--wp-m-fmw-options-gap);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-card {
+      gap: var(--wp-m-fmw-option-content-gap);
+      min-height: 44px;
+      padding: var(--wp-m-fmw-option-pad);
+      border-radius: var(--wp-m-fmw-option-radius);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-media {
+      flex-basis: 88px;
+      width: 88px;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-radio {
+      width: var(--wp-m-fmw-option-radio-size);
+      height: var(--wp-m-fmw-option-radio-size);
+      border-radius: calc(var(--wp-m-fmw-option-radio-size) / 2);
+    }
+
+    /* Mobile's selected card is border-color only — the fetched node (7894:1537) has no dot
+       element at all, unlike desktop's filled ::after. Confirmed, not assumed. */
+    #shopify-section-{{ section.id }} .wp-fmw__option-radio::after {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-text {
+      gap: var(--wp-m-fmw-option-text-gap);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-title {
+      font-size: var(--wp-m-fmw-option-title-size);
+      font-weight: var(--wp-body-small-weight);
+      line-height: var(--wp-m-fmw-option-title-line-height);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__option-desc {
+      font-size: var(--wp-m-fmw-option-desc-size);
+      line-height: var(--wp-m-fmw-option-desc-line-height);
+    }
+
+    /* Actions — Figma 7894:1196 (primary, filled) stacked ABOVE 7894:1198 (secondary BACK,
+       outlined). DOM order stays Back-then-Next; column-reverse flips the visual order only,
+       no markup change. */
+    #shopify-section-{{ section.id }} .wp-fmw__actions {
+      flex-direction: column-reverse;
+      gap: var(--wp-m-fmw-actions-gap);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__back {
+      min-height: var(--wp-m-fmw-btn-secondary-h);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__next {
+      min-height: var(--wp-m-fmw-btn-primary-h);
+    }
+
+    /* Privacy note — Figma 7894:1200: left-aligned (desktop: centered), smaller icon, same
+       SVG asset reused at a smaller size. */
+    #shopify-section-{{ section.id }} .wp-fmw__privacy {
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: var(--wp-m-fmw-privacy-gap);
+      padding-top: var(--wp-m-fmw-privacy-pad-top);
+      text-align: left;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__privacy-icon svg {
+      width: var(--wp-m-fmw-privacy-icon-size);
+      height: var(--wp-m-fmw-privacy-icon-size);
+    }
+
+    /* Results carousel — Figma 7894:1206 (metadata + screenshot only; no Results/Recommended
+       node was approved for get_design_context in this task). All <= 6 matches become
+       swipeable (not just the first 3, which stay hidden via JS's own
+       data-fmw-result-extra/hidden toggle — this selector only overrides how that hidden
+       state renders at this breakpoint); "SEE ALL SIX" hides. The extra ".wp-fmw__results-grid"
+       ancestor class makes this selector one specificity step above the section's own
+       "[hidden] { display:none!important }" rule, so it wins regardless of stylesheet order. */
+    #shopify-section-{{ section.id }} .wp-fmw__skeleton,
+    #shopify-section-{{ section.id }} .wp-fmw__results-grid {
+      display: flex;
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      padding: 4px var(--wp-m-fmw-carousel-inset);
+      margin: 0 calc(var(--wp-m-fmw-carousel-inset) * -1);
+      gap: var(--wp-m-fmw-carousel-gap);
+      scrollbar-width: none;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__skeleton::-webkit-scrollbar,
+    #shopify-section-{{ section.id }} .wp-fmw__results-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__skeleton-card,
+    #shopify-section-{{ section.id }} .wp-fmw__result {
+      flex: 0 0 var(--wp-m-fmw-carousel-card-w);
+      width: var(--wp-m-fmw-carousel-card-w);
+      scroll-snap-align: start;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__results-grid .wp-fmw__result[data-fmw-result-extra] {
+      display: flex;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__results-more {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__results-browse-link {
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px 24px;
+      border: 1px solid var(--wp-color-black);
+      border-radius: var(--wp-radius-sm);
+      text-align: center;
+      text-decoration: none;
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__results-actions {
+      flex-direction: column;
+      gap: var(--wp-m-fmw-results-actions-gap);
+    }
+
+    #shopify-section-{{ section.id }} .wp-fmw__results-actions .wp-fmw__back {
+      min-height: 44px;
+    }
+  }
+
+  @media (max-width: 749px) and (prefers-reduced-motion: no-preference) {
+    /* Smooth scroll for the carousel's snap settle, opt out (not opt in) for reduced motion —
+       same base-rule-has-none / no-preference-adds-it pattern as the progress fill transition
+       above, per the brief's own rule. */
+    #shopify-section-{{ section.id }} .wp-fmw__results-grid {
+      scroll-behavior: smooth;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Find my wig quiz",
+  "tag": "section",
+  "class": "wp-find-my-wig-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "Breadcrumb: home label"
+    },
+    {
+      "type": "text",
+      "id": "parent_label",
+      "default": "Start Here",
+      "label": "Breadcrumb: parent label"
+    },
+    {
+      "type": "url",
+      "id": "parent_url",
+      "label": "Breadcrumb: parent link"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "Find my wig",
+      "label": "Breadcrumb: current page label"
+    },
+    {
+      "type": "header",
+      "content": "Results"
+    },
+    {
+      "type": "text",
+      "id": "results_heading",
+      "label": "Results heading",
+      "default": "Your shortlist"
+    },
+    {
+      "type": "text",
+      "id": "results_consult_label",
+      "label": "Consult button label",
+      "default": "Message Kristi's team"
+    },
+    {
+      "type": "url",
+      "id": "results_consult_url",
+      "label": "Consult button link",
+      "info": "Blank hides the button."
+    },
+    {
+      "type": "text",
+      "id": "nothing_fits_heading",
+      "label": "No-match heading",
+      "default": "Nothing fits quite yet"
+    },
+    {
+      "type": "textarea",
+      "id": "nothing_fits_text",
+      "label": "No-match message",
+      "default": "We could not find a wig that matches every answer. Talk to us and we will help you find the right one, or start the quiz over.",
+      "info": "Shown when no wig matches every answer."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Question heading"
+        },
+        {
+          "type": "textarea",
+          "id": "subheading",
+          "label": "Question subheading (optional)"
+        },
+        {
+          "type": "select",
+          "id": "question_type",
+          "label": "Question type",
+          "options": [
+            { "value": "static", "label": "Static (no filter effect)" },
+            { "value": "filter", "label": "Filter (maps to a collection filter)" }
+          ],
+          "default": "static"
+        },
+        {
+          "type": "text",
+          "id": "filter_key",
+          "label": "Filter key (e.g. af_cap-construction)",
+          "info": "Only used when Question type is Filter."
+        },
+        {
+          "type": "text",
+          "id": "time_left",
+          "label": "Time-left text",
+          "default": "About two minutes left"
+        },
+        {
+          "type": "textarea",
+          "id": "options",
+          "label": "Options, one per line",
+          "info": "Label | Description | value | image URL (optional). Value: blank = no filter, link:<url> = opens a link instead of selecting, reveal:<key> = selects and shows the reveal panel below, or one or more comma-separated filter values."
+        },
+        {
+          "type": "checkbox",
+          "id": "private_answer",
+          "label": "Never store this answer",
+          "info": "Keeps the answer in memory only: not sessionStorage, not the URL, not analytics.",
+          "default": false
+        },
+        {
+          "type": "textarea",
+          "id": "reveal_text",
+          "label": "Reveal panel text (optional)"
+        },
+        {
+          "type": "text",
+          "id": "reveal_cta_label",
+          "label": "Reveal panel button label (optional)"
+        },
+        {
+          "type": "url",
+          "id": "reveal_cta_url",
+          "label": "Reveal panel button link",
+          "info": "Blank hides the button."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Find my wig quiz",
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "heading": "Have you worn a wig before?",
+            "question_type": "static",
+            "time_left": "About two minutes left",
+            "options": "Yes, I have before | | \nNo, this is my first time | | "
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "heading": "What brings you here?",
+            "question_type": "static",
+            "time_left": "About two minutes left",
+            "private_answer": true,
+            "options": "Medical | | \nTransition | | \nThinning | | \nConvenience | | \nFashion | | \nI would rather not say | | "
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "heading": "How much are you wearing it?",
+            "subheading": "This decision helps us recommend the best cap construction for your lifestyle, comfort and budget.",
+            "question_type": "filter",
+            "filter_key": "af_cap-construction",
+            "time_left": "About a minute left",
+            "options": "Every day, all day | We will show you hand-tied wigs. | hand-tied | https://cdn.shopify.com/s/files/1/0566/0403/3113/files/69541dfa0caab0a655acc9f749411d6f3da893d5.jpg?v=1789143970&width=480\nMost days, some of the day | Hand-tied or extended lace front both work. We will show you both. | hand-tied,extended-lace-front | https://cdn.shopify.com/s/files/1/0566/0403/3113/files/Ami_single_labeled_photo.jpg?v=1787673553&width=480\nOccasionally | We will show you extended lace front wigs. | extended-lace-front | https://cdn.shopify.com/s/files/1/0566/0403/3113/files/1000030091.jpg?v=1772136606&width=480\nI honestly do not know yet | We will show you hand-tied and extended lace front wigs. | hand-tied,extended-lace-front | https://cdn.shopify.com/s/files/1/0566/0403/3113/files/amsterdam.jpg?v=1751042443&width=480"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "heading": "What is your cap size?",
+            "question_type": "filter",
+            "filter_key": "af_cap-size",
+            "time_left": "About a minute left",
+            "options": "Average · 19 to 23 inches | The cap size most of our wigs list. Each wig page shows its exact fit. | \nSmaller or larger than average | We will help you check the fit before you order. | reveal:size\nNot sure, measure first | Opens our measuring guide in a new tab. | link:/pages/measure-and-cap-guide\nNo idea | | ",
+            "reveal_text": "Most of our wigs list an average cap, 19 to 23 inches. Send Kristi's team a message and we will help you check the fit.",
+            "reveal_cta_label": "Message Kristi's team",
+            "reveal_cta_url": "/pages/contact"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "heading": "What colour family are you drawn to?",
+            "question_type": "filter",
+            "filter_key": "af_colour-family",
+            "time_left": "Almost done",
+            "options": "Blonde | | blonde\nBrunette | | brunette\nRed & auburn | | red-auburn\nGrey & silver | | grey-silver\nRooted | | rooted\nNot sure yet | | reveal:colour",
+            "reveal_text": "Not sure which shade is right? Send Kristi's team a message and we will help you narrow it down.",
+            "reveal_cta_label": "Message Kristi's team",
+            "reveal_cta_url": "/pages/contact"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "heading": "How long do you want it?",
+            "question_type": "filter",
+            "filter_key": "af_length",
+            "time_left": "Almost done",
+            "options": "Short · above chin | | short-above-chin\nMid · to shoulder | | mid-to-shoulder\nLong · past shoulder | | long-past-shoulder\nNo preference | | "
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

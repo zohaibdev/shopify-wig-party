@@ -45,7 +45,7 @@
           "type": "button",
           "settings": {
             "text": "Meet Kristi",
-            "url": "shopify://pages/kristis-favorite-color-contacts-myeyebb-rare-iris-blue-non-prescription-contact-lenses",
+            "url": "shopify://pages/about-kristi",
             "style": "secondary"
           }
         }
@@ -61,17 +61,17 @@
         "logo_image": "shopify://shop_images/hero-logo.png",
         "image": "shopify://shop_images/hero.jpg",
         "background_color": "#f1e3d8",
-        "show_rating_badge": true,
-        "rating_badge_text": "500+ verified 5-star reviews",
+        "show_rating_badge": false,
+        "rating_badge_text": "",
         "heading": "Wig Party",
-        "description": "<p>Helping women discover confidence through beautiful wigs, trusted education, and a community that understands.</p>",
+        "description": "<p>Helping women discover confidence through <strong>beautiful wigs,</strong> trusted <strong>education</strong>, and a community that <strong>understands.</strong></p>",
         "show_live_badge": true,
         "live_badge_avatar": "shopify://shop_images/hero-image.jpg",
         "live_badge_title": "Live with Kristi",
         "live_badge_brand": "",
         "live_badge_subtitle": "Join us live on Facebook",
         "live_badge_description": "See the wigs. Ask questions. Laugh with friends.",
-        "live_badge_url": "shopify://collections/live-with-nancy-8-25",
+        "live_badge_url": "shopify://pages/live",
         "live_badge_button_label": "Watch Live"
       }
     },
@@ -81,57 +81,57 @@
         "collection-1": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "City Collection"
+            "collection": "in-stock-city-collection",
+            "title_override": "City"
           }
         },
         "collection_MqTqeA": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "Icons Collection"
+            "collection": "new-extended-lace-cafe",
+            "title_override": "Café Extended"
           }
         },
         "collection_VgEzbt": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "Café Collection"
+            "collection": "icon-in-stock",
+            "title_override": "Icons"
           }
         },
         "collection_DxJfEU": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "Lux Collection"
+            "collection": "kristi-collection",
+            "title_override": "Kristi Collection"
           }
         },
         "collection_g6WYct": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "City Collection"
+            "collection": "lux-se-in-stock",
+            "title_override": "Lux SE"
           }
         },
         "collection_bw48TD": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "Icons Collection"
+            "collection": "lux-sale",
+            "title_override": "Lux"
           }
         },
         "collection_DCmHTm": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "Café Collection"
+            "collection": "bloom-collection",
+            "title_override": "Bloom"
           }
         },
         "collection_6wdbQi": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "title_override": "Lux Collection"
+            "collection": "pre-order-european-city-collection",
+            "title_override": "Euro City"
           }
         }
       },
@@ -209,8 +209,8 @@
       "settings": {
         "heading": "Best Sellers",
         "subheading": "The styles our community can't stop buying.",
-        "show_rating_badge": true,
-        "rating_badge_text": "200+ verified 5-star reviews",
+        "show_rating_badge": false,
+        "rating_badge_text": "",
         "background_gradient_start": "#ffffff",
         "background_gradient_end": "#f5ebe2",
         "feature_tag_metafield": "custom.feature_tags"
@@ -225,7 +225,7 @@
             "default_icon": "wp-icon-measure-head",
             "title": "Measure Your Head",
             "subtitle": "Get the perfect fit",
-            "link": ""
+            "link": "/pages/measure-and-cap-guide"
           }
         },
         "sh-2": {
@@ -234,7 +234,7 @@
             "default_icon": "wp-icon-wig-101",
             "title": "Wig 101",
             "subtitle": "Choose carefree",
-            "link": ""
+            "link": "/pages/learn"
           }
         },
         "sh-3": {
@@ -243,7 +243,7 @@
             "default_icon": "wp-icon-cap-construction",
             "title": "Cap Construction Guide",
             "subtitle": "Learn the right way",
-            "link": ""
+            "link": "/collections/cap-construction"
           }
         },
         "sh-4": {
@@ -252,7 +252,7 @@
             "default_icon": "wp-icon-hair-cut",
             "title": "Hair Cut Guide",
             "subtitle": "Making it easy",
-            "link": ""
+            "link": "/pages/learn"
           }
         },
         "sh-5": {
@@ -261,7 +261,7 @@
             "default_icon": "wp-icon-color-guide",
             "title": "Color Guide",
             "subtitle": "All options for you",
-            "link": ""
+            "link": "/pages/find-your-colour"
           }
         },
         "sh-6": {
@@ -270,7 +270,7 @@
             "default_icon": "wp-icon-common-mistakes",
             "title": "Common Mistakes",
             "subtitle": "Here to help you",
-            "link": ""
+            "link": "/pages/learn"
           }
         }
       },
@@ -308,22 +308,22 @@
       "type": "community-exclusive",
       "settings": {
         "eyebrow": "Community exclusive",
-        "heading": "Deals & Exclusives",
-        "description": "A rotating deal picked by Kristi — sometimes a favorite product, sometimes a whole category, sometimes a flash discount. New one, regularly.",
+        "heading": "Dailey Deals",
+        "description": "A rotating deal picked by Kristi. Check the Dailey Deals for what is on right now.",
         "background_color": "#1a1a1a",
         "product": "amarettoe",
         "image": "shopify://shop_images/image-1_4ad87bad-a1fb-45be-af9d-579404161225.jpg",
-        "badge_text": "Flash Discount",
-        "deal_eyebrow": "Ends tonight at 11:59pm",
+        "badge_text": "Dailey Deal",
+        "deal_eyebrow": "",
         "deal_title": "",
-        "deal_description": "Today's Dailey Deal: our most-requested style, in the last of the Fog colorway.",
+        "deal_description": "",
         "primary_button_label": "Shop the deal",
-        "primary_button_link": "",
+        "primary_button_link": "shopify://collections/dailey-deal-sales",
         "secondary_button_label": "View detail",
         "secondary_button_link": "",
         "footer_link_label": "Shop all Dailey Deals",
         "footer_link_url": "shopify://collections/dailey-deal-sales",
-        "info_label": "New here? How this works",
+        "info_label": "Questions? Message Kristi's team",
         "info_link": "shopify://pages/contact"
       }
     },
@@ -333,17 +333,15 @@
         "de-1": {
           "type": "collection",
           "settings": {
-            "collection": "confidence-care-collection-by-kristi",
-            "image": "shopify://shop_images/deal-1.jpg",
-            "title_override": "Hair supplies",
-            "link": ""
+            "collection": "summer-sale",
+            "title_override": "Sale",
+            "link": "/collections/sale"
           }
         },
         "de-2": {
           "type": "collection",
           "settings": {
-            "collection": "cafe-collection",
-            "image": "shopify://shop_images/deal-2.jpg",
+            "collection": "wig-supplies",
             "title_override": "Wig-care products",
             "link": ""
           }
@@ -352,7 +350,6 @@
           "type": "collection",
           "settings": {
             "collection": "cc-beanie",
-            "image": "shopify://shop_images/deal-3.jpg",
             "title_override": "Essential accessories",
             "link": ""
           }
@@ -360,10 +357,9 @@
         "de-4": {
           "type": "collection",
           "settings": {
-            "collection": "dailey-deal-sales",
-            "image": "shopify://shop_images/deal-4.jpg",
+            "collection": "retired",
             "title_override": "Clearance",
-            "link": ""
+            "link": "/collections/clearance"
           }
         }
       },
@@ -375,7 +371,8 @@
       ],
       "settings": {
         "heading": "Deals & Exclusives",
-        "subheading": "Shop by what matters most to you."
+        "subheading": "Shop by what matters most to you.",
+        "show_button": false
       }
     },
     "new_trending": {
@@ -434,7 +431,7 @@
           "type": "story",
           "settings": {
             "image": "shopify://shop_images/2.png",
-            "video": "shopify://files/videos/placholder-video.mp4",
+            "video": "shopify://files/videos/v12044gd0000d2vlqanog65j4iktqhb0.mp4",
             "video_url": "",
             "show_play_icon": true,
             "caption": ""
@@ -471,9 +468,8 @@
           "type": "story",
           "settings": {
             "image": "shopify://shop_images/6.png",
-            "video": "shopify://files/videos/placholder-video.mp4",
             "video_url": "",
-            "show_play_icon": true,
+            "show_play_icon": false,
             "caption": ""
           }
         }
@@ -487,9 +483,9 @@
       ],
       "settings": {
         "heading": "Real Customers, Real Confidence",
-        "show_rating_badge": true,
-        "rating_badge_text": "Thousands of 5-star reviews",
-        "fallback_video": "shopify://files/videos/placholder-video.mp4",
+        "exclude_video": "shopify://files/videos/placholder-video.mp4",
+        "show_rating_badge": false,
+        "rating_badge_text": "",
         "show_navigation": true,
         "background_color": "#000000"
       }
@@ -501,7 +497,7 @@
           "type": "tab",
           "settings": {
             "title": "Where to start",
-            "link": "shopify://collections/cafe-collection",
+            "link": "/#start-here",
             "image": "shopify://shop_images/image-3.jpg"
           }
         },
@@ -509,7 +505,7 @@
           "type": "tab",
           "settings": {
             "title": "How to measure your head",
-            "link": "",
+            "link": "/pages/measure-and-cap-guide",
             "image": "shopify://shop_images/image-3.jpg"
           }
         },
@@ -517,7 +513,7 @@
           "type": "tab",
           "settings": {
             "title": "Cap construction",
-            "link": "",
+            "link": "/collections/cap-construction",
             "image": "shopify://shop_images/image-3.jpg"
           }
         }
@@ -529,79 +525,16 @@
       ],
       "settings": {
         "heading": "Education and guides",
+        "link_style": "left",
         "show_signature": true,
         "signature_image": "shopify://shop_images/signature.png",
         "autoplay": true,
         "autoplay_interval": 5,
-        "show_decoration": true,
+        "show_decoration": false,
         "background_gradient_start": "#ffffff",
-        "background_gradient_end": "#f5ebe2",
+        "background_gradient_end": "#ffffff",
         "panel_gradient_start": "#f5e9e9",
         "panel_gradient_end": "#ffffff"
-      }
-    },
-    "find_your_wig": {
-      "type": "find-your-wig",
-      "blocks": {
-        "fw-1": {
-          "type": "card",
-          "settings": {
-            "title": "By Length",
-            "subtitle": "Short · Medium · Long",
-            "default_image": "wp-find-length.jpg",
-            "image_fit": "cover",
-            "background_color": "#ffffff",
-            "button_label": "View More",
-            "link": "shopify://collections/cafe-collection"
-          }
-        },
-        "fw-2": {
-          "type": "card",
-          "settings": {
-            "title": "By Texture",
-            "subtitle": "Straight · Wavy · Curly",
-            "default_image": "wp-find-texture.jpg",
-            "image_fit": "cover",
-            "background_color": "#ffffff",
-            "button_label": "View More",
-            "link": "shopify://collections/cafe-collection"
-          }
-        },
-        "fw-3": {
-          "type": "card",
-          "settings": {
-            "title": "Color Comparison",
-            "subtitle": "Blonde · Brunette · Grey",
-            "default_image": "wp-find-color.jpg",
-            "image_fit": "cover",
-            "background_color": "#ffffff",
-            "button_label": "View More",
-            "link": "shopify://collections/cafe-collection"
-          }
-        },
-        "fw-4": {
-          "type": "card",
-          "settings": {
-            "title": "Shop by Cap Size",
-            "subtitle": "Petite · Average · Large",
-            "default_image": "wp-find-cap.png",
-            "image_fit": "contain",
-            "background_color": "#eaddd4",
-            "button_label": "View More",
-            "link": "shopify://collections/cafe-collection"
-          }
-        }
-      },
-      "block_order": [
-        "fw-1",
-        "fw-2",
-        "fw-3",
-        "fw-4"
-      ],
-      "settings": {
-        "heading": "Find Your Perfect Wig",
-        "subheading": "Shop by what matters most to you.",
-        "background_color": "#ffffff"
       }
     },
     "community_photos": {
@@ -636,9 +569,9 @@
         "heading": "Real Women. Real Wigs. Real Confidence.",
         "subheading": "Tag us #WigParty to be featured!",
         "button_label": "See All Community Photos",
-        "button_link": "shopify://collections/cafe-collection",
-        "quote": "Because of Kristi, I finally had the confidence to change my profile picture. This is HUGE for me! Thank you!",
-        "quote_author": "— Michelle",
+        "button_link": "shopify://pages/community",
+        "quote": "",
+        "quote_author": "",
         "show_quote_mark": true,
         "quote_button_label": "Share Your Story",
         "quote_button_link": "shopify://pages/contact",
@@ -651,7 +584,7 @@
         "ww-1": {
           "type": "feature",
           "settings": {
-            "label": "Authorized Belle Tress Retailer"
+            "label": "Hand-Picked by Kristi"
           }
         },
         "ww-2": {
@@ -684,47 +617,6 @@
         "signature_image": "shopify://shop_images/image-6.png",
         "background_color": "#f5ebe2",
         "frame_border_color": "#bc696b"
-      }
-    },
-    "join_the_party": {
-      "type": "join-the-party",
-      "blocks": {
-        "jp-1": {
-          "type": "photo",
-          "settings": {
-            "default_image": "wp-ugc-featured"
-          }
-        },
-        "jp-2": {
-          "type": "photo",
-          "settings": {
-            "default_image": "wp-find-length"
-          }
-        },
-        "jp-3": {
-          "type": "photo",
-          "settings": {
-            "default_image": "wp-join-collage-3"
-          }
-        },
-        "jp-4": {
-          "type": "photo",
-          "settings": {
-            "default_image": "wp-ugc-photo-1"
-          }
-        }
-      },
-      "block_order": [
-        "jp-1",
-        "jp-2",
-        "jp-3",
-        "jp-4"
-      ],
-      "settings": {
-        "heading": "Join the Party — Be the First to Know",
-        "subheading": "New styles, live shows & exclusive deals — plus 10% off your first order",
-        "placeholder": "Enter your email address",
-        "button_label": "Join the Party"
       }
     },
     "about_wig_party": {
@@ -768,124 +660,142 @@
       ],
       "settings": {
         "eyebrow": "About Wig Party",
-        "heading": "Hi, I'm",
+        "heading": "Hi, I'm Kristi",
         "body": "<p>Wig Party started with one girl, a love for wigs, and a dream to help other women feel beautiful, confident, and included. Through the laughs, the lives, the tears, and the wigs, this community has become my heart.</p>",
         "tagline": "You're not just a customer. You're part of the Wig Party family.",
         "button_label": "Our Story",
-        "button_link": "shopify://pages/contact",
+        "button_link": "shopify://pages/about-kristi",
         "image": "shopify://shop_images/image-7.jpg",
         "show_social": true,
         "show_signature": true,
         "background_color": "#ffffff"
       }
     },
-    "instagram_feed": {
-      "type": "instagram-feed",
+    "find_your_wig": {
+      "type": "find-your-wig",
       "blocks": {
-        "ig-1": {
-          "type": "post",
+        "c1": {
+          "type": "card",
           "settings": {
-            "image": "shopify://shop_images/1_af33c142-389a-4934-bb10-f0ff5ad9a761.png",
-            "product": "city-collection-alicante-belle-tress-wig-in-stock",
-            "link": "",
-            "caption": ""
+            "title": "By Length",
+            "subtitle": "Short · Medium · Long",
+            "default_image": "wp-find-length.jpg",
+            "image_fit": "cover",
+            "background_color": "#ffffff",
+            "button_label": "View More",
+            "link": "by-length",
+            "url": "shopify://collections/all-in-stock-wigs"
           }
         },
-        "ig-2": {
-          "type": "post",
+        "c2": {
+          "type": "card",
           "settings": {
-            "image": "shopify://shop_images/02_d6f70625-8cc7-4fbe-b713-daa32f165f6d.png",
-            "product": "amarettoe",
-            "link": "",
-            "caption": ""
+            "title": "By Texture",
+            "subtitle": "Straight · Wavy · Curly",
+            "default_image": "wp-find-texture.jpg",
+            "image_fit": "cover",
+            "background_color": "#ffffff",
+            "button_label": "View More",
+            "link": "by-texture",
+            "url": "shopify://collections/all-in-stock-wigs"
           }
         },
-        "ig-3": {
-          "type": "post",
+        "c3": {
+          "type": "card",
           "settings": {
-            "image": "shopify://shop_images/2_c539a24e-6bdd-43ab-b615-9e29619ab06a.png",
-            "product": "lux-se-ht-ami-belle-tress-wig-in-stock",
-            "link": "",
-            "caption": ""
+            "title": "Color Comparison",
+            "subtitle": "Blonde · Brunette · Grey",
+            "default_image": "wp-find-color.jpg",
+            "image_fit": "cover",
+            "background_color": "#ffffff",
+            "button_label": "View More",
+            "link": "color-comparison",
+            "url": "shopify://pages/compare-shades"
           }
         },
-        "ig-4": {
-          "type": "post",
+        "c4": {
+          "type": "card",
           "settings": {
-            "image": "shopify://shop_images/4_4723f73f-4512-43e5-857b-f74e7936af25.png",
-            "product": "belle-tress-adriana-wig-hand-tied-lux-se-collection-preorder-copy",
-            "link": "",
-            "caption": ""
-          }
-        },
-        "ig-5": {
-          "type": "post",
-          "settings": {
-            "image": "shopify://shop_images/6_29e750e8-f7ab-4eb0-b413-71be57a938be.png",
-            "product": "alicante-new-spanish-city-collection",
-            "link": "",
-            "caption": ""
+            "title": "Shop by Cap Size",
+            "subtitle": "Petite · Average · Large",
+            "default_image": "wp-find-cap.png",
+            "image_fit": "contain",
+            "background_color": "#ffffff",
+            "button_label": "View More",
+            "link": "shop-by-cap-size",
+            "url": "shopify://collections/all-in-stock-wigs"
           }
         }
       },
       "block_order": [
-        "ig-1",
-        "ig-2",
-        "ig-3",
-        "ig-4",
-        "ig-5"
+        "c1",
+        "c2",
+        "c3",
+        "c4"
       ],
       "settings": {
-        "heading": "@WigParty on Instagram",
-        "subheading": "Tag #WigParty to be featured",
-        "background_gradient_start": "#ffffff",
-        "background_gradient_end": "#eaddd4"
+        "layout_variant": "home",
+        "heading": "Find Your Perfect Wig",
+        "subheading": "Shop by what matters most to you.",
+        "background_color": "#ffffff"
       }
     },
-    "trust_badges": {
-      "type": "trust-badges",
+    "bought_alongside": {
+      "type": "pdp-product-carousel",
+      "disabled": true,
+      "settings": {
+        "heading": "What people buy alongside [product_short]",
+        "product": "new-lux-hand-tied-armani-v-in-stock",
+        "hide_supplier": true,
+        "source": "recommendations",
+        "collection": "",
+        "intent": "related",
+        "products_to_show": 8,
+        "feature_tag_metafield": "custom.feature_tags",
+        "container": "wide",
+        "slides_desktop": "4",
+        "background_color": "#f5ebe2"
+      }
+    },
+    "join_the_party": {
+      "type": "join-the-party",
       "blocks": {
-        "tb-1": {
-          "type": "badge",
+        "jp-1": {
+          "type": "photo",
           "settings": {
-            "title": "Free Shipping",
-            "description": "On all orders over $99",
-            "default_icon": "wp-trust-free-shipping"
+            "default_image": "wp-ugc-featured"
           }
         },
-        "tb-2": {
-          "type": "badge",
+        "jp-2": {
+          "type": "photo",
           "settings": {
-            "title": "30-Day Wear & Share",
-            "description": "Try it. Love it. Then decide.",
-            "default_icon": "wp-trust-wear-share"
+            "default_image": "wp-find-length"
           }
         },
-        "tb-3": {
-          "type": "badge",
+        "jp-3": {
+          "type": "photo",
           "settings": {
-            "title": "Easy Returns",
-            "description": "No stress. We've got you.",
-            "default_icon": "wp-trust-easy-returns"
+            "default_image": "wp-join-collage-3"
           }
         },
-        "tb-4": {
-          "type": "badge",
+        "jp-4": {
+          "type": "photo",
           "settings": {
-            "title": "Pay in 4",
-            "description": "Shop now. Pay later with Shop Pay.",
-            "default_icon": "wp-trust-pay-in-4"
+            "default_image": "wp-ugc-photo-1"
           }
         }
       },
       "block_order": [
-        "tb-1",
-        "tb-2",
-        "tb-3",
-        "tb-4"
+        "jp-1",
+        "jp-2",
+        "jp-3",
+        "jp-4"
       ],
       "settings": {
-        "background_color": "#ffffff"
+        "heading": "Join the Party: Be the First to Know",
+        "subheading": "New styles, live shopping and Dailey Deals, straight to your inbox.",
+        "placeholder": "Enter your email address",
+        "button_label": "Join the Party"
       }
     }
   },
@@ -901,11 +811,10 @@
     "real_customers",
     "education_guides",
     "find_your_wig",
+    "bought_alongside",
     "community_photos",
     "why_wig_party",
     "join_the_party",
-    "about_wig_party",
-    "instagram_feed",
-    "trust_badges"
+    "about_wig_party"
   ]
 }

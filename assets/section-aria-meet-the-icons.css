@@ -219,3 +219,120 @@
     margin-bottom: 48px;
   }
 }
+
+/* The mobile <picture> wrapper must not add a box of its own: the <img> keeps sizing
+   against `.aria-meet-icons__media` exactly as it did before the wrapper existed. */
+.aria-meet-icons__media picture {
+  display: contents;
+}
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6576:12146 (343 x 992 inside frame 6576:11745). Scoped under 750px, so
+ * tablet and desktop are untouched.
+ *
+ * A stacked card, not the desktop overlay: a #F9F0E9 panel with the signature at the
+ * top, the glass card over it, then the photo filling the bottom 496px.
+ * Ladder (px, Figma): 101.31 to the glass card / 361 card / 33.69 / 496 photo = 992.
+ * Glass card (311 wide, p-40/20, border inside): 30 pill / 15 / 92 heading / 16 / 52
+ * subline / 24 / 52 button.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* Continues the gradient Start Here begins (see section-aria-start-here.css): at this
+     section's top the frame's #F5EBE2 -> white ramp is 941 / 1092.94 of the way through,
+     and it reaches white 151.94px further down. Visible in the 16px gutters. */
+  .aria-meet-icons {
+    background: linear-gradient(180deg, rgb(253.61 252.22 250.97) 0px, #ffffff 151.94px);
+  }
+
+  /* The photo layer comes first in the markup (desktop stacks the panel over it); here
+     the glass card is ordered above the photo instead. */
+  .aria-meet-icons__stage {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 0;
+    padding-top: 101.31px;
+    border-radius: 0;
+    background: #f9f0e9;
+  }
+
+  /* Signature (6576:12150): 314.02 wide at 12.98 / 12.16, under the glass card. */
+  .aria-meet-icons__signature {
+    display: block;
+    position: absolute;
+    left: 12.98px;
+    top: 12.16px;
+    width: 314.02px;
+  }
+
+  /* Glass card: Figma's 1px white stroke sits inside its 40/20 padding. */
+  .aria-meet-icons__panel {
+    order: 1;
+    box-sizing: border-box;
+    margin: 0 16px;
+    padding: 39px 19px;
+  }
+
+  /* Pill: 30 tall (px-12 py-4 with the ring inside), Poppins Medium 14/22 uppercase. */
+  .aria-meet-icons__eyebrow {
+    box-sizing: border-box;
+    padding: 3px 11px;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  /* Mobile H1: Montserrat Medium 36/46, broken "Meet the / Icons" as drawn — the same
+     6em cap desktop uses to force that break. */
+  .aria-meet-icons__heading {
+    max-width: 6em;
+    font-family: var(--font-heading-family);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 46px;
+    letter-spacing: 0;
+    color: var(--black, #000);
+  }
+
+  /* Poppins Medium 16/26 uppercase #A64A4C, 24px to the button. */
+  .aria-meet-icons__subheading {
+    width: 100%;
+    margin-bottom: 24px;
+    font-family: var(--font-body-family);
+    font-size: 16px;
+    line-height: 26px;
+    letter-spacing: 0;
+  }
+
+  /* Black, full width, 52 tall, Poppins 18/28 white. */
+  .aria-meet-icons__btn {
+    box-sizing: border-box;
+    height: 52px;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  /* Photo box: the bottom 343 x 496 of the card, 33.69px under the glass card. */
+  .aria-meet-icons__media {
+    order: 2;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 343 / 496;
+    margin-top: 33.69px;
+    overflow: hidden;
+  }
+
+  /* Figma fill: 338.75% x 159.16% of the photo box, offset -181.55% / -21.03%. */
+  .aria-meet-icons__image {
+    position: absolute;
+    left: -181.55%;
+    top: -21.03%;
+    width: 338.75%;
+    height: 159.16%;
+    max-width: none;
+  }
+
+  /* No scrim on this frame: the copy no longer sits over the photo. */
+  .aria-meet-icons__scrim {
+    display: none;
+  }
+}

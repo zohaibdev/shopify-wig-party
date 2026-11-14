@@ -48,6 +48,20 @@
   overflow: hidden;
 }
 
+/* Swiper's own base CSS sets `.swiper-wrapper { align-items: flex-start }` — each slide
+   sits at its own natural content height rather than stretching to its row's tallest
+   sibling (checked directly against assets/vendor-swiper-bundle.min.css). `stretch` here
+   is what actually equalises two adjacent cards' heights when one has a colour-swatch row
+   and the other doesn't, or their titles wrap to a different number of lines —
+   `.aria-product-card`'s own `height: 100%` (a stretched flex child with `height: auto`
+   fills the stretched cross size) and `.aria-product-card__actions { margin-top: auto }`
+   (component-aria-product-card.css) do the rest, pinning the button to the bottom. Scoped
+   to this swiper rather than the bare `.swiper-wrapper` class, which other carousels in
+   the theme rely on keeping at its default. */
+.aria-new-trending__swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
 .aria-new-trending__slide {
   height: auto;
   display: flex;
@@ -127,5 +141,261 @@
   /* V4: 5 x 262px cards + 4 x 12px gaps = 1358px, the full container. */
   .aria-new-trending__controls {
     justify-content: flex-end;
+  }
+}
+
+/* Mobile-only controls pieces (below). Tablet/desktop keep the chevron-only row. */
+.aria-new-trending__progress,
+.aria-new-trending__nav-arrow {
+  display: none;
+}
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — Figma 6578:12565 (the last 563px of frame 6578:12247). Scoped under 750px,
+ * and every card override is prefixed with `.aria-new-trending`, so the shared product
+ * card keeps its own design in Best Sellers and on the PDP.
+ *
+ * Ladder (px, Figma): 48 pad / 46 heading / 32 / 329 card / 12 / 48 controls / 48 pad.
+ * Card (169 x 329, py-8): 176 media / 13 / 15 rating / 8 / 28 name / 6 / 15 swatches /
+ * 24 / 28 price — no button on this frame.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* Continues Deals & Exclusives' gradient: at this section's top the frame's
+     white -> #EADDD4 ramp is 429 / 992 of the way through, and it ends 563px later. */
+  .aria-new-trending {
+    background: linear-gradient(
+      180deg,
+      rgb(245.92 240.3 236.4) 0px,
+      var(--aria-nt-bg-to, #eaddd4) 563px
+    );
+    overflow: hidden;
+  }
+
+  /* Mobile H1: Montserrat Medium 36/46 black. */
+  .aria-new-trending__heading {
+    font-family: var(--font-heading-family);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 46px;
+    letter-spacing: 0;
+    color: var(--black, #000);
+  }
+
+  .aria-new-trending__carousel-wrap {
+    gap: 12px;
+  }
+
+  /* Explicit width, not `auto`: as a flex item here an auto-width Swiper grows to its
+     slides' full length, which leaves nothing to scroll — Swiper then locks itself and
+     disables both buttons. The extra 16px runs the row into the right gutter. */
+  .aria-new-trending__swiper {
+    width: calc(100% + 16px);
+    margin-right: -16px;
+  }
+
+  /* Fixed 169px cards, 8px apart (Swiper `auto` + data-space-between-mobile/-sm). */
+  .aria-new-trending__slide {
+    width: 169px;
+  }
+
+  /* --- Card ---------------------------------------------------------------------- */
+
+  .aria-new-trending .aria-product-card {
+    gap: 13px;
+    padding-block: 8px;
+  }
+
+  /* 169 x 176, white behind the photo, radius 2. */
+  .aria-new-trending .aria-product-card__media {
+    height: 176px;
+    aspect-ratio: auto;
+    background: var(--white, #fff);
+    border-radius: 2px;
+  }
+
+  /* Figma parks the heart at x=190 inside a 169px box: off the card by design. */
+  .aria-new-trending .aria-product-card__wishlist {
+    display: none;
+  }
+
+  /* Chip: 8px in from the left and bottom, a fixed 18px tall, Poppins 12/14. */
+  .aria-new-trending .aria-product-card__badge {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 8px;
+    font-family: var(--font-body-family);
+    letter-spacing: 0;
+  }
+
+  /* Text column is 139 wide, not the card's full 169. */
+  .aria-new-trending .aria-product-card__body {
+    width: 139px;
+  }
+
+  /* Rating: 12px stars 2 apart, 4px to "4.9 (212)" in Helvetica Neue 10/15 #333131. */
+  /* One 15px row, as drawn. The base rule wraps, which dropped a longer label (the
+     store's "No reviews yet") onto a second line in the 139px column; unwrapped it still
+     fits inside the 169px card. */
+  .aria-new-trending .aria-product-card__rating {
+    flex-wrap: nowrap;
+    min-height: 15px;
+    white-space: nowrap;
+  }
+
+  .aria-new-trending .aria-product-card__stars .aria-icon {
+    display: block;
+  }
+
+  .aria-new-trending .aria-product-card__rating-value {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0.5px;
+    color: #333131;
+  }
+
+  /* Name: Poppins 20/28 #3F3E3E, held to two lines so a long real title cannot push one
+     card's price below its neighbour's. */
+  .aria-new-trending .aria-product-card__title {
+    font-family: var(--font-body-family);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .aria-new-trending .aria-product-card__title a {
+    color: #3f3e3e;
+  }
+
+  /* Swatches: 6px under the name, 15px discs (1px #B5B5B5 ring) 5 apart, then "+14" in
+     Poppins 10/15 #302E2E. */
+  .aria-new-trending .aria-product-card__swatches {
+    gap: 5px;
+    min-height: 15px;
+    margin-top: -2px;
+  }
+
+  .aria-new-trending .aria-product-card__swatch {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+  }
+
+  .aria-new-trending .aria-product-card__swatch::before {
+    inset: 0;
+  }
+
+  .aria-new-trending .aria-product-card__swatch-more {
+    font-family: var(--font-body-family);
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0;
+    color: #302e2e;
+  }
+
+  .aria-new-trending .aria-product-card__swatch-more::after {
+    inset: -6px -6px;
+  }
+
+  /* Price: Montserrat Medium 20/28, current black and compare #3F3E3E at 49% struck,
+     6 apart; 24px below the swatches (8 body gap + 16). */
+  .aria-new-trending .aria-product-card__price,
+  .aria-new-trending .aria-product-card__price-current,
+  .aria-new-trending .aria-product-card__price-compare {
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+  }
+
+  .aria-new-trending .aria-product-card__price-compare {
+    opacity: 0.49;
+  }
+
+  /* No View Product / quick-add on this frame. */
+  .aria-new-trending .aria-product-card__actions {
+    display: none;
+  }
+
+  /* --- Controls (6578:12668): progress takes the rest of the row, 12px to two 48px
+     buttons 4 apart. ------------------------------------------------------------- */
+  .aria-new-trending__controls {
+    justify-content: flex-start;
+    gap: 4px;
+    height: 48px;
+  }
+
+  .aria-new-trending__progress {
+    display: block;
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 40px;
+    height: 4px;
+    margin-right: 8px;
+  }
+
+  .aria-new-trending__progress-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    background: var(--qi, #bc696b);
+    opacity: 0.3;
+  }
+
+  .aria-new-trending__progress-fill {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    min-width: 4px;
+    border-radius: 30px;
+    background: var(--py, #a64a4c);
+    transition: width 0.2s ease;
+  }
+
+  .aria-new-trending__nav {
+    box-sizing: border-box;
+    flex: none;
+    padding: 0;
+  }
+
+  .aria-new-trending__nav--prev {
+    color: var(--black, #000);
+  }
+
+  /* Full strength in the resting state, as drawn; disabled only stops responding. */
+  .aria-new-trending__nav:disabled {
+    opacity: 1;
+  }
+
+  .aria-new-trending__nav .aria-icon {
+    display: none;
+  }
+
+  .aria-new-trending__nav-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+  }
+
+  .aria-new-trending__nav-arrow svg {
+    display: block;
+    width: 13.1667px;
+    height: 19.9622px;
+  }
+
+  .aria-new-trending__nav--prev .aria-new-trending__nav-arrow svg {
+    transform: rotate(90deg);
+  }
+
+  .aria-new-trending__nav--next .aria-new-trending__nav-arrow svg {
+    transform: rotate(-90deg);
   }
 }

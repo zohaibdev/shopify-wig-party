@@ -1,0 +1,1591 @@
+/* Wig Party — cart drawer (snippets/cart-drawer.liquid), Figma 6663:9488.
+ *
+ * Layered over Dawn's component-cart-drawer.css (which keeps the open/close mechanics:
+ * fixed overlay, slide-in transform). Everything is scoped under `.aria-cart`.
+ *
+ * Desktop geometry (px, Figma): a 534-wide glass panel (rgba(255,255,255,.62), 50px blur,
+ * 1px white ring, p-16, 12px between blocks) holding a 500px column: header, free-shipping
+ * block, item cards (118 tall, 8 apart), the upsell (70 tall), and the summary.
+ * Mobile (Figma 6825:2529) is the max-width 559px block at the end.
+ */
+
+.aria-cart {
+  background-color: rgba(26, 26, 26, 0.35);
+}
+
+.aria-cart .drawer__inner,
+.aria-cart.is-empty .drawer__inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 534px;
+  max-width: 100vw;
+  height: 100%;
+  /* 1px ring + 16 = Figma content at x 17, y 17, 500 wide. */
+  padding: 16px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--black, #000);
+}
+
+/* The panel takes focus on open; Dawn's focus ring has no place on the dialog itself. */
+.aria-cart .drawer__inner:focus,
+.aria-cart .drawer__inner:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+
+.aria-cart .drawer__inner > *,
+.aria-cart .aria-cart__form-wrap {
+  flex: none;
+}
+
+/* ---------- Header (6663:9489) ---------- */
+
+.aria-cart__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid #d5d7da;
+}
+
+/* Montserrat Bold 18/28 #252B37. */
+.aria-cart__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  color: #252b37;
+}
+
+/* 32px black circle, white 11.5px cross. */
+.aria-cart .aria-cart__close {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 70px;
+  background: var(--black, #000);
+  cursor: pointer;
+}
+
+.aria-cart .aria-cart__close svg {
+  display: block;
+  width: 11.5px;
+  height: 11.5px;
+}
+
+/* ---------- Free shipping (6663:9495) ---------- */
+
+.aria-cart__shipping {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Montserrat Medium 20/28 #252B37. */
+.aria-cart__shipping-title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: #252b37;
+}
+
+/* 468 x 24 row, inset 16 each side: a 7px track (#3F3E3E at 36%) with the #A64A4C fill
+   and a 24px truck disc riding its end. */
+.aria-cart__progress {
+  position: relative;
+  height: 24px;
+  margin-inline: 16px;
+}
+
+.aria-cart__progress-track,
+.aria-cart__progress-fill {
+  position: absolute;
+  top: 8.5px;
+  left: 0;
+  height: 7px;
+  border-radius: 10px;
+}
+
+.aria-cart__progress-track {
+  right: 0;
+  background: #3f3e3e;
+  opacity: 0.36;
+}
+
+.aria-cart__progress-fill {
+  width: var(--aria-cart-progress, 0%);
+  background: var(--py, #a64a4c);
+  transition: width 0.3s ease;
+}
+
+/* Figma: the 24px disc sits 21px back from the fill's end (178 on a 199 fill). */
+.aria-cart__progress-truck {
+  position: absolute;
+  top: 0;
+  left: clamp(0px, calc(var(--aria-cart-progress, 0%) - 21px), calc(100% - 24px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 140px;
+  background: var(--py, #a64a4c);
+  transition: left 0.3s ease;
+}
+
+.aria-cart__progress-truck svg {
+  display: block;
+  width: 14.5125px;
+  height: 12.3307px;
+}
+
+/* Poppins 16/26 #535862. */
+.aria-cart__shipping-note {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: #535862;
+}
+
+/* ---------- Items (6663:9510) ---------- */
+
+.aria-cart cart-drawer-items {
+  display: block;
+  overflow: visible;
+  flex: none;
+}
+
+.aria-cart .cart-drawer__form {
+  display: block;
+  margin: 0;
+}
+
+.aria-cart .drawer__contents {
+  display: block;
+}
+
+.aria-cart__items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Card: 500 x 118, white -> #EADDD4, 1px #EADDD4 ring inside p-8, 12px image -> text. */
+.aria-cart .aria-cart__item {
+  position: relative;
+  margin: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 118px;
+  /* 1px ring + 5 = Figma's 106-tall info block centred at y 6 and the image at 9,9. Figma's
+     92 + 12 + 379 overruns its p-8 by 1 on the right, hence 7 there. */
+  padding: 5px 7px 5px 8px;
+  border: 1px solid #eaddd4;
+  background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+}
+
+/* Beats Dawn's `.cart-drawer .cart-item:last-child { margin-bottom: 1.5rem }`. */
+.aria-cart .aria-cart__item:last-child {
+  margin-bottom: 0;
+}
+
+.aria-cart__media {
+  flex: none;
+  display: block;
+  width: 92px;
+  height: 100px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-cart__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.aria-cart__info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aria-cart__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* The 8px row gap plus 4 makes Figma's 12px above the actions row. */
+.aria-cart__row--actions {
+  margin-top: 4px;
+}
+
+/* Poppins 16/26 #181D27. */
+.aria-cart__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: #181d27;
+  text-decoration: none;
+}
+
+.aria-cart__name:hover,
+.aria-cart__name:focus-visible {
+  text-decoration: underline;
+}
+
+/* Pill: #A64A4C, px-6 py-2, radius 14, Montserrat Medium 10/18 uppercase white. */
+.aria-cart__badge {
+  flex: none;
+  padding: 2px 6px;
+  border-radius: 14px;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-heading-family);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  white-space: nowrap;
+}
+
+/* Poppins 14/22 #535862. */
+.aria-cart__sub {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: #535862;
+}
+
+/* Montserrat Medium 20/28: #181D27, the compare #A4A7AE struck, 4 apart. */
+.aria-cart__price {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.aria-cart__price-current {
+  color: #181d27;
+}
+
+.aria-cart__price-compare {
+  color: #a4a7ae;
+  text-decoration: line-through;
+}
+
+/* Stepper: three 33 x 32 cells, #E0E0E0 hairlines, 4px outer radius, white. */
+.aria-cart .aria-cart__qty {
+  display: flex;
+  width: auto;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.aria-cart .aria-cart__qty::before,
+.aria-cart .aria-cart__qty::after {
+  display: none;
+}
+
+.aria-cart .aria-cart__qty-btn,
+.aria-cart .aria-cart__qty-input {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 33px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #e0e0e0;
+  background: var(--white, #fff);
+  color: #101828;
+}
+
+.aria-cart .aria-cart__qty-btn {
+  cursor: pointer;
+}
+
+.aria-cart .aria-cart__qty-btn--minus {
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.aria-cart .aria-cart__qty-btn--plus {
+  border-left: 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.aria-cart .aria-cart__qty-btn svg {
+  display: block;
+  pointer-events: none;
+  width: 11.6667px;
+}
+
+.aria-cart .aria-cart__qty-btn--minus svg {
+  height: 1px;
+}
+
+.aria-cart .aria-cart__qty-btn--plus svg {
+  height: 11.6667px;
+}
+
+.aria-cart .aria-cart__qty-btn:disabled,
+.aria-cart .aria-cart__qty-btn.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* White cells. Dawn's `.quantity__button:not(:focus-visible):not(.focused)` (and the input
+   twin) sets `background-color: inherit`, which outranks the rule above and lets the card's
+   gradient show through, hence the extra classes. */
+.aria-cart .aria-cart__qty .quantity__button.aria-cart__qty-btn,
+.aria-cart .aria-cart__qty .quantity__input.aria-cart__qty-input {
+  background-color: var(--white, #fff);
+}
+
+/* The count: 16/24 #101828, centred, no browser spinner. */
+.aria-cart .aria-cart__qty-input {
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  opacity: 1;
+}
+
+.aria-cart .aria-cart__qty-input::-webkit-outer-spin-button,
+.aria-cart .aria-cart__qty-input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+/* Remove (Poppins 12/18 black) and Save for later (Poppins 13/19.5 #3F3E3E), both
+   underlined, top-aligned 10 apart. */
+.aria-cart__links cart-remove-button {
+  display: block;
+  margin: 0;
+}
+
+.aria-cart__links {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.aria-cart__link {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body-family);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-underline-position: from-font;
+  text-decoration-skip-ink: none;
+  cursor: pointer;
+}
+
+.aria-cart__link--remove {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--black, #000);
+}
+
+.aria-cart__link--save {
+  font-size: 13px;
+  line-height: 19.5px;
+  color: #3f3e3e;
+}
+
+.aria-cart__link:hover,
+.aria-cart__link:focus-visible {
+  color: var(--py, #a64a4c);
+}
+
+.aria-cart .aria-cart__error {
+  display: block;
+  margin: 0;
+}
+
+/* Dawn fills the text on a failed update; until then the row takes no space. */
+.aria-cart .aria-cart__error:has(.cart-item__error-text:empty) {
+  display: none;
+}
+
+.aria-cart__error .cart-item__error-text:empty {
+  display: none;
+}
+
+.aria-cart__error .cart-item__error-text {
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  line-height: 18px;
+  color: #b42318;
+}
+
+/* Dawn's per-line spinner is shown while a line updates; dim the card instead of
+   drawing a spinner over the design. */
+.aria-cart__item .loading__spinner {
+  display: none;
+}
+
+.aria-cart__item:has(.loading__spinner:not(.hidden)) {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.aria-cart__errors:empty {
+  display: none;
+}
+
+/* ---------- Upsell (6848:8469) ---------- */
+
+/* 500 x 70, #A64A4C, 1px #E9EAEB ring, p-8; 12 below the items like every panel block. */
+/* Recommended upsell (aria-cart-recs): the row inside it carries all the styling. */
+.aria-cart__recs {
+  display: block;
+}
+
+.aria-cart__upsell {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 70px;
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid #e9eaeb;
+  background: var(--py, #a64a4c);
+}
+
+.aria-cart__upsell-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.aria-cart__upsell-media {
+  flex: none;
+  width: 50px;
+  height: 52px;
+  overflow: hidden;
+}
+
+.aria-cart__upsell-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aria-cart__upsell-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* Poppins 16/26 white, then Poppins 14/22 filled white -> #EADDD4 top to bottom. */
+.aria-cart__upsell-title {
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+.aria-cart__upsell-sub {
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+  background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 70px black pill, px-12 py-4, Poppins Light 16/20 white. */
+.aria-cart__upsell-add {
+  box-sizing: border-box;
+  display: block;
+  flex: none;
+  width: 70px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 40px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-cart__upsell-add:hover,
+.aria-cart__upsell-add:focus-visible {
+  background: #2b2b2b;
+}
+
+.aria-cart__upsell-add[aria-busy='true'] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ---------- Summary (6663:9579) ---------- */
+
+/* 1px #F5F5F5 rule on top, px-16 (no vertical padding), 12 between blocks, a soft white
+   glow below. */
+.aria-cart .aria-cart__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px;
+  border-top: 1px solid #f5f5f5;
+  box-shadow: 0 4px 34.3px #ffffff;
+}
+
+.aria-cart__totals {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aria-cart__total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Labels Montserrat SemiBold 14/20 black; values Montserrat Medium 20/28 #4B4B4B. */
+.aria-cart__total-label {
+  font-family: var(--font-heading-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-cart__total-value {
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: #4b4b4b;
+  white-space: nowrap;
+}
+
+/* 1px #CACAC7. Figma draws it over the last pixel of the Shipping row and starts Total
+   straight under it, so the margins cancel the 12px gaps either side and lift it 1px. */
+.aria-cart__rule {
+  height: 1px;
+  margin: -13px 0 -12px;
+  border: 0;
+  background: #cacac7;
+}
+
+/* Total: Montserrat ExtraBold 16/28, value Montserrat Bold 20/28 #181D27. */
+.aria-cart__total-row--grand .aria-cart__total-label {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 28px;
+}
+
+.aria-cart__total-row--grand .aria-cart__total-value {
+  font-weight: 700;
+  color: #181d27;
+}
+
+/* Discount code (no Figma frame): built from the drawer's own parts — the upsell row's
+   #E9EAEB border, the checkout button's colour and type, Poppins 14 for the field. */
+.aria-cart__discount {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.aria-cart__discount-form {
+  display: flex;
+  gap: 8px;
+}
+
+.aria-cart .aria-cart__discount-input {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid #e9eaeb;
+  border-radius: 0;
+  background: var(--white, #fff);
+  box-shadow: none;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: #181d27;
+}
+
+.aria-cart .aria-cart__discount-input:focus {
+  outline: 0;
+  border-color: var(--py, #a64a4c);
+  box-shadow: none;
+}
+
+.aria-cart__discount-apply {
+  box-sizing: border-box;
+  flex: none;
+  min-width: 96px;
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-cart__discount-apply:hover {
+  background: var(--qi, #bc696b);
+}
+
+.aria-cart__discount-apply:disabled,
+.aria-cart__discount-form[aria-busy='true'] .aria-cart__discount-apply {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.aria-cart__discount-codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-cart__discount-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 4px 4px 10px;
+  background: var(--cream, #eaddd4);
+  font-family: var(--font-body-family);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  text-transform: uppercase;
+  color: #181d27;
+}
+
+.aria-cart__discount-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  color: #181d27;
+  cursor: pointer;
+}
+
+.aria-cart__discount-error {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--py, #a64a4c);
+}
+
+.aria-cart__discount-error[hidden] {
+  display: none;
+}
+
+/* Checkout: #A64A4C, 52 tall, px-20 py-12, 16/28 white uppercase. */
+.aria-cart__checkout {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 0;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-cart__checkout:hover,
+.aria-cart__checkout:focus-visible {
+  background: #8d3b3d;
+}
+
+/* Payment marks: six 58 x 40, 12 apart, centred; the logo-only ones sit in a white
+   radius-6 tile with a #F2F4F7 ring. */
+.aria-cart__payments {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-cart__pay {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 40px;
+}
+
+.aria-cart__pay svg {
+  display: block;
+}
+
+.aria-cart__pay--visa svg,
+.aria-cart__pay--shoppay svg,
+.aria-cart__pay--applepay svg {
+  width: 58px;
+  height: 40px;
+}
+
+.aria-cart__pay--mastercard,
+.aria-cart__pay--amazon,
+.aria-cart__pay--paypal {
+  border: 1px solid #f2f4f7;
+  border-radius: 6px;
+  background: var(--white, #fff);
+}
+
+/* Marks sit where Figma's insets put them inside the 56 x 38 tile, not centred. */
+.aria-cart__pay--mastercard svg,
+.aria-cart__pay--amazon svg,
+.aria-cart__pay--paypal svg {
+  position: absolute;
+}
+
+.aria-cart__pay--mastercard svg {
+  top: 7.38px;
+  left: 9px;
+  width: 37.2666px;
+  height: 22.333px;
+}
+
+.aria-cart__pay--amazon svg {
+  top: 14px;
+  left: 4.67px;
+  width: 45.333px;
+  height: 14.3617px;
+}
+
+.aria-cart__pay--paypal svg {
+  top: 8.55px;
+  left: 18.24px;
+  width: 17.9901px;
+  height: 21.9406px;
+}
+
+/* #EADDD4 strip, py-8, Montserrat Medium 12/20 #545454, centred. */
+.aria-cart__installments {
+  margin: 0;
+  padding: 8px 12px;
+  background: #eaddd4;
+  font-family: var(--font-heading-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-align: center;
+  color: #545454;
+}
+
+/* Badges: px-12, spread across, 16px icon above Poppins 12/14 uppercase, 6 apart. */
+.aria-cart__badges {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 0 12px;
+  list-style: none;
+}
+
+.aria-cart__badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+/* Figma fixes the first badge at 97 (its label overhangs by 1.5 each side), which is what
+   places the middle badge at x 116. */
+.aria-cart__badge-item:first-child {
+  flex: none;
+  width: 97px;
+  white-space: nowrap;
+}
+
+/* Updated Figma (7103:11189): the 2nd and 3rd badges are 127 and 182 wide, the width of
+   their one-line labels. */
+.aria-cart__badge-item:nth-child(2) {
+  flex: none;
+  width: 127px;
+}
+
+.aria-cart__badge-item:nth-child(3) {
+  flex: none;
+  width: 182px;
+}
+
+.aria-cart__badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.aria-cart__badge-icon svg {
+  display: block;
+  max-width: 16px;
+  max-height: 16px;
+}
+
+.aria-cart__badge-label {
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--black, #000);
+}
+
+/* Not sure yet (6819:2398): Poppins 18/28 #A64A4C heading, Poppins 12/14 uppercase #3F3E3E
+   text, 4 apart; 12px down to the 52-tall black Save button (radius 2, px-20 py-12,
+   Poppins 20/28 white). The consult button was removed, so Save spans the row. */
+.aria-cart__consult {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aria-cart__consult-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aria-cart__consult-heading {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--py, #a64a4c);
+}
+
+.aria-cart__consult-text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #3f3e3e;
+}
+
+.aria-cart__consult-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.aria-cart__secondary {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-width: 1px;
+  min-height: 52px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-cart__secondary:hover,
+.aria-cart__secondary:focus-visible {
+  background: #2b2b2b;
+}
+
+/* ---------- Empty cart ---------- */
+
+.aria-cart .aria-cart__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  height: auto;
+  padding: 48px 16px;
+  overflow: visible;
+  text-align: center;
+}
+
+.aria-cart__empty-text {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  color: #252b37;
+}
+
+.aria-cart__checkout--link {
+  width: auto;
+  padding-inline: 32px;
+}
+
+/* ---------- Mobile (Figma 6825:2529) ----------
+ * A 350-wide panel on a 375 frame (25px of page left showing), rgba(255,255,255,.79) with a
+ * 5.45px blur, no ring and no outer padding: the blocks stack flush and carry their own
+ * insets: header px-16 py-8, shipping px-16 py-8, items p-12, summary p-12.
+ */
+
+@media screen and (max-width: 559px) {
+  /* The mobile footer already has 16px above it. */
+  .aria-cart__discount {
+    padding-top: 0;
+  }
+
+  .aria-cart .drawer__inner,
+  .aria-cart.is-empty .drawer__inner {
+    gap: 0;
+    width: calc(100vw - 25px);
+    max-width: calc(100vw - 25px);
+    padding: 0;
+    border: 0;
+    background: rgba(255, 255, 255, 0.79);
+    backdrop-filter: blur(5.45px);
+    -webkit-backdrop-filter: blur(5.45px);
+  }
+
+  /* Shipping (6825:2536): 8 between title, bar and note; #E9EAEB rule below. */
+  .aria-cart__shipping {
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #e9eaeb;
+  }
+
+  /* The bar runs the full 318 column; track at 38%, and the disc sits 16px back from the
+     fill's end (119.2 on a 135.2 fill). */
+  .aria-cart__progress {
+    margin-inline: 0;
+  }
+
+  .aria-cart__progress-track {
+    opacity: 0.38;
+  }
+
+  .aria-cart__progress-truck {
+    left: clamp(0px, calc(var(--aria-cart-progress, 0%) - 16px), calc(100% - 24px));
+  }
+
+  /* Items (6825:2551): p-12, cards and the upsell 8 apart; 8 under the upsell. */
+  .aria-cart cart-drawer-items {
+    padding: 12px 12px 8px;
+  }
+
+  /* Card: 326 x 176, p-8 inside the 1px ring, 8 from the 92 x 158 image to the 207 text
+     column (which leaves Figma 1px spare on the right, hence 9 there). */
+  .aria-cart .aria-cart__item {
+    align-items: center;
+    gap: 8px;
+    min-height: 176px;
+    padding: 7px 9px 7px 8px;
+  }
+
+  .aria-cart__media {
+    width: 92px;
+    height: 158px;
+  }
+
+  /* Column: name/badge row, then sub + price (4 apart), 8 down to stepper + links (2 apart). */
+  .aria-cart__info {
+    gap: 0;
+  }
+
+  .aria-cart__row {
+    gap: 0;
+  }
+
+  .aria-cart__row:nth-child(2) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .aria-cart__row--actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin-top: 8px;
+  }
+
+  /* Poppins 14/22 black, wrapping beside the pill (146 + 61 = the 207 column). */
+  .aria-cart__name {
+    flex: 1 1 0;
+    overflow: visible;
+    white-space: normal;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--black, #000);
+  }
+
+  .aria-cart__sub {
+    max-width: 100%;
+  }
+
+  /* Montserrat Medium 16/24. */
+  .aria-cart__price {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  /* Remove and Save for later: both Poppins 12/22 #3F3E3E, underlined, 9 apart. */
+  .aria-cart__links {
+    gap: 9px;
+  }
+
+  .aria-cart__link--remove,
+  .aria-cart__link--save {
+    font-size: 12px;
+    line-height: 22px;
+    color: #3f3e3e;
+  }
+
+  /* Upsell (6848:8497): 326 x 62, p-4 inside the 1px ring; 46 x 52 image 3 from the text,
+     13 to the ADD pill. */
+  .aria-cart__upsell {
+    gap: 13px;
+    min-height: 62px;
+    margin-top: 8px;
+    padding: 4px;
+  }
+
+  .aria-cart__upsell-main {
+    flex: 1 1 auto;
+    gap: 3px;
+  }
+
+  .aria-cart__upsell-media {
+    width: 46px;
+    height: 52px;
+  }
+
+  .aria-cart__upsell-text {
+    flex: 1 1 auto;
+    gap: 0;
+  }
+
+  /* Poppins 12/17 white (wraps to two lines), then 10/17 with the white -> cream fill. */
+  .aria-cart__upsell-title {
+    font-size: 12px;
+    line-height: 17px;
+  }
+
+  .aria-cart__upsell-sub {
+    font-size: 10px;
+    line-height: 17px;
+    white-space: nowrap;
+  }
+
+  /* 53 wide, px-12 py-4, Poppins Regular 14/22. */
+  .aria-cart__upsell-add {
+    width: 53px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  /* Summary (6825:2639): inset 12 (27 below), then the #F5F5F5 rule, pt-16 and a
+     rgba(48,48,48,.25) shadow. The Figma frame has no fill, so its shadow is cast by its
+     content (buttons, strips, text), not its box: drop-shadow, not box-shadow, which
+     would grey the 12px margins either side. */
+  .aria-cart .aria-cart__footer {
+    margin: 12px 12px 27px;
+    padding: 16px 0 0;
+    box-shadow: none;
+    filter: drop-shadow(0 4px 34.3px rgba(48, 48, 48, 0.25));
+  }
+
+  /* Labels match the values: Montserrat Medium 20/28, black. */
+  .aria-cart__total-label {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  /* Rule: 12 under Shipping, 13 above Total. */
+  .aria-cart__rule {
+    margin: 0 0 1px;
+  }
+
+  /* Total: Montserrat Medium 24/32; value Montserrat Bold 20/28 black. */
+  .aria-cart__total-row--grand .aria-cart__total-label {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+  }
+
+  .aria-cart__total-row--grand .aria-cart__total-value {
+    color: var(--black, #000);
+  }
+
+  /* Payment marks: the desktop 58 x 40 tiles scaled to 44.8 x 30.9 (0.7724), 9.27 apart.
+     Amazon keeps a true 6px radius in Figma, so it is pre-scaled. */
+  .aria-cart__payments {
+    flex-wrap: nowrap;
+    gap: 9.269px;
+  }
+
+  .aria-cart__pay {
+    zoom: 0.77244;
+  }
+
+  .aria-cart__pay--amazon {
+    border-radius: 7.768px;
+  }
+
+  /* #EADDD4 at 92%, the copy in a 304.8 box so it wraps where Figma does. */
+  .aria-cart__installments {
+    padding: 8px 10.6px;
+    background: rgba(234, 221, 212, 0.92);
+  }
+
+  /* Badges: icon beside label (6 apart), spread edge to edge; labels Poppins 12/14
+     uppercase #3F3E3E in Figma's fixed text boxes, which set where each wraps. */
+  .aria-cart__badges {
+    gap: 0;
+    padding: 0;
+  }
+
+  /* The three need 318.7 of the 326 row; below a 375 screen they shrink rather than
+     overflow. */
+  .aria-cart__badge-item {
+    flex: 0 1 auto;
+    flex-direction: row;
+    align-items: center;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .aria-cart__badge-item:first-child,
+  .aria-cart__badge-item:nth-child(2),
+  .aria-cart__badge-item:nth-child(3) {
+    flex: 0 1 auto;
+    width: auto;
+    white-space: normal;
+  }
+
+  .aria-cart__badge-item:first-child {
+    flex: 0 1 97px;
+  }
+
+  .aria-cart__badge-icon {
+    flex: none;
+  }
+
+  .aria-cart__badge-label {
+    min-width: 0;
+    color: #3f3e3e;
+  }
+
+  .aria-cart__badge-item:nth-child(1) .aria-cart__badge-label {
+    flex: 0 1 78.496px;
+  }
+
+  .aria-cart__badge-item:nth-child(2) .aria-cart__badge-label {
+    flex: 0 1 93.068px;
+  }
+
+  .aria-cart__badge-item:nth-child(3) .aria-cart__badge-label {
+    flex: 0 1 84.597px;
+  }
+
+  /* Not sure yet: the two buttons stack full width, 12 apart. */
+  .aria-cart__consult-actions {
+    flex-direction: column;
+  }
+
+  .aria-cart__secondary {
+    flex: none;
+  }
+}
+
+/* ---------- Rebuy Smart Cart off (assets/aria-suppress-rebuy-cart.js) ----------
+   The theme drawer is the cart; Rebuy's injected Smart Cart must never show or lock
+   the page, even for the moment before the script patches it. */
+#rebuy-cart,
+.rebuy-cart__flyout,
+.rebuy-cart__background {
+  display: none !important;
+}
+
+html.rebuy-cart-visible,
+body.rebuy-cart-visible:not(.overflow-hidden) {
+  overflow: auto !important;
+}
+
+/* The closed panel waits translated off the right edge; without a clip on its fixed, full-
+   screen layer it widened the page (sideways scroll on the cart page at 768). */
+cart-drawer.drawer.aria-cart {
+  overflow: hidden;
+}
+
+/* QA pass 2026-10-29: the item name is #181D27 at every width (mobile was black). */
+.aria-cart .aria-cart__name,
+.aria-cart a.aria-cart__name {
+  color: #181d27;
+}
+
+/* ---------- Nov 6 QA: match Side Cart Drawer Option 1 (Figma 7103:10254 desktop,
+ * 7103:11218 mobile). Appended last so these rules win over the older 6663:9488 build. ---------- */
+
+/* Link icons (trash, bookmark) are desktop only; mobile keeps the text links. */
+.aria-cart .aria-cart__link-icon {
+  display: none;
+  flex: none;
+}
+
+/* Upsell: neither design has the red banner. It takes the design's soft card instead
+   (white to #EADDD4, dark text) so it reads as part of the cart, on every size. */
+.aria-cart .aria-cart__upsell {
+  border: 1px solid #e9eaeb;
+  background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+}
+
+.aria-cart .aria-cart__upsell-title {
+  color: #181d27;
+}
+
+.aria-cart .aria-cart__upsell-sub {
+  color: #535862;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+}
+
+@media screen and (min-width: 560px) {
+  /* Panel: 500 wide, solid white, no outer padding; blocks carry their own insets. */
+  .aria-cart .drawer__inner,
+  .aria-cart.is-empty .drawer__inner {
+    gap: 0;
+    width: 500px;
+    padding: 0;
+    border: 0;
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  /* Header: px-16 py-8, #D5D7DA rule; close is a 32px #EADDD4 disc with a dark cross. */
+  .aria-cart .aria-cart__close {
+    background: #eaddd4;
+  }
+
+  .aria-cart .aria-cart__close svg path {
+    stroke: #252b37;
+  }
+
+  /* Shipping: px-16 py-8, 12 apart, #E9EAEB rule; bar runs the full 468 column on #EADDD4. */
+  .aria-cart .aria-cart__shipping {
+    gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #e9eaeb;
+  }
+
+  .aria-cart .aria-cart__progress {
+    margin-inline: 0;
+  }
+
+  .aria-cart .aria-cart__progress-track {
+    background: #eaddd4;
+    opacity: 1;
+  }
+
+  /* Items: p-16, cards 8 apart. */
+  .aria-cart cart-drawer-items {
+    padding: 16px;
+  }
+
+  .aria-cart cart-drawer-items.is-empty {
+    padding: 0;
+  }
+
+  /* Card 468 x 118: #F6F8F9, 1px #E9EAEB, p-8, 92 x 100 image, 12 to the text. */
+  .aria-cart .aria-cart__item {
+    gap: 12px;
+    padding: 8px;
+    border: 1px solid #e9eaeb;
+    background: #f6f8f9;
+  }
+
+  .aria-cart .aria-cart__name {
+    color: #000000;
+  }
+
+  /* 8 between name and sub/price rows, 4 down to the stepper row. */
+  .aria-cart .aria-cart__row--actions {
+    justify-content: flex-start;
+    margin-top: -4px;
+  }
+
+  /* Trash sits 8 right of the stepper; Save for later is pushed to the right edge. */
+  .aria-cart .aria-cart__row--actions .aria-cart__links {
+    display: contents;
+  }
+
+  .aria-cart .aria-cart__row--actions .aria-cart__links cart-remove-button {
+    display: flex;
+    align-items: center;
+  }
+
+  .aria-cart .aria-cart__link--remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: #252b37;
+    text-decoration: none;
+  }
+
+  .aria-cart .aria-cart__link--remove .aria-cart__link-text {
+    display: none;
+  }
+
+  .aria-cart .aria-cart__link-icon {
+    display: block;
+  }
+
+  .aria-cart .aria-cart__link--save {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-family: var(--font-heading-family);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 19.5px;
+    color: #4a4a4a;
+  }
+
+  .aria-cart .aria-cart__link--save .aria-cart__link-text {
+    text-decoration: underline;
+    text-underline-position: from-font;
+  }
+
+  .aria-cart .aria-cart__link--save:hover,
+  .aria-cart .aria-cart__link--remove:hover {
+    color: var(--py, #a64a4c);
+  }
+
+  /* Upsell sits 8 under the last card, like the design's notice block. */
+  .aria-cart .aria-cart__upsell {
+    margin-top: 8px;
+  }
+
+  /* Summary: white, p-16, 1px #F5F5F5 rule, 12 between blocks, no glow. */
+  .aria-cart .aria-cart__footer {
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid #f5f5f5;
+    background: #ffffff;
+    box-shadow: none;
+  }
+
+  /* Labels and values Montserrat Medium 20/28: labels black, values #4B4B4B. */
+  .aria-cart .aria-cart__total-label {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    color: #000000;
+  }
+
+  /* 13 above and below the #CACAC7 rule. */
+  .aria-cart .aria-cart__rule {
+    margin: 1px 0;
+  }
+
+  /* Total: label Montserrat Medium 24/32, value 20/28 black bold. */
+  .aria-cart .aria-cart__total-row--grand .aria-cart__total-label {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+  }
+
+  .aria-cart .aria-cart__total-row--grand .aria-cart__total-value {
+    font-weight: 700;
+    color: #000000;
+  }
+
+  /* Klarna strip #EADDD4 at 92%. */
+  .aria-cart .aria-cart__installments {
+    background: rgba(234, 221, 212, 0.92);
+  }
+
+  /* Badges: one row, 16px icon left of a two-line Poppins 12/14 #535862 label, 6 apart;
+     97 / 115 / 132 wide, spread across the 468 column. */
+  .aria-cart .aria-cart__badges {
+    align-items: center;
+    padding: 0;
+  }
+
+  .aria-cart .aria-cart__badge-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    text-align: left;
+  }
+
+  .aria-cart .aria-cart__badge-item:first-child {
+    width: 97px;
+    white-space: normal;
+  }
+
+  .aria-cart .aria-cart__badge-item:nth-child(2) {
+    width: 115px;
+  }
+
+  .aria-cart .aria-cart__badge-item:nth-child(3) {
+    width: 132px;
+  }
+
+  .aria-cart .aria-cart__badge-icon {
+    flex: none;
+  }
+
+  .aria-cart .aria-cart__badge-label {
+    color: #535862;
+  }
+}

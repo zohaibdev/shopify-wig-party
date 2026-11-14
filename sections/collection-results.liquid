@@ -1,0 +1,798 @@
+{%- comment -%}
+  Wig Party — collection results. Figma internal file, node 6663:2083 (1440 wide); the
+  no-sidebar layout is node 6849:9638.
+
+  Quick-filter chips across the top, a filter sidebar, a results bar with the count line and
+  a sort dropdown, a 4-up product grid of the shared `aria-product-card`, and a "Show N more"
+  button that appends the next page in place.
+
+  Everything is driven by Shopify's own data:
+    • The sidebar renders `collection.filters` — whatever filters are configured in the
+      Search & Discovery app, with their real counts. Nothing is hardcoded, so a filter the
+      store adds later (cap construction, cap size, colour family, length…) appears here on
+      its own. Price is Shopify's range filter, offered as the design's price bands.
+    • The count line is the filtered product count, split by the availability filter
+      (in stock = "on our shelf", out of stock = "made to order").
+    • Chips are blocks: a label plus a filter (`filter.x.y=value`) or a link. A chip's count
+      and active state come from the matching filter value, and a chip whose filter the store
+      does not offer yet is not shown.
+
+  "New in: last N days" (New In page) lists only the wigs added in that window — or, when
+  there are none, the newest page of arrivals — with no "Show more"; the same set as the hero's
+  stats (snippets/aria-new-in-set.liquid). The page must run newest first, so without a sort in
+  the URL it reloads itself sorted by created-descending; the theme-filter script keeps to the
+  same set (data-new-since / data-new-limit).
+
+  Filter and sort changes submit the form (a normal GET to the collection URL, so every state
+  is a shareable URL); assets/aria-collection.js adds the auto-submit, the price bands, the
+  sort dropdown and the load-more.
+{%- endcomment -%}
+
+{{ 'component-aria-product-card.css' | asset_url | stylesheet_tag }}
+{{ 'section-aria-collection-results.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'aria-collection.js' | asset_url }}" defer="defer"></script>
+
+{%- paginate collection.products by section.settings.products_per_page -%}
+  {%- liquid
+    # -- Availability split for the count line, read off the availability filter's values.
+    assign count_in_stock = blank
+    assign count_to_order = blank
+    assign any_filter_active = false
+    for filter in collection.filters
+      if filter.active_values.size > 0
+        assign any_filter_active = true
+      endif
+      if filter.type == 'price_range'
+        if filter.min_value.value != blank or filter.max_value.value != blank
+          assign any_filter_active = true
+        endif
+      endif
+      if filter.param_name == 'filter.v.availability'
+        for value in filter.values
+          if value.value == '1'
+            assign count_in_stock = value.count
+          elsif value.value == '0'
+            assign count_to_order = value.count
+          endif
+        endfor
+      endif
+    endfor
+
+    assign current_sort = collection.sort_by | default: collection.default_sort_by
+    assign sort_whitelist = section.settings.sort_options | split: ','
+    # -- The design's own wording for Shopify's sort values (Figma 6668:3911); anything
+    # -- not listed keeps Shopify's name.
+    assign sort_label_keys = 'manual|best-selling|price-ascending|price-descending|created-descending' | split: '|'
+    assign sort_label_names = 'Featured|Best selling|Price: low to high|Price: high to low|Newest' | split: '|'
+    assign current_sort_label = ''
+    for option in collection.sort_options
+      if option.value == current_sort
+        assign current_sort_label = option.name
+        for key in sort_label_keys
+          if key == option.value
+            assign current_sort_label = sort_label_names[forloop.index0]
+          endif
+        endfor
+      endif
+    endfor
+
+    assign new_mode = blank
+    if section.settings.new_within_days > 0
+      capture new_set
+        render 'aria-new-in-set', products: collection.products, days: section.settings.new_within_days, fallback: section.settings.products_per_page
+      endcapture
+      assign new_parts = new_set | strip | split: ':'
+      assign new_mode = new_parts[0]
+      assign new_since = new_parts[1]
+      assign new_handles = new_parts[2]
+      assign new_shown = new_handles | remove_first: ',' | split: ',' | size
+    endif
+
+    assign next_count = 0
+    if paginate.next
+      assign shown_so_far = paginate.current_offset | plus: paginate.page_size
+      assign next_count = paginate.items | minus: shown_so_far
+      if next_count > paginate.page_size
+        assign next_count = paginate.page_size
+      endif
+    endif
+  -%}
+
+  {%- comment -%}
+    `layout: full` (Shop by Cap Construction, Figma 6849:9638) drops the sidebar for a 5-up
+    grid. The filter form still renders, hidden, because the sort and the chips submit
+    through it.
+  {%- endcomment -%}
+  {%- liquid
+    # -- The sort a visit without ?sort_by= should land on: newest first for New In,
+    # -- else the section's "Default sort" (collections' own default is set per collection
+    # -- in admin, so the theme states it here instead).
+    assign wanted_sort = section.settings.default_sort
+    if new_mode != blank
+      assign wanted_sort = 'created-descending'
+    endif
+  -%}
+  {%- if wanted_sort != blank and collection.sort_by == blank and collection.default_sort_by != wanted_sort -%}
+    <script>
+      (function () {
+        var params = new URLSearchParams(location.search);
+        params.set('sort_by', {{ wanted_sort | json }});
+        location.replace(location.pathname + '?' + params.toString() + location.hash);
+      })();
+    </script>
+  {%- endif -%}
+  <section
+    class="aria-coll{% if section.settings.layout == 'full' %} aria-coll--full{% endif %}"
+    data-aria-coll
+    {% if new_mode == 'new' %}
+      data-new-since="{{ new_since }}"
+    {% elsif new_mode == 'latest' %}
+      data-new-limit="{{ new_shown }}"
+    {% endif %}
+  >
+    {%- comment -%} JS restates the count line and applies theme filters (af_*); hide what it will replace until then. {%- endcomment -%}
+    <script>
+      document.currentScript.parentNode.classList.add('aria-coll--counting');
+      if (/[?&]af_/.test(location.search)) document.currentScript.parentNode.classList.add('aria-coll--facet-loading');
+    </script>
+    <div class="aria-coll__inner">
+      {%- comment -%} Quick chips (Figma 6663:2931). {%- endcomment -%}
+      {%- liquid
+        assign chip_blocks = 0
+        for block in section.blocks
+          if block.type == 'chip'
+            assign chip_blocks = chip_blocks | plus: 1
+          endif
+        endfor
+      -%}
+      {%- if chip_blocks > 0 -%}
+        <div class="aria-coll__quick">
+          {%- if section.settings.quick_label != blank -%}
+            <span class="aria-coll__quick-label">{{ section.settings.quick_label }}</span>
+          {%- endif -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type != 'chip' -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign chip_param = block.settings.filter | strip
+              assign chip_theme = false
+              if chip_param contains 'af_'
+                assign chip_theme = true
+              endif
+              assign chip_name = chip_param | split: '=' | first | strip
+              assign chip_value = chip_param | split: '=' | last | strip
+              assign chip_url = block.settings.link
+              assign chip_count = blank
+              assign chip_active = false
+              assign chip_available = true
+
+              if chip_param == blank and chip_url == blank
+                # -- "Everything": the whole collection, active when nothing is filtered.
+                assign chip_url = collection.url
+                assign chip_count = collection.all_products_count
+                if new_mode != blank
+                  assign chip_count = new_shown
+                endif
+                unless any_filter_active
+                  assign chip_active = true
+                endunless
+              elsif chip_theme
+                # -- A theme filter (af_group=value): JS fills its count and active state.
+                assign chip_url = collection.url | append: '?' | append: chip_param
+              elsif chip_name == 'sort_by'
+                # -- A sort chip ("New in" = sort_by=created-descending): active while that
+                # -- sort is applied. JS counts what was added in the last 30 days.
+                assign chip_url = collection.url | append: '?' | append: chip_param
+                if current_sort == chip_value
+                  assign chip_active = true
+                endif
+              elsif chip_param != blank
+                assign chip_url = collection.url | append: '?' | append: chip_param
+                if chip_name contains 'filter.v.price'
+                  # -- Price bands have no value list to count against.
+                  for filter in collection.filters
+                    if filter.type == 'price_range'
+                      if chip_name == 'filter.v.price.lte' and filter.max_value.value != blank
+                        assign max_int = filter.max_value.value | divided_by: 100
+                        assign chip_int = chip_value | plus: 0
+                        if max_int == chip_int
+                          assign chip_active = true
+                        endif
+                      endif
+                    endif
+                  endfor
+                else
+                  assign chip_available = false
+                  for filter in collection.filters
+                    for value in filter.values
+                      if value.param_name == chip_name and value.value == chip_value
+                        assign chip_available = true
+                        assign chip_count = value.count
+                        assign chip_active = value.active
+                      endif
+                    endfor
+                  endfor
+                endif
+              endif
+            -%}
+            {%- if chip_available -%}
+              <a
+                href="{{ chip_url }}"
+                class="aria-coll__chip{% if chip_active %} aria-coll__chip--active{% endif %}"
+                {% if chip_theme %}
+                  data-aria-coll-theme-chip="{{ chip_param | remove_first: 'af_' | escape }}" hidden
+                {% endif %}
+                {% if chip_param == blank and block.settings.link == blank %}
+                  data-aria-coll-everything
+                {% endif %}
+                {% if chip_param == 'sort_by=created-descending' %}
+                  data-aria-coll-new-chip="{{ 'now' | date: '%s' | minus: 2592000 }}"
+                {% endif %}
+                {% if chip_active %}
+                  aria-current="true"
+                {% endif %}
+                {{ block.shopify_attributes }}
+              >
+                {{- block.settings.label -}}
+                {%- if chip_count != blank %} ({{ chip_count }}){% endif -%}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <div class="aria-coll__layout">
+        {%- comment -%} Filter sidebar (Figma 6663:2111). {%- endcomment -%}
+        <details class="aria-coll__filters-toggle" data-aria-coll-filters-toggle open>
+          <summary class="aria-coll__filters-summary">{{ 'products.facets.filter_button' | t }}</summary>
+          <aside class="aria-coll__sidebar">
+            <form
+              class="aria-coll__form"
+              action="{{ collection.url }}"
+              method="get"
+              data-aria-coll-form
+            >
+              <input type="hidden" name="sort_by" value="{{ current_sort }}" data-aria-coll-sort-input>
+
+              {%- comment -%}
+                Theme filters (blocks): built from each product's type, title, tags or
+                colour names, so they work without Search & Discovery. Rendered hidden;
+                assets/aria-collection.js counts them from ?view=aria-index, shows the
+                options that match anything, and filters the grid.
+              {%- endcomment -%}
+              {%- assign theme_config = '' -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type != 'theme_filter' or block.settings.title == blank -%}{%- continue -%}{%- endif -%}
+                {%- liquid
+                  assign group_id = block.settings.title | handleize
+                  assign option_lines = block.settings.options | newline_to_br | split: '<br />'
+                -%}
+                <details class="aria-coll__group" open data-aria-coll-theme-group="{{ group_id }}" hidden {{ block.shopify_attributes }}>
+                  <summary class="aria-coll__group-head">
+                    <span class="aria-coll__group-title">{{ block.settings.title }}</span>
+                    {{- 'wp-coll-arrow.svg' | inline_asset_content -}}
+                  </summary>
+                  <ul class="aria-coll__options" role="list">
+                    {%- assign group_json = '' -%}
+                    {%- for line in option_lines -%}
+                      {%- liquid
+                        assign line = line | strip
+                        unless line contains '='
+                          continue
+                        endunless
+                        assign option_label = line | split: '=' | first | strip
+                        assign option_keys = line | remove_first: option_label | remove_first: '=' | strip
+                        # -- A trailing "| #hex" is the colour dot; any other | belongs to a re: pattern.
+                        assign option_swatch = ''
+                        if option_keys contains '|'
+                          assign swatch_try = option_keys | split: '|' | last | strip
+                          if swatch_try.first == '#'
+                            assign option_swatch = swatch_try
+                            assign option_keys = option_keys | remove_last: swatch_try | strip | remove_last: '|' | strip
+                          endif
+                        endif
+                        assign option_value = option_label | handleize
+                      -%}
+                      {%- capture option_json -%}{"value": {{ option_value | json }}, "keys": {{ option_keys | json }}},{%- endcapture -%}
+                      {%- assign group_json = group_json | append: option_json -%}
+                      <li class="aria-coll__option" data-aria-coll-theme-option="{{ option_value }}" hidden>
+                        <label class="aria-coll__option-label">
+                          <input type="checkbox" class="aria-coll__check" name="af_{{ group_id }}" value="{{ option_value }}" data-aria-coll-theme>
+                          {%- if option_swatch != blank -%}
+                            <span class="aria-coll__swatch" style="background-color: {{ option_swatch | escape }};"></span>
+                          {%- endif -%}
+                          <span class="aria-coll__option-text">{{ option_label }} (<span data-aria-coll-theme-count>0</span>)</span>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                  {%- if block.settings.note != blank -%}
+                    <p class="aria-coll__note">{{ block.settings.note }}</p>
+                  {%- endif -%}
+                </details>
+                {%- capture group_entry -%}{"id": {{ group_id | json }}, "source": {{ block.settings.source | json }}, "options": [{{ group_json | remove_last: ',' }}]},{%- endcapture -%}
+                {%- assign theme_config = theme_config | append: group_entry -%}
+              {%- endfor -%}
+              {%- if theme_config != blank -%}
+                <script type="application/json" data-aria-coll-theme-config>[{{ theme_config | remove_last: ',' }}]</script>
+              {%- endif -%}
+
+              {%- for filter in collection.filters -%}
+                {%- if filter.type == 'price_range' -%}
+                  {%- comment -%}
+                    Shopify's price filter is a single range, so the design's bands are one
+                    choice at a time. The two hidden fields carry the chosen band; JS sets them
+                    and submits. Values are whole currency units, as the URL expects.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign cur_min = filter.min_value.value | divided_by: 100
+                    assign cur_max = filter.max_value.value | divided_by: 100
+                    if filter.min_value.value == blank
+                      assign cur_min = blank
+                    endif
+                    if filter.max_value.value == blank
+                      assign cur_max = blank
+                    endif
+                    assign bands = section.settings.price_bands | split: ','
+                  -%}
+                  <details class="aria-coll__group" open>
+                    <summary class="aria-coll__group-head">
+                      <span class="aria-coll__group-title">{{ filter.label }}</span>
+                      {{- 'wp-coll-arrow.svg' | inline_asset_content -}}
+                    </summary>
+                    <input type="hidden" name="{{ filter.min_value.param_name }}" value="{{ cur_min }}" data-aria-coll-price="min" {% if cur_min == blank %}disabled{% endif %}>
+                    <input type="hidden" name="{{ filter.max_value.param_name }}" value="{{ cur_max }}" data-aria-coll-price="max" {% if cur_max == blank %}disabled{% endif %}>
+                    <ul class="aria-coll__options" role="list">
+                      {%- for band in bands -%}
+                        {%- liquid
+                          assign band_min = band | split: '-' | first | strip
+                          assign band_max = band | split: '-' | last | strip
+                          if band contains '+'
+                            assign band_min = band | remove: '+' | strip
+                            assign band_max = ''
+                          endif
+                          if band_min == '0'
+                            assign band_min = ''
+                          endif
+                          assign band_active = false
+                          assign cur_min_s = cur_min | append: ''
+                          assign cur_max_s = cur_max | append: ''
+                          if cur_min_s == band_min and cur_max_s == band_max
+                            assign band_active = true
+                          endif
+                          assign min_money = band_min | times: 100 | money_without_trailing_zeros
+                          assign max_money = band_max | times: 100 | money_without_trailing_zeros
+                        -%}
+                        <li class="aria-coll__option">
+                          <label class="aria-coll__option-label">
+                            <input
+                              type="checkbox"
+                              class="aria-coll__check"
+                              data-aria-coll-band
+                              data-min="{{ band_min }}"
+                              data-max="{{ band_max }}"
+                              {% if band_active %}
+                                checked
+                              {% endif %}
+                            >
+                            <span class="aria-coll__option-text">
+                              {%- if band_min == '' -%}
+                                Under {{ max_money }}
+                              {%- elsif band_max == '' -%}
+                                Over {{ min_money }}
+                              {%- else -%}
+                                {{ min_money }}–{{ max_money }}
+                              {%- endif -%}
+                            </span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  </details>
+                {%- else -%}
+                  <details class="aria-coll__group" open>
+                    <summary class="aria-coll__group-head">
+                      <span class="aria-coll__group-title">{{ filter.label }}</span>
+                      {{- 'wp-coll-arrow.svg' | inline_asset_content -}}
+                    </summary>
+                    <ul class="aria-coll__options" role="list">
+                      {%- for value in filter.values -%}
+                        <li class="aria-coll__option">
+                          <label class="aria-coll__option-label{% if value.count == 0 and value.active == false %} aria-coll__option-label--empty{% endif %}">
+                            <input
+                              type="checkbox"
+                              class="aria-coll__check"
+                              name="{{ value.param_name }}"
+                              value="{{ value.value }}"
+                              {% if value.active %}
+                                checked
+                              {% endif %}
+                              {% if value.count == 0 and value.active == false %}
+                                disabled
+                              {% endif %}
+                            >
+                            {%- if value.swatch.color or value.swatch.image -%}
+                              <span
+                                class="aria-coll__swatch"
+                                style="{% if value.swatch.image %}background-image: url({{ value.swatch.image | image_url: width: 40 }});{% else %}background-color: {{ value.swatch.color }};{% endif %}"
+                              ></span>
+                            {%- endif -%}
+                            {%- comment -%} Product types arrive lowercase ("hand tied"); Figma sets them in sentence case. {%- endcomment -%}
+                            <span class="aria-coll__option-text">
+                              {%- if filter.param_name == 'filter.p.product_type' -%}
+                                {{ value.label | capitalize }}
+                              {%- else -%}
+                                {{ value.label }}
+                              {%- endif %} ({{ value.count }})</span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                    {%- if section.settings.note_filter != blank and section.settings.note_text != blank -%}
+                      {%- assign note_key = section.settings.note_filter | downcase | strip -%}
+                      {%- assign label_key = filter.label | downcase | strip -%}
+                      {%- if note_key == label_key -%}
+                        <p class="aria-coll__note">{{ section.settings.note_text }}</p>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </details>
+                {%- endif -%}
+              {%- endfor -%}
+
+              <noscript>
+                <button type="submit" class="aria-coll__apply">{{ 'products.facets.apply' | t }}</button>
+              </noscript>
+            </form>
+          </aside>
+        </details>
+
+        {%- comment -%} Results (Figma 6663:2120). {%- endcomment -%}
+        <div class="aria-coll__main">
+          <div class="aria-coll__bar">
+            {%- comment -%}
+              Figma sets "258 wigs" then two spaces before the first "·"; the pair is a
+              non-breaking space + space so it survives normal white-space collapsing.
+            {%- endcomment -%}
+            <p
+              class="aria-coll__count"
+              data-aria-coll-count
+              data-noun="{{ section.settings.item_noun | escape }}"
+              data-in-label="{{ section.settings.in_stock_label | escape }}"
+              data-out-label="{{ section.settings.to_order_label | escape }}"
+            >
+              {%- capture split_line -%}
+                {%- if count_in_stock != blank -%}&nbsp; · {{ count_in_stock }} {{ section.settings.in_stock_label }}{%- endif -%}
+                {%- if count_to_order != blank %} · {{ count_to_order }} {{ section.settings.to_order_label }}{%- endif -%}
+              {%- endcapture -%}
+              <span class="aria-coll__count-total">{% if new_mode != blank %}{{ new_shown }}{% else %}{{ collection.products_count }}{% endif %} {{ section.settings.item_noun }}</span>
+              {%- if split_line != blank -%}<span class="aria-coll__count-split">{{ split_line }}</span>{%- endif -%}
+            </p>
+
+            <details class="aria-coll__sort" data-aria-coll-sort>
+              <summary class="aria-coll__sort-trigger">
+                <span class="aria-coll__sort-text">
+                  <span class="aria-coll__sort-prefix">{{ section.settings.sort_prefix }}</span>
+                  <span class="aria-coll__sort-value">{{ current_sort_label }}</span>
+                </span>
+                {%- comment -%}
+                  One chevron drawn pointing up (Figma's chevron-up, M12 10 8 6 4 10); CSS turns
+                  it down and grey when closed, and up and pink on hover / while open.
+                {%- endcomment -%}
+                <span class="aria-coll__sort-chevron" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 10L8 6L4 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </span>
+              </summary>
+              <ul class="aria-coll__sort-list" role="list">
+                {%- for option in collection.sort_options -%}
+                  {%- liquid
+                    assign show_option = false
+                    for allowed in sort_whitelist
+                      assign allowed_s = allowed | strip
+                      if allowed_s == option.value
+                        assign show_option = true
+                      endif
+                    endfor
+                    if option.value == current_sort
+                      assign show_option = true
+                    endif
+                    assign option_label = option.name
+                    for key in sort_label_keys
+                      if key == option.value
+                        assign option_label = sort_label_names[forloop.index0]
+                      endif
+                    endfor
+                  -%}
+                  {%- if show_option -%}
+                    <li>
+                      <button
+                        type="button"
+                        class="aria-coll__sort-option{% if option.value == current_sort %} aria-coll__sort-option--active{% endif %}"
+                        data-aria-coll-sort-value="{{ option.value }}"
+                        {% if option.value == current_sort %}
+                          aria-current="true"
+                        {% endif %}
+                      >
+                        <span>{{ option_label }}</span>
+                        {%- if option.value == current_sort -%}
+                          <svg class="aria-coll__sort-check" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false"><path d="M1.75 6.5L5.25 10L12.25 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        {%- endif -%}
+                      </button>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            </details>
+          </div>
+
+          {%- if collection.products.size > 0 -%}
+            <ul class="aria-coll__grid" role="list" data-aria-coll-grid>
+              {%- for product in collection.products -%}
+                {%- if new_mode != blank -%}
+                  {%- assign handle_key = ',' | append: product.handle | append: ',' -%}
+                  {%- unless new_handles contains handle_key -%}{%- continue -%}{%- endunless -%}
+                {%- endif -%}
+                <li class="aria-coll__item">
+                  {%- render 'aria-product-card',
+                    product: product,
+                    feature_tag_metafield: section.settings.feature_tag_metafield,
+                    section_id: section.id,
+                    quick_add_icon: 'mega-cart-02'
+                  -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+
+            {%- if paginate.next and new_mode == blank -%}
+              <div class="aria-coll__more-wrap" data-aria-coll-more-wrap>
+                <a
+                  href="{{ paginate.next.url }}"
+                  class="aria-coll__more"
+                  data-aria-coll-more
+                  data-page-size="{{ paginate.page_size }}"
+                  data-total="{{ paginate.items }}"
+                  data-offset="{{ paginate.current_offset | plus: paginate.page_size }}"
+                  data-label="{{ section.settings.more_label | escape }}"
+                >
+                  {{- section.settings.more_label | replace: '[count]', next_count -}}
+                </a>
+              </div>
+            {%- endif -%}
+          {%- else -%}
+            <div class="aria-coll__empty">
+              <p>{{ 'sections.collection_template.empty' | t }}</p>
+              {%- comment -%} Only when a filter narrowed the list to nothing — an empty collection has nothing to remove. {%- endcomment -%}
+              {%- if any_filter_active -%}
+                <a href="{{ collection.url }}" class="aria-coll__chip">{{ 'sections.collection_template.use_fewer_filters_html' | t: link: collection.url, class: '' | strip_html }}</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection results",
+  "tag": "section",
+  "class": "aria-coll-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "default": "sidebar",
+      "options": [
+        { "value": "sidebar", "label": "Filter sidebar, 4 across" },
+        { "value": "full", "label": "No sidebar, 5 across" }
+      ],
+      "info": "No sidebar keeps the quick chips and sort, on a white-to-cream background."
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "info": "Also the size of each 'Show more' step."
+    },
+    {
+      "type": "select",
+      "id": "default_sort",
+      "label": "Default sort",
+      "info": "Used when the address has no sort. Empty keeps each collection's own default (set in admin).",
+      "options": [
+        { "value": "", "label": "Collection default" },
+        { "value": "best-selling", "label": "Best selling" },
+        { "value": "created-descending", "label": "Newest" },
+        { "value": "price-ascending", "label": "Price: low to high" },
+        { "value": "price-descending", "label": "Price: high to low" },
+        { "value": "manual", "label": "Featured" }
+      ],
+      "default": ""
+    },
+    {
+      "type": "range",
+      "id": "new_within_days",
+      "label": "New in: last N days",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 0,
+      "info": "0 = off. On: only wigs added in this many days, newest first; if none, the newest page of arrivals."
+    },
+    {
+      "type": "text",
+      "id": "more_label",
+      "label": "Show more label",
+      "default": "Show [count] more",
+      "info": "[count] is the number of products the next step adds."
+    },
+    {
+      "type": "text",
+      "id": "feature_tag_metafield",
+      "label": "Card badge metafield",
+      "default": "custom.feature_tags"
+    },
+    {
+      "type": "header",
+      "content": "Count line"
+    },
+    {
+      "type": "text",
+      "id": "item_noun",
+      "label": "Item noun",
+      "default": "wigs"
+    },
+    {
+      "type": "text",
+      "id": "in_stock_label",
+      "label": "In-stock label",
+      "default": "on our shelf"
+    },
+    {
+      "type": "text",
+      "id": "to_order_label",
+      "label": "Out-of-stock label",
+      "default": "made to order"
+    },
+    {
+      "type": "header",
+      "content": "Sort"
+    },
+    {
+      "type": "text",
+      "id": "sort_prefix",
+      "label": "Sort prefix",
+      "default": "Sort:"
+    },
+    {
+      "type": "text",
+      "id": "sort_options",
+      "label": "Sort options shown",
+      "default": "manual,best-selling,price-ascending,price-descending,created-descending",
+      "info": "Comma-separated Shopify sort values, in the order Shopify lists them."
+    },
+    {
+      "type": "header",
+      "content": "Filters"
+    },
+    {
+      "type": "text",
+      "id": "price_bands",
+      "label": "Price bands",
+      "default": "0-300,300-450,450-600,600+",
+      "info": "Comma-separated, in whole currency units. 0-300 reads 'Under $300', 600+ reads 'Over $600'."
+    },
+    {
+      "type": "text",
+      "id": "note_filter",
+      "label": "Note under filter",
+      "info": "The filter label to show the note under, e.g. Cap construction."
+    },
+    {
+      "type": "textarea",
+      "id": "note_text",
+      "label": "Note text"
+    },
+    {
+      "type": "header",
+      "content": "Quick chips"
+    },
+    {
+      "type": "text",
+      "id": "quick_label",
+      "label": "Label",
+      "default": "Quick"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Quick chip",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Everything"
+        },
+        {
+          "type": "text",
+          "id": "filter",
+          "label": "Filter",
+          "info": "A filter parameter from the collection URL, e.g. filter.v.availability=1 or filter.v.price.lte=300. Leave this and the link empty for 'Everything'. A chip whose filter the store does not offer is hidden. A theme filter works too: af_group=option, e.g. af_cap-construction=hand-tied. So does a sort, e.g. sort_by=created-descending."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link instead of a filter"
+        }
+      ]
+    },
+    {
+      "type": "theme_filter",
+      "name": "Theme filter",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "A sidebar filter built from product data, for filters Search & Discovery does not offer. Groups and options with no matching products stay hidden."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Filter"
+        },
+        {
+          "type": "select",
+          "id": "source",
+          "label": "Match against",
+          "default": "tags",
+          "options": [
+            {
+              "value": "type",
+              "label": "Product type"
+            },
+            {
+              "value": "title",
+              "label": "Product title"
+            },
+            {
+              "value": "tags",
+              "label": "Product tags"
+            },
+            {
+              "value": "colour",
+              "label": "Colour names"
+            },
+            {
+              "value": "capsize",
+              "label": "Cap sizes (product metafields)"
+            }
+          ]
+        },
+        {
+          "type": "textarea",
+          "id": "options",
+          "label": "Options",
+          "info": "One per line: Label = keyword, keyword. Matches when the field contains a keyword (tags must match a whole tag). -word excludes, re:pattern is a regular expression, and a trailing | #hex adds a colour dot."
+        },
+        {
+          "type": "text",
+          "id": "note",
+          "label": "Note under the options"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection results"
+    }
+  ]
+}
+{% endschema %}

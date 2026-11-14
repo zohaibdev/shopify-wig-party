@@ -1449,6 +1449,21 @@
         "id": "cart_color_scheme",
         "label": "t:sections.all.colors.label",
         "default": "scheme-1"
+      },
+      {
+        "type": "checkbox",
+        "id": "wp_cart_redirect",
+        "label": "Redirect to cart after add",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "wp_cart_redirect_delay",
+        "label": "Redirect delay (ms)",
+        "min": 0,
+        "max": 3000,
+        "step": 100,
+        "default": 700
       }
     ]
   },
@@ -1464,6 +1479,197 @@
         "id": "customer_account_menu",
         "default": "customer-account-main-menu",
         "label": "t:settings_schema.customer_accounts.settings.customer_account_menu.label"
+      }
+    ]
+  },
+  {
+    "name": "Supplier branding",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Names removed from product titles on the homepage (Best Sellers, New & Trending, Instagram feed) and in the mega menu product cards."
+      },
+      {
+        "type": "text",
+        "id": "hidden_supplier_names",
+        "label": "Supplier names to hide",
+        "info": "Comma-separated. Matching ignores case and spaces in whole title segments, e.g. \"Belle Tress\" also hides \"BelleTress\".",
+        "default": "Belle Tress"
+      }
+    ]
+  },
+  {
+    "name": "Cart drawer",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The Wig Party cart drawer (Figma 6663:9488)."
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "Free shipping from (store currency, 0 = hide)",
+        "default": 0
+      },
+      {
+        "type": "text",
+        "id": "cart_shipping_unlocked",
+        "label": "Free shipping reached",
+        "default": "Free shipping unlocked"
+      },
+      {
+        "type": "text",
+        "id": "cart_shipping_progress",
+        "label": "Free shipping not reached",
+        "default": "You're [amount] away from free shipping",
+        "info": "[amount] is what is left to spend."
+      },
+      {
+        "type": "textarea",
+        "id": "cart_shipping_note",
+        "label": "Shipping note",
+        "default": "Orders are processed in 1 to 3 business days. Tracking within 24 to 48 hours."
+      },
+      {
+        "type": "header",
+        "content": "Upsell"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_upsell_enabled",
+        "label": "Show upsell",
+        "default": true
+      },
+      {
+        "type": "product",
+        "id": "cart_upsell_product",
+        "label": "Upsell product",
+        "info": "ADD puts this in the cart; the row hides once it is there or sold out."
+      },
+      {
+        "type": "select",
+        "id": "cart_upsell_source",
+        "label": "Upsell source",
+        "options": [
+          { "value": "product", "label": "Upsell product only" },
+          { "value": "product_then_recommendations", "label": "Upsell product, then recommendations" },
+          { "value": "recommendations", "label": "Recommendations only" }
+        ],
+        "default": "product",
+        "info": "Recommendations are Shopify's related products for the newest item in the cart. With \"Upsell product, then recommendations\", one shows when the upsell product is in the cart, sold out or not set."
+      },
+      {
+        "type": "text",
+        "id": "cart_recs_title",
+        "label": "Recommendation title",
+        "default": "Pair it with [product]",
+        "info": "[product] is the recommended product's name."
+      },
+      {
+        "type": "text",
+        "id": "cart_recs_text",
+        "label": "Recommendation text",
+        "default": "[price] — picked to go with your bag.",
+        "info": "[price] is the product's price."
+      },
+      {
+        "type": "text",
+        "id": "cart_upsell_title",
+        "label": "Upsell title",
+        "default": "Add the LUX Detangle Brush"
+      },
+      {
+        "type": "text",
+        "id": "cart_upsell_text",
+        "label": "Upsell text",
+        "default": "[price] — the brush made for wig fibres.",
+        "info": "[price] is the product's price."
+      },
+      {
+        "type": "image_picker",
+        "id": "cart_upsell_image",
+        "label": "Upsell image",
+        "info": "Empty uses the product's own image."
+      },
+      {
+        "type": "header",
+        "content": "Discount code"
+      },
+      {
+        "type": "text",
+        "id": "cart_discount_placeholder",
+        "label": "Field placeholder",
+        "default": "Discount code"
+      },
+      {
+        "type": "text",
+        "id": "cart_discount_error",
+        "label": "Invalid code message",
+        "default": "[code] can't be used with this cart.",
+        "info": "[code] is the code that was entered."
+      },
+      {
+        "type": "header",
+        "content": "Payment line"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_payment_icons",
+        "label": "Show payment marks",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cart_installments_text",
+        "label": "Instalments line",
+        "default": "Or 4 interest-free payments of [amount] with Sezzle. Taxes calculated at checkout.",
+        "info": "[amount] is the total divided by 4. Leave empty to hide."
+      },
+      {
+        "type": "header",
+        "content": "Badges"
+      },
+      {
+        "type": "text",
+        "id": "cart_badge_1",
+        "label": "Badge 1",
+        "default": "45-day returns"
+      },
+      {
+        "type": "text",
+        "id": "cart_badge_2",
+        "label": "Badge 2",
+        "default": "Discreet packaging"
+      },
+      {
+        "type": "text",
+        "id": "cart_badge_3",
+        "label": "Badge 3",
+        "default": "Free consult before you buy"
+      },
+      {
+        "type": "header",
+        "content": "Not sure yet?"
+      },
+      {
+        "type": "text",
+        "id": "cart_consult_heading",
+        "label": "Heading",
+        "default": "NOT SURE YET?"
+      },
+      {
+        "type": "textarea",
+        "id": "cart_consult_text",
+        "label": "Text",
+        "default": "Nothing here expires. Save the bag and book fifteen free minutes with Kristi before you commit to [total].",
+        "info": "[total] is the cart total."
+      },
+      {
+        "type": "text",
+        "id": "cart_save_label",
+        "label": "Save button",
+        "default": "SAVE MY BAG",
+        "info": "Saves every item to the wishlist and opens it."
       }
     ]
   }

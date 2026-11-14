@@ -1,0 +1,101 @@
+{%- comment -%}
+  Wig Party — Kristi's Picks, "From Kristi". Figma internal file, desktop node 7546:32898
+  (1440 x 785), mobile node 7546:33781 (375 x 933).
+  A 580 column — heading, her quote, the attribution, round social links and her signature
+  pinned to the bottom — beside a 680 x 625 photo; on mobile the photo follows the column.
+  Social links with no URL are hidden. Styles in assets/section-picks-from-kristi.css.
+{%- endcomment -%}
+
+{{ 'section-picks-from-kristi.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign heading_font_semibold = settings.type_header_font | font_modify: 'weight', '600'
+  assign body_font_medium_italic = settings.type_body_font | font_modify: 'weight', '500' | font_modify: 'style', 'italic'
+  assign socials = 'facebook,instagram,tiktok,youtube' | split: ','
+-%}
+{% style %}
+  {%- if heading_font_semibold -%}{{ heading_font_semibold | font_face: font_display: 'swap' }}{%- endif -%}
+  {%- if body_font_medium_italic -%}{{ body_font_medium_italic | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="picks-fk">
+  <div class="picks-fk__inner">
+    <div class="picks-fk__col">
+      <div class="picks-fk__top">
+        <div class="picks-fk__copy">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="picks-fk__title">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.quote != blank -%}
+            <p class="picks-fk__quote">{{ section.settings.quote }}</p>
+          {%- endif -%}
+          {%- if section.settings.attribution != blank -%}
+            <p class="picks-fk__by">{{ section.settings.attribution }}</p>
+          {%- endif -%}
+        </div>
+
+        <ul class="picks-fk__social" role="list">
+          {%- for platform in socials -%}
+            {%- assign url_key = platform | append: '_url' -%}
+            {%- assign url = section.settings[url_key] -%}
+            {%- if url == blank -%}{%- continue -%}{%- endif -%}
+            <li>
+              <a class="picks-fk__social-link" href="{{ url }}" target="_blank" rel="noopener">
+                {{- 'wp-social-' | append: platform | append: '.svg' | inline_asset_content -}}
+                <span class="visually-hidden">{{ 'general.social.links.' | append: platform | t }}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      {%- if section.settings.show_signature -%}
+        <span class="picks-fk__signature" aria-hidden="true">
+          <img src="{{ 'wp-kristi-signature-dark.svg' | asset_url }}" alt="" width="345" height="134" loading="lazy">
+        </span>
+      {%- endif -%}
+    </div>
+
+    <div class="picks-fk__media">
+      {%- if section.settings.image != blank -%}
+        {{
+          section.settings.image
+          | image_url: width: 1360
+          | image_tag: widths: '343,686,680,1360', sizes: '(min-width: 750px) 680px, calc(100vw - 32px)', alt: section.settings.image.alt, loading: 'lazy'
+        }}
+      {%- else -%}
+        <picture>
+          <source media="(max-width: 749px)" srcset="{{ 'wp-picks-from-kristi-mobile.jpg' | asset_url }}" width="343" height="315">
+          <img src="{{ 'wp-picks-from-kristi.jpg' | asset_url }}" alt="Kristi" width="680" height="625" loading="lazy">
+        </picture>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Picks · From Kristi",
+  "tag": "section",
+  "class": "picks-fk-section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "FROM KRISTI" },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Quote",
+      "default": "“I don’t call my customers customers. I’ve created a buying community. If I would not put it on my own head, it is not going on this list — and if it only works for some people, I will say so.”"
+    },
+    { "type": "text", "id": "attribution", "label": "Attribution", "default": "— Kristi, founder" },
+    { "type": "header", "content": "Social links" },
+    { "type": "url", "id": "facebook_url", "label": "Facebook" },
+    { "type": "url", "id": "instagram_url", "label": "Instagram" },
+    { "type": "url", "id": "tiktok_url", "label": "TikTok" },
+    { "type": "url", "id": "youtube_url", "label": "YouTube", "info": "Links left empty are hidden." },
+    { "type": "header", "content": "Media" },
+    { "type": "checkbox", "id": "show_signature", "label": "Show signature", "default": true },
+    { "type": "image_picker", "id": "image", "label": "Photo", "info": "Empty uses Figma's photo of Kristi." }
+  ],
+  "presets": [{ "name": "Picks · From Kristi" }]
+}
+{% endschema %}

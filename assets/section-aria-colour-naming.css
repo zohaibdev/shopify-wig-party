@@ -1,0 +1,278 @@
+/* Wig Party — Find Your Colour, "How Belle Tress names colours" (sections/colour-naming.liquid),
+ * Figma 7009:5300.
+ *
+ * Desktop geometry (px, Figma, 1440 x 992): #F5EBE2, pt-100 px-40, no bottom padding; 48 from
+ * the intro to the panel.
+ *   intro  756 wide, centred, 16 apart: an #F79510 pill (r-16, px-12 py-6, Poppins 12/14
+ *          uppercase black), the title (Montserrat Medium 56/64 black), the text (Poppins 20/28
+ *          #3F3E3E)
+ *   panel  1360, #EADDD4, p-48, 24 apart: the example name (Montserrat Medium 28/38 black) and
+ *          three equal cards 16 apart (410.67 each)
+ *   card   p-16, 12 apart: a 267-tall white photo frame, a white tag pill (r-40, px-8 py-4,
+ *          Poppins Medium 11/16.5 uppercase #4A4A4A, 25 tall), then 12 apart a Montserrat Bold
+ *          16/24 #1A1A1A title and Poppins 16/20 #4A4A4A text
+ *          Fill rgba(235,193,192,.2) under Figma's Glass effect (light at -45deg), which has no
+ *          CSS equivalent. Its render is a diagonal shade, measured on the Figma export:
+ *          #E2D0C8 top-left -> #EAD8D0 middle -> #F2E0D8 bottom-right, with a 1px light rim.
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-colour-naming,
+.aria-colour-naming *,
+.aria-colour-naming *::before,
+.aria-colour-naming *::after {
+  box-sizing: border-box;
+}
+
+.aria-colour-naming {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding: 100px 40px 0;
+  background: #f5ebe2;
+}
+
+/* ---------- Intro (7009:5301) ---------- */
+
+.aria-colour-naming__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 756px;
+  max-width: 100%;
+  text-align: center;
+}
+
+.aria-colour-naming__eyebrow {
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: #f79510;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--black, #000);
+}
+
+.aria-colour-naming__title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-colour-naming__text {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--gray, #3f3e3e);
+}
+
+/* ---------- Panel (7009:5305) ---------- */
+
+.aria-colour-naming__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 1360px;
+  max-width: 100%;
+  padding: 48px;
+  background: var(--cream, #eaddd4);
+}
+
+.aria-colour-naming__example {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 38px;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--black, #000);
+}
+
+/* Figma's text is " V Chocolate Buttercream R": the leading space counts in the centring, so
+   the visible name sits half a space right of centre. */
+.aria-colour-naming__example::before {
+  content: ' ';
+  white-space: pre;
+}
+
+.aria-colour-naming__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Card (7009:5308) ---------- */
+
+.aria-colour-naming__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  background: linear-gradient(to bottom right, #e2d0c8 0%, #ead8d0 50%, #f2e0d8 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.aria-colour-naming__media {
+  position: relative;
+  width: 100%;
+  height: 267px;
+  overflow: hidden;
+  background: var(--white, #fff);
+}
+
+.aria-colour-naming__media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-colour-naming__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* 4 + 16.5 + 4.5 = Figma's 25-tall pill with the text 4 from the top. */
+.aria-colour-naming__tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px 4.5px;
+  border-radius: 40px;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16.5px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #4a4a4a;
+}
+
+.aria-colour-naming__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.aria-colour-naming__card-title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #1a1a1a;
+}
+
+/* pre-wrap keeps the editor's line breaks (and Figma's double spaces) as typed. */
+.aria-colour-naming__card-text {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0;
+  white-space: pre-wrap;
+  color: #4a4a4a;
+}
+
+/* The 16px runs land 1px higher in the browser than in Figma (the other sizes match), so they
+   are nudged down without moving any box. */
+.aria-colour-naming__card-title,
+.aria-colour-naming__card-text {
+  position: relative;
+  top: 1px;
+}
+
+/* ---------- Mobile (7009:4862) ----------
+ * 375 x 1573: py-48 px-16, 32 from the intro to the panel (which now has the section's bottom
+ * padding under it). Intro 343, 16 apart: the pill, the title (Montserrat Medium 24/32), the
+ * text (Poppins 16/24 #3F3E3E). Panel p-16, 16 apart: the example name (Poppins Medium 20/24,
+ * with Figma's leading space) and the cards stacked 16 apart; card p-12, 12 apart, photo 200
+ * tall, the same tag / title / text as desktop.
+ */
+@media screen and (max-width: 749px) {
+  .aria-colour-naming {
+    gap: 32px;
+    padding: 48px 16px;
+  }
+
+  /* Measured against the Figma render: both land 1px high at these sizes. */
+  .aria-colour-naming__title {
+    position: relative;
+    top: 1px;
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  .aria-colour-naming__text {
+    position: relative;
+    top: 1px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .aria-colour-naming__panel {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .aria-colour-naming__example {
+    font-family: var(--font-body-family);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  .aria-colour-naming__cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aria-colour-naming__card {
+    padding: 12px;
+  }
+
+  .aria-colour-naming__media {
+    height: 200px;
+  }
+
+  /* Figma's second card text box is 80 tall for three lines (its trailing space is set on a
+     fourth), which is what makes that card 389 like the third. */
+  .aria-colour-naming__card:nth-child(2) .aria-colour-naming__card-text {
+    min-height: 80px;
+  }
+}

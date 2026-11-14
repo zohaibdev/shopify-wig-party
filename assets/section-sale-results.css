@@ -1,0 +1,365 @@
+/* Wig Party — SALE listing (collection-results, layout `full`), Figma 7547:4685 (chips) and
+ * 7547:4733 (card). Desktop, plus the mobile chip label (7547:5334) in the last block.
+ *
+ * Scoped to #shopify-section-sale-results so the shared collection-results and aria-product-card
+ * CSS stay untouched. What differs from the shared `full` layout:
+ *   quick bar   gradient white -> #EADDD4 with its 1px #EADDD4 ring (shared `full`: plain white)
+ *   grid        3 columns, 20 across, 32 down
+ *   card        no padding, 12 photo -> text, 20 text -> button
+ *   photo       380 tall, radius 4; heart 40 at 16 / 16; sold-out chip 16 from left and bottom,
+ *               #F97066, Poppins 16/18.667 uppercase, px 10.667, radius 49, 24 tall
+ *   rating      15px stars 2.5 apart, 4 to Poppins Medium 14/22 black uppercase
+ *   name        Montserrat Medium 24/32 black
+ *   swatches    40px discs 4 apart, "+N" Poppins 12/14 black
+ *   price       Montserrat Medium 24/32 black, compare 20/28 #3F3E3E struck, 6 apart
+ *   button      "View Product" 54 tall, 1px black, Poppins 18/28 black (shared card button)
+ * The shared card's quick-add cart button is kept (revealed on hover, as on the other listings), so
+ * the card can add to cart; Figma's single wide button label is "Shop In-Stock Wigs".
+ */
+
+@media screen and (min-width: 750px) {
+  #shopify-section-sale-results .aria-coll--full .aria-coll__quick {
+    background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-coll__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 20px;
+  }
+
+  /* ---------- Card ---------- */
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card {
+    gap: 12px;
+    padding: 0;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__media {
+    height: 380px;
+    border-radius: 4px;
+    background: var(--wp-color-white, #fff);
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__wishlist {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: var(--py, #a64a4c);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__badges {
+    left: 16px;
+    bottom: 16px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__badge {
+    height: 24px;
+    padding: 0 10.667px;
+    border-radius: 49px;
+    font-size: 16px;
+    line-height: 18.667px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__badge--sold-out {
+    background: #f97066;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__stars {
+    gap: 2.5px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__stars .aria-icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__rating-value {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: 0;
+    color: #000;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__title {
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__title a {
+    color: #000;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__swatches {
+    gap: 4px;
+    min-height: 40px;
+    margin-top: 0;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__swatch {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__swatch-more {
+    font-size: 12px;
+    line-height: 14px;
+    color: #000;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__price {
+    gap: 6px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__price-current,
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__price-compare {
+    font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+    font-weight: 500;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__price-current {
+    font-size: 24px;
+    line-height: 32px;
+    color: #000;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__price-compare {
+    font-size: 20px;
+    line-height: 28px;
+    color: #3f3e3e;
+  }
+
+  /* ---------- Button: View Product, 54 tall; the shared hover-reveal quick add (cart icon) is back ---------- */
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card__view-btn {
+    display: flex;
+    min-height: 54px;
+    border-color: #000;
+    color: #000;
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  #shopify-section-sale-results .aria-coll--full .aria-product-card:hover .aria-product-card__view-btn,
+  #shopify-section-sale-results .aria-coll--full .aria-product-card:focus-within .aria-product-card__view-btn {
+    border-color: var(--py, #a64a4c);
+    color: #fff;
+  }
+}
+
+/* ---------- Mobile (Figma 7547:5334): chip label ---------- */
+/* Shared mobile CSS already gives padding 15 + 1px ring, gap 9 / 7, gradient, 34-tall chips.
+   Only the label differs: "WHY IT IS REDUCED" is 147 wide + 8 right padding (155), not the 50px QUICK slot. */
+
+@media screen and (max-width: 749px) {
+  #shopify-section-sale-results .aria-coll__quick-label {
+    width: auto;
+    min-width: 0;
+    padding-right: var(--wp-m-sale-chips-label-pad-right);
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Mobile (Figma 7547:5381 card, 7547:5528 show more): single column ---------- */
+/* Tokens --wp-m-sale-card-* (assets/design-tokens.css). Quick add replaces View Product: one
+   full-width "Add to Cart" + cart icon button, as in Figma. Shared card/collection CSS untouched. */
+
+@media screen and (max-width: 749px) {
+  #shopify-section-sale-results .aria-coll__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wp-m-sale-card-gap);
+    margin-right: 0;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card {
+    gap: var(--wp-m-sale-card-media-gap);
+    padding: 0;
+    background: var(--wp-color-white, #fff);
+    border-radius: 2px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__media {
+    height: var(--wp-m-sale-card-media-height);
+    aspect-ratio: auto;
+    border-radius: 2px;
+    background: var(--wp-color-white, #fff);
+  }
+
+  /* Figma image 343 x 361 at top -17 inside the 327 frame. */
+  #shopify-section-sale-results .aria-coll .aria-product-card__media-link {
+    position: relative;
+    height: var(--wp-m-sale-card-image-height);
+    margin-top: var(--wp-m-sale-card-image-top);
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__wishlist {
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    background: var(--py, #a64a4c);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__badges {
+    left: 10px;
+    bottom: 12px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__badge {
+    height: 18px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__body {
+    gap: 8px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__stars {
+    gap: 2px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__stars .aria-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__rating {
+    gap: 4px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__rating-value {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 15px;
+    letter-spacing: 0.5px;
+    color: #333131;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__title {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__title a {
+    color: #3f3e3e;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__swatches {
+    gap: 5px;
+    min-height: 28px;
+    margin-top: 4px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__swatch {
+    width: 27px;
+    height: 28px;
+    min-width: 27px;
+    border: 1px solid #b5b5b5;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__swatch-more {
+    font-size: 12px;
+    line-height: 14px;
+    color: #302e2e;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__body > .aria-product-card__price {
+    gap: 6px;
+    min-height: 18px;
+    margin-top: 12px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__price-current,
+  #shopify-section-sale-results .aria-coll .aria-product-card__price-compare {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 22px;
+    line-height: 18px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__price-current {
+    font-weight: 600;
+    color: #252424;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__price-compare {
+    font-weight: 500;
+    color: #8c8c8c;
+    opacity: 1;
+  }
+
+  /* Button row: body -> button is 21 in Figma, card gap 13 + 8. */
+  #shopify-section-sale-results .aria-coll .aria-product-card__actions {
+    margin-top: 8px;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__view-btn {
+    display: none;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__quick-add {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    opacity: 1;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__cart-btn {
+    gap: 4px;
+    width: 100%;
+    height: 47px;
+    padding: 15px 24px;
+    background: var(--wp-color-white, #fff);
+    border: 1px solid #b1b1b1;
+    border-radius: 2px;
+    color: #404040;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__cart-label {
+    display: inline;
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+    text-transform: uppercase;
+    color: #404040;
+  }
+
+  #shopify-section-sale-results .aria-coll .aria-product-card__cart-btn .aria-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* SHOW 24 MORE: px-20 py-12, Poppins 20/28, black. */
+  #shopify-section-sale-results .aria-coll__more {
+    padding: 12px 20px;
+    font-size: 20px;
+    line-height: 28px;
+  }
+}
+
+/* Mobile: the Sale design has no "Join the Party" band (Figma 7547:5242). Hidden here only;
+   join-the-party.liquid is untouched. Kanij to confirm. */
+@media screen and (max-width: 749px) {
+  #shopify-section-join-the-party {
+    display: none;
+  }
+}

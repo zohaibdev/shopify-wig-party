@@ -1,0 +1,313 @@
+/* Wig Party — Measure & cap guide hero (sections/guide-hero.liquid), Figma 7368:83. Desktop only.
+ *
+ * Geometry (px, Figma, 1440 x 482):
+ *   hero        gradient to bottom #ffffff -> #eaddd4, px-80 py-48, content space-between
+ *   left        555 wide column, 16 between crumbs and body
+ *   crumbs      cart breadcrumb style: 12/14 uppercase, --wp-color-gray, "/" separator, current Bold
+ *               (Figma text is white on white, not used)
+ *   body        intro, 32, button
+ *   intro       text group, 20, stats; text group: title Montserrat Medium 48/56, 12, text Poppins 15/22.5 #4a4a4a
+ *   stats       24 apart, Montserrat Medium; number 32/40 black, label 16/20 #4a4a4a; width from content (Figma 80/104/96)
+ *   button      368 wide, black, px-24 py-12, r-2, Poppins 18/28 white uppercase
+ *   media       fixed 550 x 386, r-2, image cover (fallback asset cap-guide-hero-media.jpg)
+ */
+
+.guide-hero,
+.guide-hero *,
+.guide-hero *::before,
+.guide-hero *::after {
+  box-sizing: border-box;
+}
+
+.guide-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 48px 80px;
+  background: var(--wp-gradient-card, linear-gradient(to bottom, #ffffff, #eaddd4));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Left column (7368:84) ---------- */
+
+.guide-hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  flex-shrink: 0;
+  width: 555px;
+}
+
+.guide-hero__crumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: var(--wp-tag-size, 12px);
+  font-weight: var(--wp-tag-weight, 400);
+  line-height: var(--wp-tag-line-height, 14px);
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--wp-color-gray, #3f3e3e);
+}
+
+.guide-hero__crumbs-list li + li::before {
+  content: '  /  ';
+  white-space: pre;
+}
+
+.guide-hero__crumbs-list a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.guide-hero__crumbs-list a:hover,
+.guide-hero__crumbs-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.guide-hero__crumbs-list [aria-current='page'] {
+  font-weight: 700;
+}
+
+.guide-hero__body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.guide-hero__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.guide-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.guide-hero__title {
+  margin: 0;
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--wp-color-black, #000);
+}
+
+.guide-hero__text {
+  margin: 0;
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22.5px;
+  letter-spacing: 0;
+  color: #4a4a4a;
+}
+
+/* ---------- Stats (7368:91) ---------- */
+
+.guide-hero__stats {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--wp-font-heading, 'Montserrat', sans-serif);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.guide-hero__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
+  width: auto; /* content width: number (nowrap) or label, whichever is wider */
+}
+
+.guide-hero__stat-number {
+  font-size: 32px;
+  line-height: 40px;
+  white-space: nowrap;
+  color: var(--wp-color-black, #000);
+}
+
+.guide-hero__stat-label {
+  min-width: 100%;
+  font-size: 16px;
+  line-height: 20px;
+  color: #4a4a4a;
+}
+
+/* ---------- Button (7368:101) ---------- */
+
+.guide-hero__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 368px;
+  padding: var(--wp-space-12, 12px) var(--wp-space-24, 24px);
+  border: 0;
+  border-radius: var(--wp-radius-sm, 2px);
+  background: var(--wp-color-black, #000);
+  font-family: var(--wp-font-body, 'Poppins', sans-serif);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--wp-color-white, #fff);
+}
+
+.guide-hero__btn:hover,
+.guide-hero__btn:focus-visible {
+  background: #2b2b2b;
+  color: var(--wp-color-white, #fff);
+}
+
+/* ---------- Media (7368:736) ---------- */
+
+.guide-hero__media {
+  position: relative;
+  flex-shrink: 0;
+  width: 550px;
+  height: 386px;
+  overflow: hidden;
+  border-radius: var(--wp-radius-sm, 2px);
+  background: var(--wp-color-gray-25, #f9f7f6); /* only visible while the image loads */
+}
+
+.guide-hero__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ---------- Mobile (Figma 7732:12648, 375 x 754) ----------
+ * hero     column, pt-32 px-16 pb-48, 30 between content and media; gradient unchanged
+ * crumbs   not in the mobile design: hidden
+ * title    Montserrat 500 32/40; text Poppins 16/26 #4a4a4a (343 wide, 12 apart)
+ * stats    24 apart; columns 80 / 104 / 96 (min widths); number 28/36 Montserrat 500, label Poppins 400 14/22 #4a4a4a
+ * button   full width (343 x 52), rest as desktop
+ * media    343 x 260, r-2. Default image: see PROGRESS.md (mobile crop asset pending markup approval)
+ */
+@media (max-width: 749px) {
+  .guide-hero {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--wp-m-ghero-gap);
+    padding: var(--wp-m-ghero-padding);
+  }
+
+  .guide-hero__content {
+    flex-shrink: 1;
+    width: 100%;
+  }
+
+  .guide-hero__crumbs {
+    display: none;
+  }
+
+  .guide-hero__title {
+    font-size: var(--wp-m-ghero-title-size);
+    line-height: var(--wp-m-ghero-title-line-height);
+    overflow-wrap: break-word;
+  }
+
+  .guide-hero__text {
+    font-size: var(--wp-m-body-small-size);
+    line-height: var(--wp-m-body-small-line-height);
+  }
+
+  .guide-hero__stat:nth-child(1) { min-width: var(--wp-m-ghero-stat-1-width); }
+  .guide-hero__stat:nth-child(2) { min-width: var(--wp-m-ghero-stat-2-width); }
+  .guide-hero__stat:nth-child(3) { min-width: var(--wp-m-ghero-stat-3-width); }
+
+  .guide-hero__stat-number {
+    font-size: var(--wp-m-ghero-stat-number-size);
+    line-height: var(--wp-m-ghero-stat-number-line-height);
+  }
+
+  .guide-hero__stat-label {
+    font-family: var(--wp-font-body, 'Poppins', sans-serif);
+    font-weight: 400;
+    font-size: var(--wp-m-body-xs-size);
+    line-height: var(--wp-m-body-xs-line-height);
+  }
+
+  .guide-hero__btn {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .guide-hero__media {
+    flex-shrink: 1;
+    width: 100%;
+    height: var(--wp-m-ghero-media-height);
+  }
+}
+
+/* ---------- Tablet (750-1279) ----------
+ * No tablet frame in Figma. The desktop row is 555 + 550 + 160 padding = 1265 wide and
+ * scrolled the page sideways below 1280: the columns now share the row (photo keeps the
+ * 550 x 386 ratio), and below 1024 they stack like mobile. */
+@media (min-width: 750px) and (max-width: 1279px) {
+  .guide-hero {
+    gap: 40px;
+    padding: 48px 40px;
+  }
+
+  .guide-hero__content {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+  }
+
+  .guide-hero__media {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    height: auto;
+    aspect-ratio: 550 / 386;
+  }
+
+  .guide-hero__btn {
+    width: 100%;
+    max-width: 368px;
+  }
+}
+
+@media (min-width: 750px) and (max-width: 1023px) {
+  .guide-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .guide-hero__media {
+    flex: none;
+    width: 100%;
+  }
+}

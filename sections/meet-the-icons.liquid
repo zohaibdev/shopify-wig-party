@@ -65,27 +65,55 @@
               ></iframe>
             {%- endif -%}
           </div>
-        {%- elsif section.settings.image != blank -%}
-          {{
-            section.settings.image
-            | image_url: width: 1600
-            | image_tag:
-              loading: 'lazy',
-              sizes: '(min-width: 990px) 1360px, 100vw',
-              widths: '480,768,1024,1400,1600',
-              class: 'aria-meet-icons__image',
-              alt: section.settings.image.alt | default: section.settings.heading
-          }}
         {%- else -%}
-          {%- comment -%} Placeholder still from the V4 design until a merchant sets media. {%- endcomment -%}
-          <img
-            src="{{ 'wp-meet-the-icons-bg.jpg' | asset_url }}"
-            alt=""
-            width="1440"
-            height="612"
-            loading="lazy"
-            class="aria-meet-icons__image"
-          >
+          {%- comment -%}
+            Mobile (Figma 6576:12146) crops into its own photo, the theme's
+            wp-meet-the-icons-bg.jpg (1264x845), not the wide 1360x612 desktop still.
+            A <picture> source swaps it in below 750px only, so desktop keeps its <img>
+            exactly as before. It is drawn at 338.75% of the 343px photo box, so
+            `339vw` is the width the browser needs to pick a sharp file.
+          {%- endcomment -%}
+          <picture>
+            {%- if section.settings.mobile_image != blank -%}
+              <source
+                media="(max-width: 749px)"
+                srcset="{{ section.settings.mobile_image | image_url: width: 750 }} 750w, {{ section.settings.mobile_image | image_url: width: 1100 }} 1100w, {{ section.settings.mobile_image | image_url: width: 1500 }} 1500w, {{ section.settings.mobile_image | image_url: width: 2200 }} 2200w"
+                sizes="339vw"
+                width="{{ section.settings.mobile_image.width }}"
+                height="{{ section.settings.mobile_image.height }}"
+              >
+            {%- else -%}
+              <source
+                media="(max-width: 749px)"
+                srcset="{{ 'wp-meet-the-icons-bg.jpg' | asset_img_url: '750x' }} 750w, {{ 'wp-meet-the-icons-bg.jpg' | asset_img_url: '1100x' }} 1100w, {{ 'wp-meet-the-icons-bg.jpg' | asset_url }} 1264w"
+                sizes="339vw"
+                width="1264"
+                height="845"
+              >
+            {%- endif -%}
+            {%- if section.settings.image != blank -%}
+              {{
+                section.settings.image
+                | image_url: width: 1600
+                | image_tag:
+                  loading: 'lazy',
+                  sizes: '(min-width: 990px) 1360px, 100vw',
+                  widths: '480,768,1024,1400,1600',
+                  class: 'aria-meet-icons__image',
+                  alt: section.settings.image.alt | default: section.settings.heading
+              }}
+            {%- else -%}
+              {%- comment -%} Placeholder still from the V4 design until a merchant sets media. {%- endcomment -%}
+              <img
+                src="{{ 'wp-meet-the-icons-bg.jpg' | asset_url }}"
+                alt=""
+                width="1440"
+                height="612"
+                loading="lazy"
+                class="aria-meet-icons__image"
+              >
+            {%- endif -%}
+          </picture>
         {%- endif -%}
         <span class="aria-meet-icons__scrim" aria-hidden="true"><span></span></span>
       </div>
@@ -152,6 +180,12 @@
       "id": "image",
       "label": "t:sections.aria-meet-the-icons.settings.image.label",
       "info": "t:sections.aria-meet-the-icons.settings.image.info"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image",
+      "info": "Shown below 750px instead of the image above, cropped to the bottom half of the mobile card. Use a landscape photo (about 1264 x 845) with the face right of centre. Empty uses the theme's default mobile photo. Ignored when a video is set."
     },
     {
       "type": "video",

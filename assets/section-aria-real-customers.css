@@ -211,11 +211,11 @@ iframe.aria-real-customers__video {
   right: 10px;
 }
 
-/* A video slide has no click-to-play poster, so the decorative centre glyph must not
-   render over it. */
-.aria-real-customers__media--video .aria-real-customers__play {
-  display: none;
-}
+/* The `.aria-real-customers__ctrl` positions above are kept for reference only: this
+   section's native-video card now uses the browser's own control bar (the <video> carries
+   `controls`; see aria-real-customers-slide.liquid) instead of the two custom discs, so
+   nothing in this section renders them at present. why-wig-party.liquid still does, off the
+   shared component-aria-video-controls.css. */
 
 .aria-real-customers__caption {
   margin: 0;
@@ -336,5 +336,236 @@ iframe.aria-real-customers__video {
   .aria-real-customers__nav--next {
     width: 64px;
     height: 64px;
+  }
+}
+
+/*
+ * ------------------------------------------------------------------
+ * Product-page placement (Figma 6356:829).
+ *
+ * Same component as the home page, framed differently: the PDP node insets the section
+ * 56px rather than 40 (a 1328 column, not 1360), caps the heading at 540 so it always
+ * breaks after "Real Customers,", states the heading weight as SemiBold rather than
+ * inheriting the theme's Montserrat 500, pads the white card frame 13.5px (343 outer /
+ * 316 inner on the active slide), and insets the nav 34px from the column edges so the
+ * buttons land at x=90 / x=1350 in a 1440 frame.
+ *
+ * Driven by the `layout_variant` setting; the default leaves the home page as it was.
+ * ------------------------------------------------------------------
+ */
+@media screen and (min-width: 990px) {
+  .aria-real-customers--product {
+    padding-inline: 56px;
+  }
+
+  .aria-real-customers--product .aria-real-customers__inner {
+    max-width: 1328px;
+  }
+
+  .aria-real-customers--product .aria-real-customers__heading {
+    max-width: 540px;
+    font-weight: 600;
+  }
+
+  .aria-real-customers--product .aria-real-customers__frame {
+    padding: 13.5px;
+  }
+
+  /*
+   * Clips the row to exactly the five cards, and nothing of the boundary clones behind
+   * them. This width only works together with the OUTER_PULL in aria-real-customers.js —
+   * see that comment for why five-and-only-five is unreachable by sizing alone. With the
+   * pull applied, measured from the viewport's own centre:
+   *
+   *   card 5 (d=2, pulled) outer edge   556.9    <-- must be INSIDE  the half-width
+   *   card 6 (d=3, natural) inner edge  576.0    <-- must be OUTSIDE the half-width
+   *
+   * so any width in 1113.8 .. 1151.9 shows five whole cards and no sixth. 1132px is the
+   * midpoint, which leaves ~9px of tolerance on BOTH failure modes (clipping card 5's
+   * border, or letting a sliver of card 6 through) rather than sitting near either edge —
+   * Swiper positions slides with fractional translate3d values, so the extra headroom is
+   * worth more here than matching Figma's own 1121px container exactly. The row that
+   * renders inside it is 1113.8px against Figma's 1112.7px, i.e. within ~1px.
+   */
+  .aria-real-customers--product .aria-real-customers__swiper {
+    max-width: 1132px;
+    margin-inline: auto;
+  }
+
+  /*
+   * Nav buttons clear the card row by 24px on each side. Figma's own 34px-from-the-column
+   * figure isn't usable directly: its nav coordinates run past the column (the same
+   * rotated-frame artifact noted on the other carousels), and it is measured against a
+   * card row laid out with spacing Swiper can't reproduce uniformly.
+   *   swiper margin each side inside the 1328px column = (1328 - 1132) / 2 = 98px
+   *   prev (60px):  98 - 24 (gap) - 60 = 14px
+   *   next (64px):  98 - 24 (gap) - 64 = 10px
+   */
+  .aria-real-customers--product .aria-real-customers__nav--prev {
+    left: 14px;
+  }
+
+  .aria-real-customers--product .aria-real-customers__nav--next {
+    right: 10px;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:3899 — its own 375px frame for the PDP placement).
+ *
+ * This file is mobile-first (the unqualified rules above already target
+ * small screens), but two of those values were guesses made before this
+ * frame was pulled. Rather than edit the base rules directly — which
+ * would also change the 750px/990px look, since those blocks only
+ * override specific properties on top of the base — the fixes live in
+ * their own max-width block, appended after every min-width block so it
+ * wins the cascade at ≤749px without touching tablet or desktop.
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* Mobile/Heading/H1 token: 36/46 (weight is already correct — the base
+     rule's 500 applies below the `--product` modifier's 990px-only 600) —
+     not the base rule's 32px / unitless 1.15 guess. */
+  .aria-real-customers__heading {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  /* Figma sets the review-count badge in Helvetica Neue; the base rule
+     never states a font-family, so it was inheriting the theme's Poppins. */
+  .aria-real-customers__badge {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  /* The active card's own frame (6441:3941) measures 248px wide, not the
+     base rule's 240px — confirmed against the two visible neighbour tiers
+     too: 174.229 / 248 = 0.70 and 210.578 / 248 = 0.85, matching the
+     existing 0.70 / 0.84 scale ladder exactly, so 248 is this design's
+     true unscaled slide width, not 240 scaled by some other factor. */
+  .aria-real-customers__slide {
+    width: 248px;
+  }
+
+  /* Only the active (centred) card gets a hairline black border on this
+     frame — the two visible neighbour cards do not have one. box-sizing
+     keeps the card from growing past 248px now that it has a border,
+     since this file sets no global border-box reset. */
+  .aria-real-customers__slide.swiper-slide-active .aria-real-customers__frame {
+    box-sizing: border-box;
+    border: 0.729px solid #000;
+  }
+}
+
+/* Mobile long-arrow glyph (below); tablet/desktop keep the chevron icon. */
+.aria-real-customers__nav-arrow {
+  display: none;
+}
+
+/* ------------------------------------------------------------------------------------ *
+ * Mobile — home page frame Figma 6576:10268 (375 x 682), the same card geometry as the
+ * PDP frame above. Scoped under 750px, so tablet and desktop are untouched.
+ *
+ * Ladder (px, Figma): 48 pad / 32 pill / 12 / 92 heading / 32 / 418 slider / 48 pad.
+ * Slider: a full-bleed 375px row (Figma's container is 376 wide at -0.5) with the 248 x 416
+ * active card at its top, neighbours at 0.8491 and 0.7025 tucked under it (spacing and
+ * scales in aria-real-customers.js), 48px buttons on the row's centre line at 16 / 311.
+ * ------------------------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  .aria-real-customers {
+    overflow: hidden;
+  }
+
+  /* Pill (6576:10271): 290 x 32. Figma's 1px ring sits inside its 4/8 padding, and
+     Dawn's body letter-spacing widened the label 178 -> 193. */
+  .aria-real-customers__badge {
+    box-sizing: border-box;
+    padding: 3px 7px;
+    letter-spacing: 0;
+  }
+
+  /* White stars, fill only. */
+  .aria-real-customers__badge-stars {
+    color: var(--white, #fff);
+  }
+
+  .aria-real-customers__badge-stars .aria-icon {
+    display: block;
+  }
+
+  .aria-real-customers__badge-stars .aria-icon path {
+    stroke: none;
+  }
+
+  .aria-real-customers__heading {
+    font-family: var(--font-heading-family);
+    letter-spacing: 0;
+  }
+
+  /* Full-bleed row, active card flush with its top; 418 tall (416 card + 2). */
+  .aria-real-customers__swiper {
+    width: auto;
+    margin-inline: -16px;
+    padding-block: 0 2px;
+  }
+
+  /* Card frame: white, radius 1.457, the photo inset 8.89 / 9.2 from the outer edge.
+     The active card's 0.729px ring sits inside that inset, so its padding gives the
+     ring's width back; every card's photo is therefore the same 230.2 x 397.8. */
+  .aria-real-customers__frame {
+    box-sizing: border-box;
+    padding: 9.2px 8.89px;
+    border-radius: 1.457px;
+  }
+
+  .aria-real-customers__slide.swiper-slide-active .aria-real-customers__frame {
+    padding: 8.471px 8.161px;
+  }
+
+  .aria-real-customers__media {
+    border-radius: 1.457px;
+  }
+
+  /* Buttons (6576:10350): 48px, white with a #A9AAB5 ring / #A64A4C, long arrows. */
+  .aria-real-customers__nav {
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+  .aria-real-customers__nav--prev {
+    color: var(--black, #000);
+  }
+
+  .aria-real-customers__nav--next {
+    background: var(--py, #a64a4c);
+  }
+
+  .aria-real-customers__nav:disabled {
+    opacity: 1;
+  }
+
+  .aria-real-customers__nav .aria-icon {
+    display: none;
+  }
+
+  .aria-real-customers__nav-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+  }
+
+  .aria-real-customers__nav-arrow svg {
+    display: block;
+    width: 13.1667px;
+    height: 19.9622px;
+  }
+
+  .aria-real-customers__nav--prev .aria-real-customers__nav-arrow svg {
+    transform: rotate(90deg);
+  }
+
+  .aria-real-customers__nav--next .aria-real-customers__nav-arrow svg {
+    transform: rotate(-90deg);
   }
 }

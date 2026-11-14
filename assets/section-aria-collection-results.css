@@ -1,0 +1,1055 @@
+/* Wig Party — collection results (sections/collection-results.liquid), Figma 6663:2083.
+ *
+ * Desktop geometry (px, Figma, 1440 frame): 80px above and below, a 1360 content row.
+ * Quick bar 74 tall; 24px; sidebar 285 + 32 gap + results 1043. Results: 40px bar, 20px,
+ * 4-up grid of 251.75px cards 12 apart (445 tall), 40px, 191 x 52 "Show more".
+ */
+
+.aria-coll {
+  padding: 80px 40px;
+  background: var(--white, #fff);
+  color: var(--black, #000);
+}
+
+.aria-coll__inner {
+  max-width: 1360px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---------- Quick chips (6663:2931) ---------- */
+
+/* White -> #EADDD4, 1px #EADDD4 ring inside the 20px padding, radius 8, 12px apart. */
+.aria-coll__quick {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 19px;
+  border: 1px solid #eaddd4;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+}
+
+/* "QUICK": Poppins 16/26 #8C8C8C in Figma's 50px text box, 8px extra before the first
+   chip (which lands at x 90). */
+.aria-coll__quick-label {
+  box-sizing: border-box;
+  min-width: 50px;
+  margin-right: 8px;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #8c8c8c;
+}
+
+/* Chip: px-13 py-6 with the ring inside, fully rounded, Poppins 14/22. */
+.aria-coll__chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border: 1px solid #3f3e3e;
+  border-radius: 96px;
+  background: var(--white, #fff);
+  color: #1a1a1a;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.aria-coll__chip:hover,
+.aria-coll__chip:focus-visible {
+  border-color: var(--py, #a64a4c);
+  color: var(--py, #a64a4c);
+}
+
+.aria-coll__chip--active,
+.aria-coll__chip--active:hover,
+.aria-coll__chip--active:focus-visible {
+  border-color: #eaddd4;
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+/* ---------- Layout ---------- */
+
+.aria-coll__layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+/* The sidebar sits in a <details> so smaller screens can collapse it; on desktop it is
+   always open and the summary is hidden. */
+.aria-coll__filters-toggle {
+  flex: 0 0 285px;
+  width: 285px;
+  min-width: 0;
+}
+
+.aria-coll__filters-summary {
+  display: none;
+}
+
+.aria-coll__main {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ---------- Filter sidebar (6663:2111) ---------- */
+
+.aria-coll__form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0;
+}
+
+/* Heading row: Montserrat SemiBold 16/24 uppercase black, 20px chevron; 20px down to the
+   1px #3F3E3E divider, 12px down to the options. Figma's divider is a 0-tall line drawn
+   in the last pixel of that 20px gap (y 43), so 19 + the 1px border keeps options at 56. */
+.aria-coll__group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 19px;
+  border-bottom: 1px solid #3f3e3e;
+  cursor: pointer;
+  list-style: none;
+}
+
+.aria-coll__group-head::-webkit-details-marker {
+  display: none;
+}
+
+.aria-coll__group-title {
+  flex: 1 1 auto;
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--black, #000);
+}
+
+/* Figma's arrow (wp-coll-arrow.svg): a 9 x 4.5 chevron, 1px #3F3E3E, in a 20px box,
+   pointing up while the group is open and down when it is closed. */
+.aria-coll__group-arrow {
+  flex: none;
+  display: block;
+  width: 20px;
+  height: 20px;
+  color: #3f3e3e;
+  transition: transform 0.2s ease;
+}
+
+.aria-coll__group:not([open]) .aria-coll__group-arrow {
+  transform: rotate(180deg);
+}
+
+.aria-coll__options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-coll__option-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.aria-coll__option-label--empty {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* 20px square, white with a 1px #E9EAEB ring; checked fills with the brand pink.
+   Two classes deep: a global `input[type="checkbox"] { width: auto }` elsewhere in the
+   theme outranks a single class and squashed the box to its 2px of border. */
+.aria-coll .aria-coll__check {
+  flex: none;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid #e9eaeb;
+  border-radius: 0;
+  background: var(--white, #fff) center / 12px no-repeat;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: inherit;
+}
+
+.aria-coll .aria-coll__check:checked {
+  border-color: var(--py, #a64a4c);
+  background-color: var(--py, #a64a4c);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 6.2 5 8.5l4.5-5' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.aria-coll .aria-coll__check:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+/* Colour-family swatch: 15px, 1px #B5B5B5 ring. */
+.aria-coll__swatch {
+  flex: none;
+  box-sizing: border-box;
+  width: 15px;
+  height: 15px;
+  border: 1px solid #b5b5b5;
+  border-radius: 50%;
+  background: #e5e5e5 center / cover no-repeat;
+}
+
+/* Montserrat Regular 16/24 black. */
+.aria-coll__option-text {
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+/* Montserrat Medium 14/22 #3F3E3E, 12px under its group's last option. */
+.aria-coll__note {
+  margin: 12px 0 0;
+  font-family: var(--font-heading-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: #3f3e3e;
+}
+
+.aria-coll__apply {
+  min-height: 44px;
+  padding: 8px 20px;
+  border: 0;
+  background: var(--black, #000);
+  color: var(--white, #fff);
+  cursor: pointer;
+}
+
+/* ---------- Results bar (6663:2122) ---------- */
+
+.aria-coll__bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* "258 wigs" Helvetica Neue Medium 20/28, then Poppins 20/28, black. */
+.aria-coll__count {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-coll__count-total {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 500;
+}
+
+/* Sort (Figma 6668:3911): 240 x 40, radius 2, px-16 py-10.
+     1. Closed:  1px #DCDCDC ring, #3F3E3E chevron pointing down.
+     2. Hover:   1px #EADDD4 ring, #A64A4C chevron pointing up.
+     3. Open:    as hover, with the menu 4px below. */
+.aria-coll__sort {
+  position: relative;
+  flex: none;
+  width: 240px;
+}
+
+.aria-coll__sort-trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 9px 15px;
+  border: 1px solid #dcdcdc;
+  border-radius: 2px;
+  background: var(--white, #fff);
+  cursor: pointer;
+  list-style: none;
+  transition: border-color 0.2s ease;
+}
+
+.aria-coll__sort-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.aria-coll__sort-trigger:hover,
+.aria-coll__sort-trigger:focus-visible,
+.aria-coll__sort[open] .aria-coll__sort-trigger {
+  border-color: #eaddd4;
+}
+
+.aria-coll__sort-trigger:focus-visible {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+.aria-coll__sort-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* "SORT:" Poppins 12/14 #3F3E3E uppercase; the value Poppins 14/22 black. */
+.aria-coll__sort-prefix {
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #3f3e3e;
+}
+
+.aria-coll__sort-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-coll__sort-chevron {
+  display: flex;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: #3f3e3e;
+  transform: rotate(180deg);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.aria-coll__sort-trigger:hover .aria-coll__sort-chevron,
+.aria-coll__sort-trigger:focus-visible .aria-coll__sort-chevron,
+.aria-coll__sort[open] .aria-coll__sort-chevron {
+  color: var(--py, #a64a4c);
+  transform: none;
+}
+
+/* Menu: 240 wide, 4px under the trigger, 1px #EADDD4 ring, radius 2, py-4,
+   shadow 0 4 6 rgba(26,26,26,.08). */
+.aria-coll__sort-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  border: 1px solid #eaddd4;
+  border-radius: 2px;
+  background: var(--white, #fff);
+  box-shadow: 0 4px 6px rgba(26, 26, 26, 0.08);
+}
+
+/* Item: px-16 py-10, Poppins 14/22 black; hover and the selected item take #EADDD4 with
+   #A64A4C text, and the selected one carries the 14px check. */
+.aria-coll__sort-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.aria-coll__sort-option:hover,
+.aria-coll__sort-option:focus-visible,
+.aria-coll__sort-option--active {
+  background: #eaddd4;
+  color: var(--py, #a64a4c);
+}
+
+.aria-coll__sort-option:focus-visible {
+  outline: none;
+}
+
+.aria-coll__sort-check {
+  display: block;
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Grid ---------- */
+
+.aria-coll__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-coll__item {
+  display: flex;
+  min-width: 0;
+}
+
+/* --- Card (6663:2133), the shared aria-product-card restyled for this grid only ---- */
+
+/* White card, p-8, radius 2; 13px media -> text, 21px text -> button. */
+.aria-coll .aria-product-card {
+  box-sizing: border-box;
+  gap: 13px;
+  padding: 8px;
+  background: var(--white, #fff);
+  border-radius: 2px;
+}
+
+/* Media: 235 x 240 at the design width, white behind the photo, radius 2. */
+.aria-coll .aria-product-card__media {
+  aspect-ratio: 235 / 240;
+  background: var(--white, #fff);
+  border-radius: 2px;
+}
+
+/* Heart 28px, 10px from the top and 17px from the right. */
+.aria-coll .aria-product-card__wishlist {
+  top: 10px;
+  right: 17px;
+}
+
+/* Chip 10px from the left and bottom, a fixed 18px tall. */
+.aria-coll .aria-product-card__badges {
+  left: 10px;
+  bottom: 10px;
+}
+
+.aria-coll .aria-product-card__badge {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 8px;
+  font-family: var(--font-body-family);
+  letter-spacing: 0;
+}
+
+/* Rating: 12px stars, Helvetica Neue 10/15 #333131, one row. */
+.aria-coll .aria-product-card__rating {
+  flex-wrap: nowrap;
+  min-height: 15px;
+  white-space: nowrap;
+}
+
+.aria-coll .aria-product-card__stars .aria-icon {
+  display: block;
+}
+
+.aria-coll .aria-product-card__rating-value {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  line-height: 15px;
+  letter-spacing: 0.5px;
+  color: #333131;
+}
+
+/* Name: Poppins 20/22 #3F3E3E, 8px under the rating, held to two lines. */
+.aria-coll .aria-product-card__title {
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.aria-coll .aria-product-card__title a {
+  color: #3f3e3e;
+}
+
+/* Swatches: 6px under the name, 15px discs 5 apart, "+14" Poppins 10/15 #302E2E. */
+.aria-coll .aria-product-card__swatches {
+  gap: 5px;
+  min-height: 15px;
+  margin-top: -2px;
+}
+
+.aria-coll .aria-product-card__swatch {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+}
+
+.aria-coll .aria-product-card__swatch::before {
+  inset: 0;
+}
+
+.aria-coll .aria-product-card__swatch-more {
+  font-family: var(--font-body-family);
+  font-size: 10px;
+  line-height: 15px;
+  letter-spacing: 0;
+  color: #302e2e;
+}
+
+/* Price: 24px under the swatches; Poppins SemiBold 22/18 #252424, the compare Poppins
+   Medium 22/18 #8C8C8C struck, 6 apart. */
+.aria-coll .aria-product-card__price {
+  gap: 6px;
+  font-family: var(--font-body-family);
+  letter-spacing: 0;
+}
+
+.aria-coll .aria-product-card__price-current,
+.aria-coll .aria-product-card__price-compare {
+  font-family: var(--font-body-family);
+  font-size: 22px;
+  line-height: 18px;
+  letter-spacing: 0;
+}
+
+.aria-coll .aria-product-card__price-current {
+  font-weight: 600;
+  color: #252424;
+}
+
+.aria-coll .aria-product-card__price-compare {
+  font-weight: 500;
+  color: #8c8c8c;
+  opacity: 1;
+}
+
+/* Button (6663:2172): one full-width outline "ADD TO CART" + cart icon, 47 tall, 1px
+   #B1B1B1, Poppins SemiBold 16/26 #404040 uppercase, 4px to the 20px icon. */
+.aria-coll .aria-product-card__actions {
+  padding-top: 8px;
+}
+
+.aria-coll .aria-product-card__view-btn {
+  display: none;
+}
+
+.aria-coll .aria-product-card__quick-add {
+  flex: 1 1 auto;
+  width: auto;
+  opacity: 1;
+  overflow: visible;
+}
+
+.aria-coll .aria-product-card__cart-btn {
+  box-sizing: border-box;
+  width: 100%;
+  height: 47px;
+  gap: 4px;
+  padding: 0 12px;
+  border: 1px solid #b1b1b1;
+  background: var(--white, #fff);
+  color: #404040;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.aria-coll .aria-product-card__cart-btn:hover,
+.aria-coll .aria-product-card__cart-btn:focus-visible {
+  border-color: var(--py, #a64a4c);
+  background: var(--py, #a64a4c);
+  color: var(--white, #fff);
+}
+
+.aria-coll .aria-product-card__cart-label {
+  display: inline;
+  white-space: nowrap;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 26px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.aria-coll .aria-product-card__cart-btn .aria-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---------- Show more (6663:2755) ---------- */
+
+/* Black 191 x 52 at "SHOW 24 MORE", px-20 py-12, Poppins 20/28 white, 40px under the grid. */
+.aria-coll__more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.aria-coll__more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border-radius: 2px;
+  background: var(--black, #000);
+  color: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-coll__more:hover,
+.aria-coll__more:focus-visible {
+  background: var(--py, #a64a4c);
+}
+
+.aria-coll__more[aria-busy='true'] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.aria-coll__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 40px 0;
+  font-family: var(--font-body-family);
+}
+
+/* ======================================================================================
+   No-sidebar layout (`layout: full`), Figma 6849:9638 (1440 x 1785)
+
+   White -> #EADDD4 top to bottom behind the same 80 / 40 padding. The quick bar is plain
+   white here (750 and up). No sidebar: the results take the full 1360, five 262.4 cards 12 apart
+   across and 20 apart down, each with a fixed 240-tall photo (445 tall in all). The
+   sort and "Show more" are unchanged.
+   ====================================================================================== */
+
+.aria-coll--full {
+  background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+}
+
+/* Everything else is the desktop / tablet presentation only. At 749px and below the page
+   uses the standard mobile layout unchanged (Figma 6849:11657 draws exactly the 6760:3443
+   one: gradient chip box, FILTER bar, 2-up 169 cards, "Show 24 more"). */
+@media screen and (min-width: 750px) {
+  .aria-coll--full .aria-coll__quick {
+    background: var(--white, #fff);
+  }
+
+  .aria-coll--full .aria-coll__filters-toggle {
+    display: none;
+  }
+
+  .aria-coll--full .aria-coll__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 20px 12px;
+  }
+
+  .aria-coll--full .aria-product-card__media {
+    aspect-ratio: auto;
+    height: 240px;
+  }
+
+  /* The heart keeps the 4-up card's x (190 into the photo), so on the wider 246.4 photo it
+     sits 28.4 from the right rather than 17. */
+  .aria-coll--full .aria-product-card__wishlist {
+    right: 28.4px;
+  }
+}
+
+/* ======================================================================================
+   Responsive
+   ====================================================================================== */
+
+/* 1280 - 1439: narrower sidebar, still 4-up. */
+@media screen and (max-width: 1439px) {
+  .aria-coll__filters-toggle {
+    flex-basis: 250px;
+    width: 250px;
+  }
+
+  .aria-coll__layout {
+    gap: 24px;
+  }
+}
+
+/* 990 - 1279: 3-up so the cards keep a usable width next to the sidebar. */
+@media screen and (max-width: 1279px) {
+  .aria-coll__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aria-coll__filters-toggle {
+    flex-basis: 230px;
+    width: 230px;
+  }
+}
+
+/* Tablet: the sidebar collapses behind a "Filter" toggle above the results. */
+@media screen and (max-width: 989px) {
+  .aria-coll {
+    padding: 48px 24px;
+  }
+
+  .aria-coll__layout {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .aria-coll__filters-toggle {
+    flex: none;
+    width: 100%;
+  }
+
+  .aria-coll__filters-summary {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    padding: 0 16px;
+    border: 1px solid #eaddd4;
+    border-radius: 2px;
+    background: var(--white, #fff);
+    font-family: var(--font-heading-family);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    text-transform: uppercase;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .aria-coll__filters-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .aria-coll__filters-summary::after {
+    content: '+';
+    font-weight: 400;
+    font-size: 20px;
+  }
+
+  .aria-coll__filters-toggle[open] .aria-coll__filters-summary::after {
+    content: '–';
+  }
+
+  .aria-coll__sidebar {
+    padding-top: 20px;
+  }
+
+  /* Groups in two columns so the open sidebar is not a long single column. */
+  .aria-coll__form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 32px;
+  }
+
+  .aria-coll__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Mobile (Figma 6760:3443, 375 wide) ----------
+   48px above and below, 16px sides, on a white -> #EADDD4 wash. Quick chips wrap in a
+   343-wide box (16px padding, 9 / 7 apart); 12px down a 38px FILTER trigger; 12px down the
+   2-up grid of 169 x 382 cards 8 apart (Figma lets the pair run 3px past the 343 column,
+   kept here); 24px down a 184 x 52 "Show 24 more". The count line and sort are not in the
+   design: they show inside the open FILTER panel instead, so sorting stays available. */
+@media screen and (max-width: 749px) {
+  .aria-coll {
+    padding: 48px 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #eaddd4 100%);
+  }
+
+  .aria-coll__inner {
+    gap: 12px;
+  }
+
+  .aria-coll__layout {
+    gap: 12px;
+  }
+
+  /* Chips wrap; the 1px ring sits inside Figma's 16px padding. */
+  .aria-coll__quick {
+    gap: 9px 7px;
+    padding: 15px;
+  }
+
+  /* "QUICK" fills Figma's 50px slot, then the row's own 7px gap. */
+  .aria-coll__quick-label {
+    width: 50px;
+    min-width: 50px;
+    margin-right: 0;
+  }
+
+  .aria-coll__chip {
+    flex: none;
+  }
+
+  /* FILTER: 343 x 38, white, 1px #EADDD4, radius 2, px-16 py-8 (ring inside), Poppins
+     14/22 black caps, Figma's 16px chevron (down closed, up open) 16px from the right. */
+  .aria-coll__filters-summary {
+    height: 38px;
+    padding: 0 15px;
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0;
+    color: var(--black, #000);
+  }
+
+  .aria-coll__filters-summary::after,
+  .aria-coll__filters-toggle[open] .aria-coll__filters-summary::after {
+    content: '';
+    flex: none;
+    width: 16px;
+    height: 16px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M12 10 8 6l-4 4' stroke='%233F3E3E' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / 16px no-repeat;
+    transform: rotate(180deg);
+    transition: transform 0.2s ease;
+  }
+
+  .aria-coll__filters-toggle[open] .aria-coll__filters-summary::after {
+    transform: none;
+  }
+
+  .aria-coll__form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Count + sort only with the FILTER panel open (see the note above). */
+  .aria-coll__filters-toggle:not([open]) ~ .aria-coll__main .aria-coll__bar {
+    display: none;
+  }
+
+  .aria-coll__bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .aria-coll__count {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .aria-coll__sort {
+    width: 100%;
+  }
+
+  .aria-coll__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-right: -3px;
+  }
+
+  /* Card: 169 x 382, p-8; 153 x 161 photo. */
+  .aria-coll .aria-product-card__media {
+    aspect-ratio: 153 / 161;
+  }
+
+  .aria-coll .aria-product-card__wishlist {
+    top: 10px;
+    right: 10px;
+  }
+
+  .aria-coll .aria-product-card__badges {
+    left: 8px;
+    bottom: 8px;
+  }
+
+  /* A long rating label ("No reviews yet") stays inside the card's padding. */
+  .aria-coll .aria-product-card__rating {
+    overflow: hidden;
+  }
+
+  .aria-coll .aria-product-card__rating-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Name: Poppins 20/28 #3F3E3E on one line (Figma's 139 x 28 box). */
+  .aria-coll .aria-product-card__title {
+    line-height: 28px;
+    -webkit-line-clamp: 1;
+  }
+
+  /* Price: Helvetica Neue Medium 20/28, #252424 and the struck #3F3E3E at 49%. */
+  .aria-coll .aria-product-card__price {
+    min-height: 28px;
+  }
+
+  .aria-coll .aria-product-card__price-current,
+  .aria-coll .aria-product-card__price-compare {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  .aria-coll .aria-product-card__price-compare {
+    color: #3f3e3e;
+    opacity: 0.49;
+  }
+
+  /* Button: 47 tall, label + 20px cart centred 4 apart, Poppins Bold 16/26 black caps. */
+  .aria-coll .aria-product-card__cart-btn {
+    padding: 0;
+    color: var(--black, #000);
+  }
+
+  .aria-coll .aria-product-card__cart-label {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 26px;
+  }
+
+  /* Show 24 more: 184 x 52, px-24 py-12, Poppins 18/28, 24px under the grid. */
+  .aria-coll__more-wrap {
+    margin-top: 24px;
+  }
+
+  .aria-coll__more {
+    padding: 12px 24px;
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+/* ---------- Theme filters (assets/aria-collection.js) ---------- */
+
+/* Groups, options and chips are rendered hidden and shown once counted; `hidden` has to
+   beat the flex/details display rules above. */
+.aria-coll [hidden] {
+  display: none !important;
+}
+
+/* With an af_ choice in the URL the server grid is unfiltered by it; keep it (and the
+   count and Show more) out of sight until the script has rebuilt them. */
+.aria-coll--facet-loading .aria-coll__grid,
+.aria-coll--facet-loading .aria-coll__more-wrap,
+.aria-coll--facet-loading .aria-coll__count {
+  visibility: hidden;
+}
+
+.aria-coll--facet-loading .aria-coll__grid {
+  min-height: 600px;
+}
+
+/* The count line waits for the script's per-wig numbers; if the script never runs it
+   shows Shopify's own after 4s. */
+.aria-coll--counting .aria-coll__count {
+  visibility: hidden;
+  animation: aria-coll-reveal 0s 4s forwards;
+}
+
+@keyframes aria-coll-reveal {
+  to {
+    visibility: visible;
+  }
+}
+
+/* The script's Show more is a <button>; match the server's link. */
+button.aria-coll__more {
+  border: 0;
+  cursor: pointer;
+}
+
+/* No-sidebar layout on tablet: step the grid down as the width shrinks (mobile keeps the
+   standard 2-up layout). */
+@media screen and (min-width: 750px) and (max-width: 1279px) {
+  .aria-coll--full .aria-coll__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .aria-coll--full .aria-coll__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* ---------- Card type, QA pass 2026-10-29 (Collection, New In, Cap Construction) ----------
+ * Title 20/28; price 22/28 #1a1a1a with the struck compare 20/28 #8c8c8c; swatch count
+ * Poppins 10/16 #3f3e3e; "Add to cart" Poppins 400 in Title Case. Desktop and tablet —
+ * the mobile card keeps its own Figma values above. */
+@media screen and (min-width: 750px) {
+  .aria-coll .aria-product-card__title {
+    line-height: 28px;
+  }
+
+  .aria-coll .aria-product-card__price {
+    min-height: 28px;
+  }
+
+  .aria-coll .aria-product-card__price-current {
+    font-size: 22px;
+    line-height: 28px;
+    color: #1a1a1a;
+  }
+
+  .aria-coll .aria-product-card__price-compare {
+    font-size: 20px;
+    line-height: 28px;
+    color: #8c8c8c;
+  }
+
+  .aria-coll .aria-product-card__swatch-more {
+    font-size: 10px;
+    line-height: 16px;
+    color: #3f3e3e;
+  }
+
+  .aria-coll .aria-product-card__cart-label {
+    font-weight: 400;
+    text-transform: none;
+  }
+}

@@ -1,0 +1,301 @@
+/* Wig Party — Learn "Ask and we will write it" (sections/learn-ask.liquid), Figma 7605:7756.
+ *
+ * Desktop geometry (px, Figma, 1440 x 738):
+ *   section     white, py-60; the panel centred
+ *   background  1440 x 802 centred on the section (top -31.73): the hero's hair photo at the
+ *               same stretched size (100.18% wide, -0.09% left, -29.55% top at 1440), under a
+ *               118.9deg wash rgba(47,47,47,.46) 12.738% -> rgba(222,222,222,.46) 78.602%
+ *   panel       1146 x 618 at 147 / 60: rgba(255,255,255,.13), 50 backdrop blur, 1px white ring
+ *               that counts toward layout, p-40, clipped; copy 471 and a 529 x 536 collage, 64
+ *               apart, vertically centred
+ *   copy        title Montserrat Bold 48/56 black in a 536.205 box (wider than the column, as
+ *               drawn), 12, text Helvetica Neue 20/28 black, 48, black button 471 x 52, p-12,
+ *               r-2, Poppins 20/28 white
+ *   collage     four photos, absolutely placed and stacked in this order:
+ *               1: 236 x 365 at 293 / 73.755   2: 199 x 297 at 94 / 17.274
+ *               3: 188 x 235 at 0 / 234.485    4: 189 x 284 at 161 / 236.068
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-learn-ask,
+.aria-learn-ask *,
+.aria-learn-ask *::before,
+.aria-learn-ask *::after {
+  box-sizing: border-box;
+}
+
+.aria-learn-ask {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 60px 40px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ---------- Background (7605:7757) ---------- */
+
+.aria-learn-ask__bg {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 802px;
+  overflow: hidden;
+  transform: translateY(calc(-50% + 0.27px));
+  pointer-events: none;
+}
+
+.aria-learn-ask__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    118.89056408794752deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+.aria-learn-ask__bg img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Figma's crop of the built-in photo, stretched to 1442.592 x 1650.823; at 1440 the image's
+   38.647% line sits on the middle of the 802 box. Anchoring that line keeps the same band of
+   hair in view at other widths. */
+.aria-learn-ask__bg img.aria-learn-ask__bg-fallback {
+  inset: auto;
+  top: 50%;
+  left: -0.09%;
+  width: 100.18%;
+  height: auto;
+  aspect-ratio: 1442.592 / 1650.823;
+  transform: translateY(-38.647%);
+  object-fit: fill;
+}
+
+/* ---------- Panel (7605:7758) ---------- */
+
+.aria-learn-ask__panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  max-width: 1146px;
+  padding: 40px;
+  overflow: hidden;
+  border: 1px solid #fff;
+  background: rgba(255, 255, 255, 0.13);
+  -webkit-backdrop-filter: blur(50px);
+  backdrop-filter: blur(50px);
+}
+
+.aria-learn-ask__copy {
+  display: flex;
+  flex: 0 1 471px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 48px;
+  min-width: 0;
+}
+
+.aria-learn-ask__text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  color: #000;
+}
+
+.aria-learn-ask__title {
+  width: 536.205px;
+  max-width: none;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+.aria-learn-ask__text {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: inherit;
+}
+
+/* Measured by pixel shift: Helvetica Neue 20/28 sits 2px lower in its line than Figma draws it. */
+.aria-learn-ask__text {
+  position: relative;
+  top: -2px;
+}
+
+.aria-learn-ask__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  padding: 12px;
+  border-radius: 2px;
+  background: #000;
+  font-family: var(--font-body-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease;
+}
+
+.aria-learn-ask__btn:hover,
+.aria-learn-ask__btn:focus-visible {
+  background: #2b2b2b;
+}
+
+/* ---------- Collage (7605:7766) ---------- */
+
+.aria-learn-ask__collage {
+  position: relative;
+  flex: 0 0 529px;
+  height: 536px;
+}
+
+.aria-learn-ask__collage-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 529px;
+  height: 536px;
+}
+
+.aria-learn-ask__photo {
+  position: absolute;
+  overflow: hidden;
+}
+
+.aria-learn-ask__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.aria-learn-ask__photo--1 { left: 293px; top: 73.755px; width: 236px; height: 365px; }
+/* Figma draws photo 2 at 17.274 but its pixels land 1px lower than Chrome snaps it (measured). */
+.aria-learn-ask__photo--2 { left: 94px; top: 18.274px; width: 199px; height: 297px; }
+.aria-learn-ask__photo--3 { left: 0; top: 234.485px; width: 188px; height: 235px; }
+.aria-learn-ask__photo--4 { left: 161px; top: 236.068px; width: 189px; height: 284px; }
+
+/* ---------- Narrower desktops: the copy gives way to the collage ---------- */
+
+@media screen and (max-width: 1199px) {
+  .aria-learn-ask__panel {
+    gap: 40px;
+  }
+
+  .aria-learn-ask__title {
+    width: auto;
+  }
+}
+
+/* ---------- Mobile (7605:8155) ----------
+ * 375 x 817.55, py-48 px-16. Background: a 375 x 903.555 box centred on the section (top -43)
+ * with the hair photo stretched to 100.18% x 205.84% at -0.09% / -29.55%, and NO wash.
+ * Panel 343 x 721.55: the same ring / fill / blur, py-32 px-40, 16 between copy and collage;
+ * its 307 column overhangs the padding by 23 each side, centred, as drawn.
+ *   copy     title Montserrat Bold 36/46, 12, text Poppins 20/28, 32, button 307 x 52
+ *   collage  the desktop collage scaled to 307.486 x 311.555 (529 -> 307.486 = 0.581258)
+ */
+@media screen and (max-width: 749px) {
+  .aria-learn-ask {
+    padding: 48px 16px;
+  }
+
+  .aria-learn-ask__bg {
+    height: 903.555px;
+    transform: translateY(-50%);
+  }
+
+  .aria-learn-ask__bg::after {
+    content: none;
+  }
+
+  .aria-learn-ask__bg img.aria-learn-ask__bg-fallback {
+    top: -29.55%;
+    left: -0.09%;
+    width: 100.18%;
+    height: 205.84%;
+    aspect-ratio: auto;
+    transform: none;
+  }
+
+  .aria-learn-ask__panel {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    padding: 32px 40px;
+  }
+
+  .aria-learn-ask__copy {
+    flex: none;
+    gap: 32px;
+    width: calc(100% + 46px);
+  }
+
+  .aria-learn-ask__title {
+    width: 100%;
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-learn-ask__text {
+    top: 0;
+    font-family: var(--font-body-family);
+  }
+
+  .aria-learn-ask__collage {
+    flex: none;
+    width: 307.486px;
+    height: 311.555px;
+  }
+
+  .aria-learn-ask__collage-inner {
+    transform: scale(0.581258);
+    transform-origin: 0 0;
+  }
+}
+
+/* Phones narrower than Figma's 375: the collage scales with the column (320 -> 252 wide). */
+@media screen and (max-width: 374px) {
+  .aria-learn-ask__collage {
+    width: 252px;
+    height: 255.36px;
+  }
+
+  .aria-learn-ask__collage-inner {
+    transform: scale(0.476371);
+  }
+}

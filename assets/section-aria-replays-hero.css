@@ -1,0 +1,391 @@
+/* Wig Party — Replays page hero (sections/replays-hero.liquid), Figma 6849:8511.
+ *
+ * Desktop geometry (px, Figma, 1440 x 442):
+ *   backdrop  the photo edge to edge under a 133.4deg wash, rgba(47,47,47,.46) 12.738% ->
+ *             rgba(222,222,222,.46) 78.602%
+ *   panel     p-40 round it: 1360 wide, 13% white, 50px blur, 1px white ring, pt-16 pb-40
+ *             px-40; breadcrumb (Poppins 14/22 white), 12, then a 1280 row (2 wider than the
+ *             padded panel, as drawn) holding the 651 copy column and the 629 stats box
+ *   copy      Montserrat Medium 48/56 white title, 8, Poppins 16/26 white intro in a 584.2
+ *             box, 20, a black r-2 button px-24 py-12, Poppins 18/28 white
+ *   stats     20% white, 34.4px blur, r-8, px-40 py-24, centred on the row; three stats 86
+ *             apart, the first two in 120 boxes: a 46 white r-8 icon tile, 16, the figure
+ *             (Montserrat Medium 48/56), 8, the label (Montserrat Medium 20/28)
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-replays-hero,
+.aria-replays-hero *,
+.aria-replays-hero *::before,
+.aria-replays-hero *::after {
+  box-sizing: border-box;
+}
+
+.aria-replays-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 40px;
+  background: #f5ebe2;
+  color: var(--white, #fff);
+}
+
+/* ---------- Backdrop (6849:8513) ---------- */
+
+.aria-replays-hero__bg {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+}
+
+.aria-replays-hero__bg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The built-in texture at Figma's own placement: a 1440 x 468 frame pinned to the top (the
+   section shows its first 442) holding the image at 100.18% x 352.74%, offset -0.09% /
+   -96.41%. Expressed against the section box so it lands on the same pixels at 1440. */
+.aria-replays-hero__bg .aria-replays-hero__bg-default {
+  position: absolute;
+  top: calc(-96.41% * 468 / 442);
+  left: -0.09%;
+  width: 100.18%;
+  max-width: none;
+  height: calc(352.74% * 468 / 442);
+  object-fit: fill;
+}
+
+.aria-replays-hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    133.39934543901973deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+/* ---------- Panel (6849:8515) ---------- */
+
+.aria-replays-hero__panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  max-width: var(--container, 1360px);
+  margin: 0 auto;
+  padding: 16px 40px 40px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+}
+
+/* Breadcrumb: flex drops the markup's whitespace; the separators keep their spaces. */
+.aria-replays-hero__crumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-replays-hero__crumb-list li {
+  display: flex;
+}
+
+.aria-replays-hero__crumb,
+.aria-replays-hero__crumb-sep {
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+  text-decoration: none;
+}
+
+.aria-replays-hero__crumb-sep {
+  white-space: pre;
+}
+
+a.aria-replays-hero__crumb:hover,
+a.aria-replays-hero__crumb:focus-visible {
+  text-decoration: underline;
+}
+
+/* The 1280 row runs 2px into the panel's right padding, as in Figma. */
+.aria-replays-hero__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: -2px;
+}
+
+/* ---------- Copy (6849:8519) ---------- */
+
+.aria-replays-hero__copy {
+  display: flex;
+  flex: 0 1 651px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+.aria-replays-hero__text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.aria-replays-hero__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+.aria-replays-hero__text {
+  max-width: 584.225px;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+.aria-replays-hero__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 2px;
+  background: var(--black, #000);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--white, #fff);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.aria-replays-hero__button:hover,
+.aria-replays-hero__button:focus-visible {
+  background: #2b2b2b;
+}
+
+/* ---------- Stats (6849:8524) ---------- */
+
+.aria-replays-hero__stats {
+  display: flex;
+  flex: 0 1 629px;
+  align-items: flex-start;
+  gap: 86px;
+  min-width: 0;
+  margin: 0;
+  padding: 24px 40px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(34.4px);
+  -webkit-backdrop-filter: blur(34.4px);
+  list-style: none;
+}
+
+/* The first two sit in Figma's 120 boxes (1,100+ spills past its own, as drawn); the last
+   is as wide as its figure. */
+.aria-replays-hero__stat {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  width: 120px;
+}
+
+.aria-replays-hero__stat:last-child {
+  width: auto;
+}
+
+.aria-replays-hero__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0 2px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--white, #fff);
+  color: var(--black, #000);
+}
+
+.aria-replays-hero__icon svg {
+  display: block;
+  flex: none;
+}
+
+.aria-replays-hero__icon--replays svg {
+  width: 24.0003px;
+  height: 27.2885px;
+}
+
+.aria-replays-hero__icon--styles svg {
+  width: 23.6796px;
+  height: 24.6624px;
+}
+
+.aria-replays-hero__icon--never svg {
+  width: 24.0009px;
+  height: 22.5014px;
+}
+
+.aria-replays-hero__stat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 92px;
+}
+
+.aria-replays-hero__value,
+.aria-replays-hero__label {
+  font-family: var(--font-heading-family);
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--white, #fff);
+}
+
+.aria-replays-hero__value {
+  font-size: 48px;
+  line-height: 56px;
+}
+
+.aria-replays-hero__label {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+/* ---------- Below desktop (no Figma frame yet): stack ---------- */
+
+@media screen and (max-width: 1199px) {
+  .aria-replays-hero__row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+    margin-right: 0;
+  }
+
+  .aria-replays-hero__copy,
+  .aria-replays-hero__stats {
+    flex: none;
+  }
+
+  .aria-replays-hero__stats {
+    gap: 40px;
+  }
+}
+
+/* ---------- Mobile (Figma 6849:8947) ----------
+ * 375 x 677: the photo in a 375 x 680 box 1 above the section (192.07% x 121.37%, offset
+ * -51.54% / -4.59%) under a 99.62deg wash; the 343 panel centred with 39.5 above and below,
+ * p-12 inside its ring. Title Montserrat Medium 36/46, intro 16/26, the button, then 32 to a
+ * stats box px-16 py-12 with three equal columns 12 apart: the desktop 46 icon tile at 32
+ * (0.6957), 16, the figure (Montserrat Medium 20/28), 12, the label (12/20).
+ * Figma's middle stat has 8 between figure and label (the others 12), which lifts
+ * "styles shown" 4px out of line; all three use 12 here.
+ */
+@media screen and (max-width: 749px) {
+  .aria-replays-hero {
+    padding: 39.5px 16px;
+  }
+
+  .aria-replays-hero__bg .aria-replays-hero__bg-default {
+    top: calc(-1px - 4.59% * 680 / 677);
+    left: -51.54%;
+    width: 192.07%;
+    height: calc(121.37% * 680 / 677);
+  }
+
+  .aria-replays-hero__bg::after {
+    background: linear-gradient(
+      99.61928331747893deg,
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .aria-replays-hero__panel {
+    padding: 12px;
+  }
+
+  .aria-replays-hero__row {
+    gap: 32px;
+  }
+
+  .aria-replays-hero__title {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-replays-hero__stats {
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .aria-replays-hero__stat,
+  .aria-replays-hero__stat:last-child {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .aria-replays-hero__icon {
+    zoom: 0.6956522;
+  }
+
+  .aria-replays-hero__stat-text {
+    gap: 12px;
+    min-height: 0;
+  }
+
+  .aria-replays-hero__value {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .aria-replays-hero__label {
+    font-size: 12px;
+    line-height: 20px;
+  }
+}
+
+/* Breadcrumb, QA pass 2026-10-29: Poppins 12/14 uppercase ("HOME / LIVE / REPLAYS"), the
+   page you are on in Bold. */
+@media screen and (min-width: 750px) {
+  .aria-replays-hero__crumb,
+  .aria-replays-hero__crumb-sep {
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+  }
+
+  .aria-replays-hero__crumb-list [aria-current='page'] {
+    font-weight: 700;
+  }
+}

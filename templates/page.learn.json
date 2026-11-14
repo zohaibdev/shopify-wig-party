@@ -1,0 +1,316 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections":  {
+                     "learn-hero":  {
+                                        "type":  "learn-hero",
+                                        "blocks":  {
+                                                       "stat-1":  {
+                                                                      "type":  "stat",
+                                                                      "settings":  {
+                                                                                       "icon":  "swap",
+                                                                                       "icon_mobile":  "same",
+                                                                                       "value":  "6",
+                                                                                       "label":  "sections",
+                                                                                       "width":  85
+                                                                                   }
+                                                                  },
+                                                       "stat-2":  {
+                                                                      "type":  "stat",
+                                                                      "settings":  {
+                                                                                       "icon":  "styles",
+                                                                                       "icon_mobile":  "same",
+                                                                                       "value":  "Free",
+                                                                                       "label":  "all of it",
+                                                                                       "width":  68
+                                                                                   }
+                                                                  },
+                                                       "stat-3":  {
+                                                                      "type":  "stat",
+                                                                      "settings":  {
+                                                                                       "icon":  "colours",
+                                                                                       "icon_mobile":  "clock",
+                                                                                       "value":  "No",
+                                                                                       "label":  "sign-up",
+                                                                                       "width":  78
+                                                                                   }
+                                                                  }
+                                                   },
+                                        "block_order":  [
+                                                            "stat-1",
+                                                            "stat-2",
+                                                            "stat-3"
+                                                        ],
+                                        "settings":  {
+                                                         "home_label":  "Home",
+                                                         "parent_label":  "",
+                                                         "parent_url":  "",
+                                                         "current_label":  "Learn",
+                                                         "heading":  "Everything we know, written down",
+                                                         "text":  "Guides on choosing, fitting, colouring and caring for your Belle Tress wig, plus what to expect from your very first one. Free to read, no sign-up.",
+                                                         "button_label":  "START AT THE BEGINNING",
+                                                         "button_url":  "/blogs/news/what-do-i-do-if-i-want-to-find-a-wig-for-beginners"
+                                                     }
+                                    },
+                     "learn-guides":  {
+                                          "type":  "learn-guides",
+                                          "blocks":  {
+                                                         "chip-1":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Wig 101"
+                                                                                     }
+                                                                    },
+                                                         "chip-2":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Colour"
+                                                                                     }
+                                                                    },
+                                                         "chip-3":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Fit \u0026 comfort"
+                                                                                     }
+                                                                    },
+                                                         "chip-4":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Care"
+                                                                                     }
+                                                                    },
+                                                         "chip-5":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Living with it"
+                                                                                     }
+                                                                    },
+                                                         "chip-6":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Hair loss"
+                                                                                     }
+                                                                    },
+                                                         "guide-1":  {
+                                                                         "type":  "guide",
+                                                                         "settings":  {
+                                                                                          "title":  "Never worn one? Read this first",
+                                                                                          "text":  "The decisions that\nactually matter, and the things nobody tells you up front.",
+                                                                                          "button_label":  "Start here",
+                                                                                          "button_url":  "/#start-here",
+                                                                                          "topics":  "Wig 101",
+                                                                                          "title_breaks_mobile":  false,
+                                                                                          "text_breaks_mobile":  true,
+                                                                                          "mobile_bleed":  false
+                                                                                      }
+                                                                     },
+                                                         "guide-2":  {
+                                                                         "type":  "guide",
+                                                                         "settings":  {
+                                                                                          "title":  "Why the screen is \nlying to you",
+                                                                                          "text":  "How Belle Tress names colours, what\nrooted means, and how to be sure before you buy.",
+                                                                                          "button_label":  "Find your colour",
+                                                                                          "button_url":  "/pages/find-your-colour",
+                                                                                          "topics":  "Colour",
+                                                                                          "title_breaks_mobile":  true,
+                                                                                          "text_breaks_mobile":  false,
+                                                                                          "mobile_bleed":  false
+                                                                                      }
+                                                                     },
+                                                         "guide-3":  {
+                                                                         "type":  "guide",
+                                                                         "settings":  {
+                                                                                          "title":  "One tape measure, thirty\nseconds",
+                                                                                          "text":  "How to measure, what your number means, and what to do if you are between\nsizes.",
+                                                                                          "button_label":  "Measure yourself",
+                                                                                          "button_url":  "/pages/measure-and-cap-guide",
+                                                                                          "topics":  "Fit \u0026 comfort",
+                                                                                          "title_breaks_mobile":  false,
+                                                                                          "text_breaks_mobile":  false,
+                                                                                          "mobile_bleed":  true
+                                                                                      }
+                                                                     }
+                                                     },
+                                          "block_order":  [
+                                                              "chip-1",
+                                                              "chip-2",
+                                                              "chip-3",
+                                                              "chip-4",
+                                                              "chip-5",
+                                                              "chip-6",
+                                                              "guide-1",
+                                                              "guide-2",
+                                                              "guide-3"
+                                                          ],
+                                          "settings":  {
+                                                           "filter_label":  "SECTION",
+                                                           "all_label":  "Everything",
+                                                           "show_signature":  true,
+                                                           "signature_alt":  "Kristi",
+                                                           "empty_text":  "Nothing in this section yet."
+                                                       }
+                                      },
+                     "learn-ask":  {
+                                       "type":  "learn-ask",
+                                       "settings":  {
+                                                        "heading":  "Ask and we will write it",
+                                                        "text":  "If your question is not here, send it. Kristi answers it directly, and if it comes up more than once it becomes an article and probably a Live.",
+                                                        "button_label":  "ASK A QUESTION",
+                                                        "button_url":  "/pages/contact"
+                                                    }
+                                   },
+                     "learn-library":  {
+                                           "type":  "learn-library",
+                                           "blocks":  {
+                                                          "topic-1":  {
+                                                                          "type":  "topic",
+                                                                          "settings":  {
+                                                                                           "title":  "Wig 101",
+                                                                                           "blog":  "news",
+                                                                                           "tag":  "Wig 101",
+                                                                                           "article_1":  "news/what-do-i-do-if-i-want-to-find-a-wig-for-beginners",
+                                                                                           "article_2":  "news/what-do-you-need-to-know-before-buying-a-wig-online",
+                                                                                           "article_3":  "news/whats-the-difference-between-a-human-hair-wig-and-a-synthetic-wig",
+                                                                                           "article_4":  "news/ready-to-wear-wigs-meaning"
+                                                                                       }
+                                                                      },
+                                                          "topic-2":  {
+                                                                          "type":  "topic",
+                                                                          "settings":  {
+                                                                                           "title":  "Colour",
+                                                                                           "blog":  "news",
+                                                                                           "tag":  "Colour",
+                                                                                           "article_1":  "news/how-do-you-choose-a-wig-color-that-complements-your-skin-tone",
+                                                                                           "article_2":  "news/how-can-you-make-your-synthetic-wig-less-shiny-and-more-natural-looking",
+                                                                                           "article_3":  "news/natural-wig-styles-on-camera",
+                                                                                           "article_4":  "news/how-to-tell-if-wig-looks-natural"
+                                                                                       }
+                                                                      },
+                                                          "topic-3":  {
+                                                                          "type":  "topic",
+                                                                          "settings":  {
+                                                                                           "title":  "Fit \u0026 comfort",
+                                                                                           "blog":  "news",
+                                                                                           "tag":  "Fit \u0026 comfort",
+                                                                                           "article_1":  "news/how-to-adjust-wig-for-fit",
+                                                                                           "article_2":  "news/wigs-petite-vs-average-head-size",
+                                                                                           "article_3":  "news/wig-cap-construction-fit-realism",
+                                                                                           "article_4":  "news/which-synthetic-wigs-are-the-most-comfortable-and-lightweight-for-hot-weather"
+                                                                                       }
+                                                                      },
+                                                          "topic-4":  {
+                                                                          "type":  "topic",
+                                                                          "settings":  {
+                                                                                           "title":  "Care",
+                                                                                           "blog":  "news",
+                                                                                           "tag":  "Care",
+                                                                                           "article_1":  "news/how-do-you-safely-detangle-a-synthetic-wig-without-damaging-the-fibers",
+                                                                                           "article_2":  "news/how-do-you-stop-your-synthetic-wig-from-shedding-excessively",
+                                                                                           "article_3":  "news/can-you-use-heat-tools-on-synthetic-hair-without-ruining-it",
+                                                                                           "article_4":  "news/how-do-i-properly-care-for-my-curly-human-hair-wig"
+                                                                                       }
+                                                                      },
+                                                          "topic-5":  {
+                                                                          "type":  "topic",
+                                                                          "settings":  {
+                                                                                           "title":  "Living with it",
+                                                                                           "blog":  "news",
+                                                                                           "tag":  "Living with it",
+                                                                                           "article_1":  "news/can-you-sleep-in-a-wig-every-night-without-damaging-it",
+                                                                                           "article_2":  "news/how-to-keep-from-sweating-while-wearing-a-wig-in-hot-weather",
+                                                                                           "article_3":  "news/what-are-the-most-travel-friendly-wig-styles-for-holiday-getaways",
+                                                                                           "article_4":  "news/how-can-you-build-a-wig-capsule-wardrobe-for-everyday-wear"
+                                                                                       }
+                                                                      },
+                                                          "topic-6":  {
+                                                                          "type":  "topic",
+                                                                          "settings":  {
+                                                                                           "title":  "Hair loss",
+                                                                                           "blog":  "news",
+                                                                                           "tag":  "Hair loss",
+                                                                                           "article_1":  "news/what-emotional-challenges-do-new-wig-wearers-face-and-how-can-you-overcome-them",
+                                                                                           "article_2":  "news/how-do-you-transition-from-natural-hair-to-wearing-wigs-full-time",
+                                                                                           "article_3":  "news/what-exactly-is-a-hair-topper-and-who-should-use-one",
+                                                                                           "article_4":  "news/what-should-you-look-for-in-a-wig-if-you-have-a-sensitive-scalp"
+                                                                                       }
+                                                                      }
+                                                      },
+                                           "block_order":  [
+                                                               "topic-1",
+                                                               "topic-2",
+                                                               "topic-3",
+                                                               "topic-4",
+                                                               "topic-5",
+                                                               "topic-6"
+                                                           ],
+                                           "settings":  {
+                                                            "eyebrow":  "Free guides",
+                                                            "heading":  "The whole library"
+                                                        }
+                                       },
+                     "trust-strip":  {
+                                         "type":  "cart-trust-strip",
+                                         "blocks":  {
+                                                        "trust-approved-1":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "live",
+                                                                                                  "heading":  "Tried on Live by Kristi",
+                                                                                                  "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-2":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "packaging",
+                                                                                                  "heading":  "Processed in 1 to 3 business days",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-3":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "shipping",
+                                                                                                  "heading":  "Tracking within 24 to 48 hours",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-4":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "consult",
+                                                                                                  "heading":  "All sales final, ask us first",
+                                                                                                  "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             }
+                                                    },
+                                         "block_order":  [
+                                                             "trust-approved-1",
+                                                             "trust-approved-2",
+                                                             "trust-approved-3",
+                                                             "trust-approved-4"
+                                                         ],
+                                         "settings":  {
+                                                          "background_color":  "#ffffff"
+                                                      }
+                                     }
+                 },
+    "order":  [
+                  "learn-hero",
+                  "learn-guides",
+                  "learn-ask",
+                  "learn-library",
+                  "trust-strip"
+              ]
+}

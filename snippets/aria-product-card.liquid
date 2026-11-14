@@ -5,6 +5,10 @@
     product                - product object (required)
     feature_tag_metafield  - "namespace.key" for the badge metafield (default custom.feature_tags)
     section_id             - string, keeps quick-add form ids unique
+    quick_add_icon         - optional aria-icon name for the quick-add button (default
+                             'cart'); the collection grid passes Figma's 'mega-cart-02'.
+    hide_vendor            - boolean, strips the supplier name from the title and the
+                             wishlist snapshot; homepage sections pass true. Default false.
 
   There is deliberately ONE card design. This snippet used to take a `card_style` param
   with a 'compact' variant for New & Trending (taller 262/320 media, chip badge, in-image
@@ -12,6 +16,20 @@
   the variant and its CSS were removed rather than left to drift out of sync again.
 {%- endcomment -%}
 {%- liquid
+  assign card_title = product.title
+  assign card_vendor = product.vendor
+  assign card_image_alt = product.featured_image.alt | default: product.title
+  if hide_vendor
+    capture card_title
+      render 'aria-strip-supplier', text: product.title
+    endcapture
+    # -- An image with no alt of its own reports the product title, supplier and all.
+    capture card_image_alt
+      render 'aria-strip-supplier', text: card_image_alt
+    endcapture
+    assign card_vendor = ''
+  endif
+
   assign is_sold_out = true
   if product.available
     assign is_sold_out = false
@@ -21,6 +39,29 @@
   assign mf_namespace = mf_parts[0]
   assign mf_key = mf_parts[1]
   assign feature_tags = product.metafields[mf_namespace][mf_key].value
+
+  # Fallback while the badge metafield is empty store-wide: the store already marks stock
+  # status with product tags, so show those as the chip (pre-order / clearance-or-retired).
+  if feature_tags == blank
+    assign tags_down = product.tags | join: '||' | downcase | split: '||'
+    assign fallback_tags = ''
+    # -- Same pre-order rule as the PDP pill (tag, title or pre-order collection).
+    capture card_preorder_text
+      render 'wp-is-preorder', product: product
+    endcapture
+    if card_preorder_text contains 'true'
+      assign fallback_tags = 'Pre-order'
+    endif
+    if tags_down contains 'clearance' or tags_down contains 'retired'
+      if fallback_tags != ''
+        assign fallback_tags = fallback_tags | append: '||'
+      endif
+      assign fallback_tags = fallback_tags | append: 'Clearance'
+    endif
+    if fallback_tags != ''
+      assign feature_tags = fallback_tags | split: '||'
+    endif
+  endif
 
   assign swatch_option = null
   for option in product.options_with_values
@@ -177,11 +218,30 @@
   # Counts swatches actually RENDERED, so skipped prompt values do not eat a visible slot
   # and leave the row showing four colours behind a "+8 more" button.
   assign swatch_rendered_count = 0
+
+  # Card links (image, title, View product) open the PDP on the colour the card shows.
+  # aria-product-card.js rewrites ?variant= when another swatch is picked. Products with
+  # no colour option keep the plain product url. `card_base_url` drops any search
+  # tracking query so the quick-add pop-up can build its own ?variant= link from it.
+  assign card_base_url = product.url | split: "?" | first
+  assign card_link_url = product.url
+  if swatch_option and card_variant
+    if product.url contains "?"
+      assign card_link_url = product.url | append: "&variant=" | append: card_variant.id
+    else
+      assign card_link_url = product.url | append: "?variant=" | append: card_variant.id
+    endif
+  endif
 -%}
 
-<article class="aria-product-card{% if is_sold_out %} aria-product-card--sold-out{% endif %}">
+<article
+  class="aria-product-card{% if is_sold_out %} aria-product-card--sold-out{% endif %}"
+  data-product-handle="{{ product.handle }}"
+  data-product-url="{{ card_base_url }}"
+  data-product-title="{{ card_title | strip | escape }}"
+>
   <div class="aria-product-card__media">
-    <a href="{{ product.url }}" class="aria-product-card__media-link" aria-hidden="true" tabindex="-1">
+    <a href="{{ card_link_url }}" class="aria-product-card__media-link" aria-hidden="true" tabindex="-1" data-card-link>
       {%- if product.featured_image != blank -%}
         {{
           product.featured_image
@@ -191,7 +251,7 @@
             sizes: '(min-width: 990px) 260px, 45vw',
             widths: '228,320,456,500',
             class: 'aria-product-card__image aria-product-card__image--primary',
-            alt: product.featured_image.alt | default: product.title
+            alt: card_image_alt
         }}
       {%- else -%}
         {{ 'product-1' | placeholder_svg_tag: 'aria-product-card__image aria-product-card__image--primary' }}
@@ -225,9 +285,9 @@
       data-product-id="{{ product.id }}"
       data-variant-id="{{ card_variant.id }}"
       data-product-handle="{{ product.handle }}"
-      data-product-title="{{ product.title | escape }}"
+      data-product-title="{{ card_title | escape }}"
       data-product-url="{{ product.url }}"
-      data-product-vendor="{{ product.vendor | escape }}"
+      data-product-vendor="{{ card_vendor | escape }}"
       {% if product.featured_image != blank %}
         data-product-image="{{ product.featured_image | image_url: width: 200 }}"
       {% endif %}
@@ -237,7 +297,7 @@
       {% endif %}
       data-product-available="{% if card_variant.available %}true{% else %}false{% endif %}"
       aria-pressed="false"
-      aria-label="{{ 'aria_theme.product_card.wishlist_named' | t: product_name: product.title }}"
+      aria-label="{{ 'aria_theme.product_card.wishlist_named' | t: product_name: card_title }}"
     >
       {%- render 'aria-icon', name: 'heart', class: 'aria-product-card__wishlist-outline' -%}
       {%- render 'aria-icon', name: 'heart-filled', class: 'aria-product-card__wishlist-filled' -%}
@@ -250,9 +310,37 @@
         </span>
       </span>
     {%- elsif feature_tags.size > 0 -%}
+      {%- comment -%}
+        A tag is either a plain string or a `product_tag` metaobject. The design gives each
+        one its own colours — BEST SELLER pink, NEW ARRIVAL amber, ICONS COLLECTION white —
+        which a list of strings cannot express, so a metaobject carries them and they are
+        applied inline. Strings keep rendering exactly as before, so nothing that already
+        uses this card has to change.
+      {%- endcomment -%}
       <span class="aria-product-card__badges">
         {%- for tag in feature_tags -%}
-          <span class="aria-product-card__badge aria-product-card__badge--tag">{{ tag }}</span>
+          {%- liquid
+            assign tag_label = tag.label.value
+            assign tag_bg = tag.background.value
+            assign tag_fg = tag.text_color.value
+            if tag_label == blank
+              assign tag_label = tag
+            endif
+
+            assign tag_style = ''
+            if tag_bg != blank
+              assign tag_style = tag_style | append: 'background:' | append: tag_bg | append: ';'
+            endif
+            if tag_fg != blank
+              assign tag_style = tag_style | append: 'color:' | append: tag_fg | append: ';'
+            endif
+          -%}
+          <span
+            class="aria-product-card__badge aria-product-card__badge--tag"
+            {% if tag_style != blank %}style="{{ tag_style }}"{% endif %}
+          >
+            {{- tag_label -}}
+          </span>
         {%- endfor -%}
       </span>
     {%- endif -%}
@@ -260,34 +348,49 @@
   </div>
 
   <div class="aria-product-card__body">
-    <div class="aria-product-card__rating">
-      <span class="aria-product-card__stars" aria-hidden="true">
-        {%- for i in (1..5) -%}
-          {%- if i <= rating_rounded -%}
-            {%- render 'aria-icon', name: 'star' -%}
-          {%- else -%}
-            {%- render 'aria-icon', name: 'star-outline' -%}
-          {%- endif -%}
-        {%- endfor -%}
-      </span>
-      {%- if review_rating -%}
+    {%- comment -%}
+      Only shown with real review data. No reviews app is installed, so an empty row of
+      stars and "No reviews yet" on every card would read as unfinished.
+    {%- endcomment -%}
+    {%- if review_rating -%}
+      <div class="aria-product-card__rating">
+        <span class="aria-product-card__stars" aria-hidden="true">
+          {%- for i in (1..5) -%}
+            {%- if i <= rating_rounded -%}
+              {%- render 'aria-icon', name: 'star' -%}
+            {%- else -%}
+              {%- render 'aria-icon', name: 'star-outline' -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </span>
         <span class="aria-product-card__rating-value">
           <span class="visually-hidden">{{ 'accessibility.star_reviews_info' | t: rating_value: review_rating.rating, rating_max: review_rating.scale_max }}</span>
           <span aria-hidden="true">{{ review_rating.rating }} ({{ review_count }})</span>
         </span>
-      {%- else -%}
-        <span class="aria-product-card__rating-value aria-product-card__rating-value--empty">
-          {{ 'aria_theme.product_card.no_reviews' | t }}
-        </span>
-      {%- endif -%}
-    </div>
+      </div>
+    {%- endif -%}
 
     <h3 class="aria-product-card__title">
-      <a href="{{ product.url }}">{{ product.title }}</a>
+      <a href="{{ card_link_url }}" data-card-link>{{ card_title }}</a>
     </h3>
 
-    {%- if swatch_option -%}
-      <div class="aria-product-card__swatches" role="group" aria-label="{{ swatch_option.name }}">
+    {%- comment -%}
+      The swatches row always renders, even for a product with no colour option, so every
+      card in a row reserves the same space here and the price/button rows below land at
+      the same position regardless — a product-level difference (has colours or does not)
+      should not read as two differently laid-out cards. When empty it carries an
+      aria-hidden spacer rather than nothing: Dawn's base.css hides any `:empty` element
+      outright (`div:empty { display: none }`), which would collapse the reserved height
+      right back to zero the moment there are no swatch buttons to put in it.
+    {%- endcomment -%}
+    <div
+      class="aria-product-card__swatches"
+      {% if swatch_option %}
+        role="group"
+        aria-label="{{ swatch_option.name }}"
+      {% endif %}
+    >
+      {%- if swatch_option -%}
         {%- for value in swatch_option.values -%}
           {%- liquid
             # `value` is a product_option_value DROP on current API versions (and a plain
@@ -340,6 +443,12 @@
             endif
 
             assign variant_image = matched_variant.featured_image
+            assign swatch_image_alt = variant_image.alt | default: product.title
+            if hide_vendor and variant_image
+              capture swatch_image_alt
+                render 'aria-strip-supplier', text: swatch_image_alt
+              endcapture
+            endif
 
             assign is_selected_swatch = false
             if value_string == selected_swatch_value
@@ -392,6 +501,8 @@
               data-variant-id="{{ matched_variant.id }}"
               data-variant-available="{% if matched_variant.available %}true{% else %}false{% endif %}"
               data-variant-price="{{ matched_variant.price | money }}"
+              data-variant-price-value="{{ matched_variant.price }}"
+              data-variant-compare-value="{{ variant_compare_at | default: 0 }}"
               {% if variant_compare_at %}
                 data-variant-compare-price="{{ variant_compare_at | money }}"
               {% endif %}
@@ -399,7 +510,7 @@
             {% if variant_image %}
               data-variant-image="{{ variant_image | image_url: width: 500 }}"
               data-variant-image-srcset="{{ variant_image | image_url: width: 228 }} 228w, {{ variant_image | image_url: width: 320 }} 320w, {{ variant_image | image_url: width: 456 }} 456w, {{ variant_image | image_url: width: 500 }} 500w"
-              data-variant-image-alt="{{ variant_image.alt | default: product.title | escape }}"
+              data-variant-image-alt="{{ swatch_image_alt | escape }}"
             {% endif %}
           ></button>
         {%- endfor -%}
@@ -417,22 +528,35 @@
             {{- 'aria_theme.product_card.more_colors' | t: count: swatch_overflow_count -}}
           </button>
         {%- endif -%}
-      </div>
-    {%- endif -%}
+      {%- else -%}
+        <span aria-hidden="true"></span>
+      {%- endif -%}
+    </div>
 
-    <div class="aria-product-card__price">
-      <span class="aria-product-card__price-current">{{ price | money }}</span>
+    {%- comment -%}
+      `data-aria-price` lets assets/aria-discount-price.js swap in what an automatic
+      discount will charge, so the card quotes the same price as the cart.
+    {%- endcomment -%}
+    <div
+      class="aria-product-card__price"
+      data-aria-price
+      data-variant-id="{{ card_variant.id }}"
+      data-price-value="{{ price }}"
+      data-compare-value="{% if compare_at_price > price %}{{ compare_at_price }}{% else %}0{% endif %}"
+      data-compare-class="aria-product-card__price-compare"
+    >
+      <span class="aria-product-card__price-current" data-aria-price-current>{{ price | money }}</span>
       {%- if compare_at_price > price -%}
-        <span class="aria-product-card__price-compare">{{ compare_at_price | money }}</span>
+        <span class="aria-product-card__price-compare" data-aria-price-compare>{{ compare_at_price | money }}</span>
       {%- endif -%}
     </div>
   </div>
 
   <div class="aria-product-card__actions">
-    <a href="{{ product.url }}" class="aria-product-card__view-btn">
+    <a href="{{ card_link_url }}" class="aria-product-card__view-btn" data-card-link>
       {{ 'aria_theme.product_card.view_product' | t }}
     </a>
 
-    {%- render 'aria-product-card-quick-add', product: product, section_id: section_id, is_sold_out: quick_add_disabled, variant_id: card_variant.id -%}
+    {%- render 'aria-product-card-quick-add', product: product, section_id: section_id, is_sold_out: is_sold_out, variant_id: card_variant.id, product_name: card_title, icon: quick_add_icon -%}
   </div>
 </article>

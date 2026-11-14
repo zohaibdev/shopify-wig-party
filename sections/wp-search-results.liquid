@@ -1,0 +1,266 @@
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-wp-search-results.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'wp-search-results.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign terms_enc = search.terms | url_encode
+  assign sort_current = search.sort_by | default: search.default_sort_by
+
+  assign types_query = ''
+  if search.types.size > 0
+    assign types_joined = search.types | join: ','
+    assign types_query = '&type=' | append: types_joined
+  endif
+
+  assign base_url = routes.search_url | append: '?q=' | append: terms_enc | append: '&options%5Bprefix%5D=last' | append: types_query
+  assign all_url = base_url | append: '&sort_by=' | append: sort_current
+
+  capture active_query
+    for f in search.filters
+      if f.type == 'price_range'
+        if f.min_value.value != blank
+          echo '&' | append: f.min_value.param_name | append: '=' | append: f.min_value.value
+        endif
+        if f.max_value.value != blank
+          echo '&' | append: f.max_value.param_name | append: '=' | append: f.max_value.value
+        endif
+      else
+        for v in f.active_values
+          assign v_enc = v.value | url_encode
+          echo '&' | append: f.param_name | append: '=' | append: v_enc
+        endfor
+      endif
+    endfor
+  endcapture
+  assign has_active_filters = false
+  if active_query != blank
+    assign has_active_filters = true
+  endif
+
+  assign want_filter = section.settings.wigs_filter_name | strip | downcase | replace: 'ies', 'y' | remove_last: 's'
+  assign want_value = section.settings.wigs_filter_value | strip | downcase | replace: 'ies', 'y' | remove_last: 's'
+  assign wigs_value = null
+  assign stock_value = null
+  for f in search.filters
+    assign f_label = f.label | strip | downcase | replace: 'ies', 'y' | remove_last: 's'
+    if f_label == want_filter and wigs_value == null
+      for v in f.values
+        assign v_label = v.label | strip | downcase | replace: 'ies', 'y' | remove_last: 's'
+        if v_label == want_value
+          assign wigs_value = v
+        endif
+      endfor
+    endif
+    if f.param_name == 'filter.v.availability'
+      for v in f.values
+        if v.value == '1'
+          assign stock_value = v
+        endif
+      endfor
+    endif
+  endfor
+
+  assign title_text = section.settings.title_template | replace: '{count}', search.results_count | replace: '{terms}', search.terms
+
+  assign is_empty = false
+  if search.performed and search.results_count == 0 and has_active_filters == false
+    assign is_empty = true
+  endif
+  assign empty_heading = section.settings.empty_heading | replace: '{terms}', search.terms
+-%}
+
+<section
+  class="wp-search section-{{ section.id }}"
+  data-wp-search
+  data-section-id="{{ section.id }}"
+  style="--wp-search-pad-top: {{ section.settings.padding_top }}px; --wp-search-pad-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="wp-search__inner">
+    {%- paginate search.results by 20 -%}
+      {%- if is_empty -%}
+        {%- render 'wp-empty-state',
+          heading: empty_heading,
+          body: section.settings.empty_body,
+          btn1_label: section.settings.empty_btn1_label,
+          btn1_url: section.settings.empty_btn1_url,
+          btn2_label: section.settings.empty_btn2_label,
+          btn2_url: section.settings.empty_btn2_url,
+          heading_tag: 'h1'
+        -%}
+      {%- elsif search.performed -%}
+        <div class="wp-search__header">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="wp-search__eyebrow">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          <h1 class="wp-search__title">
+            {{- title_text -}}
+          </h1>
+          {%- if section.settings.subtitle != blank -%}
+            <p class="wp-search__subtitle">{{ section.settings.subtitle }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- if search.filters != empty or search.results_count > 0 -%}
+          <div class="wp-search__bar">
+            <div class="wp-search__filters">
+              <span class="wp-search__filter-label">{{ section.settings.filter_label }}</span>
+              <div class="wp-search__chips">
+                <a
+                  class="wp-search__chip{% unless has_active_filters %} wp-search__chip--active{% endunless %}"
+                  href="{{ all_url }}"
+                >
+                  {{- section.settings.all_label -}}
+                  {%- unless has_active_filters %} {{ search.results_count }}{% endunless -%}
+                </a>
+
+                {%- if wigs_value -%}
+                  <a
+                    class="wp-search__chip{% if wigs_value.active %} wp-search__chip--active{% endif %}"
+                    href="{% if wigs_value.active %}{{ wigs_value.url_to_remove }}{% else %}{{ wigs_value.url_to_add }}{% endif %}"
+                  >
+                    {{- section.settings.wigs_label }} {{ wigs_value.count -}}
+                  </a>
+                {%- endif -%}
+
+                {%- if stock_value -%}
+                  <a
+                    class="wp-search__chip{% if stock_value.active %} wp-search__chip--active{% endif %}"
+                    href="{% if stock_value.active %}{{ stock_value.url_to_remove }}{% else %}{{ stock_value.url_to_add }}{% endif %}"
+                  >
+                    {{- section.settings.stock_label }} {{ stock_value.count -}}
+                  </a>
+                {%- endif -%}
+
+                {%- if section.settings.show_guides_chip -%}
+                  {%- assign guides_url = section.settings.guides_url -%}
+                  {%- if guides_url == blank -%}
+                    {%- assign guides_url = routes.search_url | append: '?q=' | append: terms_enc | append: '&options%5Bprefix%5D=last&type=article' -%}
+                  {%- endif -%}
+                  <a class="wp-search__chip" href="{{ guides_url }}">{{ section.settings.guides_label }}</a>
+                {%- endif -%}
+
+                {%- if section.settings.show_replays_chip and section.settings.replays_url != blank -%}
+                  <a class="wp-search__chip" href="{{ section.settings.replays_url }}">{{ section.settings.replays_label }}</a>
+                {%- endif -%}
+              </div>
+            </div>
+
+            {%- if search.sort_options.size > 0 and search.results_count > 0 -%}
+              <div class="wp-search__sort" data-wp-sort>
+                <button
+                  type="button"
+                  class="wp-search__sort-trigger"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                  data-wp-sort-trigger
+                >
+                  <span class="wp-search__sort-text">
+                    <span class="wp-search__sort-label">{{ section.settings.sort_label }}: </span>
+                    {%- for option in search.sort_options -%}
+                      {%- if option.value == sort_current -%}
+                        <span class="wp-search__sort-value">{{ option.name }}</span>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </span>
+                  <span class="wp-search__sort-chevron" aria-hidden="true">{{ 'search-sort-chevron-icon.svg' | inline_asset_content }}</span>
+                </button>
+                <ul class="wp-search__sort-menu" role="listbox" hidden data-wp-sort-menu>
+                  {%- for option in search.sort_options -%}
+                    <li role="presentation">
+                      <a
+                        role="option"
+                        class="wp-search__sort-option"
+                        href="{{ base_url }}{{ active_query }}&sort_by={{ option.value }}"
+                        aria-selected="{% if option.value == sort_current %}true{% else %}false{% endif %}"
+                      >{{ option.name }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if search.results_count == 0 -%}
+          <p class="wp-search__no-match">{{ section.settings.filter_empty_text }}</p>
+        {%- endif -%}
+
+        {%- if search.results_count > 0 -%}
+          <ul class="wp-search__grid" data-wp-search-grid>
+            {%- for item in search.results -%}
+              {%- if item.object_type == 'product' -%}
+                <li class="wp-search__item">
+                  {%- render 'wp-search-card', product: item, section_id: section.id -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+
+          {%- liquid
+            assign shown_so_far = paginate.current_offset | plus: paginate.current_size
+            assign remaining = paginate.items | minus: shown_so_far
+            assign more_token = '{n}'
+            assign more_count = remaining
+            if more_count > paginate.page_size
+              assign more_count = paginate.page_size
+            endif
+          -%}
+          <div class="wp-search__more-wrap" data-wp-search-more-wrap>
+            {%- if paginate.next and remaining > 0 -%}
+              <a
+                class="wp-search__more"
+                href="{{ paginate.next.url }}"
+                data-wp-search-more
+              >{{ section.settings.more_label | replace: more_token, more_count }}</a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        <div class="wp-search__header">
+          <h1 class="wp-search__title">{{ 'general.search.search' | t }}</h1>
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Search results",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "header", "content": "Heading" },
+    { "type": "text", "id": "eyebrow", "label": "Label above heading (mobile)", "info": "Hidden when empty." },
+    { "type": "text", "id": "title_template", "label": "Title", "info": "Use {count} and {terms}.", "default": "{count} results for “{terms}”" },
+    { "type": "textarea", "id": "subtitle", "label": "Subtitle", "info": "Hidden when empty." },
+    { "type": "header", "content": "Filter row" },
+    { "type": "text", "id": "filter_label", "label": "Row label", "default": "Filter" },
+    { "type": "text", "id": "all_label", "label": "All chip label", "default": "All" },
+    { "type": "text", "id": "wigs_label", "label": "Wigs chip label", "default": "Wigs" },
+    { "type": "text", "id": "wigs_filter_name", "label": "Wigs chip: filter name", "info": "Name of the storefront filter, as set in Search & Discovery.", "default": "Product type" },
+    { "type": "text", "id": "wigs_filter_value", "label": "Wigs chip: filter value", "info": "The value of that filter to apply.", "default": "Wig" },
+    { "type": "text", "id": "stock_label", "label": "Available chip label", "info": "Shopify availability counts pre-orders that can be bought, so this is not labelled In stock.", "default": "Available to order" },
+    { "type": "checkbox", "id": "show_guides_chip", "label": "Show Guides chip", "default": false },
+    { "type": "text", "id": "guides_label", "label": "Guides chip label", "default": "Guides" },
+    { "type": "url", "id": "guides_url", "label": "Guides chip link", "info": "Empty: article search for the same terms." },
+    { "type": "checkbox", "id": "show_replays_chip", "label": "Show Live replays chip", "default": false },
+    { "type": "text", "id": "replays_label", "label": "Live replays chip label", "default": "Live replays" },
+    { "type": "url", "id": "replays_url", "label": "Live replays chip link" },
+    { "type": "text", "id": "sort_label", "label": "Sort label", "default": "Sort" },
+    { "type": "header", "content": "Results" },
+    { "type": "text", "id": "more_label", "label": "Show more button", "info": "Use {n} for the number left to show (max 20).", "default": "Show {n} more" },
+    { "type": "header", "content": "No results" },
+    { "type": "text", "id": "empty_heading", "label": "No-results heading", "info": "Use {terms}.", "default": "Nothing matched “{terms}”" },
+    { "type": "textarea", "id": "empty_body", "label": "No-results text", "default": "We couldn't find anything for that search. Try a different word, or browse our wigs and guides." },
+    { "type": "text", "id": "empty_btn1_label", "label": "First button label", "default": "Synthetic vs Human Hair" },
+    { "type": "url", "id": "empty_btn1_url", "label": "First button link", "info": "Button is hidden when label or link is empty." },
+    { "type": "text", "id": "empty_btn2_label", "label": "Second button label", "default": "Book a consult" },
+    { "type": "url", "id": "empty_btn2_url", "label": "Second button link", "info": "Button is hidden when label or link is empty." },
+    { "type": "text", "id": "filter_empty_text", "label": "Text when a filter has no products", "default": "No products match this filter" },
+    { "type": "header", "content": "Spacing" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Top padding", "default": 80 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Bottom padding", "default": 80 }
+  ]
+}
+{% endschema %}

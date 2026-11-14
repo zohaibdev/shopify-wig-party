@@ -1,0 +1,1629 @@
+/* Wig Party — PDP buy box (sections/pdp-buy-box.liquid), Figma node 6358:1262.
+ *
+ * Every length in this file is transcribed from the Figma frame, which is authored at a
+ * 1360px container (x=40 inside the 1440 artboard) — the same width as the theme's
+ * `--container`, so the desktop layout is a 1:1 mapping with no rescaling.
+ *
+ * Desktop is the design of record. The breakpoints below only reflow the two columns;
+ * the mobile composition is a separate Figma frame and is deliberately NOT invented here.
+ */
+
+/* Dawn ships no global box-sizing reset (base.css sets it only on `details > *`), and the
+ * theme's own convention is to declare it per element. Nearly every box in this design is
+ * a fixed Figma width that also carries a border — the 140px quantity stepper, the 118px
+ * thumbs, the 48px trust tiles, the cap cards that swap a 1px border for 2px on select.
+ * Under content-box each of those would render 1-2px wider than the design and the
+ * cap cards would visibly resize on selection, so the reset is scoped here once. */
+.aria-pdp,
+.aria-pdp *,
+.aria-pdp *::before,
+.aria-pdp *::after {
+  box-sizing: border-box;
+}
+
+/* `display: block` is load-bearing, not tidiness. The section's root is the custom
+ * element <aria-pdp-buy-box>, and an unknown element defaults to `display: inline`;
+ * vertical padding on an inline box paints but creates no layout space, so the 80px
+ * Figma puts below the info column (node 6358:1262, pb-80) silently did nothing and
+ * the next section butted straight up against the accordions. */
+.aria-pdp {
+  display: block;
+  background: var(--white, #fff);
+  padding-bottom: 80px;
+}
+
+/* No inline padding at true desktop — Figma's 1360 column runs edge to edge up to the
+   container's own max-width. Below 1399px (where the column starts shrinking below
+   1360, so content can otherwise touch the viewport edges) the ≤1399px rule below
+   restores a 16px margin. */
+.aria-pdp__inner {
+  max-width: var(--container, 1360px);
+  margin-inline: auto;
+}
+
+/* Figma: gallery 727 + info 593 inside 1360 → the residual 40px is the column gap. */
+.aria-pdp__layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Gallery (6358:1263) — 727 wide
+ * ------------------------------------------------------------------ */
+
+.aria-pdp__gallery {
+  flex: 0 0 727px;
+  width: 727px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 727x768. `position: relative` anchors both the wishlist button and the video pill,
+   which Figma positions against the main image rather than the gallery column. */
+.aria-pdp__main-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 727 / 768;
+  overflow: hidden;
+  background: var(--cream, #eaddd4);
+}
+
+.aria-pdp__main-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Only the active slide is shown; keeping the others in the DOM (rather than
+   re-sourcing on click) means switching thumbnails never re-downloads an image. */
+.aria-pdp__main-slide {
+  position: absolute;
+  inset: 0;
+}
+
+.aria-pdp__main-slide[hidden] {
+  display: none !important;
+}
+
+/* Figma places this at left 667 / top 20 in a 727-wide frame → 20px from the right edge. */
+.aria-pdp__wishlist {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--white, #fff);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.29);
+  color: var(--py, #a64a4c);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.aria-pdp__wishlist:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.aria-pdp__wishlist svg {
+  width: 18.46px;
+  height: 16px;
+  display: block;
+}
+
+/* The card heart glyph is a hardcoded white fill; on the PDP the resting state is the
+   brand pink outline-on-glass, so the fill is driven from CSS instead. */
+.aria-pdp__wishlist svg path {
+  fill: currentColor;
+}
+
+.aria-pdp__wishlist[aria-pressed='true'] {
+  background: var(--white, #fff);
+}
+
+/* Figma: left 20, top 676 in a 768-tall image. The designed pill is 72px tall
+ * (12 + a two-line 48px label + 12), so 676 + 72 leaves exactly 20px at the bottom —
+ * the same inset the wishlist uses at the top. Anchoring from the bottom keeps that
+ * gap honest at every viewport, where a top offset would drift as the image scales.
+ *
+ * `font: inherit` matters because the pill renders as a <button> when a video is set;
+ * without it the UA's button font overrides the label's Montserrat and the copy breaks
+ * in the wrong place. */
+.aria-pdp__video-pill {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--white, #fff);
+  backdrop-filter: blur(6.7px);
+  -webkit-backdrop-filter: blur(6.7px);
+  font: inherit;
+  text-align: left;
+  border: 0;
+  cursor: pointer;
+}
+
+.aria-pdp__video-avatar {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 40px;
+}
+
+.aria-pdp__video-avatar img {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Badge sits at 34/41 inside the pill; the avatar starts at 12/12, so this is
+   +22/+29 from the avatar's own origin. */
+.aria-pdp__video-badge {
+  position: absolute;
+  left: 22px;
+  top: 29px;
+  width: 19.533px;
+  height: 19.533px;
+}
+
+.aria-pdp__video-badge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Figma node 6358:1276 is Montserrat Medium 16/24 in a 187px box — the heading family,
+ * not the body one. `flex: none` stops the flex row from shrinking that box below 187,
+ * which is what makes the copy break after "this", as the design does. */
+.aria-pdp__video-label {
+  flex: none;
+  width: 187px;
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #383838;
+}
+
+/* The pill renders as an <a> when the record supplies a link; the design has no
+   underline on it, and the label colour must not flip to the theme's link colour. */
+.aria-pdp__video-pill,
+.aria-pdp__video-pill:hover,
+.aria-pdp__video-pill:focus {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* --- Video lightbox ------------------------------------------------ *
+ * Figma has no frame for this — the pill is simply marked as a link to the styling
+ * video. Playing it in place beats navigating away mid-purchase, so the player is a
+ * native <dialog>: focus trapping, Esc-to-close and the backdrop come for free.
+ * ------------------------------------------------------------------- */
+
+.aria-pdp__video-modal {
+  width: min(880px, 92vw);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.aria-pdp__video-modal::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.aria-pdp__video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.aria-pdp__video-frame iframe,
+.aria-pdp__video-frame video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.aria-pdp__video-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--white, #fff);
+  cursor: pointer;
+}
+
+/* Six 118px thumbs + five 12px gaps = 768 in a 727 frame, so Figma clips the last one.
+   Scrolling is the honest web equivalent of that overflow. */
+.aria-pdp__thumbs {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.aria-pdp__thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.aria-pdp__thumb {
+  flex: none;
+  width: 118px;
+  height: 118px;
+  padding: 0;
+  border: 1px solid var(--cream, #eaddd4);
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Selected thumb is a 2px dark-pink border. Box-sizing keeps the tile 118px in both
+   states so the row does not shift by 1px when the selection moves. */
+.aria-pdp__thumb[aria-current='true'] {
+  border: 2px solid var(--py, #a64a4c);
+}
+
+.aria-pdp__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ------------------------------------------------------------------ *
+ * Info column (6358:1279) — 593 wide, 24px between major blocks
+ * ------------------------------------------------------------------ */
+
+.aria-pdp__info {
+  flex: 0 0 593px;
+  width: 593px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --- Title block (6358:1280) --------------------------------------- */
+
+.aria-pdp__heading-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Figma's pill is 356 wide inside a 317 parent (it overflows by design); as an
+   inline-flex it simply sizes to its content, which is the same result. */
+.aria-pdp__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  gap: 10px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 20px;
+  background: var(--cream, #eaddd4);
+}
+
+.aria-pdp__eyebrow-text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: var(--black, #000);
+}
+
+.aria-pdp__stock-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 32px;
+  background: var(--qi, #bc696b);
+  font-family: var(--font-body-family);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 12px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+  white-space: nowrap;
+}
+
+.aria-pdp__stock-badge--out {
+  background: var(--gray, #3f3e3e);
+}
+
+/* 12px top/bottom padding + a 2px gap reproduce the 96px block in Figma. */
+.aria-pdp__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block: 12px;
+}
+
+.aria-pdp__rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.aria-pdp__stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.aria-pdp__star {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.aria-pdp__star svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-pdp__rating-text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: #333131;
+}
+
+/* Heading/H2 token: Montserrat Medium 48/56 — the theme's heading family already is
+   Montserrat 500, so this inherits rather than hardcoding a family. */
+.aria-pdp__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--black, #000);
+}
+
+.aria-pdp__summary {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: var(--gray, #3f3e3e);
+}
+
+/* <product-form> and its <form> are structural wrappers that Figma has no counterpart
+   for; `display: contents` keeps them out of the 24px flex rhythm of the info column. */
+.aria-pdp__product-form,
+.aria-pdp__form {
+  display: contents;
+}
+
+/* The form's own children continue the column's 24px stack. */
+.aria-pdp__form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* --- Price block (6358:1307) --------------------------------------- */
+
+.aria-pdp__price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.aria-pdp__price-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.aria-pdp__price {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 38px;
+  color: var(--black, #000);
+  white-space: nowrap;
+}
+
+.aria-pdp__price-compare {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  text-decoration: line-through;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  opacity: 0.58;
+  color: var(--gray, #3f3e3e);
+  white-space: nowrap;
+}
+
+.aria-pdp__save-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #f79510;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: var(--black, #000);
+  white-space: nowrap;
+}
+
+.aria-pdp__finance {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: var(--gray, #3f3e3e);
+}
+
+/* Figma 6358:1312 draws "Learn more" in the same grey as the rest of the line, with no
+ * underline — so at rest the link is invisible as a link. The affordance is therefore
+ * carried entirely by hover and keyboard focus, which leaves the resting design intact. */
+.aria-pdp__finance a,
+.aria-pdp__finance-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.aria-pdp__finance a:hover,
+.aria-pdp__finance a:focus-visible,
+.aria-pdp__finance-link:hover,
+.aria-pdp__finance-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+}
+
+/* --- Colour / swatches (6358:1313) --------------------------------- */
+
+.aria-pdp__colour {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aria-pdp__colour-label {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--black, #000);
+}
+
+.aria-pdp__compare-all {
+  color: var(--qi, #bc696b);
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.aria-pdp__compare-all:hover,
+.aria-pdp__compare-all:focus-visible {
+  color: var(--py, #a64a4c);
+}
+
+/* Figma's swatch container is a 593-wide absolute grid: items 68.195 x 68.863 on an
+   83.32 x 86.828 pitch, first item at (4.449, 8.98). Subtracting the item box from the
+   pitch gives the gaps below, so a real grid lands on the designed coordinates while
+   still accepting however many variants the product actually has. */
+.aria-pdp__swatches {
+  display: grid;
+  grid-template-columns: repeat(7, 68.195px);
+  column-gap: 15.125px;
+  row-gap: 17.965px;
+  padding-left: 4.449px;
+  padding-top: 8.98px;
+  margin: 0;
+  list-style: none;
+}
+
+.aria-pdp__swatch {
+  position: relative;
+  width: 68.195px;
+  height: 68.863px;
+}
+
+.aria-pdp__swatch-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aria-pdp__swatch-label {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.aria-pdp__swatch-label img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Keyboard focus has to be visible even though the radio itself is off-screen. */
+.aria-pdp__swatch-input:focus-visible + .aria-pdp__swatch-label {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+.aria-pdp__swatch-input:checked + .aria-pdp__swatch-label {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: -2px;
+}
+
+/* Sold-out colours get Figma's dark flag (a 47.5px body plus a ~20px arrow point that
+   deliberately runs to the tile's right edge), not a generic dimming. */
+.aria-pdp__swatch--unavailable .aria-pdp__swatch-label img {
+  opacity: 0.55;
+}
+
+.aria-pdp__swatch-flag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 67.935px;
+  height: 69.941px;
+  pointer-events: none;
+  background: var(--aria-pdp-swatch-flag) no-repeat left top / 67.935px 69.941px;
+}
+
+.aria-pdp__swatch-flag span {
+  position: absolute;
+  left: 12.414px;
+  top: 20.971px;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: var(--white, #fff);
+}
+
+/* Figma: the last swatch row ends at y=340.573 and the select starts at y=365. */
+.aria-pdp__colour-select-wrap {
+  position: relative;
+  margin-top: 24.43px;
+}
+
+.aria-pdp__colour-select {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 54px;
+  padding: 0 44px 0 20px;
+  border: 1.49px solid #ddd;
+  border-radius: 0;
+  background: var(--white, #fff);
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #1c1b1b;
+  text-align: center;
+  text-align-last: center;
+  cursor: pointer;
+}
+
+/* Chevron at Figma x=563.51, width 14.825, in a 593 box → 14.665px from the right. */
+.aria-pdp__colour-select-icon {
+  position: absolute;
+  right: 14.665px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14.825px;
+  height: 14.97px;
+  color: #1c1b1b;
+  pointer-events: none;
+}
+
+.aria-pdp__colour-select-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Kristi banner (6358:1347) ------------------------------------- */
+
+.aria-pdp__kristi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--white, #fff);
+  border-radius: 4px;
+  background: var(--black, #000);
+}
+
+.aria-pdp__kristi-media {
+  flex: none;
+  width: 127.317px;
+  height: 135.719px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.aria-pdp__kristi-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 6358:1349 is a fixed 411 inside the card's 569px content box, so ~18.7px of slack
+   sits to its right unclaimed. That slack is what produces the five-line wrap in the
+   design — letting the body fill the row sets the copy one line short. */
+.aria-pdp__kristi-body {
+  flex: none;
+  width: 411px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+/* Figma 6358:1350 — 74.777 x 28.719, white on the black card. Painted as a mask rather
+ * than shipped as an <img>: the shared asset is authored in brand pink for use on light
+ * backgrounds elsewhere on the site, so the colour is set here instead of forking the
+ * file. `contain` keeps the glyph's aspect ratio inside the designed box. */
+.aria-pdp__kristi-signature {
+  flex: none;
+  display: block;
+  width: 74.777px;
+  height: 28.719px;
+  background-color: var(--white, #fff);
+  -webkit-mask: var(--aria-pdp-kristi-signature) no-repeat left center / contain;
+  mask: var(--aria-pdp-kristi-signature) no-repeat left center / contain;
+}
+
+/* `p` is load-bearing: metafield_tag wraps rich text in a paragraph, which arrives with
+   the UA's 1em margin and would break the 9px gap under the signature. */
+.aria-pdp__kristi-text,
+.aria-pdp__kristi-text p {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--white, #fff);
+}
+
+.aria-pdp__kristi-text p + p {
+  margin-top: 12px;
+}
+
+/* Figma sets "plus 10%" and the colour name in Poppins Bold. `b` is covered alongside
+   `strong` because a section richtext setting can emit either. */
+.aria-pdp__kristi-text strong,
+.aria-pdp__kristi-text b {
+  font-weight: 700;
+}
+
+.aria-pdp__kristi-text a {
+  color: inherit;
+}
+
+/* --- Add to cart row (6358:1353) ----------------------------------- */
+
+.aria-pdp__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.aria-pdp__cart-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aria-pdp__qty {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 140px;
+  height: 56px;
+  padding-inline: 8px;
+  border: 1px solid var(--charcoal, #36393c);
+}
+
+.aria-pdp__qty-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #070504;
+  cursor: pointer;
+}
+
+.aria-pdp__qty-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.aria-pdp__qty-btn svg {
+  display: block;
+}
+
+/* The plus glyph exports at 12.03px inside Figma's 19x20 icon frame. */
+.aria-pdp__qty-btn--plus svg {
+  width: 12.033px;
+  height: 12.033px;
+}
+
+.aria-pdp__qty-btn--minus svg {
+  width: 19px;
+  height: 20px;
+}
+
+/* Figma specifies Neue Haas Grotesk Display Pro 55 Roman here — a face the theme does
+   not license or load. The body family at the same size/weight/line-height is the
+   closest faithful stand-in; swap the family here if the face is ever added. */
+.aria-pdp__qty-input {
+  width: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--charcoal, #36393c);
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.aria-pdp__qty-input::-webkit-outer-spin-button,
+.aria-pdp__qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 593 - 140 qty - 8 gap = 445, matching the Figma button box exactly. */
+.aria-pdp__submit {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 56px;
+  padding: 14px 50px;
+  border: 0;
+  border-radius: 0;
+  background: var(--py, #a64a4c);
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+  color: var(--white, #fff);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.aria-pdp__submit:hover:not([aria-disabled='true']) {
+  background: var(--sy, #000);
+}
+
+.aria-pdp__submit[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.aria-pdp__submit-icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: currentColor;
+}
+
+.aria-pdp__submit-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aria-pdp__error {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 22px;
+  color: #d02e2e;
+}
+
+.aria-pdp__error[hidden] {
+  display: none;
+}
+
+/* --- Trust cards (6358:1371) --------------------------------------- */
+
+.aria-pdp__trust {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-pdp__trust-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 78px;
+  padding-left: 16px;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 16px;
+  background: var(--white, #fff);
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.05));
+}
+
+.aria-pdp__trust-icon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+  color: var(--black, #000);
+}
+
+/* Figma node 6358:1375: a 35px glyph centred in the 48px tile (6358:1374).
+ *
+ * `img` matters as much as `svg` here. A badge coming from a section block is an inline
+ * <svg>; one coming from a `trust_badge` metaobject is an <img> off the Files CDN. With
+ * only the svg rule, the image rendered at its intrinsic size and burst out of the tile.
+ * `object-fit: contain` keeps a non-square upload inside the box instead of stretching it. */
+.aria-pdp__trust-icon svg,
+.aria-pdp__trust-icon img {
+  display: block;
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+}
+
+.aria-pdp__trust-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.aria-pdp__trust-title {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--black, #000);
+}
+
+.aria-pdp__trust-desc {
+  margin: 0;
+  padding-top: 4px;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--gray, #3f3e3e);
+}
+
+/* --- Cap size (6358:1415) ------------------------------------------ */
+
+.aria-pdp__cap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aria-pdp__cap-label-row {
+  display: flex;
+  align-items: center;
+}
+
+.aria-pdp__cap-label {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #171717;
+}
+
+/* Figma 6358:1419 — Poppins Medium 13/18, dark pink, underlined, 10px clear of the
+   label (Figma models that gap as an explicit spacer layer). */
+.aria-pdp__cap-measure {
+  margin-left: 10px;
+  font-family: var(--font-body-family);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  text-decoration: underline;
+  text-underline-position: from-font;
+  color: var(--py, #a64a4c);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.aria-pdp__cap-measure:hover,
+.aria-pdp__cap-measure:focus-visible {
+  color: var(--qi, #bc696b);
+}
+
+.aria-pdp__cap-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Positioned so the off-screen radio is contained rather than escaping to the page and
+   dragging the layout into a horizontal scroll. */
+.aria-pdp__cap-option {
+  position: relative;
+  display: flex;
+}
+
+.aria-pdp__cap-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* `justify-content: flex-end` is Figma's own alignment: the label block is pinned to the
+   bottom so all three cards share a text baseline regardless of glyph height. */
+.aria-pdp__cap-card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 16px 12px;
+  border: 1px solid var(--cream, #eaddd4);
+  border-radius: 2px;
+  background: var(--white, #fff);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* Selected card: 2px pink border + the white→cream gradient. The 1px border difference
+   is absorbed by border-box sizing so the card never resizes on selection. */
+.aria-pdp__cap-input:checked + .aria-pdp__cap-card {
+  border: 2px solid var(--qi, #bc696b);
+  background: linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%);
+}
+
+.aria-pdp__cap-input:focus-visible + .aria-pdp__cap-card {
+  outline: 2px solid var(--py, #a64a4c);
+  outline-offset: 2px;
+}
+
+/* The three heads are one measuring diagram. Figma windows a 36x49 view onto it scaled
+   to 119.3x58.1, stepping the x-origin per option — reproduced here as a background
+   sprite so the three tiles stay in register with the source artwork. Note the first
+   origin is NEGATIVE (Figma: left -6.15% of 36px); a positive value shifts the Petite
+   head right and clips a sliver of its neighbour. */
+.aria-pdp__cap-figure {
+  flex: none;
+  width: 36px;
+  height: 49px;
+  background-image: var(--aria-pdp-cap-sprite);
+  background-repeat: no-repeat;
+  background-size: 119.3px 58.1px;
+  background-position: -2.21px -9.11px;
+}
+
+.aria-pdp__cap-option:nth-child(2) .aria-pdp__cap-figure {
+  background-position: -41.9px -9.11px;
+}
+
+.aria-pdp__cap-option:nth-child(3) .aria-pdp__cap-figure {
+  background-position: -81.4px -9.11px;
+}
+
+/* A merchant-uploaded per-option image replaces the sprite window entirely. */
+.aria-pdp__cap-figure--image {
+  background: none;
+  object-fit: contain;
+}
+
+.aria-pdp__cap-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  text-align: center;
+}
+
+.aria-pdp__cap-name {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #171717;
+  white-space: nowrap;
+}
+
+.aria-pdp__cap-measure-value {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+  color: #8c8c8c;
+  white-space: nowrap;
+}
+
+/* --- Accordions (6358:1436) ---------------------------------------- */
+
+.aria-pdp__accordions {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Figma overlaps each row by 1px (`mb-[-1px]`) so adjacent 1px borders collapse into a
+   single hairline instead of doubling to 2px. */
+.aria-pdp__accordion {
+  border: 1px solid var(--silver, #b2b6b6);
+  margin-bottom: -1px;
+}
+
+.aria-pdp__accordion:first-child {
+  border-radius: 4px 4px 0 0;
+}
+
+.aria-pdp__accordion:last-child {
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 0;
+}
+
+.aria-pdp__accordion-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.aria-pdp__accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.aria-pdp__accordion-title {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-pdp__accordion-icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: var(--black, #000);
+}
+
+.aria-pdp__accordion-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* One icon slot, two glyphs — swapped on open state so the box never reflows. */
+.aria-pdp__accordion-icon .aria-pdp__icon-minus {
+  display: none;
+}
+
+.aria-pdp__accordion[open] .aria-pdp__accordion-icon .aria-pdp__icon-minus {
+  display: block;
+}
+
+.aria-pdp__accordion[open] .aria-pdp__accordion-icon .aria-pdp__icon-plus {
+  display: none;
+}
+
+/* Summary already carries 20px; the 14px gap Figma puts between header and body is the
+   remainder once the shared padding is accounted for. */
+.aria-pdp__accordion-content {
+  padding: 0 20px 20px;
+  margin-top: -6px;
+}
+
+.aria-pdp__accordion-content,
+.aria-pdp__accordion-content p {
+  margin-block: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  color: #000001;
+}
+
+.aria-pdp__accordion-content p + p {
+  margin-top: 16px;
+}
+
+/* Product descriptions come from the admin and can hold wide spec tables and pasted
+   images; they scroll or shrink inside the accordion instead of widening the page. */
+.aria-pdp__accordion-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.aria-pdp__accordion-content img,
+.aria-pdp__accordion-content iframe,
+.aria-pdp__accordion-content video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ------------------------------------------------------------------ *
+ * Reflow. The Figma frame is desktop-only; below its 1360 container the
+ * two fixed columns become fluid, then stack. Mobile composition is a
+ * separate design and is not invented here.
+ * ------------------------------------------------------------------ */
+
+@media screen and (max-width: 1399px) {
+  .aria-pdp__inner {
+    padding-inline: 16px;
+  }
+
+  .aria-pdp__gallery,
+  .aria-pdp__info {
+    flex: 1 1 0;
+    width: auto;
+  }
+
+  /* Once the column is fluid the swatch pitch can no longer be fixed at 68.195px. */
+  .aria-pdp__swatches {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    padding-left: 0;
+  }
+
+  .aria-pdp__swatch {
+    width: 100%;
+    aspect-ratio: 68.195 / 68.863;
+    height: auto;
+  }
+
+  /* The 411px body only reproduces the designed wrap at the designed 593px column. */
+  .aria-pdp__kristi-body {
+    flex: 1 1 auto;
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .aria-pdp {
+    padding-bottom: 48px;
+  }
+
+  .aria-pdp__layout {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .aria-pdp__gallery,
+  .aria-pdp__info {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .aria-pdp__title {
+    font-size: 36px;
+    line-height: 44px;
+  }
+
+  .aria-pdp__swatches {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .aria-pdp__trust-card {
+    height: auto;
+    padding-block: 14px;
+  }
+
+  .aria-pdp__cart-row {
+    flex-wrap: wrap;
+  }
+
+  .aria-pdp__submit {
+    flex: 1 1 100%;
+    padding-inline: 20px;
+  }
+}
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:4639 — a 375px frame, 16px side margins => 343px content column).
+ * Placed after the 989px tablet block so it wins the cascade at ≤749px;
+ * every value below is read directly off that node, not the screenshot.
+ *
+ * Re-verified against a fresh get_design_context pull (not just metadata).
+ * That pass turned up a real sequence bug: on this frame Cap size sits
+ * BEFORE the quantity/Add-to-cart row, which sits before Trust, which
+ * sits before Accordions — the opposite order the desktop frame
+ * (6358:1262: cart row -> trust -> cap size -> accordions) uses. The
+ * markup is unchanged (still desktop's DOM order); the four blocks below
+ * are flex children of `.aria-pdp__actions`, so `order` reorders them
+ * for this breakpoint only, with no HTML change.
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* 6441:3596's own `pt-[20px]` is the gallery -> info gap on this frame;
+     the 989px block's 32px is a tablet-only value and does not apply here. */
+  .aria-pdp__layout {
+    gap: 20px;
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Gallery (node 6441:3509, its own 375px mobile frame — 343 wide,
+   * 364-tall image + an 8px gap + 48px thumbnails, height 420 total).
+   * Every value below is this node's own geometry, not the 727-wide
+   * desktop frame scaled down.
+   * ---------------------------------------------------------------- */
+  .aria-pdp__gallery {
+    gap: 8px;
+  }
+
+  .aria-pdp__main-media {
+    aspect-ratio: 343 / 364;
+  }
+
+  /* The wishlist heart has no layer in this frame at all (and the current
+     mobile screenshot confirms it — nothing overlays the top-right corner
+     of the hero image on this breakpoint), so it is hidden rather than
+     repositioned. */
+  .aria-pdp__wishlist {
+    display: none;
+  }
+
+  /* Pill sits at left 8 / (364 - 287.6 - 68) ≈ 8 from the bottom, not
+     desktop's 20/20 — this frame's image is shorter (364 vs 768). */
+  .aria-pdp__video-pill {
+    left: 8px;
+    bottom: 8px;
+  }
+
+  /* Mobile sets the label in the body font at 14/22 gray, not desktop's
+     heading font at 16/24 dark-grey — a real typographic difference
+     between the two frames, confirmed by the node's own font tokens. */
+  .aria-pdp__video-label {
+    font-family: var(--font-body-family);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    color: var(--gray, #3f3e3e);
+  }
+
+  /* 7 tiles on a 50px pitch (48px tile + 2px gap), not desktop's 118px
+     tiles on a 12px gap. Border widths are hairline fractions in the node
+     itself (0.472px resting / 0.944px active) rather than desktop's 1px/2px
+     — kept literal per this file's convention of transcribing Figma's own
+     stroke values instead of rounding them. */
+  .aria-pdp__thumbs {
+    gap: 2px;
+  }
+
+  .aria-pdp__thumb {
+    width: 48px;
+    height: 48px;
+    border-width: 0.472px;
+  }
+
+  .aria-pdp__thumb[aria-current='true'] {
+    border-width: 0.944px;
+  }
+
+  /* Mobile spans the pill full width and tightens its internal gap to 4px
+     (desktop is content-width with a 10px gap). Figma places the eyebrow
+     text hard left and the stock badge hard right (x=13.5 vs x=274.5 in a
+     343-wide pill) — the inherited `justify-content: center` from the base
+     rule bunched both together in the middle instead of spreading them. */
+  .aria-pdp__eyebrow {
+    width: 100%;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  /* At `width: 100%` the label's available space is fixed (343 - padding -
+     the 63px badge - the gap ≈ 260px), and real browser-rendered Poppins
+     measures a long vendor/type string (e.g. "Belle Tress · Lux V
+     Collection · Hand-Tied") wider than that — Figma's own text tool
+     apparently measures it just narrow enough to fit, which is why the
+     node shows one line where the browser was wrapping to two. Flex items
+     default to `min-width: auto` (content size), which blocks a flex child
+     from ever shrinking (and truncating) below its own text width — so
+     without `min-width: 0` here, the item was forced to wrap instead of
+     truncate. This pill is a single fixed-height row in every frame this
+     component appears in, never a two-line one, so truncating long labels
+     is the correct general fix, not just a patch for this one string. */
+  .aria-pdp__eyebrow-text {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Content width, never shrunk: Figma's 63px only fits "IN STOCK"; "PRE-ORDER · ETA …"
+     was clipped. The eyebrow label (min-width: 0, ellipsis) gives up the room instead. */
+  .aria-pdp__stock-badge {
+    flex: none;
+    min-width: 63px;
+    justify-content: center;
+  }
+
+  /* Mobile keeps 12px above the rating/title, but drops the 12px below it —
+     desktop's `padding-block: 12px` is symmetric, mobile is not. */
+  .aria-pdp__title-group {
+    padding-block: 12px 0;
+  }
+
+  /* Mobile/Heading/Title token: 40/48, not the 989px block's 36/44. */
+  .aria-pdp__title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  /* The 989px block drops to 5 columns for a mid-width tablet; true mobile goes
+     back to Figma's 7, just fluid instead of the desktop 68.195px fixed pitch.
+     Gaps are read off the node's own tile pitch (50.03px column / ~52.8px row,
+     averaged across all 4 rows) minus the 40.944 x 41.345 tile itself — a
+     different ratio than desktop's, so they cannot be inherited from the
+     ≤1399px rule. The base rule's `padding-top: 8.98px` is a desktop-scale
+     value for the same sub-pixel inset the ≤1399px rule already zeroes on
+     the left; zeroed here too so it does not add a stray gap above the grid.
+     */
+  .aria-pdp__swatches {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    column-gap: 9.086px;
+    row-gap: 11.236px;
+    padding-top: 0;
+  }
+
+  /* The "BACK SOON" flag scales with the smaller tile: both the ribbon graphic
+     and its label are read off the node at ~0.6x the desktop asset, not
+     recomputed — the two sub-pieces (background art vs label offset) don't
+     share one clean scale factor once rounded, so each is stated directly. */
+  .aria-pdp__swatch-flag {
+    width: 40.788px;
+    height: 41.993px;
+    background-size: 40.788px 41.993px;
+  }
+
+  .aria-pdp__swatch-flag span {
+    left: 7.454px;
+    top: 12.59px;
+    font-size: 7.205px;
+    line-height: 8.406px;
+  }
+
+  /* Kristi banner (6441:3591): desktop is a row (fixed media beside flexible
+     text); mobile stacks the photo above the copy, both full width. */
+  .aria-pdp__kristi {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aria-pdp__kristi-media {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 127.317 / 135.719;
+  }
+
+  .aria-pdp__kristi-body {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Mobile draws the signature larger than desktop's 74.777x28.719 — verified
+     against the node, not a guess: 6441:3594 is 124.981 x 48. */
+  .aria-pdp__kristi-signature {
+    width: 124.981px;
+    height: 48px;
+  }
+
+  /* The last swatch row ends at y=204.48 (163.135 + 41.345 tile) and the
+     "Choose a Color" select starts at y=218.5 — a 14px gap, not desktop's
+     24.43px (that value comes from the fixed 593px desktop column and its
+     different tile pitch). */
+  .aria-pdp__colour-select-wrap {
+    margin-top: 14px;
+  }
+
+  /* Figma's mobile select is 41px tall, not desktop's 54px — a different
+     component size, not a scaled-down one. */
+  .aria-pdp__colour-select {
+    height: 41px;
+  }
+
+  /* Chevron sits at x=315.11 in a 344-wide control (344 - 315.11 - 16 =
+     12.89px from the right edge), not desktop's 14.665px. */
+  .aria-pdp__colour-select-icon {
+    right: 12.89px;
+  }
+
+  /* Desktop's 140px stepper has no room next to a full-width Add to Cart on a
+     343px screen, so the 989px block wraps them onto two rows instead. Figma's
+     mobile frame keeps both on one row — stepper 74, button flex-fills the
+     remaining 261 (74 + 8 gap + 261 = 343, the exact column width) — so this
+     undoes that wrap rather than resizing around it. */
+  .aria-pdp__cart-row {
+    flex-wrap: nowrap;
+    /* Reorders to sit AFTER cap size on this frame — see the block comment
+       at the top of this media query. */
+    order: 2;
+  }
+
+  /* Figma's icon sits at x=9 inside the 74px box; with a 1px border that is
+     an 8px inset (border-box: border + padding = 1 + 8 = 9), not 9px of
+     padding on top of the border. */
+  .aria-pdp__qty {
+    width: 74px;
+    padding-inline: 8px;
+  }
+
+  /* The "1" glyph itself is only ~7px wide in the node (icons at x=9 and
+     x=46 leave 18px total between them for the gaps + digit under
+     `justify-content: space-between`). 20px left no room and would push
+     the plus icon out of the 74px box; 12px keeps the digit legible without
+     that overlap. */
+  .aria-pdp__qty-input {
+    width: 12px;
+  }
+
+  /* Overrides the 989px block's `flex: 1 1 100%` (which forced the wrap above)
+     back to filling the row beside the stepper. Figma's own icon/gap/text
+     measurements centre inside the button regardless of the exact padding
+     value (the button is centred via `justify-content: center`), so this
+     keeps the existing padding rather than chasing sub-pixel parity that
+     produces no visible difference. */
+  .aria-pdp__submit {
+    flex: 1 1 auto;
+    padding: 14px 12px;
+  }
+
+  /* Cap size: first block in this frame (before the cart row). No style
+     changes needed — the mobile node uses the exact same card, sprite and
+     typography as desktop — only the position in the flex column moves. */
+  .aria-pdp__cap {
+    order: 1;
+  }
+
+  /* Trust cards: the 989px tablet rule sets `height: auto` for a mid-width
+     column; this frame's cards are a fixed 78px, same as desktop, so that
+     rule is undone here rather than inherited. */
+  .aria-pdp__trust {
+    order: 3;
+  }
+
+  .aria-pdp__trust-card {
+    height: 78px;
+    padding-block: 0;
+  }
+
+  .aria-pdp__accordions {
+    order: 4;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Returns disclaimer — follows the purchase area at the foot of the
+ * info column. Deliberately quieter than the accordion body (14/22,
+ * grey) so it reads as terms, not as product copy.
+ * ------------------------------------------------------------------ */
+
+.aria-pdp__disclaimer {
+  /* The info column's 24px flex gap already spaces it from the form. */
+  box-sizing: border-box;
+  padding-top: 20px;
+  border-top: 1px solid var(--cream, #eaddd4);
+}
+
+.aria-pdp__disclaimer,
+.aria-pdp__disclaimer p {
+  margin-block: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: var(--gray, #3f3e3e);
+}
+
+.aria-pdp__disclaimer p + p {
+  margin-top: 10px;
+}
+
+.aria-pdp__disclaimer strong {
+  font-weight: 700;
+  color: var(--black, #000);
+}
+
+/* PDP section headings, QA pass 2026-10-29: Figma PDP V2 (7104:3688) sets every 56px
+   section heading in Montserrat Medium. These shared sections default to SemiBold for the
+   home page, so the product page alone takes 500 (body class from layout/theme.liquid). */
+@media screen and (min-width: 750px) {
+  body.aria-template-product .aria-shades__heading,
+  body.aria-template-product .aria-real-customers__heading,
+  body.aria-template-product .aria-pcar__heading,
+  body.aria-template-product .aria-find-wig__heading {
+    font-weight: 500;
+  }
+}

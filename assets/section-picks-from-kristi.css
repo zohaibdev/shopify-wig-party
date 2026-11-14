@@ -1,0 +1,193 @@
+/* Wig Party — Kristi's Picks "From Kristi" (sections/picks-from-kristi.liquid).
+ * Desktop, Figma 7546:32898 (1440 x 785):
+ *   section   white, 80 all round; row 1280 = 580 column + 20 + 680 x 625 photo (r-2)
+ *   column    625 tall; copy top, signature (345 x 134) pinned to the bottom
+ *   copy      title Montserrat 600 56/64; 16 to the quote (Poppins 400 20/28, 481 wide);
+ *             12 to the attribution (Poppins 500 italic 14/22, uppercase); 64 to the socials
+ *   socials   34 circles 12 apart, white 13% + 1px white -> cream ring, 16px glyphs
+ * Mobile, Figma 7546:33781 (375 x 933): 48 / 16 padding, column then photo 20 below;
+ *   title Montserrat 500 36/46; signature 212 x 82 at 414 from the top; photo 343 x 315. */
+
+.picks-fk,
+.picks-fk *,
+.picks-fk *::before,
+.picks-fk *::after {
+  box-sizing: border-box;
+}
+
+.picks-fk {
+  padding: 80px;
+  background: var(--wp-color-white, #fff);
+  color: #000;
+  letter-spacing: 0;
+}
+
+.picks-fk__inner {
+  display: flex;
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.picks-fk__col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 0 0 580px;
+  min-width: 0;
+  min-height: 625px;
+}
+
+.picks-fk__top {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.picks-fk__copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.picks-fk__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: 600;
+  font-size: 56px;
+  line-height: 64px;
+  color: #000;
+}
+
+.picks-fk__quote {
+  max-width: 481px;
+  margin: 16px 0 0;
+  font-family: var(--font-body-family);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.picks-fk__by {
+  margin: 12px 0 0;
+  font-family: var(--font-body-family);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 22px;
+  text-transform: uppercase;
+}
+
+.picks-fk__social {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.picks-fk__social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 17px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.13)) padding-box,
+    linear-gradient(90deg, #ffffff, #eaddd4) border-box;
+  color: #000;
+}
+
+.picks-fk__social-link svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.picks-fk__signature img {
+  display: block;
+  width: 345px;
+  height: 134px;
+}
+
+.picks-fk__media {
+  flex: 0 0 680px;
+  min-width: 0;
+  height: 625px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--wp-color-gray-25, #f9f7f6);
+}
+
+.picks-fk__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tablet: no Figma frame; the two columns share the row. */
+@media (min-width: 750px) and (max-width: 1439px) {
+  .picks-fk {
+    padding: 80px 40px;
+  }
+
+  .picks-fk__col {
+    flex: 1 1 0;
+  }
+
+  .picks-fk__media {
+    flex: 1 1 0;
+    height: auto;
+    aspect-ratio: 680 / 625;
+  }
+}
+
+@media (max-width: 749px) {
+  .picks-fk {
+    padding: 48px 16px;
+  }
+
+  .picks-fk__inner {
+    flex-direction: column;
+  }
+
+  .picks-fk__col {
+    flex: none;
+    min-height: 0;
+    justify-content: flex-start;
+    gap: 14px;
+  }
+
+  .picks-fk__title {
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .picks-fk__quote {
+    max-width: none;
+  }
+
+  .picks-fk__top {
+    gap: 54px;
+  }
+
+  .picks-fk__signature {
+    margin-top: 48px;
+  }
+
+  .picks-fk__signature img {
+    width: 212px;
+    height: 82px;
+  }
+
+  .picks-fk__media {
+    flex: none;
+    margin-top: 6px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 343 / 315;
+  }
+}

@@ -1,0 +1,162 @@
+{%- comment -%}
+  Wig Party — Measure & cap guide: "Three things that are not cap size". Figma node 7368:332
+  (1440 x 809, desktop). Dark section: chip, heading, then up to 3 tip cards (437.33 x 499).
+  Each card: photo (empty uses assets/guide-tips-N.jpg by card position, 880x1002 export of the
+  Figma 440x501 frame) with a frosted-glass panel at the bottom: tag, title, body.
+  Nothing is clickable. Styles in assets/section-guide-tips.css.
+{%- endcomment -%}
+
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'section-guide-tips.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="guide-tips"
+  {% if section.settings.background_color != blank %}
+    style="--wp-gtips-bg: {{ section.settings.background_color }};"
+  {% endif %}
+>
+  <div class="guide-tips__inner">
+    {%- if section.settings.chip != blank or section.settings.heading != blank -%}
+      <div class="guide-tips__head">
+        {%- if section.settings.chip != blank -%}
+          <span class="guide-tips__chip">{{ section.settings.chip | escape }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="guide-tips__title">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="guide-tips__cards" role="list">
+        {%- for block in section.blocks -%}
+          <li class="guide-tips__card" {{ block.shopify_attributes }}>
+            <div class="guide-tips__frame">
+              {%- if block.settings.image != blank -%}
+                {%- assign img_alt = block.settings.image.alt | default: '' -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 880
+                  | image_tag: widths: '440,880', sizes: '440px', alt: img_alt, loading: 'lazy', class: 'guide-tips__img'
+                }}
+              {%- elsif forloop.index <= 3 -%}
+                {%- assign fallback_src = 'guide-tips-' | append: forloop.index | append: '.jpg' -%}
+                <img
+                  src="{{ fallback_src | asset_url }}"
+                  width="880"
+                  height="1002"
+                  alt=""
+                  loading="lazy"
+                  class="guide-tips__img"
+                >
+              {%- endif -%}
+
+              {%- if block.settings.tag != blank
+                or block.settings.title != blank
+                or block.settings.body != blank
+              -%}
+                <div class="guide-tips__glass" style="--wp-gtips-glass-min-height: {{ block.settings.panel_min_height }}px;">
+                  {%- if block.settings.tag != blank -%}
+                    <span class="guide-tips__tag">{{ block.settings.tag | escape }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.title != blank or block.settings.body != blank -%}
+                    <div class="guide-tips__text">
+                      {%- if block.settings.title != blank -%}
+                        <h3 class="guide-tips__card-title">{{ block.settings.title | escape }}</h3>
+                      {%- endif -%}
+                      {%- if block.settings.body != blank -%}
+                        <p class="guide-tips__body">{{ block.settings.body | escape | newline_to_br }}</p>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Guide tips",
+  "tag": "section",
+  "class": "guide-tips-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "#1a1a1a",
+      "label": "Background color"
+    },
+    {
+      "type": "text",
+      "id": "chip",
+      "default": "COMFORT",
+      "label": "Chip"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Three things that are not cap size",
+      "label": "Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tip",
+      "name": "Tip card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Empty uses the Figma photo for cards 1-3."
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "default": "Tips 1",
+          "label": "Tag"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "A wig grip changes everything",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "default": "A velvet band under the wig stops it moving and takes the pressure off the adjustable straps. $35.79 and the most-recommended thing we sell.",
+          "label": "Body"
+        },
+        {
+          "type": "range",
+          "id": "panel_min_height",
+          "min": 160,
+          "max": 300,
+          "step": 2,
+          "unit": "px",
+          "default": 224,
+          "label": "Glass panel minimum height",
+          "info": "Figma: card 1 is 230, cards 2 and 3 are 224."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Guide tips",
+      "blocks": [
+        { "type": "tip" },
+        { "type": "tip" },
+        { "type": "tip" }
+      ]
+    }
+  ]
+}
+{% endschema %}

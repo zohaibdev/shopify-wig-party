@@ -1,0 +1,20 @@
+{%- layout none -%}
+{%- comment -%}
+  Wig Party — every product card of a collection (?view=aria-cards), for the theme's own
+  filters. assets/aria-collection.js fetches this only once a theme filter is ticked, with
+  the page's query string (so Shopify's filters and sort apply), and shows the cards whose
+  handle matched. Same card as sections/collection-results.liquid; 250 per page.
+{%- endcomment -%}
+{%- paginate collection.products by 250 -%}
+  <ul data-aria-coll-cards data-page="{{ paginate.current_page }}" data-pages="{{ paginate.pages }}">
+    {%- for product in collection.products -%}
+      <li class="aria-coll__item" data-handle="{{ product.handle | escape }}">
+        {%- render 'aria-product-card',
+          product: product,
+          section_id: 'aria-coll-cards',
+          quick_add_icon: 'mega-cart-02'
+        -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endpaginate -%}

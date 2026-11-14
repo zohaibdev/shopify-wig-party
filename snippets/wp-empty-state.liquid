@@ -1,0 +1,40 @@
+{%- comment -%}
+  Empty state card (heading, body, up to 2 buttons). Figma 7452:11136.
+  Params (plain text, escaped here): heading, body, btn1_label, btn1_url, btn2_label, btn2_url, heading_tag (default h2).
+  A button renders only when both its label and url are set. No buttons set = no button row.
+{%- endcomment -%}
+{{ 'design-tokens.css' | asset_url | stylesheet_tag }}
+{{ 'wp-empty-state.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign tag = heading_tag | default: 'h2'
+  assign show_btn1 = false
+  assign show_btn2 = false
+  if btn1_label != blank and btn1_url != blank
+    assign show_btn1 = true
+  endif
+  if btn2_label != blank and btn2_url != blank
+    assign show_btn2 = true
+  endif
+-%}
+
+<div class="wp-empty-state">
+  <div class="wp-empty-state__text">
+    {%- if heading != blank -%}
+      <{{ tag }} class="wp-empty-state__heading">{{ heading | escape }}</{{ tag }}>
+    {%- endif -%}
+    {%- if body != blank -%}
+      <p class="wp-empty-state__body">{{ body | escape }}</p>
+    {%- endif -%}
+  </div>
+  {%- if show_btn1 or show_btn2 -%}
+    <div class="wp-empty-state__actions">
+      {%- if show_btn1 -%}
+        <a class="wp-empty-state__btn wp-empty-state__btn--primary" href="{{ btn1_url | escape }}">{{ btn1_label | escape }}</a>
+      {%- endif -%}
+      {%- if show_btn2 -%}
+        <a class="wp-empty-state__btn wp-empty-state__btn--secondary" href="{{ btn2_url | escape }}">{{ btn2_label | escape }}</a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>

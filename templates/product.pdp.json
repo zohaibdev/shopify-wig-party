@@ -1,0 +1,419 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections":  {
+                     "main":  {
+                                  "type":  "pdp-buy-box",
+                                  "blocks":  {
+                                                 "trust_returns":  {
+                                                                       "type":  "trust",
+                                                                       "settings":  {
+                                                                                        "title":  "Tried on Live by Kristi",
+                                                                                        "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                        "default_icon":  "wp-pdp-trust-gift.svg"
+                                                                                    }
+                                                                   },
+                                                 "trust_gift":  {
+                                                                    "type":  "trust",
+                                                                    "settings":  {
+                                                                                     "title":  "Processed in 1 to 3 business days",
+                                                                                     "description":  "",
+                                                                                     "default_icon":  "wp-pdp-trust-shipping.svg"
+                                                                                 }
+                                                                },
+                                                 "trust_shipping":  {
+                                                                        "type":  "trust",
+                                                                        "settings":  {
+                                                                                         "title":  "Tracking within 24 to 48 hours",
+                                                                                         "description":  "",
+                                                                                         "default_icon":  "wp-pdp-trust-shipping.svg"
+                                                                                     }
+                                                                    },
+                                                 "trust_pricematch":  {
+                                                                          "type":  "trust",
+                                                                          "settings":  {
+                                                                                           "title":  "All sales final, ask us first",
+                                                                                           "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                           "default_icon":  "wp-pdp-trust-pricematch.svg"
+                                                                                       }
+                                                                      },
+                                                 "cap_petite":  {
+                                                                    "type":  "cap_size",
+                                                                    "settings":  {
+                                                                                     "name":  "Petite",
+                                                                                     "caption":  "20½\""
+                                                                                 }
+                                                                },
+                                                 "cap_average":  {
+                                                                     "type":  "cap_size",
+                                                                     "settings":  {
+                                                                                      "name":  "Average",
+                                                                                      "caption":  "21½\" · most people"
+                                                                                  }
+                                                                 },
+                                                 "cap_large":  {
+                                                                   "type":  "cap_size",
+                                                                   "settings":  {
+                                                                                    "name":  "Large",
+                                                                                    "caption":  "22½\""
+                                                                                }
+                                                               },
+                                                 "acc_know":  {
+                                                                  "type":  "accordion",
+                                                                  "settings":  {
+                                                                                   "title":  "What you should know",
+                                                                                   "content":  "",
+                                                                                   "use_product_description":  true,
+                                                                                   "open":  true
+                                                                               }
+                                                              },
+                                                 "acc_shipping":  {
+                                                                      "type":  "accordion",
+                                                                      "settings":  {
+                                                                                       "title":  "Shipping \u0026 returns",
+                                                                                       "content":  "\u003cp\u003eDelivery times, costs and the return terms for your order are set out in our \u003ca href=\"/policies/shipping-policy\"\u003eShipping Policy\u003c/a\u003e and \u003ca href=\"/policies/refund-policy\"\u003eRefund Policy\u003c/a\u003e.\u003c/p\u003e",
+                                                                                       "use_product_description":  false,
+                                                                                       "open":  false
+                                                                                   }
+                                                                  }
+                                             },
+                                  "block_order":  [
+                                                      "trust_returns",
+                                                      "trust_gift",
+                                                      "trust_shipping",
+                                                      "trust_pricematch",
+                                                      "cap_petite",
+                                                      "cap_average",
+                                                      "cap_large",
+                                                      "acc_know",
+                                                      "acc_shipping"
+                                                  ],
+                                  "settings":  {
+                                                   "eyebrow_text":  "",
+                                                   "show_stock_badge":  true,
+                                                   "show_rating":  false,
+                                                   "rating_value":  "",
+                                                   "rating_count":  "",
+                                                   "summary":  "",
+                                                   "finance_text":  "",
+                                                   "compare_all_link":  "",
+                                                   "cap_measure_link":  "/pages/measure-and-cap-guide",
+                                                   "video_label":  "Watch Kristi style it",
+                                                   "video_link":  "",
+                                                   "banner_image":  "shopify://shop_images/image-7.jpg",
+                                                   "banner_text":  "\u003cp\u003eYou\u0027re not just a customer. You\u0027re part of the Wig Party family.\u003c/p\u003e"
+                                               }
+                              },
+                     "shade-carousel":  {
+                                            "type":  "pdp-shade-carousel",
+                                            "settings":  {
+                                                             "heading":  "[product_short], in all [count] shades",
+                                                             "background_color":  "#f5ebe2",
+                                                             "exclude_values":  "Choose Color,Drop Down,retired,discontinued"
+                                                         }
+                                        },
+                     "kristi-video":  {
+                                          "type":  "pdp-kristi-video",
+                                          "settings":  {
+                                                           "heading":  "Watch Kristi style it",
+                                                           "copy":  "\u003cp\u003eKristi shows the wigs live on Facebook. Catch every replay on Wig Party Live.\u003c/p\u003e",
+                                                           "placeholder":  "Enter your email address",
+                                                           "button_label":  "Join the Party",
+                                                           "video":  "shopify://files/videos/v12044gd0000d2vlqanog65j4iktqhb0.mp4",
+                                                           "video_url":  "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+                                                           "play_label":  "Play video",
+                                                           "gradient_from":  "#ffffff",
+                                                           "gradient_to":  "#eaddd4"
+                                                       }
+                                      },
+                     "bought-alongside":  {
+                                              "type":  "pdp-product-carousel",
+                                              "settings":  {
+                                                               "heading":  "What people buy alongside [product_short]",
+                                                               "source":  "recommendations",
+                                                               "collection":  "",
+                                                               "intent":  "related",
+                                                               "products_to_show":  8,
+                                                               "feature_tag_metafield":  "custom.feature_tags",
+                                                               "container":  "wide",
+                                                               "slides_desktop":  "4",
+                                                               "background_color":  "#f5ebe2"
+                                                           }
+                                          },
+                     "real-customers":  {
+                                            "type":  "real-customers",
+                                            "blocks":  {
+                                                           "story_1":  {
+                                                                           "type":  "story",
+                                                                           "settings":  {
+                                                                                            "image":  "shopify://shop_images/2.png",
+                                                                                            "video_url":  "",
+                                                                                            "show_play_icon":  true,
+                                                                                            "caption":  ""
+                                                                                        }
+                                                                       },
+                                                           "story_2":  {
+                                                                           "type":  "story",
+                                                                           "settings":  {
+                                                                                            "image":  "shopify://shop_images/02.png",
+                                                                                            "video_url":  "",
+                                                                                            "show_play_icon":  false,
+                                                                                            "caption":  ""
+                                                                                        }
+                                                                       },
+                                                           "story_3":  {
+                                                                           "type":  "story",
+                                                                           "settings":  {
+                                                                                            "image":  "shopify://shop_images/1.png",
+                                                                                            "video_url":  "",
+                                                                                            "show_play_icon":  true,
+                                                                                            "caption":  ""
+                                                                                        }
+                                                                       },
+                                                           "story_4":  {
+                                                                           "type":  "story",
+                                                                           "settings":  {
+                                                                                            "image":  "shopify://shop_images/6.png",
+                                                                                            "video_url":  "",
+                                                                                            "show_play_icon":  false,
+                                                                                            "caption":  ""
+                                                                                        }
+                                                                       },
+                                                           "story_5":  {
+                                                                           "type":  "story",
+                                                                           "settings":  {
+                                                                                            "image":  "shopify://shop_images/4.png",
+                                                                                            "video_url":  "",
+                                                                                            "show_play_icon":  true,
+                                                                                            "caption":  ""
+                                                                                        }
+                                                                       }
+                                                       },
+                                            "block_order":  [
+                                                                "story_1",
+                                                                "story_2",
+                                                                "story_3",
+                                                                "story_4",
+                                                                "story_5"
+                                                            ],
+                                            "settings":  {
+                                                             "layout_variant":  "product",
+                                                             "heading":  "Real Customers, Real Confidence",
+                                                             "show_rating_badge":  false,
+                                                             "rating_badge_text":  "",
+                                                             "show_navigation":  true,
+                                                             "background_color":  "#000000"
+                                                         }
+                                        },
+                     "education-guides":  {
+                                              "type":  "education-guides",
+                                              "blocks":  {
+                                                             "guide_start":  {
+                                                                                 "type":  "tab",
+                                                                                 "settings":  {
+                                                                                                  "title":  "Where to start",
+                                                                                                  "link":  "/#start-here",
+                                                                                                  "image":  "shopify://shop_images/image-3.jpg"
+                                                                                              }
+                                                                             },
+                                                             "guide_cap":  {
+                                                                               "type":  "tab",
+                                                                               "settings":  {
+                                                                                                "title":  "Cap construction",
+                                                                                                "link":  "/collections/cap-construction",
+                                                                                                "image":  "shopify://shop_images/image-3.jpg"
+                                                                                            }
+                                                                           },
+                                                             "guide_measure":  {
+                                                                                   "type":  "tab",
+                                                                                   "settings":  {
+                                                                                                    "title":  "How to measure your head",
+                                                                                                    "link":  "/pages/measure-and-cap-guide",
+                                                                                                    "image":  "shopify://shop_images/image-3.jpg"
+                                                                                                }
+                                                                               }
+                                                         },
+                                              "block_order":  [
+                                                                  "guide_start",
+                                                                  "guide_measure",
+                                                                  "guide_cap"
+                                                              ],
+                                              "settings":  {
+                                                               "heading":  "Education and guides",
+                                                               "link_style":  "left",
+                                                               "show_signature":  true,
+                                                               "autoplay":  true,
+                                                               "autoplay_interval":  5,
+                                                               "show_decoration":  false,
+                                                               "background_gradient_start":  "#ffffff",
+                                                               "background_gradient_end":  "#ffffff",
+                                                               "panel_gradient_start":  "#f5e9e9",
+                                                               "panel_gradient_end":  "#ffffff",
+                                                               "signature_image":  "shopify://shop_images/signature.png"
+                                                           }
+                                          },
+                     "suggested":  {
+                                       "type":  "pdp-product-carousel",
+                                       "settings":  {
+                                                        "heading":  "Suggested by Kristi",
+                                                        "source":  "collection",
+                                                        "collection":  "in-stock-city-collection",
+                                                        "intent":  "related",
+                                                        "products_to_show":  8,
+                                                        "feature_tag_metafield":  "custom.feature_tags",
+                                                        "container":  "narrow",
+                                                        "slides_desktop":  "auto",
+                                                        "background_color":  "#ffffff"
+                                                    }
+                                   },
+                     "breadcrumbs":  {
+                                         "type":  "pdp-breadcrumbs",
+                                         "settings":  {
+                                                          "root_label":  "All Wigs",
+                                                          "root_url":  "/collections/all"
+                                                      }
+                                     },
+                     "find-your-wig":  {
+                                           "type":  "find-your-wig",
+                                           "blocks":  {
+                                                          "c1":  {
+                                                                     "type":  "card",
+                                                                     "settings":  {
+                                                                                      "title":  "By Length",
+                                                                                      "subtitle":  "Short · Medium · Long",
+                                                                                      "default_image":  "wp-find-length.jpg",
+                                                                                      "image_fit":  "cover",
+                                                                                      "background_color":  "#ffffff",
+                                                                                      "button_label":  "View More",
+                                                                                      "link":  "by-length"
+                                                                                  }
+                                                                 },
+                                                          "c2":  {
+                                                                     "type":  "card",
+                                                                     "settings":  {
+                                                                                      "title":  "By Texture",
+                                                                                      "subtitle":  "Straight · Wavy · Curly",
+                                                                                      "default_image":  "wp-find-texture.jpg",
+                                                                                      "image_fit":  "cover",
+                                                                                      "background_color":  "#ffffff",
+                                                                                      "button_label":  "View More",
+                                                                                      "link":  "by-texture"
+                                                                                  }
+                                                                 },
+                                                          "c3":  {
+                                                                     "type":  "card",
+                                                                     "settings":  {
+                                                                                      "title":  "Color Comparison",
+                                                                                      "subtitle":  "Blonde · Brunette · Grey",
+                                                                                      "default_image":  "wp-find-color.jpg",
+                                                                                      "image_fit":  "cover",
+                                                                                      "background_color":  "#ffffff",
+                                                                                      "button_label":  "View More",
+                                                                                      "link":  "color-comparison"
+                                                                                  }
+                                                                 },
+                                                          "c4":  {
+                                                                     "type":  "card",
+                                                                     "settings":  {
+                                                                                      "title":  "Shop by Cap Size",
+                                                                                      "subtitle":  "Petite · Average · Large",
+                                                                                      "default_image":  "wp-find-cap.png",
+                                                                                      "image_fit":  "contain",
+                                                                                      "background_color":  "#ffffff",
+                                                                                      "button_label":  "View More",
+                                                                                      "link":  "shop-by-cap-size"
+                                                                                  }
+                                                                 }
+                                                      },
+                                           "block_order":  [
+                                                               "c1",
+                                                               "c2",
+                                                               "c3",
+                                                               "c4"
+                                                           ],
+                                           "settings":  {
+                                                            "layout_variant":  "product",
+                                                            "heading":  "Find Your Perfect Wig",
+                                                            "subheading":  "Shop by what matters most to you.",
+                                                            "background_color":  "#f5ebe2"
+                                                        }
+                                       },
+                     "join-the-party":  {
+                                            "type":  "join-the-party",
+                                            "blocks":  {
+                                                           "jp-1":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-ugc-featured"
+                                                                                     }
+                                                                    },
+                                                           "jp-2":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-find-length"
+                                                                                     }
+                                                                    },
+                                                           "jp-3":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-join-collage-3"
+                                                                                     }
+                                                                    },
+                                                           "jp-4":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-ugc-photo-1"
+                                                                                     }
+                                                                    }
+                                                       },
+                                            "block_order":  [
+                                                                "jp-1",
+                                                                "jp-2",
+                                                                "jp-3",
+                                                                "jp-4"
+                                                            ],
+                                            "settings":  {
+                                                             "heading":  "Join the Party: Be the First to Know",
+                                                             "subheading":  "New styles, live shopping and Dailey Deals, straight to your inbox.",
+                                                             "placeholder":  "Enter your email address",
+                                                             "button_label":  "Join the Party"
+                                                         }
+                                        },
+                     "recently-viewed":  {
+                                             "type":  "pdp-product-carousel",
+                                             "settings":  {
+                                                              "heading":  "Recently viewed",
+                                                              "source":  "recently_viewed",
+                                                              "collection":  "",
+                                                              "intent":  "related",
+                                                              "show_fallback":  false,
+                                                              "products_to_show":  8,
+                                                              "feature_tag_metafield":  "custom.feature_tags",
+                                                              "container":  "narrow",
+                                                              "slides_desktop":  "auto",
+                                                              "background_color":  "#ffffff"
+                                                          },
+                                             "disabled":  true
+                                         }
+                 },
+    "order":  [
+                  "breadcrumbs",
+                  "main",
+                  "shade-carousel",
+                  "kristi-video",
+                  "bought-alongside",
+                  "education-guides",
+                  "real-customers",
+                  "suggested",
+                  "recently-viewed",
+                  "find-your-wig",
+                  "join-the-party"
+              ]
+}

@@ -1,0 +1,185 @@
+{%- comment -%}
+  Wig Party — Shop by Cap Construction page, hero. Figma internal file, node 6699:224
+  (1440 x 436).
+  Left: breadcrumbs, the title, an intro and HELP ME CHOOSE. Right: a white 463 x 340 panel
+  showing one `slide` image at a time over three-style dots (assets/aria-cap-hero.js).
+  Styles in assets/section-aria-cap-hero.css.
+{%- endcomment -%}
+
+{{ 'section-aria-cap-hero.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-cap-hero.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign slide_blocks = section.blocks | where: 'type', 'slide'
+  assign slide_count = slide_blocks.size
+  if slide_count == 0
+    assign slide_count = 1
+  endif
+
+  comment
+    Figma draws the middle dot active, so the starting slide is a setting (default 2) and
+    is clamped to the slides that exist.
+  endcomment
+  assign start = section.settings.start_slide | at_most: slide_count | minus: 1
+  assign current_label = section.settings.current_label | default: page.title
+-%}
+
+<div class="aria-cap-hero">
+  <div class="aria-cap-hero__inner">
+    <div class="aria-cap-hero__copy">
+      <nav class="aria-cap-hero__crumbs" aria-label="{{ 'aria_theme.pdp.breadcrumb' | t }}">
+        <ol class="aria-cap-hero__crumbs-list" role="list">
+          <li><a href="{{ routes.root_url }}">{{ section.settings.home_label }}</a></li>
+          {%- if section.settings.shop_label != blank -%}
+            <li><a href="{{ section.settings.shop_url | default: routes.all_products_collection_url }}">{{ section.settings.shop_label }}</a></li>
+          {%- endif -%}
+          <li aria-current="page">{{ current_label }}</li>
+        </ol>
+      </nav>
+
+      <div class="aria-cap-hero__body">
+        <div class="aria-cap-hero__text-group">
+          {%- if section.settings.heading != blank -%}
+            <h1 class="aria-cap-hero__title">{{ section.settings.heading }}</h1>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <p class="aria-cap-hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+        {%- if section.settings.button_label != blank -%}
+          <a class="aria-cap-hero__btn" href="{{ section.settings.button_url | default: '#' }}">
+            {{- section.settings.button_label -}}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <aria-cap-hero-slider class="aria-cap-hero__panel" data-start="{{ start }}">
+      {%- if slide_blocks.size > 0 -%}
+        {%- for block in slide_blocks -%}
+          <div
+            class="aria-cap-hero__slide{% if forloop.index0 == start %} is-active{% endif %}"
+            data-slide
+            {% unless forloop.index0 == start %}aria-hidden="true"{% endunless %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 524
+                | image_tag: widths: '175,349,524', sizes: '175px', alt: block.settings.image.alt, loading: 'lazy'
+              }}
+            {%- else -%}
+              <img src="{{ 'wp-cap-hero.jpg' | asset_url }}" alt="" width="466" height="725" loading="lazy">
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        <div class="aria-cap-hero__slide is-active" data-slide>
+          <img src="{{ 'wp-cap-hero.jpg' | asset_url }}" alt="" width="466" height="725" loading="lazy">
+        </div>
+      {%- endif -%}
+
+      {%- if slide_blocks.size > 1 -%}
+        <div class="aria-cap-hero__dots">
+          {%- for block in slide_blocks -%}
+            <button
+              type="button"
+              class="aria-cap-hero__dot{% if forloop.index0 == start %} is-active{% endif %}"
+              data-dot="{{ forloop.index0 }}"
+              aria-label="{{ forloop.index }} / {{ slide_blocks.size }}"
+              {% if forloop.index0 == start %}aria-current="true"{% endif %}
+            ></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </aria-cap-hero-slider>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-cap-hero.name",
+  "tag": "section",
+  "class": "aria-cap-hero-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "default": "Home",
+      "label": "t:sections.aria-cap-hero.settings.home_label.label"
+    },
+    {
+      "type": "text",
+      "id": "shop_label",
+      "default": "Shop",
+      "label": "t:sections.aria-cap-hero.settings.shop_label.label"
+    },
+    {
+      "type": "url",
+      "id": "shop_url",
+      "label": "t:sections.aria-cap-hero.settings.shop_url.label"
+    },
+    {
+      "type": "text",
+      "id": "current_label",
+      "default": "By cap construction",
+      "label": "t:sections.aria-cap-hero.settings.current_label.label",
+      "info": "t:sections.aria-cap-hero.settings.current_label.info"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "The decision that actually matters",
+      "label": "t:sections.aria-cap-hero.settings.heading.label"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "default": "Not the collection name. Cap construction decides how it sits, how it moves, how it feels after eight hours, and most of what you pay. Four types, explained without jargon.",
+      "label": "t:sections.aria-cap-hero.settings.text.label"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "HELP ME CHOOSE",
+      "label": "t:sections.aria-cap-hero.settings.button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:sections.aria-cap-hero.settings.button_url.label"
+    },
+    {
+      "type": "range",
+      "id": "start_slide",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "label": "t:sections.aria-cap-hero.settings.start_slide.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "t:sections.aria-cap-hero.blocks.slide.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-cap-hero.blocks.slide.settings.image.label",
+          "info": "t:sections.aria-cap-hero.blocks.slide.settings.image.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-cap-hero.presets.name",
+      "blocks": [{ "type": "slide" }, { "type": "slide" }, { "type": "slide" }]
+    }
+  ]
+}
+{% endschema %}

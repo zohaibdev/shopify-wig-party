@@ -1,0 +1,485 @@
+{%- comment -%}
+  Wig Party — Contact page, body. Figma hf0beCVyuHCECkNQfaOm2q, node 7926:26021
+  (1440 x 1400), two columns:
+    - Self-serve (7926:26022): FAQ accordion + "Or just turn up" live banner.
+    - Contact options (7926:26037): message form card + "Other ways" card.
+  Desktop only. Styles in assets/section-contact-body.css.
+
+  Form: same {% form 'contact' %} field names / ids / error handling as the old
+  sections/contact-form.liquid (Name, email, Phone, Body) — only the design is new.
+  The Figma design's 5th/6th fields ("Order number", "What is this about?" select)
+  are not part of Shopify's native contact form and are not built here; see
+  PROGRESS.md for the field-mapping note.
+{%- endcomment -%}
+
+{{ 'section-contact-body.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign faq_blocks = section.blocks | where: 'type', 'faq_item'
+  assign other_way_blocks = section.blocks | where: 'type', 'other_way'
+-%}
+
+<div class="wp-contact-body">
+  <div class="wp-contact-body__inner">
+    <div class="wp-contact-selfserve">
+      {%- if section.settings.self_serve_eyebrow != blank or section.settings.self_serve_heading != blank -%}
+        <div class="wp-contact-selfserve__heading">
+          {%- if section.settings.self_serve_eyebrow != blank -%}
+            <p class="wp-contact-selfserve__eyebrow">{{ section.settings.self_serve_eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.self_serve_heading != blank -%}
+            <h2 class="wp-contact-selfserve__title">{{ section.settings.self_serve_heading }}</h2>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if faq_blocks.size > 0 -%}
+        <div class="wp-contact-faq">
+          {%- for block in faq_blocks -%}
+            <details class="wp-contact-faq__row" {{ block.shopify_attributes }}>
+              <summary class="wp-contact-faq__summary">
+                <span class="wp-contact-faq__question">{{ block.settings.question }}</span>
+                <span class="wp-contact-faq__icon">
+                  <span class="wp-contact-faq__icon-plus">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+                  <span class="wp-contact-faq__icon-minus">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
+                </span>
+              </summary>
+              <div class="wp-contact-faq__answer">
+                {{- block.settings.answer -}}
+                {%- if block.settings.link_label != blank -%}
+                  {%- liquid
+                    assign faq_link_url = block.settings.link_url
+                    if faq_link_url == blank and block.settings.link_label == 'Track an order' or faq_link_url == blank and block.settings.link_label == 'Start a return'
+                      assign faq_link_url = routes.account_url
+                    endif
+                  -%}
+                  {%- if faq_link_url != blank -%}
+                    <a class="wp-contact-faq__link" href="{{ faq_link_url }}">{{ block.settings.link_label }}</a>
+                  {%- else -%}
+                    <span class="wp-contact-faq__link">{{ block.settings.link_label }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+            </details>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.turnup_eyebrow != blank or section.settings.turnup_text != blank -%}
+        <div class="wp-contact-turnup">
+          <div class="wp-contact-turnup__text">
+            {%- if section.settings.turnup_eyebrow != blank -%}
+              <p class="wp-contact-turnup__eyebrow">{{ section.settings.turnup_eyebrow }}</p>
+            {%- endif -%}
+            {%- if section.settings.turnup_text != blank -%}
+              <p class="wp-contact-turnup__body">{{ section.settings.turnup_text }}</p>
+            {%- endif -%}
+            {%- if section.settings.turnup_button_label != blank and section.settings.turnup_button_url != blank -%}
+              <a class="wp-contact-turnup__btn" href="{{ section.settings.turnup_button_url }}">
+                {{- section.settings.turnup_button_label -}}
+              </a>
+            {%- endif -%}
+          </div>
+          <div class="wp-contact-turnup__photo">
+            {%- if section.settings.turnup_photo != blank -%}
+              <img
+                src="{{ section.settings.turnup_photo | image_url: width: 440 }}"
+                alt="{{ section.settings.turnup_photo.alt | default: '' }}"
+                width="220"
+                loading="lazy"
+              >
+            {%- else -%}
+              <img
+                src="{{ 'contact-turnup-kristi-photo.png' | asset_url }}"
+                alt=""
+                width="220"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="wp-contact-options">
+      <div class="wp-contact-form-card">
+        {%- if section.settings.form_heading != blank -%}
+          <h2 class="wp-contact-form-card__title">{{ section.settings.form_heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.form_sub != blank -%}
+          <p class="wp-contact-form-card__sub">{{ section.settings.form_sub }}</p>
+        {%- endif -%}
+
+        {%- form 'contact', id: 'ContactForm', class: 'wp-contact-form' -%}
+          {%- if form.posted_successfully? -%}
+            <h3 class="wp-contact-form__message" tabindex="-1" autofocus>
+              {{- 'icon-success.svg' | inline_asset_content -}}
+              {{ 'templates.contact.form.post_success' | t }}
+            </h3>
+          {%- elsif form.errors -%}
+            <div class="wp-contact-form__message">
+              <h3 class="wp-contact-form__message-heading" role="alert" tabindex="-1" autofocus>
+                {{- 'icon-error.svg' | inline_asset_content -}}
+                {{ 'templates.contact.form.error_heading' | t }}
+              </h3>
+            </div>
+            <ul class="wp-contact-form__error-list" role="list">
+              <li>
+                <a href="#ContactForm-email" class="wp-contact-form__error-link">
+                  {{ form.errors.translated_fields.email | capitalize }}
+                  {{ form.errors.messages.email }}
+                </a>
+              </li>
+            </ul>
+          {%- endif -%}
+
+          <div class="wp-contact-form__field">
+            <label class="visually-hidden" for="ContactForm-name">{{ 'templates.contact.form.name' | t }}</label>
+            <input
+              class="wp-contact-form__input"
+              autocomplete="name"
+              type="text"
+              id="ContactForm-name"
+              name="contact[{{ 'templates.contact.form.name' | t }}]"
+              value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+              placeholder="{{ 'templates.contact.form.name' | t }}"
+            >
+          </div>
+
+          <div class="wp-contact-form__field{% if form.errors contains 'email' %} wp-contact-form__field--error{% endif %}">
+            <label class="visually-hidden" for="ContactForm-email">{{ 'templates.contact.form.email' | t }}</label>
+            <input
+              autocomplete="email"
+              type="email"
+              id="ContactForm-email"
+              class="wp-contact-form__input"
+              name="contact[email]"
+              spellcheck="false"
+              autocapitalize="off"
+              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              aria-required="true"
+              {% if form.errors contains 'email' %}
+                aria-invalid="true"
+                aria-describedby="ContactForm-email-error"
+              {% endif %}
+              placeholder="{{ 'templates.contact.form.email' | t }}"
+            >
+            {%- if form.errors contains 'email' -%}
+              <small class="wp-contact-form__field-error" id="ContactForm-email-error">
+                <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+                {{- 'icon-error.svg' | inline_asset_content -}}
+                {{- form.errors.translated_fields.email | capitalize }}
+                {{ form.errors.messages.email -}}
+              </small>
+            {%- endif -%}
+          </div>
+
+          <div class="wp-contact-form__field">
+            <label class="visually-hidden" for="ContactForm-phone">{{ 'templates.contact.form.phone' | t }}</label>
+            <input
+              type="tel"
+              id="ContactForm-phone"
+              class="wp-contact-form__input"
+              autocomplete="tel"
+              name="contact[{{ 'templates.contact.form.phone' | t }}]"
+              pattern="[0-9\-]*"
+              value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+              placeholder="{{ 'templates.contact.form.phone' | t }}"
+            >
+          </div>
+
+          <div class="wp-contact-form__field">
+            <label class="visually-hidden" for="ContactForm-order">Order number (optional)</label>
+            <input
+              type="text"
+              id="ContactForm-order"
+              class="wp-contact-form__input"
+              name="contact[Order number]"
+              placeholder="Order number (optional)"
+            >
+          </div>
+
+          <div class="wp-contact-form__field">
+            <label class="visually-hidden" for="ContactForm-body">{{ 'templates.contact.form.comment' | t }}</label>
+            <textarea
+              rows="4"
+              id="ContactForm-body"
+              class="wp-contact-form__input wp-contact-form__input--textarea"
+              name="contact[{{ 'templates.contact.form.comment' | t }}]"
+              placeholder="{{ 'templates.contact.form.comment' | t }}"
+            >{{- form.body -}}</textarea>
+          </div>
+
+          <button type="submit" class="wp-contact-form__submit">
+            {{- 'templates.contact.form.send' | t -}}
+          </button>
+        {%- endform -%}
+
+        {%- if section.settings.privacy_note != blank -%}
+          <div class="wp-contact-form-card__privacy">
+            <span class="wp-contact-form-card__privacy-icon">{{- 'icon-lock.svg' | inline_asset_content -}}</span>
+            {{ section.settings.privacy_note }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if other_way_blocks.size > 0 -%}
+        <div class="wp-contact-otherways">
+          {%- if section.settings.other_ways_eyebrow != blank -%}
+            <p class="wp-contact-otherways__eyebrow">{{ section.settings.other_ways_eyebrow }}</p>
+          {%- endif -%}
+          {%- for block in other_way_blocks -%}
+            <div class="wp-contact-otherways__row" {{ block.shopify_attributes }}>
+              <div class="wp-contact-otherways__label">
+                {%- if block.settings.title != blank -%}
+                  <p class="wp-contact-otherways__title">{{ block.settings.title }}</p>
+                {%- endif -%}
+                {%- if block.settings.subtitle != blank -%}
+                  <p class="wp-contact-otherways__subtitle">{{ block.settings.subtitle }}</p>
+                {%- endif -%}
+              </div>
+              {%- if block.settings.value != blank -%}
+                {%- if block.settings.value_url != blank -%}
+                  <a class="wp-contact-otherways__value" href="{{ block.settings.value_url }}">
+                    {{- block.settings.value -}}
+                  </a>
+                {%- else -%}
+                  <span class="wp-contact-otherways__value">{{- block.settings.value -}}</span>
+                {%- endif -%}
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact body",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Self-serve column"
+    },
+    {
+      "type": "text",
+      "id": "self_serve_eyebrow",
+      "default": "FASTER THAN A FORM",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "self_serve_heading",
+      "default": "Four things people usually want",
+      "label": "Heading"
+    },
+    {
+      "type": "header",
+      "content": "\"Or just turn up\" banner"
+    },
+    {
+      "type": "text",
+      "id": "turnup_eyebrow",
+      "default": "OR JUST TURN UP",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "textarea",
+      "id": "turnup_text",
+      "default": "Kristi is live most weeknights and reads the chat. For a lot of questions that is the fastest answer there is, and you can stay anonymous.",
+      "label": "Body text"
+    },
+    {
+      "type": "text",
+      "id": "turnup_button_label",
+      "default": "WATCH A LIVE",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "turnup_button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "turnup_photo",
+      "label": "Photo (optional, overrides default)"
+    },
+    {
+      "type": "header",
+      "content": "Message form card"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "default": "Send a message",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "form_sub",
+      "default": "Goes to a real inbox, read by people.",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "privacy_note",
+      "default": "<p>We reply within one business day. If it is about a medical situation or anything you would rather keep private, say so — it stays between you and Kristi.</p>",
+      "label": "Privacy note"
+    },
+    {
+      "type": "header",
+      "content": "\"Other ways\" card"
+    },
+    {
+      "type": "text",
+      "id": "other_ways_eyebrow",
+      "default": "OTHER WAYS",
+      "label": "Eyebrow"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Where is my order?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Inline link label"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Inline link URL"
+        }
+      ]
+    },
+    {
+      "type": "other_way",
+      "name": "Other way row",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Email"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value label"
+        },
+        {
+          "type": "url",
+          "id": "value_url",
+          "label": "Value link (fill in the real target)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact body",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Where is my order?",
+            "answer": "<p>Tracking goes out the moment it ships.</p>",
+            "link_label": "Track an order",
+            "link_url": "/account"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "When will my pre-order arrive?",
+            "answer": "<p>Most pre-orders take 2–4 weeks from Belle Tress.</p>",
+            "link_label": "Track an order",
+            "link_url": "/account"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Which colour should I get?",
+            "answer": "<p>Fifteen minutes with Kristi before you spend $400.</p>",
+            "link_label": "Book fifteen free minutes"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "I want to return something.",
+            "answer": "<p>45 days, tags attached, no restocking fee.</p>",
+            "link_label": "Start a return",
+            "link_url": "/account"
+          }
+        },
+        {
+          "type": "other_way",
+          "settings": {
+            "title": "Email",
+            "subtitle": "One address, everywhere",
+            "value": "hello@wigparty.com",
+            "value_url": "mailto:hello@wigparty.com"
+          }
+        },
+        {
+          "type": "other_way",
+          "settings": {
+            "title": "The Live",
+            "subtitle": "Ask in the chat",
+            "value": "Most weeknights, 7pm ET"
+          }
+        },
+        {
+          "type": "other_way",
+          "settings": {
+            "title": "The group",
+            "subtitle": "Several thousand people who have been there",
+            "value": "Facebook"
+          }
+        },
+        {
+          "type": "other_way",
+          "settings": {
+            "title": "Free consult",
+            "subtitle": "With Kristi, not a chatbot",
+            "value": "15 minutes on video"
+          }
+        },
+        {
+          "type": "other_way",
+          "settings": {
+            "title": "Accessibility",
+            "subtitle": "We treat it as a bug",
+            "value": "Report a barrier"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,294 @@
+/* Wig Party — collection hero (sections/collection-hero.liquid), Figma 6655:400.
+ *
+ * Desktop geometry (px, Figma, 1440 frame): section 448 tall, panel 1360 x 384 at 40/32
+ * (32 above and below), panel padding 16 / 40 / 40 with its 1px white ring outside it,
+ * 62px breadcrumb -> copy, 12px heading -> description. The model photo is 403 wide,
+ * positioned inside the panel 27px from its right edge and 10.18px above its top inset,
+ * and hangs past the panel to be cropped by the section's bottom edge.
+ */
+
+.aria-coll-hero {
+  --aria-coll-model-w: 403px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 32px 40px;
+  background: #f5ebe2;
+  color: var(--white, #fff);
+}
+
+/* ---------- Background: hair texture under a grey wash ---------- */
+
+.aria-coll-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+/* Figma fills the 1440 x 448 frame with the photo at 100.18% width, offset -100.71% from
+   the top of a 368.49%-tall image: a width-fitted cover crop sitting 37.5% down it. */
+.aria-coll-hero__bg-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 37.5%;
+}
+
+/* Grey wash: rgba(47,47,47,.46) -> rgba(222,222,222,.46) at 134.65deg. Needs an inert
+   child — Dawn's base.css hides :empty elements. */
+.aria-coll-hero__wash {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    134.65deg,
+    rgba(47, 47, 47, 0.46) 12.738%,
+    rgba(222, 222, 222, 0.46) 78.602%
+  );
+}
+
+/* ---------- Frosted panel ---------- */
+
+.aria-coll-hero__panel {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 62px;
+  max-width: 1360px;
+  min-height: 384px;
+  margin-inline: auto;
+  padding: 16px 40px 40px;
+  border: 1px solid var(--white, #fff);
+  background: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+}
+
+/* Breadcrumb: Poppins 14/22 white, "  /  " separators set literally, as Figma does. */
+.aria-coll-hero__crumbs {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0;
+  white-space: pre;
+  color: var(--white, #fff);
+}
+
+.aria-coll-hero__crumb {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.aria-coll-hero__crumb:hover,
+a.aria-coll-hero__crumb:focus-visible {
+  text-decoration: underline;
+}
+
+/* The copy stays clear of the model photo on its right. */
+.aria-coll-hero__copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: calc(100% - var(--aria-coll-model-w) - 51px);
+}
+
+/* Desktop H2: Montserrat Medium 48/56 white, a 703.2px measure. */
+.aria-coll-hero__heading {
+  margin: 0;
+  max-width: 703.2px;
+  font-family: var(--font-heading-family);
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 56px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+/* Poppins 15/22.5 white, a 557px measure. */
+.aria-coll-hero__description {
+  margin: 0;
+  max-width: 557px;
+  font-family: var(--font-body-family);
+  font-size: 15px;
+  line-height: 22.5px;
+  letter-spacing: 0;
+  color: var(--white, #fff);
+}
+
+/* Model photo: 403 wide, 27px in from the panel's right edge, its top 10.18px above the
+   panel's top inset (Figma: a 426px box at 2.5 holding the photo at -2.39%). It is not
+   clipped by the panel — the section's bottom edge crops it. */
+.aria-coll-hero__model {
+  position: absolute;
+  top: -7.68px;
+  right: 27px;
+  width: var(--aria-coll-model-w);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.aria-coll-hero__model-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- 990 - 1439: the panel fills the row, the model scales with it ---------- */
+
+@media screen and (max-width: 1439px) {
+  .aria-coll-hero {
+    --aria-coll-model-w: clamp(300px, 28vw, 403px);
+  }
+
+  /* Bottom-anchored below the design width: a narrower model is also shorter, and a
+     top-anchored one then ended a few px above the section's edge, showing the photo's
+     own cut. Pinned to the section's bottom (panel bottom + 32px padding + 1px ring), it
+     always runs off the edge the way the 1440 frame draws it. */
+  .aria-coll-hero__model {
+    top: auto;
+    bottom: -33px;
+  }
+}
+
+/* ---------- Tablet ---------- */
+
+@media screen and (max-width: 989px) {
+  .aria-coll-hero {
+    --aria-coll-model-w: 240px;
+    padding: 24px;
+  }
+
+  .aria-coll-hero__panel {
+    gap: 40px;
+    min-height: 340px;
+    padding: 16px 32px 32px;
+  }
+
+  .aria-coll-hero__heading {
+    font-size: 40px;
+    line-height: 48px;
+  }
+
+  .aria-coll-hero__model {
+    right: 16px;
+    bottom: -25px;
+  }
+}
+
+/* ---------- Mobile (Figma 6760:3362, 375 x 817) ----------
+   The hair photo fills the top 796px (212.27vw) under its own 98.24deg wash, on
+   rgb(244, 237, 229). A 343-wide frosted panel sits 19px down (p-16, 40 at the bottom,
+   1px white ring). The model is a 448.4 x 474 box (119.58vw x 126.4vw) centred 14px right
+   of the middle, starting 41px above the panel's bottom edge and running 7px past the
+   section's, which crops it. Image sizes scale with the width (the model up to 600px
+   tall); the copy does not. */
+@media screen and (max-width: 749px) {
+  .aria-coll-hero {
+    /* Scales with the width, capped at 600px tall so wide phones and small tablets do
+       not get a giant model; the width keeps Figma's 448.408 : 474. */
+    --aria-coll-model-h: min(calc(474 / 375 * 100vw), 600px);
+    padding: 19px 16px calc(var(--aria-coll-model-h) - 48px);
+    background: rgb(244, 237, 229);
+  }
+
+  .aria-coll-hero__bg {
+    bottom: auto;
+    height: calc(796 / 375 * 100vw);
+    overflow: hidden;
+  }
+
+  /* Figma's crop: the photo at 192.91% x 104% of the box, offset -51.77% / -4%. */
+  .aria-coll-hero__bg-img {
+    position: absolute;
+    top: -4%;
+    left: -51.77%;
+    width: 192.91%;
+    max-width: none;
+    height: 104%;
+    object-fit: fill;
+  }
+
+  .aria-coll-hero__wash {
+    background-image: linear-gradient(
+      98.24deg,
+      rgba(47, 47, 47, 0.46) 12.738%,
+      rgba(222, 222, 222, 0.46) 78.602%
+    );
+  }
+
+  .aria-coll-hero__panel {
+    gap: 8px;
+    max-width: 343px;
+    min-height: 0;
+    padding: 16px 16px 40px;
+    overflow: visible;
+  }
+
+  /* "Home  /  Shop  /  All wigs": Poppins 14/22, the current page Bold. */
+  .aria-coll-hero__crumb--current {
+    font-weight: 700;
+  }
+
+  .aria-coll-hero__copy {
+    gap: 16px;
+    max-width: none;
+  }
+
+  /* Mobile H1: Montserrat Medium 36/46. */
+  .aria-coll-hero__heading {
+    max-width: none;
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  /* Poppins 16/26. */
+  .aria-coll-hero__description {
+    max-width: none;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  /* 40px up from the panel's padding-box bottom = 41px above its outer edge. */
+  .aria-coll-hero__model {
+    position: absolute;
+    top: calc(100% - 40px);
+    right: auto;
+    bottom: auto;
+    left: calc(50% + var(--aria-coll-model-h) * 14 / 474);
+    width: calc(var(--aria-coll-model-h) * 448.408 / 474);
+    height: var(--aria-coll-model-h);
+    overflow: hidden;
+    transform: translateX(-50%);
+  }
+
+  /* Figma draws the 1000 x 1400 photo at 100% x 134.71% of the box, 2.39% above it. */
+  .aria-coll-hero__model-img {
+    position: absolute;
+    top: -2.39%;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    height: 134.71%;
+  }
+}
+
+/* Breadcrumb, QA pass 2026-10-29: Poppins 12/14 uppercase ("HOME / SHOP / ALL WIGS"), the
+   page you are on in Bold. */
+@media screen and (min-width: 750px) {
+  .aria-coll-hero__crumbs {
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+  }
+
+  .aria-coll-hero__crumb--current {
+    font-weight: 700;
+  }
+}

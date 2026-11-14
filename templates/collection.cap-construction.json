@@ -1,0 +1,351 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections":  {
+                     "cap-hero":  {
+                                      "type":  "cap-hero",
+                                      "blocks":  {
+                                                     "slide-1":  {
+                                                                     "type":  "slide",
+                                                                     "settings":  {
+
+                                                                                  }
+                                                                 },
+                                                     "slide-2":  {
+                                                                     "type":  "slide",
+                                                                     "settings":  {
+
+                                                                                  }
+                                                                 },
+                                                     "slide-3":  {
+                                                                     "type":  "slide",
+                                                                     "settings":  {
+
+                                                                                  }
+                                                                 }
+                                                 },
+                                      "block_order":  [
+                                                          "slide-1",
+                                                          "slide-2",
+                                                          "slide-3"
+                                                      ],
+                                      "settings":  {
+                                                       "home_label":  "Home",
+                                                       "shop_label":  "Shop",
+                                                       "shop_url":  "/collections/all",
+                                                       "current_label":  "By cap construction",
+                                                       "heading":  "Shop by cap construction",
+                                                       "text":  "Every product title on this site names its cap. Here are the four cap constructions explained in plain words, with the styles in each.",
+                                                       "button_label":  "HELP ME CHOOSE",
+                                                       "button_url":  "/pages/find-my-wig"
+                                                   }
+                                  },
+                     "cap-types":  {
+                                       "type":  "cap-types",
+                                       "blocks":  {
+                                                      "cap-1":  {
+                                                                    "type":  "cap_type",
+                                                                    "settings":  {
+                                                                                     "title":  "Hand-tied",
+                                                                                     "match_keywords":  "hand tied",
+                                                                                     "collection_url_slug":  "hand-tied",
+                                                                                     "text":  "Every hair is knotted by hand, so it moves like your own and you can part it anywhere."
+                                                                                 }
+                                                                },
+                                                      "cap-2":  {
+                                                                    "type":  "cap_type",
+                                                                    "settings":  {
+                                                                                     "title":  "Extended lace front",
+                                                                                     "match_keywords":  "extended lace front, creative lace front",
+                                                                                     "collection_url_slug":  "extended-lace-front",
+                                                                                     "text":  "A deeper lace front gives you a natural hairline and lets you sweep it off your face."
+                                                                                 }
+                                                                },
+                                                      "cap-3":  {
+                                                                    "type":  "cap_type",
+                                                                    "settings":  {
+                                                                                     "title":  "Full mono",
+                                                                                     "match_keywords":  "full mono",
+                                                                                     "collection_url_slug":  "full-mono",
+                                                                                     "text":  "A fine mesh across the whole top looks like scalp from every angle, so you can part it anywhere."
+                                                                                 }
+                                                                },
+                                                      "cap-4":  {
+                                                                    "type":  "cap_type",
+                                                                    "settings":  {
+                                                                                     "title":  "Mono topper",
+                                                                                     "match_keywords":  "center mono",
+                                                                                     "collection_url_slug":  "mono-topper",
+                                                                                     "text":  "Clips onto your own hair to add volume at the crown, with a mono base where your part sits."
+                                                                                 }
+                                                                }
+                                                  },
+                                       "block_order":  [
+                                                           "cap-1",
+                                                           "cap-2",
+                                                           "cap-3",
+                                                           "cap-4"
+                                                       ],
+                                       "settings":  {
+
+                                                    }
+                                   },
+                     "cap-table":  {
+                                       "type":  "cap-table",
+                                       "blocks":  {
+                                                      "row-1":  {
+                                                                    "type":  "row",
+                                                                    "settings":  {
+                                                                                     "label":  "Weight",
+                                                                                     "label_weight":  "bold",
+                                                                                     "value_1":  "Lightest",
+                                                                                     "value_2":  "Light",
+                                                                                     "value_3":  "Medium",
+                                                                                     "value_4":  "Lightest"
+                                                                                 }
+                                                                },
+                                                      "row-3":  {
+                                                                    "type":  "row",
+                                                                    "settings":  {
+                                                                                     "label":  "Parting",
+                                                                                     "label_weight":  "bold",
+                                                                                     "value_1":  "Anywhere",
+                                                                                     "value_2":  "Front area",
+                                                                                     "value_3":  "Anywhere",
+                                                                                     "value_4":  "Crown"
+                                                                                 }
+                                                                }
+                                                  },
+                                       "block_order":  [
+                                                           "row-1",
+                                                           "row-3"
+                                                       ],
+                                       "settings":  {
+
+                                                    }
+                                   },
+                     "filter-guard":  {
+                                          "type":  "collection-filter-guard",
+                                          "settings":  {
+
+                                                       }
+                                      },
+                     "results":  {
+                                     "type":  "collection-results",
+                                     "blocks":  {
+                                                    "chip_everything":  {
+                                                                            "type":  "chip",
+                                                                            "settings":  {
+                                                                                             "label":  "Everything",
+                                                                                             "filter":  "",
+                                                                                             "link":  ""
+                                                                                         }
+                                                                        },
+                                                    "chip_shelf":  {
+                                                                       "type":  "chip",
+                                                                       "settings":  {
+                                                                                        "label":  "On our shelf",
+                                                                                        "filter":  "af_stock=on-our-shelf",
+                                                                                        "link":  ""
+                                                                                    }
+                                                                   },
+                                                    "chip_handtied":  {
+                                                                          "type":  "chip",
+                                                                          "settings":  {
+                                                                                           "label":  "Hand-tied",
+                                                                                           "filter":  "af_cap-construction=hand-tied",
+                                                                                           "link":  ""
+                                                                                       }
+                                                                      },
+                                                    "chip_under300":  {
+                                                                          "type":  "chip",
+                                                                          "settings":  {
+                                                                                           "label":  "Under $300",
+                                                                                           "filter":  "filter.v.price.lte=300",
+                                                                                           "link":  ""
+                                                                                       }
+                                                                      },
+                                                    "chip_rooted":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Rooted",
+                                                                                         "filter":  "af_colour-family=rooted",
+                                                                                         "link":  ""
+                                                                                     }
+                                                                    },
+                                                    "tf_cap":  {
+                                                                   "type":  "theme_filter",
+                                                                   "settings":  {
+                                                                                    "title":  "Cap construction",
+                                                                                    "source":  "type",
+                                                                                    "options":  "Hand-tied = hand tied\nExtended lace front = extended lace front, creative lace front\nFull mono = full mono\nMono topper = center mono\nStandard wefted = wefted",
+                                                                                    "note":  ""
+                                                                                }
+                                                               },
+                                                    "tf_size":  {
+                                                                    "type":  "theme_filter",
+                                                                    "settings":  {
+                                                                                     "title":  "Cap size",
+                                                                                     "source":  "tags",
+                                                                                     "options":  "Petite · 20½” = petite, petite cap\nAverage · 21½” = average, average cap\nLarge · 22½” = large, large cap",
+                                                                                     "note":  ""
+                                                                                 }
+                                                                },
+                                                    "tf_colour":  {
+                                                                      "type":  "theme_filter",
+                                                                      "settings":  {
+                                                                                       "title":  "Colour family",
+                                                                                       "source":  "colour",
+                                                                                       "options":  "Blonde = blonde, butterbeer, champagne, almond, tres leches, biscotti, velvet cr, gilded honey, honey with chai, sugar cookie, milktea, milk tea, mliktea, millktea, beige linen, oatmilk | #d9bf8f\nBrunette = brown, chocolate, jamoca, mocha, cappuccino, truffle, havana, french roast, walnut, pecan, buttered toast, toffee, macadamia, caramel, -blonde | #6b4a35\nRed \u0026 auburn = auburn, sienna, strawberry, strawbwerry, berry, amber, spiced rum, pumpkin | #8e3b2a\nGrey \u0026 silver = gray, grey, silver, oyster, alpine, alpin cream, coconut milk | #b9b7b2\nRooted = re:(^|[\\s-])r($|[\\s-(]) | #8a6e55",
+                                                                                       "note":  ""
+                                                                                   }
+                                                                  },
+                                                    "tf_length":  {
+                                                                      "type":  "theme_filter",
+                                                                      "settings":  {
+                                                                                       "title":  "Length",
+                                                                                       "source":  "tags",
+                                                                                       "options":  "Short · above chin = short, bob, short bob, classic bob, inverted bob, wavy bob, pixie, -long\nMid · to shoulder = shoulder length, lob, mid length, medium length\nLong · past shoulder = long",
+                                                                                       "note":  ""
+                                                                                   }
+                                                                  },
+                                                    "tf_collection":  {
+                                                                          "type":  "theme_filter",
+                                                                          "settings":  {
+                                                                                           "title":  "Collection",
+                                                                                           "source":  "title",
+                                                                                           "options":  "Lux V = lux v\nLux SE = lux se\nCafé extended = cafe e, café e\nCafé hand-tied = cafe ht, café ht\nCity = city collection\nIcon = icons collection\nBloom = bloom collection\nLux = lux collection, lux ht collection\nConfidence = confidence collection",
+                                                                                           "note":  ""
+                                                                                       }
+                                                                      },
+                                                    "tf_status":  {
+                                                                      "type":  "theme_filter",
+                                                                      "settings":  {
+                                                                                       "title":  "Status",
+                                                                                       "source":  "tags",
+                                                                                       "options":  "Sale = clearance, daileydeals, discount",
+                                                                                       "note":  ""
+                                                                                   }
+                                                                  },
+                                                    "chip_new":  {
+                                                                     "type":  "chip",
+                                                                     "settings":  {
+                                                                                      "label":  "New in",
+                                                                                      "filter":  "sort_by=created-descending",
+                                                                                      "link":  ""
+                                                                                  }
+                                                                 },
+                                                    "chip_sale":  {
+                                                                      "type":  "chip",
+                                                                      "settings":  {
+                                                                                       "label":  "Sale",
+                                                                                       "filter":  "af_status=sale",
+                                                                                       "link":  ""
+                                                                                   }
+                                                                  },
+                                                    "tf_stock":  {
+                                                                     "type":  "theme_filter",
+                                                                     "settings":  {
+                                                                                      "title":  "Stock",
+                                                                                      "source":  "tags",
+                                                                                      "options":  "On our shelf = in stock",
+                                                                                      "note":  ""
+                                                                                  }
+                                                                 }
+                                                },
+                                     "block_order":  [
+                                                         "chip_everything",
+                                                         "chip_shelf",
+                                                         "chip_handtied",
+                                                         "chip_under300",
+                                                         "chip_rooted",
+                                                         "chip_new",
+                                                         "chip_sale",
+                                                         "tf_cap",
+                                                         "tf_size",
+                                                         "tf_colour",
+                                                         "tf_length",
+                                                         "tf_collection",
+                                                         "tf_status",
+                                                         "tf_stock"
+                                                     ],
+                                     "settings":  {
+                                                      "note_filter":  "Cap construction",
+                                                      "note_text":  "",
+                                                      "layout":  "full"
+                                                  }
+                                 },
+                     "cap-consult":  {
+                                         "type":  "cap-consult",
+                                         "settings":  {
+                                                          "heading":  "Message Kristi\u0027s team",
+                                                          "text":  "Not sure which cap is right for you? Tell us what you wear now and what you are looking for, and Kristi\u0027s team will help you choose.",
+                                                          "button_label":  "MESSAGE KRISTI\u0027S TEAM",
+                                                          "button_url":  "/pages/contact"
+                                                      }
+                                     },
+                     "trust-badges":  {
+                                          "type":  "trust-badges",
+                                          "blocks":  {
+                                                         "trust-approved-1":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Tried on Live by Kristi",
+                                                                                                   "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                   "default_icon":  "wp-trust-wear-share"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-2":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Processed in 1 to 3 business days",
+                                                                                                   "description":  "",
+                                                                                                   "default_icon":  "cart-trust-packaging-icon"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-3":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "Tracking within 24 to 48 hours",
+                                                                                                   "description":  "",
+                                                                                                   "default_icon":  "wp-trust-free-shipping"
+                                                                                               }
+                                                                              },
+                                                         "trust-approved-4":  {
+                                                                                  "type":  "badge",
+                                                                                  "settings":  {
+                                                                                                   "title":  "All sales final, ask us first",
+                                                                                                   "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                   "default_icon":  "cart-trust-consult-icon"
+                                                                                               }
+                                                                              }
+                                                     },
+                                          "block_order":  [
+                                                              "trust-approved-1",
+                                                              "trust-approved-2",
+                                                              "trust-approved-3",
+                                                              "trust-approved-4"
+                                                          ],
+                                          "settings":  {
+                                                           "background_color":  "#ffffff"
+                                                       },
+                                          "disabled":  true
+                                      }
+                 },
+    "order":  [
+                  "cap-hero",
+                  "cap-types",
+                  "cap-table",
+                  "filter-guard",
+                  "results",
+                  "cap-consult",
+                  "trust-badges"
+              ]
+}

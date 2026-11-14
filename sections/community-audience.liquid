@@ -1,0 +1,124 @@
+{%- comment -%}
+  Wig Party — Community page, "Everyone who wants different hair". Figma internal file, node
+  6849:22724 (1440 x 814); mobile 7000:4900 (375 x 1168).
+
+  A centred heading over a 3-across grid of `reason` cards: a glyph, an uppercase title and
+  a short line. Styles in assets/section-aria-community-audience.css.
+{%- endcomment -%}
+
+{{ 'section-aria-community-audience.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # -- Desktop card titles are Poppins Medium, a weight theme.liquid does not declare.
+  assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+-%}
+{% style %}
+  {%- if body_font_medium -%}{{ body_font_medium | font_face: font_display: 'swap' }}{%- endif -%}
+{% endstyle %}
+
+<div class="aria-comm-aud" style="--aria-comm-aud-bg: {{ section.settings.background_color }};">
+  <div class="aria-comm-aud__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="aria-comm-aud__title">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="aria-comm-aud__cards" role="list">
+        {%- for block in section.blocks -%}
+          <li class="aria-comm-aud__card" {{ block.shopify_attributes }}>
+            <span class="aria-comm-aud__icon" aria-hidden="true">
+              {%- if block.settings.icon != blank -%}
+                {{ block.settings.icon | image_url: width: 168 | image_tag: widths: '56,112,168', sizes: '56px', alt: '', loading: 'lazy' }}
+              {%- else -%}
+                {%- comment -%}
+                  Each card has its own glyph, picked per block. Desktop (6849:22724) draws it
+                  84 square and mobile (7000:4900) 60; the art and its insets are identical.
+                {%- endcomment -%}
+                {%- assign glyph_file = 'wp-community-icon-' | append: block.settings.glyph | append: '.svg' -%}
+                <span class="aria-comm-aud__glyph">
+                  {{- glyph_file | inline_asset_content -}}
+                </span>
+              {%- endif -%}
+            </span>
+            <div class="aria-comm-aud__copy">
+              <h3 class="aria-comm-aud__name">{{ block.settings.title }}</h3>
+              {%- if block.settings.text != blank -%}
+                <p class="aria-comm-aud__text">{{ block.settings.text }}</p>
+              {%- endif -%}
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-community-audience.name",
+  "tag": "section",
+  "class": "aria-comm-aud-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "default": "#F5EBE2",
+      "label": "t:sections.aria-community-audience.settings.background_color.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Everyone who wants different hair",
+      "label": "t:sections.aria-community-audience.settings.heading.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "reason",
+      "name": "t:sections.aria-community-audience.blocks.reason.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.aria-community-audience.blocks.reason.settings.icon.label",
+          "info": "t:sections.aria-community-audience.blocks.reason.settings.icon.info"
+        },
+        {
+          "type": "select",
+          "id": "glyph",
+          "default": "medical",
+          "label": "t:sections.aria-community-audience.blocks.reason.settings.glyph.label",
+          "info": "t:sections.aria-community-audience.blocks.reason.settings.glyph.info",
+          "options": [
+            { "value": "medical", "label": "t:sections.aria-community-audience.blocks.reason.settings.glyph.options__1.label" },
+            { "value": "transition", "label": "t:sections.aria-community-audience.blocks.reason.settings.glyph.options__2.label" },
+            { "value": "thinning", "label": "t:sections.aria-community-audience.blocks.reason.settings.glyph.options__3.label" },
+            { "value": "convenience", "label": "t:sections.aria-community-audience.blocks.reason.settings.glyph.options__4.label" },
+            { "value": "fashion", "label": "t:sections.aria-community-audience.blocks.reason.settings.glyph.options__5.label" },
+            { "value": "private", "label": "t:sections.aria-community-audience.blocks.reason.settings.glyph.options__6.label" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "MEDICAL",
+          "label": "t:sections.aria-community-audience.blocks.reason.settings.title.label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "Chemotherapy and radiation, alopecia, thyroid and autoimmune conditions, PCOS, postpartum shedding.",
+          "label": "t:sections.aria-community-audience.blocks.reason.settings.text.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-community-audience.presets.name",
+      "blocks": [{ "type": "reason" }, { "type": "reason" }, { "type": "reason" }]
+    }
+  ]
+}
+{% endschema %}

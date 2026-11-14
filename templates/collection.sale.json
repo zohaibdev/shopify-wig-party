@@ -1,0 +1,241 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections":  {
+                     "sale-hero":  {
+                                       "type":  "new-in-hero",
+                                       "blocks":  {
+                                                      "stat-1":  {
+                                                                     "type":  "stat",
+                                                                     "settings":  {
+                                                                                      "default_icon":  "sale_sample",
+                                                                                      "use_collection_count":  false,
+                                                                                      "count_collection":  "summer-sale",
+                                                                                      "value":  "",
+                                                                                      "label":  "Summer sale"
+                                                                                  }
+                                                                 },
+                                                      "stat-2":  {
+                                                                     "type":  "stat",
+                                                                     "settings":  {
+                                                                                      "default_icon":  "sale_daily",
+                                                                                      "use_collection_count":  false,
+                                                                                      "count_collection":  "dailey-deal-sales",
+                                                                                      "value":  "",
+                                                                                      "label":  "Dailey Deals"
+                                                                                  }
+                                                                 },
+                                                      "stat-3":  {
+                                                                     "type":  "stat",
+                                                                     "settings":  {
+                                                                                      "default_icon":  "sale_clearance",
+                                                                                      "use_collection_count":  false,
+                                                                                      "count_collection":  "clearance",
+                                                                                      "value":  "",
+                                                                                      "label":  "Clearance"
+                                                                                  }
+                                                                 }
+                                                  },
+                                       "block_order":  [
+                                                           "stat-1",
+                                                           "stat-2",
+                                                           "stat-3"
+                                                       ],
+                                       "settings":  {
+                                                        "parent_label":  "All Collection",
+                                                        "parent_url":  "/collections/all",
+                                                        "current_label":  "Sale",
+                                                        "heading":  "Sale wigs",
+                                                        "text":  "Clearance, Dailey Deals, the Lux sale and the Summer sale in one place. Sale items may have been tried on during a live show and may not be factory-sealed. All sales are final.",
+                                                        "button_label":  "",
+                                                        "stat_size":  "32"
+                                                    }
+                                   },
+                     "sale-listing":  {
+                                          "type":  "sale-listing",
+                                          "blocks":  {
+                                                         "chip-1":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Everything",
+                                                                                         "link":  "/collections/sale"
+                                                                                     }
+                                                                    },
+                                                         "chip-2":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Clearance",
+                                                                                         "link":  "/collections/clearance"
+                                                                                     }
+                                                                    },
+                                                         "chip-3":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Dailey Deals",
+                                                                                         "link":  "/collections/dailey-deal-sales"
+                                                                                     }
+                                                                    },
+                                                         "chip-4":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Lux sale",
+                                                                                         "link":  "/collections/lux-sale"
+                                                                                     }
+                                                                    },
+                                                         "chip-5":  {
+                                                                        "type":  "chip",
+                                                                        "settings":  {
+                                                                                         "label":  "Summer sale",
+                                                                                         "link":  "/collections/summer-sale"
+                                                                                     }
+                                                                    },
+                                                         "card-1":  {
+                                                                        "type":  "card",
+                                                                        "settings":  {
+                                                                                         "tag":  "Clearance",
+                                                                                         "heading":  "Overstock and tried-on pieces",
+                                                                                         "text":  "Sale and clearance items may include overstock or pieces that have been displayed, demonstrated or tried on during live broadcasts. They remain in excellent condition unless otherwise noted."
+                                                                                     }
+                                                                    },
+                                                         "card-2":  {
+                                                                        "type":  "card",
+                                                                        "settings":  {
+                                                                                         "tag":  "Dailey Deals",
+                                                                                         "heading":  "Limited quantities, first to checkout wins",
+                                                                                         "text":  "Adding a wig to your cart does not reserve it. The first completed checkout receives the available inventory."
+                                                                                     }
+                                                                    },
+                                                         "card-3":  {
+                                                                        "type":  "card",
+                                                                        "settings":  {
+                                                                                         "tag":  "Want it brand new?",
+                                                                                         "heading":  "Shop regular stock instead",
+                                                                                         "text":  "If you want a brand-new, unopened wig shipped directly from Belle Tress, please order from regularly stocked styles rather than sale or clearance."
+                                                                                     }
+                                                                    }
+                                                     },
+                                          "block_order":  [
+                                                              "chip-1",
+                                                              "chip-2",
+                                                              "chip-3",
+                                                              "chip-4",
+                                                              "chip-5",
+                                                              "card-1",
+                                                              "card-2",
+                                                              "card-3"
+                                                          ],
+                                          "settings":  {
+                                                           "label":  "SHOP THE SALE",
+                                                           "products_per_page":  12,
+                                                           "more_label":  "Show {n} more",
+                                                           "feature_tag_metafield":  "custom.feature_tags",
+                                                           "padding_top":  80,
+                                                           "padding_bottom":  80
+                                                       }
+                                      },
+                     "join-the-party":  {
+                                            "type":  "join-the-party",
+                                            "blocks":  {
+                                                           "jp-1":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-ugc-featured"
+                                                                                     }
+                                                                    },
+                                                           "jp-2":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-find-length"
+                                                                                     }
+                                                                    },
+                                                           "jp-3":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-join-collage-3"
+                                                                                     }
+                                                                    },
+                                                           "jp-4":  {
+                                                                        "type":  "photo",
+                                                                        "settings":  {
+                                                                                         "default_image":  "wp-ugc-photo-1"
+                                                                                     }
+                                                                    }
+                                                       },
+                                            "block_order":  [
+                                                                "jp-1",
+                                                                "jp-2",
+                                                                "jp-3",
+                                                                "jp-4"
+                                                            ],
+                                            "settings":  {
+                                                             "heading":  "Join the Party",
+                                                             "subheading":  "Join our email list for new styles, live shows and deals.",
+                                                             "placeholder":  "Enter your email address",
+                                                             "button_label":  "Join the Party"
+                                                         }
+                                        },
+                     "trust-strip":  {
+                                         "type":  "cart-trust-strip",
+                                         "blocks":  {
+                                                        "trust-approved-1":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "live",
+                                                                                                  "heading":  "Tried on Live by Kristi",
+                                                                                                  "description":  "Text love to (833) 280-2725 for live alerts.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-2":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "packaging",
+                                                                                                  "heading":  "Processed in 1 to 3 business days",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-3":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "shipping",
+                                                                                                  "heading":  "Tracking within 24 to 48 hours",
+                                                                                                  "description":  "",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             },
+                                                        "trust-approved-4":  {
+                                                                                 "type":  "trust_item",
+                                                                                 "settings":  {
+                                                                                                  "default_icon":  "consult",
+                                                                                                  "heading":  "All sales final, ask us first",
+                                                                                                  "description":  "Email shopwigparty@gmail.com before you order.",
+                                                                                                  "content_width":  true
+                                                                                              }
+                                                                             }
+                                                    },
+                                         "block_order":  [
+                                                             "trust-approved-1",
+                                                             "trust-approved-2",
+                                                             "trust-approved-3",
+                                                             "trust-approved-4"
+                                                         ],
+                                         "settings":  {
+                                                          "background_color":  "#ffffff"
+                                                      }
+                                     }
+                 },
+    "order":  [
+                  "sale-hero",
+                  "sale-listing",
+                  "join-the-party",
+                  "trust-strip"
+              ]
+}

@@ -21,9 +21,13 @@
 
 <section class="aria-join">
   {%- comment -%}
-    Full-bleed background photo with V4's diagonal scrim over it. The scrim is a real
-    element (not a background-image on the section) so the merchant's own photo can sit
-    beneath it untouched.
+    Full-bleed background photo. Figma node 6356:1446 puts the photo straight under the
+    frosted panel with no wash over it — the panel's own blur + 13% white is what lifts
+    the copy off the texture. (The earlier V4 diagonal scrim is deliberately gone; it was
+    what made the panel read charcoal on the left.)
+
+    The fallback is the warm texture from Figma node 6356:1447, not the cool grey
+    `wp-find-texture.jpg` — the two sections use different photos.
   {%- endcomment -%}
   <div class="aria-join__bg" aria-hidden="true">
     {%- if section.settings.background_image != blank -%}
@@ -39,7 +43,7 @@
       }}
     {%- else -%}
       <img
-        src="{{ 'wp-find-texture.jpg' | asset_url }}"
+        src="{{ 'wp-join-texture.png' | asset_url }}"
         alt=""
         width="1440"
         height="802"
@@ -47,7 +51,6 @@
         class="aria-join__bg-img"
       >
     {%- endif -%}
-    <span class="aria-join__scrim"><span></span></span>
   </div>
 
   <div class="aria-join__inner">
@@ -121,13 +124,25 @@
 
       {%- if collage_blocks.size > 0 -%}
         {%- comment -%}
-          Decorative overlapping collage. Each photo's position comes from V4 and is
+          Decorative overlapping collage. Each photo's position comes from Figma and is
           expressed in percentages of the 529x536 collage box so it scales intact.
+          DOM order is the Figma paint order (1 at the back, 4 in front).
           aria-hidden: it carries no information the copy does not already give.
+
+          `--default` marks a slot still showing its bundled theme photo. Figma zooms and
+          offsets each of those inside its clip box — that is what crops the burnt-in gold
+          style bands (VIVIENNE, KARINA) out of shot. Those offsets belong to those exact
+          files, so a merchant's own upload gets a plain centred cover instead.
         {%- endcomment -%}
         <div class="aria-join__collage" aria-hidden="true">
           {%- for block in collage_blocks limit: 4 -%}
-            <span class="aria-join__collage-item aria-join__collage-item--{{ forloop.index }}" {{ block.shopify_attributes }}>
+            {%- liquid
+              assign item_class = 'aria-join__collage-item aria-join__collage-item--' | append: forloop.index
+              if block.settings.image == blank
+                assign item_class = item_class | append: ' aria-join__collage-item--default'
+              endif
+            -%}
+            <span class="{{ item_class }}" {{ block.shopify_attributes }}>
               {%- if block.settings.image != blank -%}
                 {{
                   block.settings.image
@@ -162,13 +177,13 @@
     {
       "type": "text",
       "id": "heading",
-      "default": "Join the Party — Be the First to Know",
+      "default": "Join the Party: Be the First to Know",
       "label": "t:sections.aria-join-the-party.settings.heading.label"
     },
     {
       "type": "text",
       "id": "subheading",
-      "default": "New styles, live shows & exclusive deals — plus 10% off your first order",
+      "default": "New styles, live show alerts and deals from Kristi, straight to your inbox",
       "label": "t:sections.aria-join-the-party.settings.subheading.label"
     },
     {

@@ -1,0 +1,114 @@
+{%- comment -%}
+  Wig Party — collection filter flash guard. Renders no visible markup; place this section
+  immediately BEFORE `collection-results` (type `collection-results`, section id commonly
+  `results`) in the template order so its <style> is parsed before any of that section's
+  content.
+
+  The problem: sections/collection-results.liquid renders Shopify's native filters
+  (Availability, Price) and the non-theme quick chips (Everything, Under $300) visible on
+  first paint, while the custom theme_filter groups/chips (Cap construction, Colour
+  family, …) render with the `hidden` attribute. assets/aria-collection.js fetches every
+  product (?view=aria-index) on DOMContentLoaded, counts the theme filters, then unhides
+  them — about a 1s gap in which only the native/quick set is visible, so the sidebar
+  visibly changes shape a second later.
+
+  The fix only uses the `aria-coll--counting` class that collection-results.liquid's own
+  inline script already adds to the section root (`document.currentScript.parentNode
+  .classList.add('aria-coll--counting')`, the very first thing inside <section data-aria-
+  coll>, before any sidebar/chip markup exists) and that aria-collection.js only ever
+  REMOVES (`.finally(done)`, plus early-return paths) — never adds. So this class behaves
+  like a server-set class for flash purposes: there is no race against the external script
+  adding it late. No markup or script in collection-results.liquid, aria-collection.js, or
+  any other shared file is touched; this file only adds CSS (plus a small, self-contained
+  accessibility script scoped to `[data-aria-coll]`, which already exists in that server
+  markup).
+
+  While `.aria-coll--counting` is present:
+    - native filter groups (`.aria-coll__group` without `data-aria-coll-theme-group`) and
+      non-theme chips (`.aria-coll__chip` without `data-aria-coll-theme-chip`) are hidden
+      via visibility/opacity, not display:none, so they keep reserving their real layout
+      box — no extra min-height hack needed.
+    - the already-`hidden` theme groups/chips/options are shown as reserved, invisible
+      space too (a higher-specificity override of collection-results' own
+      `.aria-coll [hidden] { display: none !important }`), so the sidebar doesn't grow
+      when their real counts land a moment later; everything becomes visible together.
+    - a pure-CSS `animation-delay` reveals all of it anyway after ~3s if the fetch never
+      resolves or aria-collection.js errors before clearing the class — no JS timer drives
+      the visual reveal.
+
+  Works at every viewport (visibility-based, no size-specific rule needed), so there is no
+  separate mobile block.
+
+  Caveat: a theme-filter group/option that ends up with zero matching products still
+  contracts (hidden attribute takes effect) once counting finishes and this CSS stops
+  applying — unavoidable since the real result isn't known until the count completes.
+{%- endcomment -%}
+
+<style>
+  .aria-coll--counting .aria-coll__group:not([data-aria-coll-theme-group]),
+  .aria-coll--counting .aria-coll__chip:not([data-aria-coll-theme-chip]) {
+    visibility: hidden;
+    opacity: 0;
+    animation: wp-coll-guard-reveal 0s 3s forwards;
+  }
+
+  .aria-coll--counting [data-aria-coll-theme-group][hidden] {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    animation: wp-coll-guard-reveal 0s 3s forwards;
+  }
+
+  .aria-coll--counting [data-aria-coll-theme-chip][hidden] {
+    display: inline-flex !important;
+    visibility: hidden;
+    opacity: 0;
+    animation: wp-coll-guard-reveal 0s 3s forwards;
+  }
+
+  .aria-coll--counting [data-aria-coll-theme-option][hidden] {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    animation: wp-coll-guard-reveal 0s 3s forwards;
+  }
+
+  @keyframes wp-coll-guard-reveal {
+    to {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-aria-coll]').forEach(function (section) {
+      if (!section.classList.contains('aria-coll--counting')) return;
+      section.setAttribute('aria-busy', 'true');
+      var cleared = false;
+      function clear() {
+        if (cleared) return;
+        cleared = true;
+        section.removeAttribute('aria-busy');
+        observer.disconnect();
+      }
+      var observer = new MutationObserver(function () {
+        if (!section.classList.contains('aria-coll--counting')) clear();
+      });
+      observer.observe(section, { attributes: true, attributeFilter: ['class'] });
+      window.setTimeout(clear, 3200);
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Collection filter guard",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Collection filter guard"
+    }
+  ]
+}
+{% endschema %}

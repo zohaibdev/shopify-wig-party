@@ -40,10 +40,13 @@
               Links come from a Shopify menu, never hardcoded. V4's placeholder copy in
               this area ("Hunter Business Insider", "How to Choose a Ceiling Fan") is
               leftover from an unrelated project and is deliberately not reproduced.
+              Items saved as `#` or blank (no page yet) are hidden, and reappear by
+              themselves once the menu item is linked.
             {%- endcomment -%}
             {%- if block.settings.menu != blank and block.settings.menu.links.size > 0 -%}
               <ul class="aria-footer__links" role="list">
                 {%- for link in block.settings.menu.links -%}
+                  {%- if link.url == blank or link.url == '#' -%}{%- continue -%}{%- endif -%}
                   <li class="aria-footer__links-item">
                     <a
                       href="{{ link.url }}"
@@ -132,11 +135,12 @@
 
       {%- if social_blocks.size > 0 -%}
         {%- comment -%}
-          Glyphs are Dawn's own `icon-<platform>.svg` assets. A block with no URL yet
-          still shows its icon on a `#` placeholder rather than leaving the row blank.
+          Glyphs are Dawn's own `icon-<platform>.svg` assets. A block with no URL yet is
+          hidden rather than shown on a dead `#` link.
         {%- endcomment -%}
         <ul class="aria-footer__social" role="list">
           {%- for block in social_blocks -%}
+            {%- if block.settings.url == blank -%}{%- continue -%}{%- endif -%}
             {%- liquid
               assign platform = block.settings.platform
               assign icon_asset = 'icon-' | append: platform | append: '.svg'
@@ -144,12 +148,10 @@
             -%}
             <li class="aria-footer__social-item" {{ block.shopify_attributes }}>
               <a
-                href="{{ block.settings.url | default: '#' }}"
+                href="{{ block.settings.url }}"
                 class="aria-footer__social-link"
-                {% if block.settings.url != blank %}
-                  target="_blank"
-                  rel="noopener"
-                {% endif %}
+                target="_blank"
+                rel="noopener"
               >
                 <span class="aria-footer__social-icon">{{- icon_asset | inline_asset_content -}}</span>
                 <span class="visually-hidden">{{ platform_name }}</span>
@@ -157,6 +159,20 @@
             </li>
           {%- endfor -%}
         </ul>
+      {%- endif -%}
+      {%- if section.settings.app_store_url != blank or section.settings.google_play_url != blank -%}
+        <div class="aria-footer__apps" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+          {%- if section.settings.app_store_url != blank -%}
+            <a href="{{ section.settings.app_store_url }}" class="aria-footer__app-link" target="_blank" rel="noopener">
+              <img src="{{ 'app-store.png' | asset_url }}" alt="Download on the App Store" height="40" style="height:40px;width:auto;display:block;" loading="lazy">
+            </a>
+          {%- endif -%}
+          {%- if section.settings.google_play_url != blank -%}
+            <a href="{{ section.settings.google_play_url }}" class="aria-footer__app-link" target="_blank" rel="noopener">
+              <img src="{{ 'google-play.png' | asset_url }}" alt="Get it on Google Play" height="40" style="height:40px;width:auto;display:block;" loading="lazy">
+            </a>
+          {%- endif -%}
+        </div>
       {%- endif -%}
     </div>
   </div>
@@ -179,6 +195,7 @@
       </li>
       {%- if section.settings.legal_menu != blank -%}
         {%- for link in section.settings.legal_menu.links -%}
+          {%- if link.url == blank or link.url == '#' -%}{%- continue -%}{%- endif -%}
           <li class="aria-footer__legal-item">
             <a href="{{ link.url }}" class="aria-footer__legal-link">{{ link.title }}</a>
           </li>
@@ -243,6 +260,18 @@
       "content": "t:sections.aria-footer.settings.header_newsletter.content"
     },
     {
+      "type": "text",
+      "id": "app_store_url",
+      "label": "App Store link",
+      "default": "https://apps.apple.com/us/app/wig-party/id6766784326"
+    },
+    {
+      "type": "text",
+      "id": "google_play_url",
+      "label": "Google Play link",
+      "default": "https://play.google.com/store/apps/details?id=net.belletress"
+    },
+    {
       "type": "checkbox",
       "id": "show_newsletter",
       "default": true,
@@ -257,7 +286,7 @@
     {
       "type": "text",
       "id": "newsletter_text",
-      "default": "New styles, live shows & deals — plus 10% off your first order.",
+      "default": "New styles, live show alerts and deals from Kristi, straight to your inbox.",
       "label": "t:sections.aria-footer.settings.newsletter_text.label"
     },
     {

@@ -1,0 +1,45 @@
+{%- comment -%}
+  Wig Party — recommended product for the cart drawer's upsell row. Not placed in any
+  template: the <aria-cart-recs> element in snippets/cart-drawer.liquid requests it from
+  the Product Recommendations API (/recommendations/products?section_id=…&product_id=…),
+  based on the newest line in the cart. Shows the first recommendation that is available
+  and not already in the cart, or nothing.
+{%- endcomment -%}
+{%- liquid
+  assign rec_pick = blank
+  if recommendations.performed
+    for rec in recommendations.products
+      unless rec.available
+        continue
+      endunless
+      assign rec_in_cart = false
+      for item in cart.items
+        if item.product_id == rec.id
+          assign rec_in_cart = true
+          break
+        endif
+      endfor
+      unless rec_in_cart
+        assign rec_pick = rec
+        break
+      endunless
+    endfor
+  endif
+-%}
+{%- if rec_pick != blank -%}
+  {%- liquid
+    capture rec_short
+      render 'aria-product-short-name', product: rec_pick
+    endcapture
+    assign rec_short = rec_short | strip
+    assign rec_title = settings.cart_recs_title | replace: '[product]', rec_short
+  -%}
+  {%- render 'aria-cart-upsell-row', product: rec_pick, title: rec_title, text: settings.cart_recs_text -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Cart recommendations",
+  "settings": []
+}
+{% endschema %}

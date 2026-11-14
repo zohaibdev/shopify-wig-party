@@ -1,0 +1,147 @@
+{%- comment -%}
+  Wig Party — Find Your Colour page, "Three ways to be sure". Figma internal file, desktop
+  node 7009:5386 (1440 x 956), mobile node 7009:4997 (the first 1852px of that 375 frame;
+  the dark block under it is the next section).
+  A centred intro (pill, title) over three `way` cards: photo, price tag, title, text and an
+  outlined button. A card's button shows only when it has a link (no dead `#` links).
+  Styles in assets/section-aria-colour-ways.css.
+{%- endcomment -%}
+
+{{ 'section-aria-colour-ways.css' | asset_url | stylesheet_tag }}
+
+{%- assign way_blocks = section.blocks | where: 'type', 'way' -%}
+
+<div class="aria-colour-ways">
+  <div class="aria-colour-ways__intro">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="aria-colour-ways__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h2 class="aria-colour-ways__title">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+  </div>
+
+  {%- if way_blocks.size > 0 -%}
+    <ul class="aria-colour-ways__cards" role="list">
+      {%- for block in way_blocks -%}
+        {%- liquid
+          assign fallback_index = forloop.index0 | modulo: 3 | plus: 1
+          assign fallback_file = 'wp-colour-ways-' | append: fallback_index | append: '.jpg'
+        -%}
+        <li class="aria-colour-ways__card" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            <div class="aria-colour-ways__media">
+              {{
+                block.settings.image
+                | image_url: width: 1176
+                | image_tag: widths: '392,784,1176', sizes: '(max-width: 749px) calc(100vw - 72px), 392px', alt: block.settings.image.alt, loading: 'lazy'
+              }}
+            </div>
+          {%- else -%}
+            {%- comment -%}
+              The built-in photos keep Figma's own framing of each one, which differs per card
+              and per breakpoint (see the --crop-N rules in the stylesheet).
+            {%- endcomment -%}
+            <div class="aria-colour-ways__media aria-colour-ways__media--crop-{{ fallback_index }}">
+              <img src="{{ fallback_file | asset_url }}" alt="" width="392" height="320" loading="lazy">
+            </div>
+          {%- endif -%}
+
+          <div class="aria-colour-ways__content">
+            {%- if block.settings.tag != blank -%}
+              <span class="aria-colour-ways__tag">{{ block.settings.tag }}</span>
+            {%- endif -%}
+            <div class="aria-colour-ways__body">
+              <div class="aria-colour-ways__copy">
+                {%- if block.settings.title != blank -%}
+                  <h3 class="aria-colour-ways__card-title">{{ block.settings.title }}</h3>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <p class="aria-colour-ways__card-text">{{ block.settings.text }}</p>
+                {%- endif -%}
+              </div>
+              {%- if block.settings.button_label != blank and block.settings.button_url != blank -%}
+                <a class="aria-colour-ways__btn" href="{{ block.settings.button_url }}">
+                  {{- block.settings.button_label -}}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.aria-colour-ways.name",
+  "tag": "section",
+  "class": "aria-colour-ways-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "default": "THREE WAYS TO BE SURE",
+      "label": "t:sections.aria-colour-ways.settings.eyebrow.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Two of them cost nothing",
+      "label": "t:sections.aria-colour-ways.settings.heading.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "way",
+      "name": "t:sections.aria-colour-ways.blocks.way.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.aria-colour-ways.blocks.way.settings.image.label",
+          "info": "t:sections.aria-colour-ways.blocks.way.settings.image.info"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "default": "FREE · 15 MIN",
+          "label": "t:sections.aria-colour-ways.blocks.way.settings.tag.label"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "default": "Show Kristi on video",
+          "label": "t:sections.aria-colour-ways.blocks.way.settings.title.label"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "default": "Hold your own hair up to the camera. She has matched several thousand people and she will tell you if the answer is none of ours.",
+          "label": "t:sections.aria-colour-ways.blocks.way.settings.text.label"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "BOOK A CONSULT",
+          "label": "t:sections.aria-colour-ways.blocks.way.settings.button_label.label"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "t:sections.aria-colour-ways.blocks.way.settings.button_url.label",
+          "info": "t:sections.aria-colour-ways.blocks.way.settings.button_url.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.aria-colour-ways.presets.name",
+      "blocks": [{ "type": "way" }, { "type": "way" }, { "type": "way" }]
+    }
+  ]
+}
+{% endschema %}

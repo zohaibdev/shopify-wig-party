@@ -1,0 +1,150 @@
+/* Empty state card (desktop). Figma 7452:11136. Tokens: "Empty state" block in design-tokens.css */
+
+.wp-empty-state,
+.wp-empty-state *,
+.wp-empty-state *::before,
+.wp-empty-state *::after {
+  box-sizing: border-box;
+}
+
+.wp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-empty-card-gap);
+  width: var(--wp-empty-card-width);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--wp-empty-card-padding);
+  background: var(--wp-empty-card-bg);
+  text-align: center;
+}
+
+.wp-empty-state__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--wp-empty-text-gap);
+  width: 100%;
+}
+
+.wp-empty-state__heading {
+  margin: 0;
+  width: 100%;
+  font-family: var(--wp-font-heading);
+  font-size: var(--wp-empty-heading-size);
+  font-weight: var(--wp-empty-heading-weight);
+  line-height: var(--wp-empty-heading-line-height);
+  letter-spacing: var(--wp-letter-spacing);
+  text-transform: none;
+  color: var(--wp-empty-heading-color);
+}
+
+.wp-empty-state__body {
+  margin: 0;
+  width: 100%;
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-body-medium-size);
+  font-weight: var(--wp-body-medium-weight);
+  line-height: var(--wp-body-medium-line-height);
+  color: var(--wp-empty-body-color);
+}
+
+.wp-empty-state__actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--wp-empty-actions-gap);
+}
+
+.wp-empty-state__btn,
+.wp-empty-state__btn:link,
+.wp-empty-state__btn:visited {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--wp-empty-btn-height);
+  padding: var(--wp-empty-btn-padding);
+  border: 1px solid var(--wp-empty-btn-border-color);
+  border-radius: var(--wp-empty-btn-radius);
+  font-family: var(--wp-font-body);
+  font-size: var(--wp-empty-btn-size);
+  font-weight: var(--wp-empty-btn-weight);
+  line-height: var(--wp-empty-btn-line-height);
+  letter-spacing: var(--wp-letter-spacing);
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.wp-empty-state__btn--primary,
+.wp-empty-state__btn--primary:link,
+.wp-empty-state__btn--primary:visited {
+  background: var(--wp-empty-btn-primary-bg);
+  color: var(--wp-empty-btn-primary-color);
+  /* Figma primary has no border; the 1px border matches its fill so both buttons are 54 high */
+  border-color: var(--wp-empty-btn-primary-bg);
+}
+
+.wp-empty-state__btn--secondary,
+.wp-empty-state__btn--secondary:link,
+.wp-empty-state__btn--secondary:visited {
+  min-width: var(--wp-empty-btn-secondary-width);
+  background: transparent;
+  color: var(--wp-empty-btn-secondary-color);
+}
+
+.wp-empty-state__btn:focus-visible {
+  outline: 2px solid var(--wp-empty-btn-primary-bg);
+  outline-offset: 2px;
+}
+
+/* Mobile (375px). Figma 7452:10713. Tokens: --wp-m-empty-* in design-tokens.css */
+@media (max-width: 749px) {
+  .wp-search:has(> .wp-search__inner > .wp-empty-state) {
+    padding: var(--wp-m-empty-band-padding);
+  }
+
+  .wp-empty-state {
+    width: var(--wp-m-empty-card-width);
+    padding: var(--wp-m-empty-card-padding);
+    gap: var(--wp-m-empty-card-gap);
+  }
+
+  .wp-empty-state__text {
+    gap: var(--wp-m-empty-text-gap);
+  }
+
+  .wp-empty-state__heading {
+    font-size: var(--wp-m-empty-heading-size);
+    line-height: var(--wp-m-empty-heading-line-height);
+  }
+
+  .wp-empty-state__body {
+    font-size: var(--wp-m-empty-body-size);
+    line-height: var(--wp-m-empty-body-line-height);
+  }
+
+  /* Stacked, centered; the column is as wide as button 1 and button 2 fills it */
+  .wp-empty-state__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--wp-m-empty-actions-gap);
+    max-width: 100%;
+  }
+
+  .wp-empty-state__btn--primary,
+  .wp-empty-state__btn--primary:link,
+  .wp-empty-state__btn--primary:visited {
+    min-height: var(--wp-m-empty-btn-primary-height);
+    border-width: 0;
+  }
+
+  .wp-empty-state__btn--secondary,
+  .wp-empty-state__btn--secondary:link,
+  .wp-empty-state__btn--secondary:visited {
+    min-width: 0;
+    min-height: var(--wp-m-empty-btn-secondary-height);
+  }
+}

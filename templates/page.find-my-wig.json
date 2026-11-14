@@ -1,0 +1,173 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "find-my-wig": {
+      "type": "find-my-wig",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "heading": "Have you worn a wig before?",
+            "subheading": "",
+            "question_type": "static",
+            "filter_key": "",
+            "time_left": "About two minutes left",
+            "options": "Yes, I have before | | \nNo, this is my first time | | ",
+            "private_answer": false,
+            "reveal_text": "",
+            "reveal_cta_label": "",
+            "reveal_cta_url": ""
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "heading": "What brings you here?",
+            "subheading": "",
+            "question_type": "static",
+            "filter_key": "",
+            "time_left": "About two minutes left",
+            "options": "Medical | | \nTransition | | \nThinning | | \nConvenience | | \nFashion | | \nI would rather not say | | ",
+            "private_answer": true,
+            "reveal_text": "",
+            "reveal_cta_label": "",
+            "reveal_cta_url": ""
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "heading": "How much are you wearing it?",
+            "subheading": "This decision helps us recommend the best cap construction for your lifestyle, comfort and budget.",
+            "question_type": "filter",
+            "filter_key": "af_cap-construction",
+            "time_left": "About a minute left",
+            "options": "Every day, all day | We will show you hand-tied wigs. | hand-tied | asset:wp-find-cap.png\nMost days, some of the day | Hand-tied or extended lace front both work. We will show you both. | hand-tied,extended-lace-front | asset:wp-find-cap.png\nOccasionally | We will show you extended lace front wigs. | extended-lace-front | asset:wp-find-cap.png\nI honestly do not know yet | We will show you hand-tied and extended lace front wigs. | hand-tied,extended-lace-front | asset:wp-find-cap.png",
+            "private_answer": false,
+            "reveal_text": "",
+            "reveal_cta_label": "",
+            "reveal_cta_url": ""
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "heading": "What is your cap size?",
+            "subheading": "",
+            "question_type": "filter",
+            "filter_key": "af_cap-size",
+            "time_left": "About a minute left",
+            "options": "Average · 19 to 23 inches | The cap size most of our wigs list. Each wig page shows its exact fit. | \nSmaller or larger than average | We will help you check the fit before you order. | reveal:size\nNot sure, measure first | Opens our measuring guide in a new tab. | link:/pages/measure-and-cap-guide\nNo idea | | ",
+            "private_answer": false,
+            "reveal_text": "Most of our wigs list an average cap, 19 to 23 inches. Send Kristi's team a message and we will help you check the fit.",
+            "reveal_cta_label": "Message Kristi's team",
+            "reveal_cta_url": "/pages/contact"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "heading": "What colour family are you drawn to?",
+            "subheading": "",
+            "question_type": "filter",
+            "filter_key": "af_colour-family",
+            "time_left": "Almost done",
+            "options": "Blonde | | blonde\nBrunette | | brunette\nRed & auburn | | red-auburn\nGrey & silver | | grey-silver\nRooted | | rooted\nNot sure yet | | reveal:colour",
+            "private_answer": false,
+            "reveal_text": "Not sure which shade is right? Send Kristi's team a message and we will help you narrow it down.",
+            "reveal_cta_label": "Message Kristi's team",
+            "reveal_cta_url": "/pages/contact"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "heading": "How long do you want it?",
+            "subheading": "",
+            "question_type": "filter",
+            "filter_key": "af_length",
+            "time_left": "Almost done",
+            "options": "Short · above chin | | short-above-chin\nMid · to shoulder | | mid-to-shoulder\nLong · past shoulder | | long-past-shoulder\nNo preference | | ",
+            "private_answer": false,
+            "reveal_text": "",
+            "reveal_cta_label": "",
+            "reveal_cta_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6"
+      ],
+      "settings": {
+        "home_label": "Home",
+        "parent_label": "Start Here",
+        "parent_url": "/#start-here",
+        "current_label": "Find my wig",
+        "results_consult_label": "Message Kristi's team",
+        "results_consult_url": "/pages/contact"
+      }
+    },
+    "trust-badges": {
+      "type": "trust-badges",
+      "blocks": {
+        "tb-1": {
+          "type": "badge",
+          "settings": {
+            "title": "Processed in 1 to 3 business days",
+            "description": "Tracking within 24 to 48 hours",
+            "default_icon": "wp-trust-free-shipping"
+          }
+        },
+        "tb-4": {
+          "type": "badge",
+          "settings": {
+            "title": "Pay in 4",
+            "description": "Shop now. Pay later with Shop Pay.",
+            "default_icon": "wp-trust-pay-in-4"
+          }
+        }
+      },
+      "block_order": [
+        "tb-1",
+        "tb-4"
+      ],
+      "settings": {
+        "background_color": "#ffffff"
+      }
+    },
+    "product_row": {
+      "type": "pdp-product-carousel",
+      "settings": {
+        "heading": "",
+        "hide_supplier": true,
+        "source": "collection",
+        "collection": "best-sellers",
+        "intent": "related",
+        "show_fallback": true,
+        "products_to_show": 8,
+        "feature_tag_metafield": "custom.feature_tags",
+        "container": "narrow",
+        "slides_desktop": "4",
+        "background_color": "#f5ebe2"
+      }
+    }
+  },
+  "order": [
+    "find-my-wig",
+    "product_row",
+    "trust-badges"
+  ]
+}

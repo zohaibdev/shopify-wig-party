@@ -1,0 +1,55 @@
+{%- comment -%}
+  Outputs a product's shade names joined by ", ": the shades on the shelf when there are any,
+  else every shade (made to order), leaving out "Choose color…" placeholder variants.
+  The same rule as templates/collection.aria-index.liquid (its `c` field), so a card rendered
+  here and one drawn from the index by assets/aria-colour-shades.js read the same.
+
+  Accepts:
+  - product: {Object}
+{%- endcomment -%}
+{%- liquid
+  assign colour_index = -1
+  for option in product.options_with_values
+    assign option_name = option.name | downcase
+    if option_name contains 'colo'
+      assign colour_index = forloop.index0
+    endif
+  endfor
+
+  assign shelf = ''
+  assign every = ''
+  for variant in product.variants
+    assign shade = ''
+    if colour_index >= 0
+      assign shade = variant.options[colour_index] | strip
+    endif
+    assign shade_key = shade | downcase
+    if shade == blank or shade_key contains 'choose' or shade_key contains 'drop down' or shade_key contains 'dropdown'
+      assign shade = ''
+    endif
+    if shade contains 'ETA'
+      assign shade = shade | split: 'ETA' | first | strip
+      assign last_char = shade | slice: -1
+      if last_char == '('
+        assign shade = shade | remove_last: '(' | strip
+      endif
+      assign last_char = shade | slice: -1
+      if last_char == '-'
+        assign shade = shade | remove_last: '-' | strip
+      endif
+    endif
+    if shade != ''
+      assign every = every | append: shade | append: '||'
+      if variant.inventory_management != blank and variant.inventory_quantity > 0
+        assign shelf = shelf | append: shade | append: '||'
+      endif
+    endif
+  endfor
+
+  if shelf != ''
+    assign colours = shelf | split: '||' | uniq
+  else
+    assign colours = every | split: '||' | uniq
+  endif
+  echo colours | join: ', '
+-%}

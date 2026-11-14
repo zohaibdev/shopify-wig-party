@@ -102,8 +102,63 @@
      (aria-product-card.js) rewrites the quick-add variant id, the primary image and the
      price when a colour is picked, so reading those means the wishlist stores the colour
      the shopper is actually looking at. */
+  /* Shade names without stock notes, same rule as assets/aria-colour-shades.js:
+     'Buttered Toast - R ETA 12/2027' is saved as 'Buttered Toast - R'. */
+  function cleanShade(name) {
+    return String(name || '').split(/\s*\(?\s*ETA\b/i)[0].replace(/[\s(-]+$/, '').replace(/\s+/g, ' ').trim();
+  }
+
+  function urlWithVariant(url, variantId) {
+    if (!url || !variantId) return url || '';
+    try {
+      var u = new URL(url, window.location.origin);
+      u.searchParams.set('variant', variantId);
+      return u.pathname + u.search;
+    } catch (error) {
+      return url;
+    }
+  }
+
+  /* PDP heart: the buy box (sections/pdp-buy-box.liquid, assets/aria-pdp-buy-box.js) owns
+     the selected variant. Read it from the buy box form's input[name=id] and the element's
+     own variant table, so the heart saves the shade in the buy box, not the default. */
+  function entryFromBuyBox(button, buyBox) {
+    var d = button.dataset;
+    var input = buyBox.querySelector('form[data-type="add-to-cart-form"] input[name="id"]') ||
+      buyBox.querySelector('input[name="id"]');
+    var id = (input && input.value) || d.variantId || '';
+    var variants = Array.isArray(buyBox.variants) ? buyBox.variants : [];
+    var variant = null;
+    for (var i = 0; i < variants.length; i++) {
+      if (String(variants[i].id) === String(id)) variant = variants[i];
+    }
+
+    var image = d.productImage || '';
+    if (variant && variant.featured_media_id) {
+      var slideImg = buyBox.querySelector('[data-pdp-slide="' + variant.featured_media_id + '"] img');
+      if (slideImg) image = slideImg.currentSrc || slideImg.getAttribute('src') || image;
+    }
+
+    var onSale = variant && variant.compare_at_price_value > variant.price_value;
+    return {
+      id: d.productId || '',
+      variantId: String(id),
+      handle: d.productHandle || '',
+      title: d.productTitle || '',
+      url: urlWithVariant(d.productUrl || '', id),
+      image: image,
+      vendor: d.productVendor || '',
+      variantTitle: variant ? cleanShade(variant.colour || variant.title) : '',
+      price: (variant && variant.price) || d.productPrice || '',
+      comparePrice: variant ? (onSale ? variant.compare_at_price : '') : d.productComparePrice || '',
+      available: variant ? variant.available !== false : d.productAvailable !== 'false',
+    };
+  }
+
   function entryFromButton(button) {
     var d = button.dataset;
+    var buyBox = button.closest('aria-pdp-buy-box');
+    if (buyBox) return entryFromBuyBox(button, buyBox);
     var card = button.closest('.aria-product-card');
     var liveVariant = card && card.querySelector('.aria-product-card__quick-add-form input[name="id"]');
     var liveImage = card && card.querySelector('.aria-product-card__image--primary');
@@ -111,15 +166,25 @@
     var liveCompare = card && card.querySelector('.aria-product-card__price-compare');
     var liveSwatch = card && card.querySelector('.aria-product-card__swatch--selected');
 
+    var variantId = (liveVariant && liveVariant.value) || d.variantId || '';
+
     return {
       id: d.productId || '',
-      variantId: (liveVariant && liveVariant.value) || d.variantId || '',
+      variantId: variantId,
       handle: d.productHandle || '',
       title: d.productTitle || '',
-      url: d.productUrl || '',
-      image: (liveImage && liveImage.tagName === 'IMG' && liveImage.getAttribute('src')) || d.productImage || '',
+      /* Only a card with a colour selector deep-links; a single-variant product keeps the
+         plain url. */
+      url: liveSwatch ? urlWithVariant(d.productUrl || '', variantId) : d.productUrl || '',
+      /* The selected shade's own image, even before it has been clicked (on first load the
+         card shows the product featured image with the first colour ringed). */
+      image:
+        (liveSwatch && liveSwatch.dataset.variantImage) ||
+        (liveImage && liveImage.tagName === 'IMG' && liveImage.getAttribute('src')) ||
+        d.productImage ||
+        '',
       vendor: d.productVendor || '',
-      variantTitle: (liveSwatch && liveSwatch.dataset.swatchValue) || '',
+      variantTitle: (liveSwatch && cleanShade(liveSwatch.dataset.swatchValue)) || '',
       price: (livePrice && livePrice.textContent.trim()) || d.productPrice || '',
       comparePrice: (liveCompare && liveCompare.textContent.trim()) || d.productComparePrice || '',
       /* Availability has to come from the SELECTED swatch, not the button. The button's
@@ -298,7 +363,7 @@
     drawer.setAttribute('aria-hidden', 'true');
 
     /* Release the body scroll lock only if no OTHER drawer still needs it. The cart
-       drawer (and this store's Rebuy cart) set the same `overflow-hidden` class, so
+       drawer sets the same `overflow-hidden` class, so
        unconditionally removing it here would unlock the page behind a cart drawer that
        is still open — which is exactly what happens on the add-to-cart handover. */
     if (!document.querySelector('cart-drawer.active, .drawer.active, [data-wishlist-drawer].active')) {
@@ -502,6 +567,12 @@
      section script that must not depend on load order. Same funnel as every other trigger. */
   document.addEventListener('wishlist:open', openWishlistDrawer);
 
+  /* Cards added after load (e.g. the collection grid's "Show more") dispatch this so their
+     hearts reflect what is already saved. */
+  document.addEventListener('wishlist:sync', function () {
+    syncAllButtons(read());
+  });
+
   window.AriaWishlist = {
     open: openWishlistDrawer,
     close: close,
@@ -509,6 +580,18 @@
       return read().length;
     },
     items: read,
+    /* Adds one entry or an array of them (the cart drawer's "Save for later" / "Save my
+       bag"), skipping any already saved. Same shape as a heart's entry; runs through
+       normalise() so a malformed entry is dropped rather than stored. */
+    add: function (entries) {
+      var list = read();
+      var incoming = normalise(Array.isArray(entries) ? entries : [entries]);
+      incoming.forEach(function (entry) {
+        if (indexOfKey(list, keyOf(entry)) === -1) list.push(entry);
+      });
+      commit(list);
+      return list.length;
+    },
   };
 
   /* Named global the brief asks for. Aliased, not a second implementation. */

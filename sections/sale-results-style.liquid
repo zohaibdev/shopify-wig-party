@@ -1,0 +1,22 @@
+{%- comment -%}
+  Wig Party — SALE listing skin (Figma 7547:4685 chips, 7547:4733 card). Renders nothing: it only
+  loads assets/section-sale-results.css, which restyles the `sale-results` collection-results
+  section on this template (id `shopify-section-sale-results`) without touching the shared
+  collection-results or aria-product-card files.
+{%- endcomment -%}
+
+{{ 'section-sale-results.css' | asset_url | stylesheet_tag }}
+
+{% schema %}
+{
+  "name": "Sale listing styles",
+  "tag": "div",
+  "class": "sale-results-style",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Sale listing styles"
+    }
+  ]
+}
+{% endschema %}

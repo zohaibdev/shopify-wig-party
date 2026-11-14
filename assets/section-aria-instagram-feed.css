@@ -46,7 +46,22 @@
 
 /* ---------- Carousel ---------- */
 
+/*
+ * `display: flex` here is a bug fix, not a design choice: below 990px this element had
+ * no layout mode of its own, so its two children — the swiper and `.controls` — were
+ * plain stacked blocks with ZERO space between them. A later fix that nudged `.controls`
+ * upward with a negative margin (meant to correct an unrelated gap elsewhere) had nothing
+ * to push against and pulled it up INTO the swiper, overlapping the bottom of the card.
+ * 12px is the true-mobile frame's own measured card-row -> controls-row gap (Figma
+ * internal file hf0beCVyuHCECkNQfaOm2q, node 6441:4377); there is no tablet frame to
+ * verify against, but any positive gap here is strictly correct where zero was not, so
+ * this applies for the whole <990px range rather than leaving 750-989px broken too.
+ * >=990px keeps its own explicit `gap: 59px` below, unaffected.
+ */
 .aria-insta__carousel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -75,7 +90,8 @@
   background: #f1f1f1;
 }
 
-.aria-insta__image {
+.aria-insta__image,
+.aria-insta__video {
   display: block;
   width: 100%;
   height: 100%;
@@ -346,6 +362,68 @@
 .aria-insta__next .aria-icon {
   width: 24px;
   height: 24px;
+}
+
+/* ------------------------------------------------------------------ *
+ * True mobile (Figma internal file hf0beCVyuHCECkNQfaOm2q, node
+ * 6441:4377 — its own 375px frame).
+ * ------------------------------------------------------------------ */
+@media screen and (max-width: 749px) {
+  /* Heading -> subheading gap on this frame (was inheriting the base
+     rule's 22px). */
+  .aria-insta__header {
+    gap: 16px;
+  }
+
+  /* Header -> carousel-wrap gap on this frame (was inheriting the base
+     rule's 32px). `.inner`'s only two children are the header and
+     `.carousel-wrap` — the swiper and controls are children of
+     `carousel-wrap` itself, not of `.inner`, so this does not also govern
+     their spacing (see `.carousel-wrap` below). */
+  .aria-insta__inner {
+    gap: 16px;
+  }
+
+  /* Mobile/Heading/H1 token: 36/46 (weight already correct, Medium 500) —
+     not the base rule's 32px / unitless 1.15. */
+  .aria-insta__heading {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  /* 282 / 364 — a different, narrower-relative-to-height ratio than
+     desktop's 384/548 (0.775 vs 0.701), not the same photo scaled down. */
+  .aria-insta__media {
+    aspect-ratio: 282 / 364;
+  }
+
+  /* Progress bar and nav sit in one row with a 12px internal gap on this
+     frame, same as every other carousel on this page (shade, product,
+     real customers, find-your-wig) — not the base rule's stacked column
+     with a 24px gap, which only makes sense once the row is too narrow
+     for both pieces side by side (this frame shows it is not). The gap
+     ABOVE this row (from the card row) is `.carousel-wrap`'s own gap,
+     fixed above — nothing here should touch this element's own vertical
+     position. */
+  .aria-insta__controls {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Nav button gap: 4px, matching the other carousels on this page — not
+     the base rule's 8px. */
+  .aria-insta__nav {
+    gap: 4px;
+  }
+
+  /* Icon frame is 28x28 in the node (confirmed directly against the
+     "Previous/Next Icon" layers), not the base rule's 24x24. */
+  .aria-insta__prev .aria-icon,
+  .aria-insta__next .aria-icon {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 /* ---------- Tablet ---------- */

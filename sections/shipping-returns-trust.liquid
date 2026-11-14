@@ -1,0 +1,132 @@
+{%- comment -%}
+  Wig Party — Shipping & Returns page, trust row. Figma node 7900:527 ("Frame 2147240435",
+  1440 x 320): 4 items, icon + title + description. A dedicated section (not the shared
+  trust-badges.liquid) because none of these 4 icons/concepts match that section's fixed
+  default_icon list, and trust-badges.liquid is reused across other pages — not edited here.
+  Desktop only. Styles in assets/section-shipping-returns-trust.css.
+{%- endcomment -%}
+
+{{ 'section-shipping-returns-trust.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign item_blocks = section.blocks | where: 'type', 'item'
+-%}
+
+{%- if item_blocks.size > 0 -%}
+  <div class="wp-sr-trust">
+    <ul class="wp-sr-trust__list" role="list">
+      {%- for block in item_blocks -%}
+        <li class="wp-sr-trust__item" {{ block.shopify_attributes }}>
+          <span class="wp-sr-trust__icon">
+            {%- if block.settings.icon != blank -%}
+              {{
+                block.settings.icon
+                | image_url: width: 128
+                | image_tag: loading: 'lazy', widths: '64,128', alt: ''
+              }}
+            {%- elsif block.settings.default_icon != 'none' -%}
+              <img
+                src="{{ block.settings.default_icon | append: '.svg' | asset_url }}"
+                alt=""
+                width="64"
+                height="64"
+                loading="lazy"
+              >
+            {%- endif -%}
+          </span>
+          {%- if block.settings.title != blank -%}
+            <h3 class="wp-sr-trust__title">{{ block.settings.title }}</h3>
+          {%- endif -%}
+          {%- if block.settings.description != blank -%}
+            <p class="wp-sr-trust__description">{{ block.settings.description }}</p>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Shipping: Trust",
+  "tag": "section",
+  "class": "section",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "All sales final, ask us first"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon (uploaded image, overrides the default icon below)"
+        },
+        {
+          "type": "select",
+          "id": "default_icon",
+          "label": "Default icon",
+          "default": "trust-icon-45-day-returns",
+          "options": [
+            { "value": "trust-icon-45-day-returns", "label": "45-day returns" },
+            { "value": "trust-icon-free-consult", "label": "Free 1:1 consult" },
+            { "value": "trust-icon-colour-ring-refunded", "label": "Colour ring, refunded" },
+            { "value": "trust-icon-discreet-packaging", "label": "Discreet packaging" },
+            { "value": "none", "label": "None" }
+          ]
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shipping & Returns: trust row",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "default_icon": "trust-icon-45-day-returns",
+            "title": "Tried on Live by Kristi",
+            "description": "Text love to (833) 280-2725 for live alerts."
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "default_icon": "trust-icon-free-consult",
+            "title": "Processed in 1 to 3 business days",
+            "description": ""
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "default_icon": "trust-icon-colour-ring-refunded",
+            "title": "Tracking within 24 to 48 hours",
+            "description": ""
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "default_icon": "trust-icon-discreet-packaging",
+            "title": "All sales final, ask us first",
+            "description": "Email shopwigparty@gmail.com before you order."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

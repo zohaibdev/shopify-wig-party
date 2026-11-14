@@ -1,0 +1,257 @@
+/* Wig Party — Community "Everyone who wants different hair" (sections/community-audience.liquid),
+ * Figma 6849:22724.
+ *
+ * The base rules are the original desktop build that mobile overrides; the current desktop
+ * (Figma 6849:22724, revised: per-card glyphs, Poppins Medium titles) is the
+ * `min-width: 750px` block below.
+ * Base geometry (px): #F5EBE2, py-100, heading (Montserrat Medium 56/64, centred), 56, a
+ * 1332 grid at x 54 (not the usual 40): 428 cards 24 apart both ways, each row as tall as
+ * its tallest card. Card: white, 1px white ring, r-10, px-16 py-24, 16 from a 94 white r-8
+ * icon tile to the title (Poppins 16/26 black) and line (Poppins 16/24 #787878,
+ * capitalised, centred) 4 apart.
+ * There is no global box-sizing reset in this theme, so the section declares its own.
+ */
+
+.aria-comm-aud,
+.aria-comm-aud *,
+.aria-comm-aud *::before,
+.aria-comm-aud *::after {
+  box-sizing: border-box;
+}
+
+.aria-comm-aud {
+  padding: 100px 54px;
+  background: var(--aria-comm-aud-bg, #f5ebe2);
+}
+
+.aria-comm-aud__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  max-width: 1332px;
+  margin: 0 auto;
+}
+
+.aria-comm-aud__title {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 64px;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--black, #000);
+}
+
+.aria-comm-aud__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aria-comm-aud__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 23px 15px;
+  border: 1px solid var(--white, #fff);
+  border-radius: 10px;
+  background: var(--white, #fff);
+}
+
+.aria-comm-aud__icon {
+  position: relative;
+  flex: none;
+  display: block;
+  width: 94px;
+  height: 94px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--white, #fff);
+  color: var(--qi, #bc696b);
+}
+
+.aria-comm-aud__icon svg {
+  position: absolute;
+  top: 16.625px;
+  left: 18.583px;
+  display: block;
+  width: 56.8333px;
+  height: 59.8813px;
+}
+
+.aria-comm-aud__icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.aria-comm-aud__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.aria-comm-aud__name {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0;
+  text-align: center;
+  color: var(--black, #000);
+}
+
+.aria-comm-aud__text {
+  margin: 0;
+  font-family: var(--font-body-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: capitalize;
+  color: #787878;
+}
+
+/* ---------- Desktop: Figma 6849:22724 (1440 x 814) ----------
+ *
+ *   frame   pt-80 pb-100; heading as above, 56, the 1332 grid at x 54, 24 apart both ways
+ *   card    white, a 1px INSIDE stroke fading white -> #EADDD4 top to bottom, r-10,
+ *           py-24 px-16: the card's own 84 x 84 #BC696B glyph (no tile; the mobile 60 art
+ *           at 1.4x, insets included), 16, title Poppins Medium 18/28 black, 4, line
+ *           Poppins 16/26 #3F3E3E centred. Rows hug their tallest card: 258 and 232.
+ * Scoped to >= 750 so none of it reaches mobile, which is built on the base rules.
+ */
+@media screen and (min-width: 750px) {
+  .aria-comm-aud {
+    padding: 80px 54px 100px;
+  }
+
+  .aria-comm-aud__card {
+    border-color: transparent;
+    background:
+      linear-gradient(var(--white, #fff), var(--white, #fff)) padding-box,
+      linear-gradient(180deg, var(--white, #fff) 0%, var(--cream, #eaddd4) 100%) border-box;
+  }
+
+  .aria-comm-aud__icon {
+    width: 84px;
+    height: 84px;
+    overflow: visible;
+    border-radius: 0;
+    background: none;
+  }
+
+  .aria-comm-aud__glyph {
+    display: block;
+  }
+
+  .aria-comm-aud__icon .aria-comm-aud__glyph svg {
+    position: static;
+    width: 84px;
+    height: 84px;
+  }
+
+  .aria-comm-aud__name {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  .aria-comm-aud__text {
+    line-height: 26px;
+    text-transform: none;
+    color: var(--gray, #3f3e3e);
+  }
+}
+
+/* ---------- Below desktop (no Figma frame yet) ---------- */
+
+@media screen and (max-width: 989px) {
+  .aria-comm-aud {
+    padding: 64px 24px;
+  }
+
+  .aria-comm-aud__title {
+    font-size: 36px;
+    line-height: 44px;
+  }
+
+  .aria-comm-aud__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Mobile: Figma 7000:4900 (375 x 1168) ----------
+ *
+ *   frame   #EADDD4, py-48 px-16; heading (Montserrat Medium 36/46, centred), 24, then a
+ *           2-across grid of 169.5 cards, 4 apart both ways
+ *   card    white, 1px white ring (inside, so the 8 / 24 padding includes it), r-10:
+ *           a bare 60 glyph (no tile; per-card art, insets baked into each 60 x 60 SVG),
+ *           16, the title (Poppins 16/26 black), 12, the line (Poppins 14/22 #3F3E3E,
+ *           centred, as written)
+ */
+@media screen and (max-width: 749px) {
+  .aria-comm-aud {
+    padding: 48px 16px;
+    background: var(--cream, #eaddd4);
+  }
+
+  .aria-comm-aud__inner {
+    gap: 24px;
+  }
+
+  .aria-comm-aud__title {
+    font-size: 36px;
+    line-height: 46px;
+  }
+
+  .aria-comm-aud__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .aria-comm-aud__card {
+    padding: 23px 7px;
+  }
+
+  .aria-comm-aud__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 0;
+    background: none;
+  }
+
+  .aria-comm-aud__glyph {
+    display: block;
+  }
+
+  .aria-comm-aud__icon .aria-comm-aud__glyph svg {
+    position: static;
+    width: 60px;
+    height: 60px;
+  }
+
+  .aria-comm-aud__copy {
+    gap: 12px;
+  }
+
+  .aria-comm-aud__text {
+    font-size: 14px;
+    line-height: 22px;
+    text-transform: none;
+    color: var(--gray, #3f3e3e);
+  }
+}

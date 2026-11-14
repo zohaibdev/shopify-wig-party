@@ -1,0 +1,58 @@
+{%- comment -%}
+  Wig Party — returns `text` with the supplier's name taken out, for places that must not
+  expose who the store buys from (product titles, the vendor line on a card).
+
+  The names come from Theme settings → Supplier branding ("Supplier names to hide",
+  comma-separated), so the supplier's name does not live in the theme code. The product's
+  own vendor field is not used: the store's own products carry the Wig Party vendor, and
+  that brand must stay.
+
+  This store's titles are usually "Style | Supplier | Collection | Status":
+    - a pipe segment that IS a supplier name is dropped; the comparison ignores case and
+      spaces, so the vendor spelling "BelleTress" matches the title spelling "Belle Tress";
+    - a name inside a segment ("Supplier Café E Collection", "Protect your Supplier Wig")
+      is removed from it, and the doubled space that leaves is collapsed.
+  Whatever is left is re-joined with " | ". If nothing is left, the output is blank.
+
+  Param: text (required).
+{%- endcomment -%}
+{%- liquid
+  assign supplier_names = settings.hidden_supplier_names | split: ','
+  assign text_parts = text | split: '|'
+  assign stripped = ''
+
+  for part in text_parts
+    assign segment = part | strip
+    assign segment_key = segment | downcase | remove: ' '
+    assign drop_segment = false
+
+    for supplier_name in supplier_names
+      assign name = supplier_name | strip
+      if name == blank
+        continue
+      endif
+      assign name_key = name | downcase | remove: ' '
+      if segment_key == name_key
+        assign drop_segment = true
+        break
+      endif
+      assign segment = segment | remove: name
+    endfor
+
+    if drop_segment
+      continue
+    endif
+
+    assign segment = segment | split: ' ' | join: ' ' | strip
+    if segment == blank
+      continue
+    endif
+
+    if stripped == blank
+      assign stripped = segment
+    else
+      assign stripped = stripped | append: ' | ' | append: segment
+    endif
+  endfor
+-%}
+{{- stripped -}}

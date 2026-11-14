@@ -1,0 +1,28 @@
+{%- comment -%}
+  Wig Party — the cart drawer's upsell row (Figma 6848:8469). One markup for both sources:
+  the fixed upsell product (snippets/cart-drawer.liquid) and the recommended product
+  (sections/aria-cart-recommendations.liquid). ADD is handled in assets/aria-cart-drawer.js.
+
+  Params: product, title, text ([price] is replaced), image (optional image to show instead
+  of the product's own).
+{%- endcomment -%}
+{%- liquid
+  assign upsell_variant = product.selected_or_first_available_variant
+  assign upsell_price = upsell_variant.price | money
+-%}
+<div class="aria-cart__upsell">
+  <div class="aria-cart__upsell-main">
+    <span class="aria-cart__upsell-media">
+      {%- if image != blank -%}
+        {{ image | image_url: width: 150 | image_tag: loading: 'lazy', width: 50, height: 52, alt: '' }}
+      {%- elsif product.featured_image != blank -%}
+        {{ product.featured_image | image_url: width: 150 | image_tag: loading: 'lazy', width: 50, height: 52, alt: '' }}
+      {%- endif -%}
+    </span>
+    <span class="aria-cart__upsell-text">
+      <span class="aria-cart__upsell-title">{{ title }}</span>
+      <span class="aria-cart__upsell-sub">{{ text | replace: '[price]', upsell_price }}</span>
+    </span>
+  </div>
+  <button type="button" class="aria-cart__upsell-add" data-aria-cart-upsell="{{ upsell_variant.id }}">ADD</button>
+</div>

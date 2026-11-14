@@ -1,0 +1,186 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "shipping-returns-hero": {
+      "type": "shipping-returns-hero",
+      "settings": {
+        "home_label": "Home",
+        "parent_label": "Help",
+        "parent_url": "/pages/contact",
+        "current_label": "Shipping & returns",
+        "eyebrow": "POLICY",
+        "heading": "Shipping & returns",
+        "text": "All sales are final. Due to the nature of our products and for hygiene reasons, we do not accept returns, exchanges, or cancellations once an order has been placed. If you have questions before you buy, please contact us first."
+      }
+    },
+    "shipping-returns-short-version": {
+      "type": "shipping-returns-short-version",
+      "blocks": {
+        "card-1": {
+          "type": "card",
+          "settings": {
+            "title": "All sales are final",
+            "description": "No returns, exchanges, or cancellations once an order has been placed."
+          }
+        },
+        "card-2": {
+          "type": "card",
+          "settings": {
+            "title": "Most orders ship the next business day",
+            "description": "Please allow 1 to 3 business days for order processing."
+          }
+        },
+        "card-3": {
+          "type": "card",
+          "settings": {
+            "title": "Tracking by email",
+            "description": "Please allow up to 24 to 48 hours for tracking to become active."
+          }
+        },
+        "card-4": {
+          "type": "card",
+          "settings": {
+            "title": "Damaged or wrong item?",
+            "description": "Contact us immediately so we can evaluate the issue and make it right."
+          }
+        },
+        "card-5": {
+          "type": "card",
+          "settings": {
+            "title": "Check your address",
+            "description": "We are generally unable to change shipping information or reroute packages."
+          }
+        },
+        "card-6": {
+          "type": "card",
+          "settings": {
+            "title": "Sale items may have been tried on",
+            "description": "They may not be factory-sealed. Want brand new? Order regularly stocked styles."
+          }
+        }
+      },
+      "block_order": ["card-1", "card-2", "card-3", "card-4", "card-5", "card-6"],
+      "settings": {
+        "eyebrow": "THE SHORT VERSION",
+        "heading": "Six things to know"
+      }
+    },
+    "shipping-returns-policy": {
+      "type": "shipping-returns-policy",
+      "blocks": {
+        "nav-1": {
+          "type": "nav_link",
+          "settings": { "label": "Shipping & returns", "url": "/pages/shipping-returns", "active": true }
+        },
+        "nav-2": {
+          "type": "nav_link",
+          "settings": { "label": "Shipping policy", "url": "/policies/shipping-policy", "active": false }
+        },
+        "nav-3": {
+          "type": "nav_link",
+          "settings": { "label": "Refund policy", "url": "/policies/refund-policy", "active": false }
+        },
+        "nav-4": {
+          "type": "nav_link",
+          "settings": { "label": "Privacy policy", "url": "/policies/privacy-policy", "active": false }
+        },
+        "nav-5": {
+          "type": "nav_link",
+          "settings": { "label": "Terms of service", "url": "/policies/terms-of-service", "active": false }
+        },
+        "nav-6": {
+          "type": "nav_link",
+          "settings": { "label": "Contact us", "url": "/pages/contact", "active": false }
+        },
+        "sec-final": {
+          "type": "article_section",
+          "settings": {
+            "style": "callout",
+            "heading": "All sales are final",
+            "body": "<p>Due to the nature of our products and for hygiene reasons, <strong>all sales are final.</strong> We do not accept returns, exchanges, or cancellations once an order has been placed.</p><p>Please carefully review your order before completing checkout to ensure you have selected the correct style, color, and quantity. If you have questions prior to purchasing, we encourage you to contact us before placing your order.</p>"
+          }
+        },
+        "sec-changes": {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Order changes and cancellations",
+            "body": "<p>Once an order has been submitted, it enters our processing system quickly and we are generally unable to make changes, additions, removals, or cancellations. Please verify your order carefully before completing checkout.</p><p><strong>First to checkout wins.</strong> Adding an item to your cart does not reserve inventory. When multiple customers attempt to purchase the same item, the first completed checkout will receive the available inventory.</p>"
+          }
+        },
+        "sec-shipping": {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Shipping",
+            "body": "<p><strong>Most orders ship the next business day.</strong> Please allow 1 to 3 business days for order processing, although many orders are shipped sooner. During major sales events, holidays, product launches, or periods of unusually high order volume, processing times may be slightly extended.</p><p>Once your order ships, tracking information will be provided by email. Please allow up to 24 to 48 hours for tracking updates to become active within the carrier's system.</p><p>Orders are shipped to the address provided during checkout. Once an order has been submitted, we are generally unable to modify shipping information or reroute packages.</p>"
+          }
+        },
+        "sec-stock": {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "If an item is unavailable",
+            "body": "<p>If an item becomes unavailable after purchase, we will contact you as soon as possible and give you the option to select an alternative color or style, if available, or receive a full refund for the unavailable item.</p>"
+          }
+        },
+        "sec-sample": {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Sale and clearance items",
+            "body": "<p>Sale, clearance, and promotional items may include overstock inventory or pieces that have been displayed, demonstrated, or tried on during educational live broadcasts. These items remain in excellent condition unless otherwise noted. However, they may not be factory-sealed or untouched.</p><p>If you want a brand-new, unopened item shipped directly from Belle Tress, please purchase regularly stocked merchandise rather than clearance or sale items.</p>"
+          }
+        },
+        "sec-damaged": {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Damaged, defective or wrong item",
+            "body": "<p>Please inspect your order upon reception and contact us immediately if the item is defective, damaged or if you receive the wrong item, so that we can evaluate the issue and make it right.</p>"
+          }
+        },
+        "sec-lost": {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Lost, stolen or delayed packages",
+            "body": "<p>Once a package has been accepted by the shipping carrier, Wig Party is not responsible for lost, stolen, delayed, or misdelivered packages. Please contact the shipping carrier directly about delivery issues. If package protection or shipping insurance was purchased, claims may be submitted according to the terms of the protection provider.</p>"
+          }
+        },
+        "sec-contact": {
+          "type": "article_section",
+          "settings": {
+            "style": "default",
+            "heading": "Contact",
+            "body": "<p>Wig Party<br>Kristi Dailey LLC<br>13322 Highway 99, Suite 201<br>Everett, WA 98204<br>Email: <a href=\"mailto:shopwigparty@gmail.com\">shopwigparty@gmail.com</a></p>"
+          }
+        }
+      },
+      "block_order": [
+        "nav-1", "nav-2", "nav-3", "nav-4", "nav-5", "nav-6",
+        "sec-final", "sec-changes", "sec-shipping", "sec-stock", "sec-sample", "sec-damaged", "sec-lost", "sec-contact"
+      ],
+      "settings": {
+        "sidebar_eyebrow": "HELP & POLICIES",
+        "ask_eyebrow": "QUESTIONS BEFORE YOU ORDER?",
+        "ask_text": "Because all sales are final, please ask us anything before you check out. Email shopwigparty@gmail.com.",
+        "ask_button_label": "CONTACT US",
+        "ask_button_url": "/pages/contact"
+      }
+    }
+  },
+  "order": [
+    "shipping-returns-hero",
+    "shipping-returns-short-version",
+    "shipping-returns-policy"
+  ]
+}

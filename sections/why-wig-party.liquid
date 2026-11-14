@@ -1,4 +1,5 @@
 {{ 'section-aria-why-wig-party.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'aria-why-wig-party.js' | asset_url }}" defer="defer"></script>
 
 {%- liquid
   assign has_video = false
@@ -11,6 +12,124 @@
   #shopify-section-{{ section.id }} .aria-why {
     --aria-why-bg: {{ section.settings.background_color }};
     --aria-why-frame-border: {{ section.settings.frame_border_color }};
+  }
+
+  /*
+   * Hosted-video toggle (sections/why-wig-party.liquid, assets/aria-why-wig-party.js).
+   * Kept here rather than in assets/section-aria-why-wig-party.css, since that file's
+   * "aria-*" naming is ambiguous with the theme's shared aria-*.css files and this block
+   * is new, section-owned behaviour rather than the V4 layout rules already there.
+   *
+   * One button spans the whole frame (class aria-why__poster, styles already defined in
+   * section-aria-why-wig-party.css) and never leaves the DOM; only its contents fade here,
+   * driven by the native-event-driven data-state the script sets, so the button itself
+   * stays the click target for pausing even while "invisible".
+   */
+  #shopify-section-{{ section.id }} .aria-why__video-toggle[data-state='playing'] .aria-why__image,
+  #shopify-section-{{ section.id }} .aria-why__video-toggle[data-state='playing'] .aria-why__scrim,
+  #shopify-section-{{ section.id }} .aria-why__video-toggle[data-state='playing'] .aria-why__play {
+    opacity: 0;
+  }
+
+  /* section-aria-why-wig-party.css (not edited for this) still carries an older rule,
+     `.aria-why__media--video .aria-why__play { display: none; }`, written back when a
+     hosted video always autoplayed and the centre glyph was never shown over it. It would
+     otherwise hide the play glyph outright, in every state, overriding the opacity rule
+     above. This restores it only while paused, higher-specificity so it wins without
+     touching that file. */
+  #shopify-section-{{ section.id }} .aria-why__media--video .aria-why__video-toggle[data-state='paused'] .aria-why__play {
+    display: block;
+  }
+
+  /* Figma (node 7238:4842) has no corner play/pause or mute button on this frame — only
+     the one centred glyph above. The shared .aria-video-ctrl markup is not rendered by this
+     section any more, but this stays as a defensive, scoped hide in case a future edit ever
+     reintroduces it here by mistake. assets/aria-video-controls.js,
+     assets/component-aria-video-controls.css and snippets/aria-icon.liquid are shared with
+     Real Customers and are not edited for this. */
+  #shopify-section-{{ section.id }} .aria-video-ctrl {
+    display: none !important;
+  }
+
+  /*
+   * Playing-state corner controls (mute + pause), scoped here rather than in
+   * assets/section-aria-why-wig-party.css since that file is shared V4-layout CSS and
+   * this is new, section-owned behaviour. Deliberately separate class names
+   * (aria-why__ctrl*) from the shared .aria-video-ctrl so the defensive hide above can
+   * never catch these. Sized and positioned per the Figma-less fallback: the old shared
+   * corner-button treatment (assets/component-aria-video-controls.css, 40px desktop
+   * discs) adapted to this frame, since no node for this control pair exists in the
+   * inspected Figma frame (node 7238:4842 has no corner controls at all).
+   *
+   * No z-index anywhere else in .aria-why__media's stacking (section-aria-why-wig-party.css
+   * never sets one), so these simply need to come after .aria-why__video-toggle in the
+   * markup to paint above it -- which they do.
+   */
+  #shopify-section-{{ section.id }} .aria-why__ctrl {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 50%;
+    background: rgba(20, 20, 20, 0.42);
+    color: var(--white, #fff);
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    visibility: hidden;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  /* Shown only while playing, and only via visibility -- never display -- so they can
+     never be the thing that breaks the toggle's own hit area underneath. Keyed off
+     data-aria-why-media's data-state, set in assets/aria-why-wig-party.js from the
+     video's native play/pause/ended events. */
+  #shopify-section-{{ section.id }} [data-aria-why-media][data-state='playing'] .aria-why__ctrl {
+    visibility: visible;
+  }
+
+  #shopify-section-{{ section.id }} .aria-why__ctrl--mute {
+    top: 16px;
+    right: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .aria-why__ctrl--pause {
+    bottom: 16px;
+    left: 16px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #shopify-section-{{ section.id }} .aria-why__ctrl:hover {
+      background: rgba(20, 20, 20, 0.62);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  #shopify-section-{{ section.id }} .aria-why__ctrl:focus-visible {
+    outline: 2px solid var(--white, #fff);
+    outline-offset: -4px;
+    box-shadow: none;
+  }
+
+  #shopify-section-{{ section.id }} .aria-why__ctrl-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+  }
+
+  /* One icon per mute state, so the toggle is an attribute flip rather than an
+     innerHTML rewrite -- same technique assets/component-aria-video-controls.css uses
+     for its own sound button, not shared code. */
+  #shopify-section-{{ section.id }} .aria-why__ctrl--mute[data-state='muted'] .aria-why__ctrl-icon--on,
+  #shopify-section-{{ section.id }} .aria-why__ctrl--mute[data-state='unmuted'] .aria-why__ctrl-icon--off {
+    display: none;
   }
 {%- endstyle -%}
 
@@ -93,23 +212,29 @@
         -%}
         {%- if has_hosted_video -%}
           {%- comment -%}
-            Autoplaying, muted, looping, inline video with the theme's shared custom
-            controls — the same behaviour as the Real Customers slides, driven by the same
-            assets/aria-video-controls.js, so this video joins the ONE page-wide audio group
-            and can never hold audio at the same time as a Real Customers slide.
+            Independent of the shared assets/aria-video-controls.js on purpose (behaviour is
+            in assets/aria-why-wig-party.js instead). That shared manager autoplays + mutes
+            every [data-aria-video] unconditionally and owns a cross-section single-audio
+            rule — neither fits here: the `video_autoplay` setting below must be able to
+            turn autoplay off, and the Figma design (node 7238:4842) has no mute control at
+            all, just one big centred play glyph that doubles as the poster. So this video
+            carries its own data-aria-why-* attributes and gets a dedicated small script
+            instead of the shared corner play/pause + mute buttons: a single full-frame
+            toggle showing the thumbnail + play glyph while paused, invisible-but-clickable
+            while playing, driven by the video's own native play/pause/ended/error events
+            rather than the shared script's data-state.
 
             `controls` is deliberately absent: that absence is what keeps the native
-            timeline, volume slider, fullscreen and PiP chrome off the video. `muted` must
-            be an ATTRIBUTE, not merely set from JS, or Chrome/Safari refuse the autoplay,
-            and `playsinline` is what stops iOS going fullscreen.
-
-            The section's `video_autoplay` and `video_show_controls` settings no longer
-            apply to a hosted video — autoplay is now unconditional and the controls are the
-            theme's own. `video_show_controls` still drives the external-iframe branch.
+            timeline, volume slider, fullscreen and PiP chrome off the video, and
+            `playsinline` is what stops iOS going fullscreen. `autoplay`/`muted` are only
+            rendered when `video_autoplay` is on — a browser only honours autoplay when
+            `muted` is a real ATTRIBUTE, not merely set from JS. A manual play (the toggle
+            button) always unmutes first, since that click is a real user gesture.
 
             Built by hand rather than with `video_tag` for the same reason as Real Customers:
             `video_tag` forces the video's own preview frame as the poster and offers no
-            override, and this design wants the merchant's still image there.
+            override, and this design wants the merchant's still image there, as both the
+            poster attribute and the thumbnail shown while paused.
           {%- endcomment -%}
           {%- liquid
             assign why_poster_url = ''
@@ -117,20 +242,22 @@
               assign why_poster_url = section.settings.image | image_url: width: 1600
             elsif section.settings.video.preview_image != blank
               assign why_poster_url = section.settings.video.preview_image | image_url: width: 1600
+            else
+              assign why_poster_url = 'wp-meet-the-icons-bg.jpg' | asset_url
             endif
           -%}
-          <div class="aria-why__media aria-why__media--video" data-aria-video-media>
+          <div class="aria-why__media aria-why__media--video" data-aria-why-media>
             <video
               class="aria-why__video"
-              data-aria-video
-              autoplay
-              muted
+              data-aria-why-video
+              {%- if section.settings.video_autoplay %}
+                autoplay
+                muted
+              {%- endif %}
               loop
               playsinline
               preload="metadata"
-              {% if why_poster_url != blank %}
-                poster="{{ why_poster_url }}"
-              {% endif %}
+              poster="{{ why_poster_url }}"
             >
               {%- for source in section.settings.video.sources -%}
                 <source src="{{ source.url }}" type="{{ source.mime_type }}">
@@ -138,34 +265,62 @@
             </video>
 
             {%- comment -%}
-              Opposite corners, never grouped. Positions are this section's own (see
-              section-aria-why-wig-party.css) because its frame is a wide landscape box,
-              not the Real Customers portrait card.
+              One button spans the whole frame rather than a small corner disc — Figma shows
+              a single centred glyph, not a toolbar. While paused it shows the poster_media +
+              play_glyph captures above and is the click target that starts the video; while
+              playing, assets/aria-why-wig-party.js flips data-state to "playing" and the
+              rules added to the <style> block above fade its contents out, but the button
+              itself stays in place as the click target for pausing — "video area" and "the
+              button" are the same element here, and nothing outside this media box is
+              clickable.
             {%- endcomment -%}
             <button
               type="button"
-              class="aria-video-ctrl aria-video-ctrl--play aria-why__ctrl"
-              data-aria-video-play
-              data-state="playing"
+              class="aria-why__poster aria-why__video-toggle"
+              data-aria-why-toggle
+              data-state="paused"
+              aria-pressed="false"
               data-label-play="{{ 'aria_theme.video.play' | t | escape }}"
               data-label-pause="{{ 'aria_theme.video.pause' | t | escape }}"
-              aria-label="{{ 'aria_theme.video.pause' | t }}"
+              aria-label="{{ 'aria_theme.video.play' | t }}"
             >
-              {%- render 'aria-icon', name: 'pause', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--pause' -%}
-              {%- render 'aria-icon', name: 'play', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--play' -%}
+              {{ poster_media }}
+              {{ play_glyph }}
+            </button>
+
+            {%- comment -%}
+              Playing-state corner controls (mute top-right, pause bottom-left). Siblings
+              of the full-frame toggle above, not nested inside it, so a click on either
+              never bubbles into the toggle's own click handler and no double-fire is
+              possible. Visibility (not display) is keyed off data-aria-why-media's own
+              data-state, set only from this video's native play/pause/ended events in
+              assets/aria-why-wig-party.js below -- never from the shared, unused-here
+              assets/aria-video-controls.js data-state contract. Icons are the existing
+              'pause' / 'sound-on' / 'sound-off' glyphs snippets/aria-icon.liquid already
+              carries for this exact corner-button pattern (see that file's own comment);
+              rendered here only, snippet itself untouched.
+            {%- endcomment -%}
+            <button
+              type="button"
+              class="aria-why__ctrl aria-why__ctrl--mute"
+              data-aria-why-mute
+              data-state="unmuted"
+              aria-pressed="false"
+              data-label-mute="{{ 'aria_theme.video.mute' | t | escape }}"
+              data-label-unmute="{{ 'aria_theme.video.unmute' | t | escape }}"
+              aria-label="{{ 'aria_theme.video.mute' | t }}"
+            >
+              {%- render 'aria-icon', name: 'sound-on', class: 'aria-why__ctrl-icon aria-why__ctrl-icon--on' -%}
+              {%- render 'aria-icon', name: 'sound-off', class: 'aria-why__ctrl-icon aria-why__ctrl-icon--off' -%}
             </button>
 
             <button
               type="button"
-              class="aria-video-ctrl aria-video-ctrl--sound aria-why__ctrl"
-              data-aria-video-sound
-              data-state="muted"
-              data-label-mute="{{ 'aria_theme.video.mute' | t | escape }}"
-              data-label-unmute="{{ 'aria_theme.video.unmute' | t | escape }}"
-              aria-label="{{ 'aria_theme.video.unmute' | t }}"
+              class="aria-why__ctrl aria-why__ctrl--pause"
+              data-aria-why-pause
+              aria-label="{{ 'aria_theme.video.pause' | t }}"
             >
-              {%- render 'aria-icon', name: 'sound-off', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--off' -%}
-              {%- render 'aria-icon', name: 'sound-on', class: 'aria-video-ctrl__icon aria-video-ctrl__icon--on' -%}
+              {%- render 'aria-icon', name: 'pause', class: 'aria-why__ctrl-icon' -%}
             </button>
         {%- elsif has_video -%}
           {%- comment -%}
@@ -399,7 +554,7 @@
     {
       "name": "t:sections.aria-why-wig-party.presets.name",
       "blocks": [
-        { "type": "feature", "settings": { "label": "Authorized Belle Tress Retailer" } },
+        { "type": "feature", "settings": { "label": "Hand-Picked by Kristi" } },
         { "type": "feature", "settings": { "label": "In Stock & Ready to Ship" } },
         { "type": "feature", "settings": { "label": "Live Shopping on Facebook" } }
       ]
